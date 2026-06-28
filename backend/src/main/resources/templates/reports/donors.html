@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: main(~{::#reports-donors}, 'reports', 'Donor Reports')}">
+<body>
+
+    <div id="reports-donors">
+
+        <div class="card mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="mb-0 fw-bold">Donor Reports Configuration</h3>
+                    <p class="text-muted mb-0">Apply filters below to generate custom donor reports.</p>
+                </div>
+                <a th:href="@{/reports}" class="btn btn-secondary px-3">Back to Reports</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <h4 class="mb-4 text-primary fw-bold">Report Filters</h4>
+            <form th:action="@{/reports/preview}" method="get">
+                <input type="hidden" name="type" value="donors">
+
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <label class="form-label">Donor Status</label>
+                        <select class="form-select" name="status">
+                            <option value="ALL">All Donors</option>
+                            <option th:each="st : ${statuses}" th:value="${st}" th:text="${st}"></option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4 mb-4">
+                        <label class="form-label">Donation Type</label>
+                        <select class="form-select" name="donationType">
+                            <option value="ALL">All Types</option>
+                            <option th:each="dt : ${donationTypes}" th:value="${dt}" th:text="${dt}"></option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4 mb-4">
+                        <label class="form-label">Keyword Search (ID, Name, Mobile)</label>
+                        <input type="text" name="keyword" class="form-control" placeholder="Search by keyword...">
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-3 mt-4 border-top pt-3">
+                    <button type="submit" class="btn btn-primary px-4" style="height:48px;">
+                        🔍 Preview Report
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+    <!-- Reusable Validation Error Display Fragment -->
+    <!-- Note: Pre-processing syntax __${fieldName}__ allows dynamic property mapping in Thymeleaf fields -->
+    <div th:fragment="field-error(fieldName)" 
+         th:if="${#fields.hasErrors(fieldName)}" 
+         th:errors="*{__${fieldName}__}" 
+         class="text-danger mt-1 fw-bold" 
+         style="font-size: 15px;">
+        Validation validation error message
+    </div>
+
+    <!-- Reusable Standard Label styling -->
+    <label th:fragment="label(forId, text, required)" th:for="${forId}" class="form-label">
+        <span th:text="${text}">Label Text</span>
+        <span th:if="${required}" class="text-danger">*</span>
+    </label>
+
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: main(~{::#import-results-container}, 'donors', 'Excel Import Report')}">
+<body>
+
+    <div id="import-results-container">
+
+        <!-- Header -->
+        <div class="card mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="mb-0 fw-bold">Donor Excel Import Results</h3>
+                    <p class="text-muted mb-0">Batch migration summary. Review the row-by-row parse log below.</p>
+                </div>
+                <a th:href="@{/donors}" class="btn btn-secondary px-3">Back to Directory</a>
+            </div>
+        </div>
+
+        <!-- Metrics Summary Cards -->
+        <div class="row mb-4">
+            <div class="col-md-4 mb-3 mb-md-0">
+                <div class="card text-center py-4">
+                    <span class="fs-1 mb-2">📋</span>
+                    <h1 class="fw-bold mb-1 text-dark" th:text="${totalCount}">0</h1>
+                    <span class="fs-5 fw-bold text-muted">Total Rows Processed</span>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3 mb-md-0">
+                <div class="card bg-success bg-opacity-10 border-success text-success text-center py-4">
+                    <span class="fs-1 mb-2">✅</span>
+                    <h1 class="fw-bold mb-1" th:text="${successCount}">0</h1>
+                    <span class="fs-5 fw-bold">Successfully Imported</span>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-danger bg-opacity-10 border-danger text-danger text-center py-4">
+                    <span class="fs-1 mb-2">❌</span>
+                    <h1 class="fw-bold mb-1" th:text="${failCount}">0</h1>
+                    <span class="fs-5 fw-bold">Rows Skipped / Failed</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row-by-Row Parse Log Table -->
+        <div class="card">
+            <h4 class="fw-bold mb-3">Row-by-Row Parse Log</h4>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" style="font-size: 15px;">
+                    <thead>
+                        <tr>
+                            <th style="width: 60px;">Row</th>
+                            <th>Donor ID</th>
+                            <th>Full Name</th>
+                            <th>Donation Type</th>
+                            <th>Amount</th>
+                            <th>Donation Date</th>
+                            <th>Status</th>
+                            <th>Import Status</th>
+                            <th>Error Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="row : ${importResults}"
+                            th:classappend="${row.valid} ? 'table-success-row' : 'table-danger-row'">
+                            <td class="fw-bold" th:text="${row.rowNum}">2</td>
+                            <td th:text="${row.donorId}">DON-0001</td>
+                            <td class="fw-bold" th:text="${row.fullName}">Donor Name</td>
+                            <td>
+                                <span th:if="${row.donationType != null}"
+                                      class="badge bg-primary bg-opacity-10 text-primary px-2 py-1 rounded-pill"
+                                      th:text="${row.donationType}">CASH</span>
+                                <span th:if="${row.donationType == null}" class="text-muted">-</span>
+                            </td>
+                            <td>
+                                <span th:if="${row.donationAmount != null}"
+                                      class="text-success fw-bold"
+                                      th:text="'₹' + ${#numbers.formatDecimal(row.donationAmount, 1, 'COMMA', 2, 'POINT')}">₹0.00</span>
+                                <span th:if="${row.donationAmount == null}" class="text-muted">-</span>
+                            </td>
+                            <td th:text="${row.donationDate != null ? #temporals.format(row.donationDate, 'dd MMM yyyy') : (row.donationDateString != null ? row.donationDateString : '-')}">-</td>
+                            <td>
+                                <span th:if="${row.status != null}"
+                                      th:text="${row.status}"
+                                      class="badge bg-secondary bg-opacity-10 text-secondary px-2 py-1 rounded-pill">ACTIVE</span>
+                                <span th:if="${row.status == null}" class="text-muted">-</span>
+                            </td>
+                            <td>
+                                <span th:if="${row.valid}" class="badge bg-success px-3 py-2 rounded-pill">Success</span>
+                                <span th:if="${!row.valid}" class="badge bg-danger px-3 py-2 rounded-pill">Failed</span>
+                            </td>
+                            <td>
+                                <span th:if="${!row.valid}" th:text="${row.errorMessage}"
+                                      class="text-danger fw-bold small">Error message</span>
+                                <span th:if="${row.valid}" class="text-success">—</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

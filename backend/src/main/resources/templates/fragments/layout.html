@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+    th:fragment="main(content, activePage, title)">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} + ' - Smart Old Age Home Portal'">Smart Old Age Home Portal</title>
+    <!-- Bootstrap 5 CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS Stylesheet -->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar Fragment -->
+        <aside class="app-sidebar">
+            <div class="sidebar-brand">
+                <!-- SVG Logo -->
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="32" height="32" rx="8" fill="#2563EB" />
+                    <path d="M16 8L7 16H10V24H14V19H18V24H22V16H25L16 8Z" fill="white" />
+                </svg>
+                <div>
+                    <span class="sidebar-brand-text" style="display: block; line-height: 1.1;">Smart Home</span>
+                    <small
+                        style="color: #64748B; font-size: 10px; display: block; font-weight: 500; margin-top: 2px;">Old
+                        Age Home Portal</small>
+                </div>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-menu-header">Menu</li>
+                <li class="sidebar-menu-item" th:classappend="${activePage == 'dashboard'} ? 'active'">
+                    <a th:href="@{/dashboard}">
+                        <i class="bi bi-house-door" style="font-size: 16px;"></i> Dashboard
+                    </a>
+                </li>
+                <li class="sidebar-menu-item" th:classappend="${activePage == 'residents'} ? 'active'">
+                    <a th:href="@{/residents}">
+                        <i class="bi bi-people" style="font-size: 16px;"></i> Residents
+                    </a>
+                </li>
+                <li class="sidebar-menu-item" th:classappend="${activePage == 'donors'} ? 'active'">
+                    <a th:href="@{/donors}">
+                        <i class="bi bi-gift" style="font-size: 16px;"></i> Donors
+                    </a>
+                </li>
+                <li class="sidebar-menu-item" th:classappend="${activePage == 'reports'} ? 'active'">
+                    <a th:href="@{/reports}">
+                        <i class="bi bi-bar-chart" style="font-size: 16px;"></i> Reports
+                    </a>
+                </li>
+                <!-- Conditional Audit Logs link for Admin only -->
+                <li sec:authorize="hasRole('ADMIN')" class="sidebar-menu-item"
+                    th:classappend="${activePage == 'audit'} ? 'active'">
+                    <a th:href="@{/admin/audit}">
+                        <i class="bi bi-clipboard-data" style="font-size: 16px;"></i> Audit Logs
+                    </a>
+                </li>
+                <!-- Conditional Settings link for Admin only -->
+                <li sec:authorize="hasRole('ADMIN')" class="sidebar-menu-item"
+                    th:classappend="${activePage == 'settings'} ? 'active'">
+                    <a th:href="@{/settings}">
+                        <i class="bi bi-gear" style="font-size: 16px;"></i> Settings
+                    </a>
+                </li>
+                <!-- Logout link using POST -->
+                <li class="sidebar-menu-item mt-auto">
+                    <form th:action="@{/logout}" method="post" id="layoutSidebarLogoutForm" style="display:none;">
+                    </form>
+                    <a href="#" onclick="document.getElementById('layoutSidebarLogoutForm').submit(); return false;"
+                        class="text-danger">
+                        <i class="bi bi-box-arrow-right" style="font-size: 16px;"></i> Logout
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Wrapper -->
+        <div class="app-main">
+            <!-- Navbar -->
+            <nav class="app-navbar">
+                <div class="navbar-title">
+                    <span class="fs-5 fw-bold text-dark" th:text="${title}">Dashboard</span>
+                </div>
+
+                <!-- Center Search Input & Bell matching reference -->
+                <div class="d-flex align-items-center gap-3">
+                    <div style="position: relative;">
+                        <i class="bi bi-search"
+                            style="position: absolute; left: 14px; top: 10px; color: var(--text-muted); font-size: 12px;"></i>
+                        <input type="text" class="form-control navbar-search-input" placeholder="Search...">
+                    </div>
+                    <button class="btn btn-link p-0 text-dark" style="line-height: 1; text-decoration: none;">
+                        <i class="bi bi-bell" style="font-size: 18px; color: var(--text-muted);"></i>
+                    </button>
+                </div>
+
+                <div class="navbar-user">
+                    <div class="d-flex align-items-center gap-2">
+                        <!-- Profile Photo or Initial -->
+                        <div th:if="${currentUserInfo != null and currentUserInfo.profilePicture != null}" 
+                             class="welcome-icon-circle p-0 border border-2 border-primary overflow-hidden"
+                             style="width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                             <img th:src="@{'/uploads/' + ${currentUserInfo.profilePicture}}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                        <div th:if="${currentUserInfo == null or currentUserInfo.profilePicture == null}"
+                             class="welcome-icon-circle"
+                            style="width: 32px; height: 32px; font-size: 14px; font-weight: bold; background-color: var(--primary); color: #FFFFFF; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <span sec:authorize="isAuthenticated()"
+                                th:text="${#strings.substring(#authentication.name, 0, 1).toUpperCase()}">A</span>
+                            <span sec:authorize="!isAuthenticated()">A</span>
+                        </div>
+                        
+                        <div>
+                            <span class="navbar-user-name" th:text="${currentUserInfo != null ? currentUserInfo.fullName : #authentication.name}" style="display: block;">User</span>
+                            <span class="navbar-user-role" sec:authorize="hasRole('ADMIN')">Administrator</span>
+                            <span class="navbar-user-role" sec:authorize="hasRole('MANAGER')">Manager</span>
+                            <span class="navbar-user-role" sec:authorize="hasRole('STAFF')">Staff</span>
+                        </div>
+                    </div>
+                    <form th:action="@{/logout}" method="post" id="layoutNavbarLogoutForm" style="display:none;"></form>
+                    <a href="#" onclick="document.getElementById('layoutNavbarLogoutForm').submit(); return false;"
+                        class="text-danger small ms-3" style="font-weight: 600;">
+                        Logout
+                    </a>
+                </div>
+            </nav>
+
+            <!-- Main Content Area (Passed dynamically) -->
+            <main class="app-content">
+                <div th:replace="${content}"></div>
+            </main>
+
+            <!-- Footer -->
+            <footer class="app-footer">
+                <div>
+                    <span>&copy; 2026 Smart Old Age Home Portal. Built for GTU Societal Internship.</span>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 Bundle with Popper CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script th:src="@{/js/main.js}"></script>
+</body>
+
+</html>

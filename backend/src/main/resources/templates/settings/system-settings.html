@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: main(~{::#system-settings}, 'settings', 'Office &amp; System Information')}">
+<body>
+
+    <div id="system-settings">
+
+        <div class="card mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="mb-0 fw-bold">Office Information</h3>
+                    <p class="text-muted mb-0">Configure metadata for your Old Age Home institution.</p>
+                </div>
+                <a th:href="@{/settings}" class="btn btn-secondary px-3">Back to Settings</a>
+            </div>
+        </div>
+
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <span th:text="${successMessage}">Success!</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="card p-4">
+            <form th:action="@{/settings/system}" th:object="${officeInfoDTO}" method="post">
+                
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label th:replace="~{fragments/forms :: label('homeName', 'Old Age Home Name', true)}"></label>
+                        <input type="text" class="form-control" th:field="*{homeName}"
+                               th:classappend="${#fields.hasErrors('homeName')} ? 'is-invalid' : ''" required>
+                        <div th:replace="~{fragments/forms :: field-error('homeName')}"></div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <label th:replace="~{fragments/forms :: label('trustName', 'Trust Name', true)}"></label>
+                        <input type="text" class="form-control" th:field="*{trustName}"
+                               th:classappend="${#fields.hasErrors('trustName')} ? 'is-invalid' : ''" required>
+                        <div th:replace="~{fragments/forms :: field-error('trustName')}"></div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label th:replace="~{fragments/forms :: label('registrationNumber', 'Registration Number', true)}"></label>
+                        <input type="text" class="form-control" th:field="*{registrationNumber}"
+                               th:classappend="${#fields.hasErrors('registrationNumber')} ? 'is-invalid' : ''" required>
+                        <div th:replace="~{fragments/forms :: field-error('registrationNumber')}"></div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <label th:replace="~{fragments/forms :: label('workingHours', 'Working Hours', true)}"></label>
+                        <input type="text" class="form-control" th:field="*{workingHours}"
+                               th:classappend="${#fields.hasErrors('workingHours')} ? 'is-invalid' : ''" required>
+                        <div th:replace="~{fragments/forms :: field-error('workingHours')}"></div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <label th:replace="~{fragments/forms :: label('phone', 'Phone Number', true)}"></label>
+                        <input type="text" class="form-control" th:field="*{phone}"
+                               th:classappend="${#fields.hasErrors('phone')} ? 'is-invalid' : ''" required>
+                        <div th:replace="~{fragments/forms :: field-error('phone')}"></div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <label th:replace="~{fragments/forms :: label('email', 'Email Address', true)}"></label>
+                        <input type="email" class="form-control" th:field="*{email}"
+                               th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''" required>
+                        <div th:replace="~{fragments/forms :: field-error('email')}"></div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <label th:replace="~{fragments/forms :: label('website', 'Website Domain', false)}"></label>
+                        <input type="text" class="form-control" th:field="*{website}"
+                               th:classappend="${#fields.hasErrors('website')} ? 'is-invalid' : ''">
+                        <div th:replace="~{fragments/forms :: field-error('website')}"></div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label th:replace="~{fragments/forms :: label('address', 'Physical Address', true)}"></label>
+                    <textarea class="form-control" th:field="*{address}" rows="3"
+                              th:classappend="${#fields.hasErrors('address')} ? 'is-invalid' : ''" required></textarea>
+                    <div th:replace="~{fragments/forms :: field-error('address')}"></div>
+                </div>
+
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary px-5">Save Office Details</button>
+                </div>
+
+            </form>
+        </div>
+
+    </div>
+
+</body>
+</html>

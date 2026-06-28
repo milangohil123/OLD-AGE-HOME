@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: main(~{::#security-settings}, 'settings', 'Change Password')}">
+<body>
+
+    <div id="security-settings">
+
+        <div class="card mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="mb-0 fw-bold">Change Password</h3>
+                    <p class="text-muted mb-0">Update your administration account credentials. You will be logged out upon success.</p>
+                </div>
+                <a th:href="@{/settings}" class="btn btn-secondary px-3">Back to Settings</a>
+            </div>
+        </div>
+
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <span th:text="${successMessage}">Success!</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="card p-4">
+            <form th:action="@{/settings/password}" th:object="${passwordDTO}" method="post" style="max-width: 600px;">
+                
+                <div class="mb-4">
+                    <label th:replace="~{fragments/forms :: label('currentPassword', 'Current Password', true)}"></label>
+                    <input type="password" class="form-control" th:field="*{currentPassword}"
+                           th:classappend="${#fields.hasErrors('currentPassword')} ? 'is-invalid' : ''" required>
+                    <div th:replace="~{fragments/forms :: field-error('currentPassword')}"></div>
+                </div>
+
+                <div class="mb-4">
+                    <label th:replace="~{fragments/forms :: label('newPassword', 'New Password', true)}"></label>
+                    <input type="password" class="form-control" th:field="*{newPassword}"
+                           th:classappend="${#fields.hasErrors('newPassword')} ? 'is-invalid' : ''" required>
+                    <div th:replace="~{fragments/forms :: field-error('newPassword')}"></div>
+                    <small class="form-text text-muted">Must be at least 8 characters long, containing 1 uppercase, 1 lowercase and 1 numeric value.</small>
+                </div>
+
+                <div class="mb-4">
+                    <label th:replace="~{fragments/forms :: label('confirmPassword', 'Confirm New Password', true)}"></label>
+                    <input type="password" class="form-control" th:field="*{confirmPassword}"
+                           th:classappend="${#fields.hasErrors('confirmPassword')} ? 'is-invalid' : ''" required>
+                    <div th:replace="~{fragments/forms :: field-error('confirmPassword')}"></div>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary px-5">Change Password</button>
+                </div>
+
+            </form>
+        </div>
+
+    </div>
+
+</body>
+</html>

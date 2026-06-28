@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: main(~{::#backup-settings}, 'settings', 'Database Backup &amp; Export')}">
+<body>
+
+    <div id="backup-settings">
+
+        <div class="card mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="mb-0 fw-bold">Backup &amp; Export</h3>
+                    <p class="text-muted mb-0">Download SQL dumps, restore database states, or export modules data spreadsheets.</p>
+                </div>
+                <a th:href="@{/settings}" class="btn btn-secondary px-3">Back to Settings</a>
+            </div>
+        </div>
+
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <span th:text="${successMessage}">Success!</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <span th:text="${errorMessage}">Error!</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="row">
+            <!-- Left Column: Database Backups -->
+            <div class="col-md-6 mb-4">
+                <div class="card p-4 h-100">
+                    <h5 class="fw-bold text-primary mb-4 border-bottom pb-2">Manual SQL Backups</h5>
+                    
+                    <div class="mb-5">
+                        <label class="form-label d-block fw-semibold mb-2">Export Database State</label>
+                        <p class="text-muted small">Download a snapshot script (.sql file) of the database tables structure and current rows data.</p>
+                        <a th:href="@{/settings/backup/export}" class="btn btn-primary px-4">
+                            <i class="bi bi-database-down me-1"></i> Export Database SQL
+                        </a>
+                    </div>
+
+                    <div>
+                        <label class="form-label d-block fw-semibold mb-2">Restore Database State</label>
+                        <p class="text-muted text-danger small">WARNING: Restoring will overwrite existing records with the uploaded backup script data.</p>
+                        <form th:action="@{/settings/backup/restore}" method="post" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <input class="form-control" type="file" id="backupFile" name="backupFile" accept=".sql" required>
+                            </div>
+                            <button type="submit" class="btn btn-danger px-4" onclick="return confirm('Are you sure you want to restore? This will overwrite the current database data!');">
+                                <i class="bi bi-database-up me-1"></i> Restore Database SQL
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Excel Exports -->
+            <div class="col-md-6 mb-4">
+                <div class="card p-4 h-100">
+                    <h5 class="fw-bold text-primary mb-4 border-bottom pb-2">Export Modules Data</h5>
+                    <p class="text-muted small">Download complete spreadsheets containing database tables records formatted for Microsoft Excel.</p>
+                    
+                    <div class="d-flex flex-column gap-3 mt-2">
+                        <a th:href="@{/settings/backup/export/residents}" class="btn btn-outline-primary text-start p-3 d-flex align-items-center justify-content-between">
+                            <span><i class="bi bi-file-earmark-excel me-2"></i> Export Residents Excel</span>
+                            <span class="fw-bold">&darr;</span>
+                        </a>
+
+                        <a th:href="@{/settings/backup/export/donors}" class="btn btn-outline-primary text-start p-3 d-flex align-items-center justify-content-between">
+                            <span><i class="bi bi-file-earmark-excel me-2"></i> Export Donors Excel</span>
+                            <span class="fw-bold">&darr;</span>
+                        </a>
+
+                        <a th:href="@{/settings/backup/export/inventory}" class="btn btn-outline-primary text-start p-3 d-flex align-items-center justify-content-between">
+                            <span><i class="bi bi-file-earmark-excel me-2"></i> Export Inventory Excel</span>
+                            <span class="fw-bold">&darr;</span>
+                        </a>
+
+                        <a th:href="@{/settings/backup/export/donations}" class="btn btn-outline-primary text-start p-3 d-flex align-items-center justify-content-between">
+                            <span><i class="bi bi-file-earmark-excel me-2"></i> Export Donations Excel</span>
+                            <span class="fw-bold">&darr;</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

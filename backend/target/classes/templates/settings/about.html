@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: main(~{::#about-page}, 'settings', 'About Application')}">
+<body>
+
+    <div id="about-page">
+
+        <div class="card mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="mb-0 fw-bold">About Application</h3>
+                    <p class="text-muted mb-0">System details, build information, and license metadata.</p>
+                </div>
+                <a th:href="@{/settings}" class="btn btn-secondary px-3">Back to Settings</a>
+            </div>
+        </div>
+
+        <div class="card p-4">
+            <div class="row align-items-center mb-4">
+                <div class="col-md-2 text-center">
+                    <svg width="80" height="80" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" class="img-fluid">
+                        <rect width="32" height="32" rx="8" fill="#2563EB"/>
+                        <path d="M16 8L7 16H10V24H14V19H18V24H22V16H25L16 8Z" fill="white"/>
+                    </svg>
+                </div>
+                <div class="col-md-10">
+                    <h4 class="fw-bold mb-1" th:text="${appName}">Smart Old Age Home Management System</h4>
+                    <p class="text-muted mb-0" th:text="'Version: ' + ${appVersion}">Version: 1.0.0</p>
+                </div>
+            </div>
+
+            <h5 class="fw-bold text-primary mb-3 border-bottom pb-2">System Metadata</h5>
+            <table class="table table-bordered mb-4">
+                <tbody>
+                    <tr>
+                        <th style="width: 30%;" class="bg-light">Developer Team</th>
+                        <td th:text="${developer}">GTU Societal Internship Team</td>
+                    </tr>
+                    <tr>
+                        <th class="bg-light">Technology Stack</th>
+                        <td th:text="${techStack}">Spring Boot, Spring Security, JPA, Thymeleaf, Bootstrap 5, MySQL</td>
+                    </tr>
+                    <tr>
+                        <th class="bg-light">License Agreement</th>
+                        <td th:text="${license}">Apache License 2.0</td>
+                    </tr>
+                    <tr>
+                        <th class="bg-light">Last Build Date</th>
+                        <td th:text="${lastUpdated}">June 2026</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h5 class="fw-bold text-primary mb-3 border-bottom pb-2">Project Scope &amp; Objective</h5>
+            <p class="text-muted">
+                The Smart Old Age Home Management System is designed to streamline day-to-day operations for residential nursing homes, caring foundations and senior citizens welfare centers. Key capabilities include residents registrations, donations tracking, medical prescriptions audits, inventory items counts and analytics report generators.
+            </p>
+            <p class="text-muted mb-0">
+                Created as a contribution to the GTU Societal Internship initiatives to digitalize care institutions and automate resource allocations.
+            </p>
+        </div>
+
+    </div>
+
+</body>
+</html>

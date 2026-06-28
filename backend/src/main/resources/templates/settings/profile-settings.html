@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: main(~{::#profile-settings}, 'settings', 'Profile Settings')}">
+<body>
+
+    <div id="profile-settings">
+
+        <div class="card mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="mb-0 fw-bold">Profile Settings</h3>
+                    <p class="text-muted mb-0">Update your account profile credentials and avatar.</p>
+                </div>
+                <a th:href="@{/settings}" class="btn btn-secondary px-3">Back to Settings</a>
+            </div>
+        </div>
+
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <span th:text="${successMessage}">Success!</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="card p-4">
+            <form th:action="@{/settings/profile}" th:object="${profileDTO}" method="post" enctype="multipart/form-data">
+                
+                <div class="row">
+                    <!-- Profile Picture preview & upload -->
+                    <div class="col-md-3 text-center mb-4">
+                        <h5 class="fw-bold mb-3 text-muted">Profile Photo</h5>
+                        <div class="mb-3">
+                            <img th:if="${profilePicture != null && !profilePicture.isEmpty()}" 
+                                 th:src="@{'/uploads/' + ${profilePicture}}" 
+                                 class="rounded-circle img-thumbnail" style="width: 150px; height: 150px; object-fit: cover;" alt="Avatar">
+                            <div th:unless="${profilePicture != null && !profilePicture.isEmpty()}" 
+                                 class="rounded-circle img-thumbnail d-inline-flex align-items-center justify-content-center bg-primary text-white mx-auto" 
+                                 style="width: 150px; height: 150px; font-size: 64px; font-weight: bold;">
+                                <span th:text="${#strings.substring(profileDTO.fullName != null && !profileDTO.fullName.isEmpty() ? profileDTO.fullName : 'A', 0, 1).toUpperCase()}">A</span>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <input class="form-control form-control-sm" type="file" id="profilePhoto" name="profilePhoto" accept="image/*">
+                        </div>
+                        <small class="text-muted">Recommended: Square format image, max 5MB.</small>
+                    </div>
+
+                    <!-- Profile fields -->
+                    <div class="col-md-9">
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label th:replace="~{fragments/forms :: label('fullName', 'Full Name', true)}"></label>
+                                <input type="text" class="form-control" th:field="*{fullName}"
+                                       th:classappend="${#fields.hasErrors('fullName')} ? 'is-invalid' : ''" required>
+                                <div th:replace="~{fragments/forms :: field-error('fullName')}"></div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label th:replace="~{fragments/forms :: label('email', 'Email Address', true)}"></label>
+                                <input type="email" class="form-control" th:field="*{email}"
+                                       th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''" required>
+                                <div th:replace="~{fragments/forms :: field-error('email')}"></div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label th:replace="~{fragments/forms :: label('mobile', 'Mobile Number', true)}"></label>
+                                <input type="text" class="form-control" th:field="*{mobile}"
+                                       th:classappend="${#fields.hasErrors('mobile')} ? 'is-invalid' : ''" required>
+                                <div th:replace="~{fragments/forms :: field-error('mobile')}"></div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label th:replace="~{fragments/forms :: label('username', 'Username', true)}"></label>
+                                <input type="text" class="form-control" th:field="*{username}"
+                                       th:classappend="${#fields.hasErrors('username')} ? 'is-invalid' : ''" required>
+                                <div th:replace="~{fragments/forms :: field-error('username')}"></div>
+                            </div>
+                        </div>
+
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary px-5">Save Profile Changes</button>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+    </div>
+
+</body>
+</html>

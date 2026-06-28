@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/layout :: main(~{::#inventory-form-container}, 'inventory', ${item.id == null ? 'Add New Medicine' : 'Edit Medicine Details'})}">
+<body>
+
+    <div id="inventory-form-container">
+
+        <!-- Action Header -->
+        <div class="card mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="mb-0 fw-bold" th:text="${item.id == null ? 'Add New Medicine' : 'Edit Medicine Details'}">Add Medicine</h3>
+                    <p class="text-muted mb-0">Fill in the fields below. Required values are marked with an asterisk (*).</p>
+                </div>
+                <a th:href="@{/inventory}" class="btn btn-secondary px-3">Back to List</a>
+            </div>
+        </div>
+
+        <!-- Form Shell -->
+        <form th:action="${item.id == null ? '/inventory/save' : '/inventory/update'}"
+              th:object="${item}" method="post">
+
+            <!-- Hidden fields for update -->
+            <input type="hidden" th:if="*{id != null}" th:field="*{id}">
+
+            <div class="row">
+
+                <!-- ── Left Column ─────────────────────────────────────────── -->
+                <div class="col-lg-8 col-md-12">
+
+                    <!-- Section A: Medicine Identification -->
+                    <div class="card mb-4">
+                        <h4 class="mb-4 border-bottom pb-2 text-primary fw-bold">Medicine Information</h4>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label th:replace="~{fragments/forms :: label('medicineCode', 'Medicine Code', true)}"></label>
+                                <input type="text" class="form-control" th:field="*{medicineCode}"
+                                       th:classappend="${#fields.hasErrors('medicineCode')} ? 'is-invalid' : ''"
+                                       placeholder="e.g. MED001" required>
+                                <div th:replace="~{fragments/forms :: field-error('medicineCode')}"></div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label th:replace="~{fragments/forms :: label('medicineName', 'Medicine Name', true)}"></label>
+                                <input type="text" class="form-control" th:field="*{medicineName}"
+                                       th:classappend="${#fields.hasErrors('medicineName')} ? 'is-invalid' : ''"
+                                       placeholder="e.g. Paracetamol 500mg" required>
+                                <div th:replace="~{fragments/forms :: field-error('medicineName')}"></div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label th:replace="~{fragments/forms :: label('category', 'Category', true)}"></label>
+                                <select class="form-select" th:field="*{category}"
+                                        th:classappend="${#fields.hasErrors('category')} ? 'is-invalid' : ''" required>
+                                    <option value="">-- Select Category --</option>
+                                    <option th:each="cat : ${categories}" th:value="${cat}" th:text="${cat}"></option>
+                                </select>
+                                <div th:replace="~{fragments/forms :: field-error('category')}"></div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label th:replace="~{fragments/forms :: label('batchNumber', 'Batch Number', false)}"></label>
+                                <input type="text" class="form-control" th:field="*{batchNumber}"
+                                       th:classappend="${#fields.hasErrors('batchNumber')} ? 'is-invalid' : ''"
+                                       placeholder="e.g. BAT001">
+                                <div th:replace="~{fragments/forms :: field-error('batchNumber')}"></div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label th:replace="~{fragments/forms :: label('manufacturer', 'Manufacturer', false)}"></label>
+                                <input type="text" class="form-control" th:field="*{manufacturer}"
+                                       th:classappend="${#fields.hasErrors('manufacturer')} ? 'is-invalid' : ''"
+                                       placeholder="e.g. Cipla">
+                                <div th:replace="~{fragments/forms :: field-error('manufacturer')}"></div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label th:replace="~{fragments/forms :: label('supplier', 'Supplier', false)}"></label>
+                                <input type="text" class="form-control" th:field="*{supplier}"
+                                       th:classappend="${#fields.hasErrors('supplier')} ? 'is-invalid' : ''"
+                                       placeholder="e.g. ABC Pharma">
+                                <div th:replace="~{fragments/forms :: field-error('supplier')}"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section B: Stock & Pricing -->
+                    <div class="card mb-4">
+                        <h4 class="mb-4 border-bottom pb-2 text-primary fw-bold">Stock &amp; Pricing</h4>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-4">
+                                <label th:replace="~{fragments/forms :: label('quantity', 'Quantity', true)}"></label>
+                                <input type="number" class="form-control" th:field="*{quantity}"
+                                       th:classappend="${#fields.hasErrors('quantity')} ? 'is-invalid' : ''"
+                                       placeholder="e.g. 200" required min="0">
+                                <div th:replace="~{fragments/forms :: field-error('quantity')}"></div>
+                            </div>
+                            <div class="col-md-4 mb-4">
+                                <label th:replace="~{fragments/forms :: label('minimumStock', 'Minimum Stock Alert Limit', true)}"></label>
+                                <input type="number" class="form-control" th:field="*{minimumStock}"
+                                       th:classappend="${#fields.hasErrors('minimumStock')} ? 'is-invalid' : ''"
+                                       placeholder="e.g. 10" required min="0">
+                                <div th:replace="~{fragments/forms :: field-error('minimumStock')}"></div>
+                            </div>
+                            <div class="col-md-4 mb-4">
+                                <label th:replace="~{fragments/forms :: label('unitPrice', 'Unit Price (₹)', true)}"></label>
+                                <input type="number" step="0.01" class="form-control" th:field="*{unitPrice}"
+                                       th:classappend="${#fields.hasErrors('unitPrice')} ? 'is-invalid' : ''"
+                                       placeholder="e.g. 3.00" required min="0">
+                                <div th:replace="~{fragments/forms :: field-error('unitPrice')}"></div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label th:replace="~{fragments/forms :: label('purchaseDate', 'Purchase Date', true)}"></label>
+                                <input type="date" class="form-control" th:field="*{purchaseDate}"
+                                       th:classappend="${#fields.hasErrors('purchaseDate')} ? 'is-invalid' : ''" required>
+                                <div th:replace="~{fragments/forms :: field-error('purchaseDate')}"></div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label th:replace="~{fragments/forms :: label('expiryDate', 'Expiry Date', true)}"></label>
+                                <input type="date" class="form-control" th:field="*{expiryDate}"
+                                       th:classappend="${#fields.hasErrors('expiryDate')} ? 'is-invalid' : ''" required>
+                                <div th:replace="~{fragments/forms :: field-error('expiryDate')}"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section C: Storage & Remarks -->
+                    <div class="card mb-4">
+                        <h4 class="mb-4 border-bottom pb-2 text-primary fw-bold">Storage &amp; Remarks</h4>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label th:replace="~{fragments/forms :: label('rackLocation', 'Rack Location', false)}"></label>
+                                <input type="text" class="form-control" th:field="*{rackLocation}"
+                                       th:classappend="${#fields.hasErrors('rackLocation')} ? 'is-invalid' : ''"
+                                       placeholder="e.g. Rack A-01">
+                                <div th:replace="~{fragments/forms :: field-error('rackLocation')}"></div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label th:replace="~{fragments/forms :: label('status', 'Status Override', true)}"></label>
+                                <select class="form-select" th:field="*{status}" required>
+                                    <option th:each="st : ${statuses}" th:value="${st}" th:text="${st}"></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-0">
+                            <label th:replace="~{fragments/forms :: label('notes', 'Remarks / Special Notes', false)}"></label>
+                            <textarea class="form-control" th:field="*{notes}" rows="3"
+                                      placeholder="e.g. Keep refrigerated..."></textarea>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- ── Right Column ────────────────────────────────────────── -->
+                <div class="col-lg-4 col-md-12">
+
+                    <!-- Info/Tip Card -->
+                    <div class="card mb-4">
+                        <h4 class="mb-3 border-bottom pb-2 text-primary fw-bold">Stock Alerts</h4>
+                        <p class="text-muted small">
+                            Status is automatically managed based on current conditions:
+                        </p>
+                        <ul class="text-muted small ps-3">
+                            <li class="mb-1"><strong>Expired:</strong> If today's date exceeds the Expiry Date.</li>
+                            <li class="mb-1"><strong>Out of Stock:</strong> If Quantity is exactly 0.</li>
+                            <li class="mb-1"><strong>Low Stock:</strong> If Quantity drops below or matches the Minimum Stock limit.</li>
+                            <li class="mb-0"><strong>Available:</strong> Default status when sufficient stock exists.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Submit Actions Card -->
+                    <div class="card">
+                        <h4 class="mb-4 border-bottom pb-2 text-primary fw-bold">Actions</h4>
+                        <button type="submit" class="btn btn-primary w-100 mb-3" style="height: 48px;">
+                            Save Medicine Record
+                        </button>
+                        <a th:href="@{/inventory}" class="btn btn-secondary w-100" style="height: 48px;">
+                            Cancel
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+
+    </div>
+
+</body>
+</html>

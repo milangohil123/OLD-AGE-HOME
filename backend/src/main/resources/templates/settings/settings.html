@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/layout :: main(~{::#settings-dashboard}, 'settings', 'Settings Dashboard')}">
+<body>
+
+    <div id="settings-dashboard">
+
+        <!-- Welcome Settings Banner -->
+        <div class="card mb-4 welcome-banner-card">
+            <div class="d-flex align-items-center gap-3">
+                <div class="welcome-icon-circle">
+                    <i class="bi bi-gear" style="font-size: 20px;"></i>
+                </div>
+                <div>
+                    <h2 class="mb-1 fw-bold" style="color: var(--primary);">System Settings Dashboard</h2>
+                    <p class="text-muted mb-0" style="font-size: 13px;">
+                        Manage administrative profiles, credentials, office credentials, databases, UI preferences and system properties.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alerts -->
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <span th:text="${successMessage}">Success!</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <span th:text="${errorMessage}">Error!</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <!-- Grid of settings modules -->
+        <div class="row">
+            <!-- Profile Settings -->
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100 p-4">
+                    <div class="stat-icon-circle mb-3">
+                        <i class="bi bi-person-circle" style="font-size: 22px;"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Profile Settings</h5>
+                    <p class="text-muted small mb-4">Update your profile name, email, phone number, username and change your avatar picture.</p>
+                    <div class="mt-auto">
+                        <a th:href="@{/settings/profile}" class="btn btn-primary w-100">
+                            <i class="bi bi-pencil me-1"></i> Edit Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Settings -->
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100 p-4">
+                    <div class="stat-icon-circle mb-3">
+                        <i class="bi bi-shield-lock" style="font-size: 22px;"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Security &amp; Password</h5>
+                    <p class="text-muted small mb-4">Change your password and ensure your admin credentials are secure. Session will logout after password change.</p>
+                    <div class="mt-auto">
+                        <a th:href="@{/settings/password}" class="btn btn-primary w-100">
+                            <i class="bi bi-key me-1"></i> Change Password
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Office Information -->
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100 p-4">
+                    <div class="stat-icon-circle mb-3">
+                        <i class="bi bi-building" style="font-size: 22px;"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Office Information</h5>
+                    <p class="text-muted small mb-4">Configure old age home details, trust name, website, phone, email, registration and working hours.</p>
+                    <div class="mt-auto">
+                        <a th:href="@{/settings/system}" class="btn btn-primary w-100">
+                            <i class="bi bi-info-circle me-1"></i> Configure Office
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preferences -->
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100 p-4">
+                    <div class="stat-icon-circle mb-3">
+                        <i class="bi bi-palette" style="font-size: 22px;"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">User Preferences</h5>
+                    <p class="text-muted small mb-4">Set color themes, sidebar status, notification preferences, table rows count, and font sizing.</p>
+                    <div class="mt-auto">
+                        <a th:href="@{/settings/preferences}" class="btn btn-primary w-100">
+                            <i class="bi bi-sliders me-1"></i> Preferences
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Database Backup -->
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100 p-4">
+                    <div class="stat-icon-circle mb-3">
+                        <i class="bi bi-database-down" style="font-size: 22px;"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Backup &amp; Export</h5>
+                    <p class="text-muted small mb-4">Manual SQL dump download, database restore and Excel file exports for residents, donors, and inventory.</p>
+                    <div class="mt-auto">
+                        <a th:href="@{/settings/backup}" class="btn btn-primary w-100">
+                            <i class="bi bi-cloud-download me-1"></i> Backup &amp; Restore
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- About -->
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100 p-4">
+                    <div class="stat-icon-circle mb-3">
+                        <i class="bi bi-info-square" style="font-size: 22px;"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">About Application</h5>
+                    <p class="text-muted small mb-4">View application version, license terms, developer metadata, and current technology stack.</p>
+                    <div class="mt-auto">
+                        <a th:href="@{/settings/about}" class="btn btn-primary w-100">
+                            <i class="bi bi-patch-question me-1"></i> View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

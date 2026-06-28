@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/layout :: main(~{::#resident-profile-container}, 'residents', 'Resident Profile')}">
+<body>
+
+    <div id="resident-profile-container">
+        
+        <!-- Header Actions Ribbon -->
+        <div class="card mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="mb-0 fw-bold">Resident Profile Card</h3>
+                    <p class="text-muted mb-0">Detailed catalog records and medical parameters for this elder.</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a th:href="@{/residents}" class="btn btn-secondary px-3">
+                        Back to Directory
+                    </a>
+                    <a th:href="@{/residents/edit/{id}(id=${resident.id})}" class="btn btn-primary px-3"
+                       sec:authorize="hasAnyRole('ADMIN', 'MANAGER')">
+                        Edit Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Left Column: Primary Profile Details -->
+            <div class="col-lg-4 col-md-12">
+                <!-- Profile Cover Card -->
+                <div class="card text-center mb-4">
+                    <div class="mb-3 d-flex justify-content-center">
+                        <img th:if="${resident.photo != null}" th:src="@{'/uploads/' + ${resident.photo}}" 
+                             class="rounded-circle object-fit-cover border" style="width: 140px; height: 140px;">
+                        <div th:if="${resident.photo == null}" class="rounded-circle bg-light d-flex align-items-center justify-content-center border" 
+                             style="width: 140px; height: 140px; font-size: 56px;">
+                            👴
+                        </div>
+                    </div>
+                    <h3 class="fw-bold mb-1" th:text="${resident.fullName}">Jane Doe</h3>
+                    <p class="text-muted mb-3" th:text="'Resident ID: ' + ${resident.residentId}">SAH-0001</p>
+                    
+                    <div class="d-flex justify-content-center gap-2">
+                        <span th:if="${resident.status.name() == 'ACTIVE'}" class="badge bg-success bg-opacity-10 text-success px-3 py-2 fs-6 rounded-pill">Active</span>
+                        <span th:if="${resident.status.name() == 'DISCHARGED'}" class="badge bg-secondary bg-opacity-10 text-secondary px-3 py-2 fs-6 rounded-pill">Discharged</span>
+                        <span th:if="${resident.status.name() == 'DECEASED'}" class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 fs-6 rounded-pill">Deceased</span>
+                    </div>
+                </div>
+
+                <!-- Fast Specs Table -->
+                <div class="card">
+                    <h4 class="fw-bold border-bottom pb-2 mb-3 text-primary">Admission Metadata</h4>
+                    <ul class="list-unstyled mb-0" style="font-size: 16px;">
+                        <li class="mb-2 d-flex justify-content-between">
+                            <span class="text-muted">Joining Date:</span>
+                            <strong th:text="${T(com.oldagehome.portal.utils.DateFormatter).displayDate(resident.joiningDate)}">01-01-2026</strong>
+                        </li>
+                        <li class="mb-2 d-flex justify-content-between">
+                            <span class="text-muted">Age / Gender:</span>
+                            <strong th:text="${resident.age} + ' yrs / ' + ${resident.gender}">72 yrs / FEMALE</strong>
+                        </li>
+                        <li class="mb-0 d-flex justify-content-between">
+                            <span class="text-muted">Blood Group:</span>
+                            <strong class="text-danger" th:text="${resident.bloodGroup != null and !resident.bloodGroup.isEmpty()} ? ${resident.bloodGroup} : 'Not Disclosed'">O+</strong>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Right Column: Secondary & Detailed Sections -->
+            <div class="col-lg-8 col-md-12">
+                <!-- Specs Card -->
+                <div class="card mb-4">
+                    <h4 class="fw-bold border-bottom pb-2 mb-3 text-primary">Contact & Profile specs</h4>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <span class="text-muted d-block small">Mobile Phone</span>
+                            <span class="fw-bold text-dark fs-5" th:text="${resident.mobile != null and !resident.mobile.isEmpty()} ? ${resident.mobile} : '-'">-</span>
+                        </div>
+                        <div class="col-md-6">
+                            <span class="text-muted d-block small">Email Address</span>
+                            <span class="fw-bold text-dark fs-5" th:text="${resident.email != null and !resident.email.isEmpty()} ? ${resident.email} : '-'">-</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-0">
+                        <span class="text-muted d-block small">Permanent Address</span>
+                        <p class="fw-bold text-dark mb-0 fs-5" style="white-space: pre-line;" th:text="${resident.address != null and !resident.address.isEmpty()} ? ${resident.address} : '-'">-</p>
+                    </div>
+                </div>
+
+                <!-- Guardian Specs Card -->
+                <div class="card mb-4">
+                    <h4 class="fw-bold border-bottom pb-2 mb-3 text-primary">Guardian / Emergency Contact</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <span class="text-muted d-block small">Emergency Representative Name</span>
+                            <span class="fw-bold text-dark fs-5" th:text="${resident.guardianName != null and !resident.guardianName.isEmpty()} ? ${resident.guardianName} : '-'">Robert Smith</span>
+                        </div>
+                        <div class="col-md-6">
+                            <span class="text-muted d-block small">Emergency Representative Phone</span>
+                            <span class="fw-bold text-dark fs-5" th:text="${resident.guardianPhone != null and !resident.guardianPhone.isEmpty()} ? ${resident.guardianPhone} : '-'">9876543211</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Medical Logs Card -->
+                <div class="card">
+                    <h4 class="fw-bold border-bottom pb-2 mb-3 text-primary">Medical Prescription & Chronic Info</h4>
+                    <div class="p-3 bg-light rounded border">
+                        <p class="mb-0 fs-6 text-dark" style="white-space: pre-line; font-weight: 500;" 
+                           th:text="${resident.medicalNotes != null and !resident.medicalNotes.isEmpty()} ? ${resident.medicalNotes} : 'No current medical files or prescription logs cataloged.'">
+                            Medical Notes details.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

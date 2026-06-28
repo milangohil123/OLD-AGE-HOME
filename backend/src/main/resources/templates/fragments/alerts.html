@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+    <!-- Reusable Success Alert -->
+    <div th:fragment="success(message)" th:if="${message != null}" class="alert alert-success d-flex align-items-center" role="alert">
+        <i class="bi bi-check-circle-fill me-2" style="font-size: 18px;"></i>
+        <div th:text="${message}">Success message text</div>
+    </div>
+
+    <!-- Reusable Error Alert -->
+    <div th:fragment="error(message)" th:if="${message != null}" class="alert alert-danger d-flex align-items-center" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2" style="font-size: 18px;"></i>
+        <div th:text="${message}">Error message text</div>
+    </div>
+
+    <!-- Reusable Warning Alert -->
+    <div th:fragment="warning(message)" th:if="${message != null}" class="alert alert-warning d-flex align-items-center" role="alert">
+        <i class="bi bi-info-circle-fill me-2" style="font-size: 18px;"></i>
+        <div th:text="${message}">Warning message text</div>
+    </div>
+
+</body>
+</html>

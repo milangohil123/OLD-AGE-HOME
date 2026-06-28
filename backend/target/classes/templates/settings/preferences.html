@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: main(~{::#preferences-settings}, 'settings', 'User Preferences')}">
+<body>
+
+    <div id="preferences-settings">
+
+        <div class="card mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="mb-0 fw-bold">User Preferences</h3>
+                    <p class="text-muted mb-0">Configure dashboard styles, default page behaviors, pagination and notifications.</p>
+                </div>
+                <a th:href="@{/settings}" class="btn btn-secondary px-3">Back to Settings</a>
+            </div>
+        </div>
+
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <span th:text="${successMessage}">Success!</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="card p-4">
+            <form th:action="@{/settings/preferences}" th:object="${preferencesDTO}" method="post">
+
+                <h5 class="fw-bold text-primary mb-4 border-bottom pb-2">Appearance &amp; Theme</h5>
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <label th:replace="~{fragments/forms :: label('theme', 'Color Theme', true)}"></label>
+                        <select class="form-select" th:field="*{theme}" required>
+                            <option value="Blue">Blue (Default)</option>
+                            <option value="Light">Light Mode</option>
+                            <option value="Dark">Dark Mode</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <label th:replace="~{fragments/forms :: label('fontSize', 'Font Size', true)}"></label>
+                        <select class="form-select" th:field="*{fontSize}" required>
+                            <option value="Small">Small</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Large">Large</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <label th:replace="~{fragments/forms :: label('language', 'Language', true)}"></label>
+                        <select class="form-select" th:field="*{language}" required>
+                            <option value="en">English (US)</option>
+                            <option value="es">Español</option>
+                            <option value="hi">हिन्दी</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" th:field="*{sidebarCollapsed}" id="sidebarCollapsed">
+                        <label class="form-check-label fw-bold" for="sidebarCollapsed">Collapse Sidebar by Default</label>
+                    </div>
+                </div>
+
+                <h5 class="fw-bold text-primary mb-4 border-bottom pb-2 mt-2">Notification Settings</h5>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" th:field="*{emailNotifications}" id="emailNotifications">
+                    <label class="form-check-label" for="emailNotifications">Enable Email Notifications</label>
+                </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" th:field="*{smsNotifications}" id="smsNotifications">
+                    <label class="form-check-label" for="smsNotifications">Enable SMS Notifications</label>
+                </div>
+                <div class="mb-4 form-check">
+                    <input type="checkbox" class="form-check-input" th:field="*{browserNotifications}" id="browserNotifications">
+                    <label class="form-check-label" for="browserNotifications">Enable Browser Push Notifications</label>
+                </div>
+
+                <h5 class="fw-bold text-primary mb-4 border-bottom pb-2 mt-2">Dashboard &amp; Pagination Options</h5>
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label th:replace="~{fragments/forms :: label('itemsPerPage', 'Default Items Per Page', true)}"></label>
+                        <input type="number" class="form-control" th:field="*{itemsPerPage}" required min="5" max="100">
+                        <div th:replace="~{fragments/forms :: field-error('itemsPerPage')}"></div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <label th:replace="~{fragments/forms :: label('defaultDashboardPage', 'Default Dashboard Page', true)}"></label>
+                        <select class="form-select" th:field="*{defaultDashboardPage}" required>
+                            <option value="Dashboard">Dashboard</option>
+                            <option value="Reports">Reports &amp; Analytics</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="text-end">
+                    <button type="submit" class="btn btn-primary px-5">Save Preferences</button>
+                </div>
+
+            </form>
+        </div>
+
+    </div>
+
+</body>
+</html>

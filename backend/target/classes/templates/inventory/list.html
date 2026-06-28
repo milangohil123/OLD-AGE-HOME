@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/layout :: main(~{::#inventory-list}, 'inventory', 'Medicine Inventory')}">
+<body>
+
+    <div id="inventory-list">
+
+        <!-- Reusable Alert Messages -->
+        <div th:replace="~{fragments/alerts :: success(${successMessage})}"></div>
+        <div th:replace="~{fragments/alerts :: error(${errorMessage})}"></div>
+
+        <!-- ── Dashboard Stats Cards ──────────────────────────────────────── -->
+        <div class="row mb-4">
+            <div class="col-xl-3 col-md-6 mb-3">
+                <div class="card text-center py-3">
+                    <span class="fs-1 mb-2">💊</span>
+                    <h2 class="fw-bold mb-1 text-primary" th:text="${totalMedicines}">0</h2>
+                    <span class="text-muted fw-semibold">Total Medicines</span>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6 mb-3">
+                <div class="card text-center py-3">
+                    <span class="fs-1 mb-2">✅</span>
+                    <h2 class="fw-bold mb-1 text-success" th:text="${availableCount}">0</h2>
+                    <span class="text-muted fw-semibold">Available</span>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6 mb-3">
+                <div class="card text-center py-3">
+                    <span class="fs-1 mb-2">⚠️</span>
+                    <h2 class="fw-bold mb-1 text-warning" th:text="${lowStockCount}">0</h2>
+                    <span class="text-muted fw-semibold">Low Stock</span>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6 mb-3">
+                <div class="card text-center py-3">
+                    <span class="fs-1 mb-2">🚫</span>
+                    <h2 class="fw-bold mb-1 text-danger" th:text="${outOfStockCount}">0</h2>
+                    <span class="text-muted fw-semibold">Out of Stock</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-xl-4 col-md-6 mb-3 mb-xl-0">
+                <div class="card text-center py-3">
+                    <span class="fs-1 mb-2">☠️</span>
+                    <h2 class="fw-bold mb-1 text-danger" th:text="${expiredCount}">0</h2>
+                    <span class="text-muted fw-semibold">Expired</span>
+                </div>
+            </div>
+            <div class="col-xl-4 col-md-6 mb-3 mb-xl-0">
+                <div class="card text-center py-3">
+                    <span class="fs-1 mb-2">⏰</span>
+                    <h2 class="fw-bold mb-1 text-warning" th:text="${expiringSoonCount}">0</h2>
+                    <span class="text-muted fw-semibold">Expiring Soon</span>
+                </div>
+            </div>
+            <div class="col-xl-4 col-md-12">
+                <div class="card text-center py-3">
+                    <span class="fs-1 mb-2">🛒</span>
+                    <h2 class="fw-bold mb-1 text-primary" th:text="${todayPurchases}">0</h2>
+                    <span class="text-muted fw-semibold">Today's Purchases</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Action Ribbon ──────────────────────────────────────────────── -->
+        <div class="card mb-4">
+            <div class="row align-items-center py-2">
+                <div class="col-md-6">
+                    <h3 class="mb-0 fw-bold">Medicine Inventory</h3>
+                    <p class="text-muted mb-0">Browse, manage, and export medicine stock records.</p>
+                </div>
+                <div class="col-md-6 text-md-end text-start mt-3 mt-md-0 d-flex justify-content-md-end gap-3 flex-wrap">
+                    <a th:href="@{/inventory/new}" class="btn btn-primary px-4">
+                        <span>➕</span> Add Medicine
+                    </a>
+                    <a th:href="@{/inventory/export}" class="btn btn-secondary px-3">
+                        <span>📥</span> Export to Excel
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Excel Bulk Import Panel ────────────────────────────────────── -->
+        <div class="card mb-4" sec:authorize="hasAnyRole('ADMIN', 'MANAGER')">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                <div>
+                    <h4 class="mb-1 fw-bold">Bulk Import Medicines</h4>
+                    <p class="text-muted mb-0 small">
+                        Import multiple medicine records from a spreadsheet.
+                        Column order: Code | Name | Category | Manufacturer | Supplier | Batch | Purchase Date | Expiry Date | Qty | Min Stock | Price | Rack | Notes
+                    </p>
+                </div>
+                <div>
+                    <form th:action="@{/inventory/import}" method="post" enctype="multipart/form-data" class="d-flex gap-2">
+                        <input type="file" name="file" class="form-control" accept=".xlsx,.xls" required style="max-width: 250px;">
+                        <button type="submit" class="btn btn-primary" style="height: 48px;">Upload Excel</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Search Component ───────────────────────────────────────────── -->
+        <div th:replace="~{fragments/search :: search(baseUrl='/inventory', keyword=${keyword}, placeholder='Search by Code, Name, Manufacturer, Supplier, or Batch...')}"></div>
+
+        <!-- ── Main Table Card ────────────────────────────────────────────── -->
+        <div class="card">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Medicine Name</th>
+                            <th>Category</th>
+                            <th>Qty</th>
+                            <th>Unit Price</th>
+                            <th>Expiry Date</th>
+                            <th>Status</th>
+                            <th class="text-end" style="width: 240px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Empty State -->
+                        <tr th:if="${inventoryPage == null or inventoryPage.totalElements == 0}">
+                            <td colspan="8" class="text-center py-5 text-muted">
+                                <span class="fs-1 d-block mb-3">💊</span>
+                                <h4 class="fw-bold">No Medicine Records Found</h4>
+                                <p class="mb-0">Add a new medicine or adjust your search filter.</p>
+                            </td>
+                        </tr>
+
+                        <!-- Inventory Rows -->
+                        <tr th:each="item : ${inventoryPage.content}">
+                            <td><strong th:text="${item.medicineCode}">MED001</strong></td>
+                            <td>
+                                <span class="fw-bold text-dark" th:text="${item.medicineName}">Paracetamol</span><br>
+                                <small class="text-muted" th:text="${item.manufacturer != null and !item.manufacturer.isEmpty() ? item.manufacturer : '-'}">-</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill"
+                                      th:text="${item.category}">TABLET</span>
+                            </td>
+                            <td>
+                                <strong class="fs-5" th:text="${item.quantity}">0</strong>
+                            </td>
+                            <td>
+                                <strong class="text-success"
+                                        th:text="'₹' + ${#numbers.formatDecimal(item.unitPrice, 1, 'COMMA', 2, 'POINT')}">₹0.00</strong>
+                            </td>
+                            <td th:text="${item.expiryDate != null ? #temporals.format(item.expiryDate, 'dd MMM yyyy') : '-'}">01 Jan 2027</td>
+                            <td>
+                                <span th:if="${item.status.name() == 'AVAILABLE'}"
+                                      class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">Available</span>
+                                <span th:if="${item.status.name() == 'LOW_STOCK'}"
+                                      class="badge bg-warning bg-opacity-10 text-warning px-3 py-2 rounded-pill">⚠ Low Stock</span>
+                                <span th:if="${item.status.name() == 'OUT_OF_STOCK'}"
+                                      class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-pill">Out of Stock</span>
+                                <span th:if="${item.status.name() == 'EXPIRED'}"
+                                      class="badge bg-danger bg-opacity-25 text-danger px-3 py-2 rounded-pill">☠ Expired</span>
+                            </td>
+                            <td class="text-end">
+                                <div class="d-inline-flex gap-2">
+                                    <a th:href="@{/inventory/view/{id}(id=${item.id})}"
+                                       class="btn btn-secondary px-3" style="height: 38px; font-size: 16px;">View</a>
+                                    <a th:href="@{/inventory/edit/{id}(id=${item.id})}"
+                                       class="btn btn-secondary px-3" style="height: 38px; font-size: 16px;"
+                                       sec:authorize="hasAnyRole('ADMIN', 'MANAGER')">Edit</a>
+                                    <a th:href="@{/inventory/delete/{id}(id=${item.id})}"
+                                       class="btn btn-danger px-3 text-white" style="height: 38px; font-size: 16px;"
+                                       onclick="return confirm('Are you sure you want to permanently delete this medicine record?');"
+                                       sec:authorize="hasRole('ADMIN')">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination Component -->
+            <div th:replace="~{fragments/pagination :: pagination(page=${inventoryPage}, baseUrl='/inventory', keyword=${keyword})}"></div>
+        </div>
+
+    </div>
+
+</body>
+</html>

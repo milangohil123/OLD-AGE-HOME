@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/layout :: main(~{::#donor-form-container}, 'donors', ${donor.id == null ? 'Register New Donor' : 'Edit Donor Profile'})}">
+<body>
+
+    <div id="donor-form-container">
+
+        <!-- Action Header -->
+        <div class="card mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="mb-0 fw-bold" th:text="${donor.id == null ? 'Register New Donor' : 'Edit Donor Profile'}">Register Donor</h3>
+                    <p class="text-muted mb-0">Fill in the fields below. Required values are marked with an asterisk (*).</p>
+                </div>
+                <a th:href="@{/donors}" class="btn btn-secondary px-3">Back to List</a>
+            </div>
+        </div>
+
+        <!-- Form Shell -->
+        <form th:action="${donor.id == null ? '/donors/save' : '/donors/update'}"
+              th:object="${donor}" method="post" enctype="multipart/form-data">
+
+            <!-- Hidden fields for update -->
+            <input type="hidden" th:if="*{id != null}" th:field="*{id}">
+            <input type="hidden" th:if="*{photo != null}" th:field="*{photo}">
+
+            <div class="row">
+
+                <!-- ── Left Column ─────────────────────────────────────────── -->
+                <div class="col-lg-8 col-md-12">
+
+                    <!-- Section A: Personal Information -->
+                    <div class="card mb-4">
+                        <h4 class="mb-4 border-bottom pb-2 text-primary fw-bold">Personal Information</h4>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label th:replace="~{fragments/forms :: label('donorId', 'Donor ID Code', true)}"></label>
+                                <input type="text" class="form-control" th:field="*{donorId}"
+                                       th:classappend="${#fields.hasErrors('donorId')} ? 'is-invalid' : ''"
+                                       placeholder="e.g. DON-2026-0001" required>
+                                <div th:replace="~{fragments/forms :: field-error('donorId')}"></div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label th:replace="~{fragments/forms :: label('fullName', 'Full Name', true)}"></label>
+                                <input type="text" class="form-control" th:field="*{fullName}"
+                                       th:classappend="${#fields.hasErrors('fullName')} ? 'is-invalid' : ''"
+                                       placeholder="e.g. Ramesh Patel" required>
+                                <div th:replace="~{fragments/forms :: field-error('fullName')}"></div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-4">
+                                <label th:replace="~{fragments/forms :: label('gender', 'Gender', true)}"></label>
+                                <select class="form-select" th:field="*{gender}"
+                                        th:classappend="${#fields.hasErrors('gender')} ? 'is-invalid' : ''" required>
+                                    <option value="">-- Select Gender --</option>
+                                    <option value="MALE">Male</option>
+                                    <option value="FEMALE">Female</option>
+                                    <option value="OTHER">Other</option>
+                                </select>
+                                <div th:replace="~{fragments/forms :: field-error('gender')}"></div>
+                            </div>
+                            <div class="col-md-4 mb-4">
+                                <label th:replace="~{fragments/forms :: label('dateOfBirth', 'Date of Birth', true)}"></label>
+                                <input type="date" class="form-control" th:field="*{dateOfBirth}"
+                                       th:classappend="${#fields.hasErrors('dateOfBirth')} ? 'is-invalid' : ''" required>
+                                <div th:replace="~{fragments/forms :: field-error('dateOfBirth')}"></div>
+                            </div>
+                            <div class="col-md-4 mb-4">
+                                <label th:replace="~{fragments/forms :: label('mobile', 'Mobile Number', false)}"></label>
+                                <input type="text" class="form-control" th:field="*{mobile}"
+                                       th:classappend="${#fields.hasErrors('mobile')} ? 'is-invalid' : ''"
+                                       placeholder="e.g. 9876543210">
+                                <div th:replace="~{fragments/forms :: field-error('mobile')}"></div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-4">
+                                <label th:replace="~{fragments/forms :: label('email', 'Email Address', false)}"></label>
+                                <input type="email" class="form-control" th:field="*{email}"
+                                       th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''"
+                                       placeholder="e.g. donor@example.com">
+                                <div th:replace="~{fragments/forms :: field-error('email')}"></div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-4">
+                                <label th:replace="~{fragments/forms :: label('address', 'Address', false)}"></label>
+                                <textarea class="form-control" th:field="*{address}" rows="2"
+                                          placeholder="Street / Village / Area..."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-0">
+                                <label th:replace="~{fragments/forms :: label('city', 'City', false)}"></label>
+                                <input type="text" class="form-control" th:field="*{city}" placeholder="e.g. Ahmedabad">
+                            </div>
+                            <div class="col-md-4 mb-0">
+                                <label th:replace="~{fragments/forms :: label('state', 'State', false)}"></label>
+                                <input type="text" class="form-control" th:field="*{state}" placeholder="e.g. Gujarat">
+                            </div>
+                            <div class="col-md-4 mb-0">
+                                <label th:replace="~{fragments/forms :: label('pincode', 'Pincode', false)}"></label>
+                                <input type="text" class="form-control" th:field="*{pincode}"
+                                       th:classappend="${#fields.hasErrors('pincode')} ? 'is-invalid' : ''"
+                                       placeholder="e.g. 380001" maxlength="6">
+                                <div th:replace="~{fragments/forms :: field-error('pincode')}"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section B: Donation Information -->
+                    <div class="card mb-4">
+                        <h4 class="mb-4 border-bottom pb-2 text-primary fw-bold">Donation Information</h4>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label th:replace="~{fragments/forms :: label('donationType', 'Donation Type', true)}"></label>
+                                <select class="form-select" th:field="*{donationType}"
+                                        th:classappend="${#fields.hasErrors('donationType')} ? 'is-invalid' : ''" required>
+                                    <option value="">-- Select Type --</option>
+                                    <option th:each="dt : ${donationTypes}" th:value="${dt}" th:text="${dt}"></option>
+                                </select>
+                                <div th:replace="~{fragments/forms :: field-error('donationType')}"></div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label th:replace="~{fragments/forms :: label('donationAmount', 'Donation Amount (₹)', true)}"></label>
+                                <input type="number" step="0.01" min="0" class="form-control" th:field="*{donationAmount}"
+                                       th:classappend="${#fields.hasErrors('donationAmount')} ? 'is-invalid' : ''"
+                                       placeholder="e.g. 5000.00" required>
+                                <div th:replace="~{fragments/forms :: field-error('donationAmount')}"></div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-4">
+                                <label th:replace="~{fragments/forms :: label('donationDate', 'Donation Date', true)}"></label>
+                                <input type="date" class="form-control" th:field="*{donationDate}"
+                                       th:classappend="${#fields.hasErrors('donationDate')} ? 'is-invalid' : ''" required>
+                                <div th:replace="~{fragments/forms :: field-error('donationDate')}"></div>
+                            </div>
+                            <div class="col-md-4 mb-4">
+                                <label th:replace="~{fragments/forms :: label('paymentMethod', 'Payment Method', false)}"></label>
+                                <select class="form-select" th:field="*{paymentMethod}">
+                                    <option value="">-- Select Method --</option>
+                                    <option value="CASH">Cash</option>
+                                    <option value="UPI">UPI</option>
+                                    <option value="CHEQUE">Cheque</option>
+                                    <option value="BANK_TRANSFER">Bank Transfer</option>
+                                    <option value="ONLINE">Online</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-4">
+                                <label th:replace="~{fragments/forms :: label('transactionId', 'Transaction ID', false)}"></label>
+                                <input type="text" class="form-control" th:field="*{transactionId}"
+                                       placeholder="e.g. TXN123456789">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section C: Additional Information -->
+                    <div class="card mb-4">
+                        <h4 class="mb-4 border-bottom pb-2 text-primary fw-bold">Additional Information</h4>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label th:replace="~{fragments/forms :: label('status', 'Donor Status', true)}"></label>
+                                <select class="form-select" th:field="*{status}" required>
+                                    <option th:each="st : ${donorStatuses}" th:value="${st}" th:text="${st}"></option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-4"></div>
+                        </div>
+
+                        <div class="mb-0">
+                            <label th:replace="~{fragments/forms :: label('remarks', 'Remarks / Notes', false)}"></label>
+                            <textarea class="form-control" th:field="*{remarks}" rows="3"
+                                      placeholder="Any special notes or acknowledgements..."></textarea>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- ── Right Column ────────────────────────────────────────── -->
+                <div class="col-lg-4 col-md-12">
+
+                    <!-- Profile Photo Card -->
+                    <div class="card mb-4 text-center">
+                        <h4 class="mb-4 border-bottom pb-2 text-primary fw-bold">Donor Photo</h4>
+                        <div class="mb-3 d-flex justify-content-center">
+                            <img th:if="*{photo != null}" th:src="@{'/uploads/' + *{photo}}"
+                                 class="rounded-circle object-fit-cover border" style="width: 140px; height: 140px;">
+                            <div th:if="*{photo == null}"
+                                 class="rounded-circle bg-light d-flex align-items-center justify-content-center border"
+                                 style="width: 140px; height: 140px; font-size: 56px;">🤝</div>
+                        </div>
+                        <div class="mb-0 text-start">
+                            <label for="photoFile" class="form-label">Upload Photo</label>
+                            <input class="form-control" type="file" id="photoFile" name="photoFile"
+                                   accept="image/*" style="height: auto;">
+                            <small class="text-muted mt-2 d-block">PNG, JPG, JPEG (Max 5MB)</small>
+                        </div>
+                    </div>
+
+                    <!-- Submit Actions Card -->
+                    <div class="card">
+                        <h4 class="mb-4 border-bottom pb-2 text-primary fw-bold">Actions</h4>
+                        <button type="submit" class="btn btn-primary w-100 mb-3" style="height: 48px;">
+                            Save Donor Record
+                        </button>
+                        <a th:href="@{/donors}" class="btn btn-secondary w-100" style="height: 48px;">
+                            Cancel
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+
+    </div>
+
+</body>
+</html>

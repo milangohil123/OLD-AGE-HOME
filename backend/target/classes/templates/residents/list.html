@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/layout :: main(~{::#residents-list}, 'residents', 'Residents Directory')}">
+<body>
+
+    <div id="residents-list">
+        
+        <!-- Reusable Alert Messages -->
+        <div th:replace="~{fragments/alerts :: success(${successMessage})}"></div>
+        <div th:replace="~{fragments/alerts :: error(${errorMessage})}"></div>
+
+        <!-- Action Ribbon (Apple/Notion style: clear headings, simple alignment) -->
+        <div class="card mb-4">
+            <div class="row align-items-center py-2">
+                <div class="col-md-6">
+                    <h3 class="mb-0 fw-bold">Elderly Residents</h3>
+                    <p class="text-muted mb-0">Browse directory database, run registers, or make updates.</p>
+                </div>
+                <div class="col-md-6 text-md-end text-start mt-3 mt-md-0 d-flex justify-content-md-end gap-3 flex-wrap">
+                    <a th:href="@{/residents/new}" class="btn btn-primary px-4">
+                        <i class="bi bi-plus-lg"></i> Add Resident
+                    </a>
+                    <a th:href="@{/residents/export}" class="btn btn-secondary px-3">
+                        <i class="bi bi-download"></i> Export to Excel
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Excel Bulk Import Panel (Direct, simple, Notion-style card) -->
+        <div class="card mb-4" sec:authorize="hasAnyRole('ADMIN', 'MANAGER')">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                <div>
+                    <h4 class="mb-1 fw-bold">Bulk Import Residents</h4>
+                    <p class="text-muted mb-0 small">Import multiple records from a spreadsheet. Column format: Resident ID | Name | Gender | DOB | Mobile | Guardian | Guardian Phone</p>
+                </div>
+                <div>
+                    <form th:action="@{/residents/import}" method="post" enctype="multipart/form-data" class="d-flex gap-2">
+                        <input type="file" name="file" class="form-control" accept=".xlsx, .xls" required style="max-width: 250px;">
+                        <button type="submit" class="btn btn-primary" style="height: 48px;">Upload Excel</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Component Filter -->
+        <div th:replace="~{fragments/search :: search(baseUrl='/residents', keyword=${keyword}, placeholder='Search by Name, ID, Guardian, or Phone...')}"></div>
+
+        <!-- Main Roster Directory Card -->
+        <div class="card">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th style="width: 80px;">Photo</th>
+                            <th>Resident ID</th>
+                            <th>Full Name</th>
+                            <th>Age / Gender</th>
+                            <th>Guardian Name</th>
+                            <th>Guardian Phone</th>
+                            <th>Status</th>
+                            <th class="text-end" style="width: 240px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Empty State -->
+                        <tr th:if="${residentsPage == null or residentsPage.totalElements == 0}">
+                            <td colspan="8" class="text-center py-5 text-muted">
+                                <i class="bi bi-people d-block mb-3" style="font-size: 40px;"></i>
+                                <h4 class="fw-bold">No Resident Records Found</h4>
+                                <p class="mb-0">Add a new resident or adjust your search filter keyword.</p>
+                            </td>
+                        </tr>
+                        
+                        <!-- Roster Loop -->
+                        <tr th:each="res : ${residentsPage.content}" th:if="${res != null}">
+                            <td>
+                                <!-- Photo Rendering: Serves default icon if no image filepath exists -->
+                                <img th:if="${res.photo != null}" th:src="@{'/uploads/' + ${res.photo}}" 
+                                     class="rounded-circle object-fit-cover" style="width: 54px; height: 54px; border: 1px solid #E5E7EB;">
+                                <div th:if="${res.photo == null}" class="rounded-circle bg-light d-flex align-items-center justify-content-center border" 
+                                     style="width: 54px; height: 54px; font-size: 20px; color: var(--text-muted);">
+                                    <i class="bi bi-person"></i>
+                                </div>
+                            </td>
+                            <td>
+                                <strong th:text="${res.residentId}">SAH-0001</strong>
+                            </td>
+                            <td>
+                                <span class="fw-bold text-dark fs-5" th:text="${res.fullName}">Jane Doe</span>
+                            </td>
+                            <td>
+                                <span th:text="${res.age != null ? res.age : 'N/A'} + ' yrs'">72 yrs</span> / 
+                                <small class="text-muted fw-bold" th:text="${res.gender != null ? res.gender : '-'}">FEMALE</small>
+                            </td>
+                            <td th:text="${res.guardianName != null and !res.guardianName.isEmpty()} ? ${res.guardianName} : '-'">Guardian</td>
+                            <td th:text="${res.guardianPhone != null and !res.guardianPhone.isEmpty()} ? ${res.guardianPhone} : '-'">0000000000</td>
+                            <td>
+                                <span th:if="${res.status != null and res.status.name() == 'ACTIVE'}" class="badge bg-success bg-opacity-10 text-success px-3 py-2 fs-6 rounded-pill">Active</span>
+                                <span th:if="${res.status != null and res.status.name() == 'DISCHARGED'}" class="badge bg-secondary bg-opacity-10 text-secondary px-3 py-2 fs-6 rounded-pill">Discharged</span>
+                                <span th:if="${res.status != null and res.status.name() == 'DECEASED'}" class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 fs-6 rounded-pill">Deceased</span>
+                                <span th:if="${res.status == null}" class="badge bg-warning bg-opacity-10 text-warning px-3 py-2 fs-6 rounded-pill">Unknown</span>
+                            </td>
+                            <td class="text-end">
+                                <div class="d-inline-flex gap-2">
+                                    <a th:href="@{/residents/view/{id}(id=${res.id})}" class="btn btn-secondary px-3" style="height: 38px; font-size: 16px;">
+                                        View
+                                    </a>
+                                    <a th:href="@{/residents/edit/{id}(id=${res.id})}" class="btn btn-secondary px-3" style="height: 38px; font-size: 16px;"
+                                       sec:authorize="hasAnyRole('ADMIN', 'MANAGER')">
+                                        Edit
+                                    </a>
+                                    <a th:href="@{/residents/delete/{id}(id=${res.id})}" class="btn btn-danger px-3 text-white" style="height: 38px; font-size: 16px;"
+                                       onclick="return confirm('Are you sure you want to permanently delete this resident record?');"
+                                       sec:authorize="hasRole('ADMIN')">
+                                        Delete
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Reusable Pagination Component -->
+            <div th:replace="~{fragments/pagination :: pagination(page=${residentsPage}, baseUrl='/residents', keyword=${keyword})}"></div>
+        </div>
+
+    </div>
+
+</body>
+</html>

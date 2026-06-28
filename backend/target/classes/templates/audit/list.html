@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/layout :: main(~{::#audit-list}, 'audit', 'System Audit Logs')}">
+<body>
+
+    <div id="audit-list">
+
+        <!-- ── Stats Cards ── -->
+        <div class="row mb-4">
+            <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
+                <div class="card py-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="stat-icon-circle" style="width: 40px; height: 40px; font-size: 16px;">
+                            <i class="bi bi-clipboard-data"></i>
+                        </div>
+                        <div>
+                            <h3 class="fw-bold mb-0 text-primary" th:text="${totalRecords}">0</h3>
+                            <span class="text-muted fw-semibold" style="font-size: 12px;">Total Logs</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
+                <div class="card py-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="stat-icon-circle" style="width: 40px; height: 40px; font-size: 16px;">
+                            <i class="bi bi-calendar-day"></i>
+                        </div>
+                        <div>
+                            <h3 class="fw-bold mb-0 text-primary" th:text="${todayActivities}">0</h3>
+                            <span class="text-muted fw-semibold" style="font-size: 12px;">Today's Logs</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
+                <div class="card py-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="stat-icon-circle" style="width: 40px; height: 40px; font-size: 16px;">
+                            <i class="bi bi-check-circle"></i>
+                        </div>
+                        <div>
+                            <h3 class="fw-bold mb-0 text-primary" th:text="${successfulActivities}">0</h3>
+                            <span class="text-muted fw-semibold" style="font-size: 12px;">Success Actions</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
+                <div class="card py-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="stat-icon-circle" style="width: 40px; height: 40px; font-size: 16px;">
+                            <i class="bi bi-x-circle"></i>
+                        </div>
+                        <div>
+                            <h3 class="fw-bold mb-0 text-danger" th:text="${failedActivities}">0</h3>
+                            <span class="text-muted fw-semibold" style="font-size: 12px;">Failed Actions</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
+                <div class="card py-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="stat-icon-circle" style="width: 40px; height: 40px; font-size: 16px;">
+                            <i class="bi bi-door-open"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-0 text-primary" th:text="${latestLogin}">Never</h5>
+                            <span class="text-muted fw-semibold" style="font-size: 12px;">Latest Login</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
+                <div class="card py-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="stat-icon-circle" style="width: 40px; height: 40px; font-size: 16px;">
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-0 text-primary" th:text="${latestUpdate}">Never</h5>
+                            <span class="text-muted fw-semibold" style="font-size: 12px;">Latest Update</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Action Ribbon & Export ── -->
+        <div class="card mb-4">
+            <div class="row align-items-center py-2">
+                <div class="col-md-5">
+                    <h3 class="mb-0 fw-bold">System Audit Logs</h3>
+                    <p class="text-muted mb-0" style="font-size: 13px;">Monitor system activity, user logins, and database alterations.</p>
+                </div>
+                <div class="col-md-7 text-md-end text-start mt-3 mt-md-0 d-flex justify-content-md-end gap-2 flex-wrap">
+                    <a th:href="@{/admin/audit/export(username=${username}, module=${module}, action=${action}, success=${success}, startDate=${startDate}, endDate=${endDate}, format='PDF')}"
+                       class="btn btn-primary px-3">
+                        <i class="bi bi-file-earmark-pdf me-1"></i> Export PDF
+                    </a>
+                    <a th:href="@{/admin/audit/export(username=${username}, module=${module}, action=${action}, success=${success}, startDate=${startDate}, endDate=${endDate}, format='EXCEL')}"
+                       class="btn btn-outline-primary px-3">
+                        <i class="bi bi-file-earmark-spreadsheet me-1"></i> Export Excel
+                    </a>
+                    <a th:href="@{/admin/audit/export(username=${username}, module=${module}, action=${action}, success=${success}, startDate=${startDate}, endDate=${endDate}, format='CSV')}"
+                       class="btn btn-outline-primary px-3">
+                        <i class="bi bi-filetype-csv me-1"></i> Export CSV
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Filters ── -->
+        <div class="card mb-4">
+            <h5 class="fw-bold text-primary mb-3">
+                <i class="bi bi-funnel me-2"></i>Filter Logs
+            </h5>
+            <form th:action="@{/admin/audit/filter}" method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Username</label>
+                    <input type="text" name="username" class="form-control" th:value="${username}" placeholder="Search username...">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Module</label>
+                    <select name="module" class="form-select">
+                        <option value="ALL">All Modules</option>
+                        <option th:each="m : ${modules}" th:value="${m}" th:text="${m}" th:selected="${m.name() == module}"></option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold">Action</label>
+                    <select name="action" class="form-select">
+                        <option value="ALL">All Actions</option>
+                        <option th:each="a : ${actions}" th:value="${a}" th:text="${a}" th:selected="${a.name() == action}"></option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold">Status</label>
+                    <select name="success" class="form-select">
+                        <option value="">All Statuses</option>
+                        <option value="true" th:selected="${success == true}">Success Only</option>
+                        <option value="false" th:selected="${success == false}">Failure Only</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end gap-2">
+                    <button type="submit" class="btn btn-primary w-100" style="height: 48px;">
+                        <i class="bi bi-search me-1"></i> Apply
+                    </button>
+                    <a th:href="@{/admin/audit}" class="btn btn-outline-primary px-3 d-flex align-items-center justify-content-center" style="height: 48px;">
+                        <i class="bi bi-x-lg"></i>
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- ── Main Table ── -->
+        <div class="card">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" style="font-size: 13px;">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>User</th>
+                            <th>Module</th>
+                            <th>Action</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th>IP Address</th>
+                            <th class="text-end" style="width: 90px;">Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Empty State -->
+                        <tr th:if="${auditPage == null or auditPage.totalElements == 0}">
+                            <td colspan="8" class="text-center py-5 text-muted">
+                                <i class="bi bi-clipboard-data d-block mb-3" style="font-size: 40px; color: #BFDBFE;"></i>
+                                <h5 class="fw-bold">No Audit Records Found</h5>
+                                <p class="mb-0 small">Refine your search keyword or filters.</p>
+                            </td>
+                        </tr>
+                        <!-- Data Rows -->
+                        <tr th:each="log : ${auditPage.content}">
+                            <td th:text="${#temporals.format(log.timestamp, 'dd-MM-yyyy HH:mm:ss')}">Time</td>
+                            <td>
+                                <strong th:text="${log.username}">user</strong><br>
+                                <small class="text-muted" th:text="${log.role}">ROLE</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-1 rounded-pill" th:text="${log.module}">AUTH</span>
+                            </td>
+                            <td th:text="${log.action}">Action</td>
+                            <td th:text="${log.description}">Description</td>
+                            <td>
+                                <span th:if="${log.success}" class="badge bg-primary bg-opacity-10 text-primary px-3 py-1 rounded-pill">
+                                    <i class="bi bi-check-lg me-1"></i>Success
+                                </span>
+                                <span th:if="${!log.success}" class="badge bg-danger bg-opacity-10 text-danger px-3 py-1 rounded-pill">
+                                    <i class="bi bi-x-lg me-1"></i>Failed
+                                </span>
+                            </td>
+                            <td th:text="${log.ipAddress}">IP</td>
+                            <td class="text-end">
+                                <a th:href="@{/admin/audit/view/{id}(id=${log.id})}" class="btn btn-outline-primary btn-sm px-3">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div th:replace="~{fragments/pagination :: pagination(page=${auditPage}, baseUrl='/admin/audit', keyword=${keyword})}"></div>
+        </div>
+
+    </div>
+
+</body>
+</html>

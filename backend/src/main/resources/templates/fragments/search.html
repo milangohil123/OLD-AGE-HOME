@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+    <!-- Reusable Search and Filter Component -->
+    <!-- Expects 'baseUrl', 'keyword' (current filter string), and optional 'placeholder' -->
+    <div th:fragment="search(baseUrl, keyword, placeholder)" class="mb-4">
+        <form th:action="@{${baseUrl}}" method="get" class="row g-3 align-items-center">
+            <div class="col-md-8 col-sm-12">
+                <div class="input-group" style="height: 48px;">
+                    <span class="input-group-text bg-white border-end-0 text-muted" style="border-radius: 8px 0 0 8px; font-size: 14px; display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" name="keyword" class="form-control border-start-0 ps-0" 
+                           th:value="${keyword}" th:placeholder="${placeholder != null ? placeholder : 'Search records...'}" 
+                           style="border-radius: 0 8px 8px 0;" aria-label="Search">
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-12 d-flex gap-2">
+                <button type="submit" class="btn btn-primary px-4 flex-grow-1" style="height: 48px;">Search</button>
+                <a th:if="${keyword != null and !keyword.isEmpty()}" th:href="@{${baseUrl}}" 
+                   class="btn btn-secondary px-3 d-flex align-items-center justify-content-center" style="height: 48px; border-radius: 8px;">
+                    Clear
+                </a>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>

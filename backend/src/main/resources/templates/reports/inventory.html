@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: main(~{::#reports-inventory}, 'reports', 'Inventory Reports')}">
+<body>
+
+    <div id="reports-inventory">
+
+        <div class="card mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="mb-0 fw-bold">Inventory Reports Configuration</h3>
+                    <p class="text-muted mb-0">Apply filters below to generate custom inventory reports.</p>
+                </div>
+                <a th:href="@{/reports}" class="btn btn-secondary px-3">Back to Reports</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <h4 class="mb-4 text-primary fw-bold">Report Filters</h4>
+            <form th:action="@{/reports/preview}" method="get">
+                <input type="hidden" name="type" value="inventory">
+
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <label class="form-label">Inventory Status</label>
+                        <select class="form-select" name="status">
+                            <option value="ALL">All Items</option>
+                            <option th:each="st : ${statuses}" th:value="${st}" th:text="${st}"></option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4 mb-4">
+                        <label class="form-label">Category</label>
+                        <select class="form-select" name="category">
+                            <option value="ALL">All Categories</option>
+                            <option th:each="cat : ${categories}" th:value="${cat}" th:text="${cat}"></option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4 mb-4">
+                        <label class="form-label">Keyword Search (Code, Name, Manufacturer)</label>
+                        <input type="text" name="keyword" class="form-control" placeholder="Search by keyword...">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label">Start Purchase Date</label>
+                        <input type="date" name="startDate" class="form-control">
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label">End Purchase Date</label>
+                        <input type="date" name="endDate" class="form-control">
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-3 mt-4 border-top pt-3">
+                    <button type="submit" class="btn btn-primary px-4" style="height:48px;">
+                        🔍 Preview Report
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+</body>
+</html>
