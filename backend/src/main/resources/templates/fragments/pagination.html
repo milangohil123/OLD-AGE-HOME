@@ -25,7 +25,7 @@
                 </small>
                 
                 <!-- Rows Per Page Selector -->
-                <form method="get" th:action="${baseUrl}" class="d-flex align-items-center gap-2">
+                <form method="get" th:attr="action=${baseUrl}" class="d-flex align-items-center gap-2">
                     <label for="pageSize" class="form-label mb-0 small fw-semibold">Per Page:</label>
                     <select id="pageSize" name="size" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
                         <option value="10" th:selected="${page.size == 10}">10</option>
@@ -49,7 +49,7 @@
                     <li class="page-item" th:classappend="${page.first} ? 'disabled'">
                         <a th:if="${!page.first}" 
                            class="page-link"
-                           th:href="@{${baseUrl}(page=${page.number - 1}, size=${page.size}, keyword=${param.keyword}, sort=${param.sort}, direction=${param.direction})}"
+                           th:href="|${baseUrl}?page=${page.number - 1}&size=${page.size}|"
                            href="#">← Previous</a>
                         <span th:if="${page.first}" class="page-link">← Previous</span>
                     </li>
@@ -61,7 +61,7 @@
                             <li class="page-item" th:classappend="${pageNum == page.number} ? 'active'">
                                 <a th:if="${pageNum != page.number}"
                                    class="page-link"
-                                   th:href="@{${baseUrl}(page=${pageNum}, size=${page.size}, keyword=${param.keyword}, sort=${param.sort}, direction=${param.direction})}"
+                                   th:href="|${baseUrl}?page=${pageNum}&size=${page.size}|"
                                    th:text="${pageNum + 1}"
                                    href="#">1</a>
                                 <span th:if="${pageNum == page.number}" class="page-link" th:text="${pageNum + 1}">1</span>
@@ -80,7 +80,7 @@
                     <li class="page-item" th:classappend="${page.last} ? 'disabled'">
                         <a th:if="${!page.last}"
                            class="page-link"
-                           th:href="@{${baseUrl}(page=${page.number + 1}, size=${page.size}, keyword=${param.keyword}, sort=${param.sort}, direction=${param.direction})}"
+                           th:href="|${baseUrl}?page=${page.number + 1}&size=${page.size}|"
                            href="#">Next →</a>
                         <span th:if="${page.last}" class="page-link">Next →</span>
                     </li>
