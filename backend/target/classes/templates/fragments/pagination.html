@@ -12,8 +12,8 @@
             - baseUrl    : String — base URL without query params     (required)
             - queryParams : String — preserved query string           (optional)
     -->
-    <div th:fragment="pagination(page, baseUrl, queryParams)"
-         th:if="${page != null and page.totalElements > 0}"
+        <div th:fragment="pagination(page, baseUrl, queryParams)"
+            th:if="${page != null and (page.totalElements > 0 or (page.content != null and !page.content.isEmpty()))}"
          class="pagination-shell d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
 
         <div class="pagination-meta d-flex align-items-center gap-3 flex-wrap">
