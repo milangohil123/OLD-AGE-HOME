@@ -12,6 +12,8 @@ public interface AuditService {
 
     AuditLog saveAuditLog(AuditLog auditLog);
 
+        AuditLog getAuditLogById(Long id);
+
     Page<AuditLog> getAuditLogs(String keyword, Pageable pageable);
 
     Page<AuditLog> filterLogs(

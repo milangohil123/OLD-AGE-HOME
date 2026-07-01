@@ -14,7 +14,7 @@
                 </div>
                 <div class="d-flex gap-2 flex-wrap">
                     <!-- Dynamic URL Construction with all applied filters -->
-                    <a th:href="@{'/reports/' + ${type} + '/pdf'(status=${status}, keyword=${keyword}, month=${month}, year=${year}, startDate=${startDate}, endDate=${endDate}, donationType=${donationType}, paymentMethod=${paymentMethod}, category=${category})}" 
+                          <a th:href="@{'/reports/' + ${type} + '/pdf'(status=${status}, keyword=${keyword}, month=${month}, year=${year}, startDate=${startDate}, endDate=${endDate}, donationType=${donationType}, paymentMethod=${paymentMethod}, category=${category})}" 
                        class="btn btn-primary px-3">
                         <span>📄</span> Download PDF
                     </a>
@@ -51,7 +51,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:each="r : ${residentsList}">
+                        <tr th:each="r : ${reportPage.content}">
                             <td><strong th:text="${r.residentId}">ID</strong></td>
                             <td class="fw-bold" th:text="${r.fullName}">Name</td>
                             <td th:text="${r.gender}">Gender</td>
@@ -61,7 +61,7 @@
                                 <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-1" th:text="${r.status}">ACTIVE</span>
                             </td>
                         </tr>
-                        <tr th:if="${#lists.isEmpty(residentsList)}">
+                        <tr th:if="${reportPage.totalElements == 0}">
                             <td colspan="6" class="text-center py-4 text-muted">No resident records matched the criteria.</td>
                         </tr>
                     </tbody>
@@ -82,7 +82,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:each="d : ${donorsList}">
+                        <tr th:each="d : ${reportPage.content}">
                             <td><strong th:text="${d.donorId}">ID</strong></td>
                             <td class="fw-bold" th:text="${d.fullName}">Name</td>
                             <td th:text="${d.mobile != null ? d.mobile : '-'}">Mobile</td>
@@ -92,7 +92,7 @@
                                 <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-1" th:text="${d.status}">ACTIVE</span>
                             </td>
                         </tr>
-                        <tr th:if="${#lists.isEmpty(donorsList)}">
+                        <tr th:if="${reportPage.totalElements == 0}">
                             <td colspan="6" class="text-center py-4 text-muted">No donor records matched the criteria.</td>
                         </tr>
                     </tbody>
@@ -113,7 +113,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:each="d : ${donationsList}">
+                        <tr th:each="d : ${reportPage.content}">
                             <td class="fw-bold" th:text="${d.fullName}">Name</td>
                             <td th:text="${d.donationType}">Type</td>
                             <td class="text-success fw-bold" th:text="'₹' + ${d.donationAmount}">Amount</td>
@@ -121,7 +121,7 @@
                             <td th:text="${d.paymentMethod != null ? d.paymentMethod : '-'}">Method</td>
                             <td th:text="${d.transactionId != null ? d.transactionId : '-'}">Txn ID</td>
                         </tr>
-                        <tr th:if="${#lists.isEmpty(donationsList)}">
+                        <tr th:if="${reportPage.totalElements == 0}">
                             <td colspan="6" class="text-center py-4 text-muted">No donation records matched the criteria.</td>
                         </tr>
                     </tbody>
@@ -143,7 +143,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:each="item : ${inventoryList}">
+                        <tr th:each="item : ${reportPage.content}">
                             <td><strong th:text="${item.medicineCode}">Code</strong></td>
                             <td class="fw-bold" th:text="${item.medicineName}">Name</td>
                             <td th:text="${item.category}">Category</td>
@@ -154,12 +154,14 @@
                                 <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-1" th:text="${item.status}">AVAILABLE</span>
                             </td>
                         </tr>
-                        <tr th:if="${#lists.isEmpty(inventoryList)}">
+                        <tr th:if="${reportPage.totalElements == 0}">
                             <td colspan="7" class="text-center py-4 text-muted">No medicine records matched the criteria.</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
+
+            <div th:replace="~{fragments/pagination :: pagination(page=${reportPage}, baseUrl='/reports/preview', queryParams=${paginationQuery})}"></div>
         </div>
 
     </div>

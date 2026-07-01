@@ -500,6 +500,137 @@ a:hover {
     min-width: auto;
 }
 
+.pagination-shell {
+    padding: 18px 24px;
+    border-top: 1px solid var(--border);
+    background: linear-gradient(180deg, #FFFFFF 0%, #FBFDFF 100%);
+}
+
+.pagination-meta {
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.pagination-label {
+    font-weight: 700;
+    color: #334155;
+    white-space: nowrap;
+}
+
+.pagination-divider {
+    color: #CBD5E1;
+}
+
+.pagination-summary strong {
+    color: var(--text-primary);
+}
+
+.pagination-size-select {
+    width: 86px;
+    height: 36px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    background: #FFFFFF;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+.pagination-nav {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.pagination-rail {
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.pagination-item.active .pagination-number-link {
+    background: var(--primary) !important;
+    border-color: var(--primary) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 2px 10px rgba(37, 99, 235, 0.25);
+}
+
+.pagination-item.disabled .pagination-link {
+    opacity: 0.45;
+    pointer-events: none;
+}
+
+.pagination-link {
+    min-width: 40px;
+    height: 40px;
+    border-radius: 12px !important;
+    padding: 0 14px;
+    border: 1.5px solid var(--border) !important;
+    background: #FFFFFF;
+    color: #334155;
+    font-weight: 700;
+    transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pagination-link:hover {
+    background: var(--primary-xlight);
+    border-color: #BFDBFE !important;
+    color: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+.pagination-prev-link,
+.pagination-next-link {
+    min-width: 92px;
+}
+
+.pagination-number-link {
+    min-width: 40px;
+    padding: 0 12px;
+}
+
+.pagination-ellipsis-link {
+    border-color: transparent !important;
+    background: transparent !important;
+    color: #94A3B8;
+    min-width: 28px;
+    padding: 0;
+}
+
+.pagination-ellipsis-link:hover {
+    background: transparent !important;
+    border-color: transparent !important;
+    color: #94A3B8;
+    transform: none;
+    box-shadow: none;
+}
+
+.pagination-single-note {
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+@media (max-width: 767.98px) {
+    .pagination-shell {
+        padding: 16px;
+    }
+
+    .pagination-nav {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .pagination-rail {
+        width: 100%;
+    }
+
+    .pagination-prev-link,
+    .pagination-next-link {
+        min-width: 76px;
+    }
+}
+
 /* ── Input Group Icon Fix ────────────────────────────────────── */
 .input-group-text {
     border: 1.5px solid var(--border);

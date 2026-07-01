@@ -103,7 +103,7 @@
         </div>
 
         <!-- ── Search Component ───────────────────────────────────────────── -->
-        <div th:replace="~{fragments/search :: search(baseUrl='/inventory', keyword=${keyword}, placeholder='Search by Code, Name, Manufacturer, Supplier, or Batch...')}"></div>
+        <div th:replace="~{fragments/search :: search(baseUrl='/inventory', keyword=${keyword}, size=${inventoryPage.size}, sort=${sort}, direction=${direction}, placeholder='Search by Code, Name, Manufacturer, Supplier, or Batch...')}"></div>
 
         <!-- ── Main Table Card ────────────────────────────────────────────── -->
         <div class="card">
@@ -179,7 +179,7 @@
             </div>
 
             <!-- Pagination Component -->
-            <div th:replace="~{fragments/pagination :: pagination(page=${inventoryPage}, baseUrl='/inventory', keyword=${keyword})}"></div>
+            <div th:replace="~{fragments/pagination :: pagination(page=${inventoryPage}, baseUrl='/inventory', queryParams=${paginationQuery})}"></div>
         </div>
 
     </div>

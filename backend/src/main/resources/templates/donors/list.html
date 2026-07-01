@@ -105,7 +105,7 @@
         </div>
 
         <!-- ── Search ── -->
-        <div th:replace="~{fragments/search :: search(baseUrl='/donors', keyword=${keyword}, placeholder='Search by Donor ID, Name, Mobile, or Email...')}"></div>
+        <div th:replace="~{fragments/search :: search(baseUrl='/donors', keyword=${keyword}, size=${donorsPage.size}, sort=${sort}, direction=${direction}, placeholder='Search by Donor ID, Name, Mobile, or Email...')}"></div>
 
         <!-- ── Main Table Card ── -->
         <div class="card">
@@ -194,7 +194,7 @@
             </div>
 
             <!-- Pagination -->
-            <div th:replace="~{fragments/pagination :: pagination(page=${donorsPage}, baseUrl='/donors', keyword=${keyword})}"></div>
+            <div th:replace="~{fragments/pagination :: pagination(page=${donorsPage}, baseUrl='/donors', queryParams=${paginationQuery})}"></div>
         </div>
 
     </div>

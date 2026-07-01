@@ -1,6 +1,7 @@
 package com.oldagehome.portal.donor;
 
 import com.oldagehome.portal.common.AppConstants;
+import com.oldagehome.portal.common.PaginationUtils;
 import com.oldagehome.portal.dto.DonorImportDTO;
 import com.oldagehome.portal.excel.DonorExcelExporter;
 import com.oldagehome.portal.utils.FileUploadUtility;
@@ -21,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 @Controller
@@ -47,10 +49,20 @@ public class DonorController {
             @RequestParam(value = "keyword", required = false) String keyword,
             @RequestParam(value = "page", defaultValue = AppConstants.Pagination.DEFAULT_PAGE_NUMBER) int page,
             @RequestParam(value = "size", defaultValue = AppConstants.Pagination.DEFAULT_PAGE_SIZE) int size,
+            @RequestParam(value = "sort", defaultValue = AppConstants.Pagination.DEFAULT_SORT_BY) String sort,
+            @RequestParam(value = "direction", defaultValue = AppConstants.Pagination.DEFAULT_SORT_DIRECTION) String direction,
             Model model) {
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Pageable pageable = buildDonorPageable(page, size, sort, direction);
         Page<Donor> donorPage = donorService.getDonors(keyword, pageable);
+
+        model.addAttribute("sort", sort);
+        model.addAttribute("direction", direction);
+        LinkedHashMap<String, Object> paginationParams = new LinkedHashMap<>();
+        paginationParams.put("keyword", keyword);
+        paginationParams.put("sort", sort);
+        paginationParams.put("direction", direction);
+        model.addAttribute("paginationQuery", PaginationUtils.buildQueryString(paginationParams));
 
         model.addAttribute("donorsPage", donorPage);
         model.addAttribute("currentPage", page);
@@ -273,5 +285,36 @@ public class DonorController {
                     "Failed to parse Excel file: " + e.getMessage());
             return "redirect:/donors";
         }
+    }
+
+    private Pageable buildDonorPageable(int page, int size, String sort, String direction) {
+        String normalizedSort = sort != null ? sort.trim().toLowerCase() : "";
+        String property;
+
+        switch (normalizedSort) {
+            case "name":
+            case "fullname":
+            case "full_name":
+                property = "fullName";
+                break;
+            case "donorid":
+            case "donor_id":
+            case "idcode":
+                property = "donorId";
+                break;
+            case "amount":
+            case "donationamount":
+                property = "donationAmount";
+                break;
+            case "dateadded":
+            case "donationdate":
+                property = "donationDate";
+                break;
+            default:
+                property = AppConstants.Pagination.DEFAULT_SORT_BY;
+                break;
+        }
+
+        return PaginationUtils.buildPageable(page, size, property, direction, AppConstants.Pagination.DEFAULT_SORT_BY);
     }
 }

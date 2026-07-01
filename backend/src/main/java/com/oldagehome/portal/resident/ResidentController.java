@@ -1,6 +1,7 @@
 package com.oldagehome.portal.resident;
 
 import com.oldagehome.portal.common.AppConstants;
+import com.oldagehome.portal.common.PaginationUtils;
 import com.oldagehome.portal.dto.ResidentImportDTO;
 import com.oldagehome.portal.excel.ResidentExcelExporter;
 import com.oldagehome.portal.utils.FileUploadUtility;
@@ -21,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 @Controller
@@ -44,10 +46,20 @@ public class ResidentController {
             @RequestParam(value = "keyword", required = false) String keyword,
             @RequestParam(value = "page", defaultValue = AppConstants.Pagination.DEFAULT_PAGE_NUMBER) int page,
             @RequestParam(value = "size", defaultValue = AppConstants.Pagination.DEFAULT_PAGE_SIZE) int size,
+            @RequestParam(value = "sort", defaultValue = AppConstants.Pagination.DEFAULT_SORT_BY) String sort,
+            @RequestParam(value = "direction", defaultValue = AppConstants.Pagination.DEFAULT_SORT_DIRECTION) String direction,
             Model model) {
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Pageable pageable = buildResidentPageable(page, size, sort, direction);
         Page<Resident> residentPage = residentService.getResidents(keyword, pageable);
+
+        model.addAttribute("sort", sort);
+        model.addAttribute("direction", direction);
+        LinkedHashMap<String, Object> paginationParams = new LinkedHashMap<>();
+        paginationParams.put("keyword", keyword);
+        paginationParams.put("sort", sort);
+        paginationParams.put("direction", direction);
+        model.addAttribute("paginationQuery", PaginationUtils.buildQueryString(paginationParams));
 
         model.addAttribute("residentsPage", residentPage);
         model.addAttribute("currentPage", page);
@@ -250,5 +262,37 @@ public class ResidentController {
             redirectAttributes.addFlashAttribute("errorMessage", "Failed to parse Excel file: " + e.getMessage());
             return "redirect:/residents";
         }
+    }
+
+    private Pageable buildResidentPageable(int page, int size, String sort, String direction) {
+        String normalizedSort = sort != null ? sort.trim().toLowerCase() : "";
+        String property;
+        String resolvedDirection = direction;
+
+        switch (normalizedSort) {
+            case "name":
+            case "fullname":
+            case "full_name":
+                property = "fullName";
+                break;
+            case "residentid":
+            case "resident_id":
+            case "idcode":
+                property = "residentId";
+                break;
+            case "age":
+                property = "dateOfBirth";
+                resolvedDirection = "desc".equalsIgnoreCase(direction) ? "asc" : "desc";
+                break;
+            case "dateadded":
+            case "joiningdate":
+                property = "joiningDate";
+                break;
+            default:
+                property = AppConstants.Pagination.DEFAULT_SORT_BY;
+                break;
+        }
+
+        return PaginationUtils.buildPageable(page, size, property, resolvedDirection, AppConstants.Pagination.DEFAULT_SORT_BY);
     }
 }

@@ -1,6 +1,7 @@
 package com.oldagehome.portal.audit;
 
 import com.oldagehome.portal.common.AppConstants;
+import com.oldagehome.portal.common.PaginationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.LinkedHashMap;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -40,10 +42,20 @@ public class AuditController {
             @RequestParam(value = "keyword", required = false) String keyword,
             @RequestParam(value = "page", defaultValue = AppConstants.Pagination.DEFAULT_PAGE_NUMBER) int page,
             @RequestParam(value = "size", defaultValue = AppConstants.Pagination.DEFAULT_PAGE_SIZE) int size,
+            @RequestParam(value = "sort", defaultValue = AppConstants.Pagination.DEFAULT_SORT_BY) String sort,
+            @RequestParam(value = "direction", defaultValue = AppConstants.Pagination.DEFAULT_SORT_DIRECTION) String direction,
             Model model) {
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Pageable pageable = buildAuditPageable(page, size, sort, direction);
         Page<AuditLog> auditPage = auditService.getAuditLogs(keyword, pageable);
+
+        model.addAttribute("sort", sort);
+        model.addAttribute("direction", direction);
+        LinkedHashMap<String, Object> paginationParams = new LinkedHashMap<>();
+        paginationParams.put("keyword", keyword);
+        paginationParams.put("sort", sort);
+        paginationParams.put("direction", direction);
+        model.addAttribute("paginationQuery", PaginationUtils.buildQueryString(paginationParams));
 
         model.addAttribute("auditPage", auditPage);
         model.addAttribute("keyword", keyword);
@@ -77,10 +89,25 @@ public class AuditController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(value = "page", defaultValue = AppConstants.Pagination.DEFAULT_PAGE_NUMBER) int page,
             @RequestParam(value = "size", defaultValue = AppConstants.Pagination.DEFAULT_PAGE_SIZE) int size,
+            @RequestParam(value = "sort", defaultValue = AppConstants.Pagination.DEFAULT_SORT_BY) String sort,
+            @RequestParam(value = "direction", defaultValue = AppConstants.Pagination.DEFAULT_SORT_DIRECTION) String direction,
             Model model) {
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Pageable pageable = buildAuditPageable(page, size, sort, direction);
         Page<AuditLog> auditPage = auditService.filterLogs(username, module, action, success, startDate, endDate, pageable);
+
+        model.addAttribute("sort", sort);
+        model.addAttribute("direction", direction);
+        LinkedHashMap<String, Object> paginationParams = new LinkedHashMap<>();
+        paginationParams.put("username", username);
+        paginationParams.put("module", module);
+        paginationParams.put("action", action);
+        paginationParams.put("success", success);
+        paginationParams.put("startDate", startDate);
+        paginationParams.put("endDate", endDate);
+        paginationParams.put("sort", sort);
+        paginationParams.put("direction", direction);
+        model.addAttribute("paginationQuery", PaginationUtils.buildQueryString(paginationParams));
 
         model.addAttribute("auditPage", auditPage);
         model.addAttribute("username", username);
@@ -110,10 +137,7 @@ public class AuditController {
 
     @GetMapping("/view/{id}")
     public String viewLog(@PathVariable("id") Long id, Model model) {
-        AuditLog log = auditService.getAuditLogs(null, Pageable.unpaged()).stream()
-                .filter(l -> l.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Audit log entry not found with id: " + id));
+        AuditLog log = auditService.getAuditLogById(id);
 
         model.addAttribute("log", log);
         model.addAttribute("activePage", "audit");
@@ -151,5 +175,32 @@ public class AuditController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename)
                 .contentType(mediaType)
                 .body(data);
+    }
+
+    private Pageable buildAuditPageable(int page, int size, String sort, String direction) {
+        String normalizedSort = sort != null ? sort.trim().toLowerCase() : "";
+        String property;
+
+        switch (normalizedSort) {
+            case "user":
+            case "username":
+                property = "username";
+                break;
+            case "module":
+                property = "module";
+                break;
+            case "action":
+                property = "action";
+                break;
+            case "dateadded":
+            case "timestamp":
+                property = "timestamp";
+                break;
+            default:
+                property = AppConstants.Pagination.DEFAULT_SORT_BY;
+                break;
+        }
+
+        return PaginationUtils.buildPageable(page, size, property, direction, AppConstants.Pagination.DEFAULT_SORT_BY);
     }
 }

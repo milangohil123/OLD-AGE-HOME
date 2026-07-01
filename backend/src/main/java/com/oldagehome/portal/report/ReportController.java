@@ -1,5 +1,7 @@
 package com.oldagehome.portal.report;
 
+import com.oldagehome.portal.common.AppConstants;
+import com.oldagehome.portal.common.PaginationUtils;
 import com.oldagehome.portal.resident.Resident;
 import com.oldagehome.portal.resident.ResidentService;
 import com.oldagehome.portal.resident.ResidentStatus;
@@ -23,6 +25,9 @@ import com.oldagehome.portal.excel.DonationReportExporter;
 import com.oldagehome.portal.excel.InventoryReportExporter;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -36,7 +41,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.io.IOException;
 import java.security.Principal;
 import java.time.LocalDate;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/reports")
@@ -126,7 +133,7 @@ public class ReportController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             Principal principal) {
         
-        List<Resident> data = reportService.getResidentsReport(status, keyword, month, year, startDate, endDate);
+        List<Resident> data = reportService.getResidentsReport(status, keyword, month, year, startDate, endDate, Pageable.unpaged()).getContent();
         String user = principal != null ? principal.getName() : "Administrator";
         byte[] pdf = ResidentReportGenerator.generatePdf(data, "Resident Management Report", user);
         
@@ -146,7 +153,7 @@ public class ReportController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) throws IOException {
         
-        List<Resident> data = reportService.getResidentsReport(status, keyword, month, year, startDate, endDate);
+        List<Resident> data = reportService.getResidentsReport(status, keyword, month, year, startDate, endDate, Pageable.unpaged()).getContent();
         byte[] excel = ResidentReportExporter.exportExcel(data, "Resident Management Report");
         
         return ResponseEntity.ok()
@@ -163,7 +170,7 @@ public class ReportController {
             @RequestParam(required = false) String donationType,
             Principal principal) {
         
-        List<Donor> data = reportService.getDonorsReport(status, keyword, donationType);
+        List<Donor> data = reportService.getDonorsReport(status, keyword, donationType, Pageable.unpaged()).getContent();
         String user = principal != null ? principal.getName() : "Administrator";
         byte[] pdf = DonorReportGenerator.generatePdf(data, "Donor List Report", user);
         
@@ -180,7 +187,7 @@ public class ReportController {
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String donationType) throws IOException {
         
-        List<Donor> data = reportService.getDonorsReport(status, keyword, donationType);
+        List<Donor> data = reportService.getDonorsReport(status, keyword, donationType, Pageable.unpaged()).getContent();
         byte[] excel = DonorReportExporter.exportExcel(data, "Donor List Report");
         
         return ResponseEntity.ok()
@@ -200,7 +207,7 @@ public class ReportController {
             @RequestParam(required = false) String donationType,
             Principal principal) {
         
-        List<Donor> data = reportService.getDonationsReport(paymentMethod, month, year, startDate, endDate, donationType);
+        List<Donor> data = reportService.getDonationsReport(paymentMethod, month, year, startDate, endDate, donationType, Pageable.unpaged()).getContent();
         String user = principal != null ? principal.getName() : "Administrator";
         byte[] pdf = DonationReportGenerator.generatePdf(data, "Donation Collection Report", user);
         
@@ -220,7 +227,7 @@ public class ReportController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(required = false) String donationType) throws IOException {
         
-        List<Donor> data = reportService.getDonationsReport(paymentMethod, month, year, startDate, endDate, donationType);
+        List<Donor> data = reportService.getDonationsReport(paymentMethod, month, year, startDate, endDate, donationType, Pageable.unpaged()).getContent();
         byte[] excel = DonationReportExporter.exportExcel(data, "Donation Collection Report");
         
         return ResponseEntity.ok()
@@ -239,7 +246,7 @@ public class ReportController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             Principal principal) {
         
-        List<Inventory> data = reportService.getInventoryReport(status, keyword, category, startDate, endDate);
+        List<Inventory> data = reportService.getInventoryReport(status, keyword, category, startDate, endDate, Pageable.unpaged()).getContent();
         String user = principal != null ? principal.getName() : "Administrator";
         byte[] pdf = InventoryReportGenerator.generatePdf(data, "Medicine Inventory Report", user);
         
@@ -258,7 +265,7 @@ public class ReportController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) throws IOException {
         
-        List<Inventory> data = reportService.getInventoryReport(status, keyword, category, startDate, endDate);
+        List<Inventory> data = reportService.getInventoryReport(status, keyword, category, startDate, endDate, Pageable.unpaged()).getContent();
         byte[] excel = InventoryReportExporter.exportExcel(data, "Medicine Inventory Report");
         
         return ResponseEntity.ok()
@@ -280,10 +287,17 @@ public class ReportController {
             @RequestParam(required = false) String donationType,
             @RequestParam(required = false) String paymentMethod,
             @RequestParam(required = false) String category,
+            @RequestParam(value = "page", defaultValue = AppConstants.Pagination.DEFAULT_PAGE_NUMBER) int page,
+            @RequestParam(value = "size", defaultValue = AppConstants.Pagination.DEFAULT_PAGE_SIZE) int size,
+            @RequestParam(value = "sort", defaultValue = AppConstants.Pagination.DEFAULT_SORT_BY) String sort,
+            @RequestParam(value = "direction", defaultValue = AppConstants.Pagination.DEFAULT_SORT_DIRECTION) String direction,
             Model model) {
         
         model.addAttribute("activePage", "reports");
         model.addAttribute("type", type);
+        model.addAttribute("pageSize", size);
+        model.addAttribute("sort", sort);
+        model.addAttribute("direction", direction);
         
         // Pass filter values back to keep download buttons synchronized
         model.addAttribute("status", status);
@@ -296,24 +310,132 @@ public class ReportController {
         model.addAttribute("paymentMethod", paymentMethod);
         model.addAttribute("category", category);
 
+        Pageable pageable = buildReportPageable(type, page, size, sort, direction);
+
+        Map<String, Object> paginationParams = new LinkedHashMap<>();
+        paginationParams.put("type", type);
+        paginationParams.put("status", status);
+        paginationParams.put("keyword", keyword);
+        paginationParams.put("month", month);
+        paginationParams.put("year", year);
+        paginationParams.put("startDate", startDate);
+        paginationParams.put("endDate", endDate);
+        paginationParams.put("donationType", donationType);
+        paginationParams.put("paymentMethod", paymentMethod);
+        paginationParams.put("category", category);
+        paginationParams.put("sort", sort);
+        paginationParams.put("direction", direction);
+        model.addAttribute("paginationQuery", PaginationUtils.buildQueryString(paginationParams));
+
         if (type.equalsIgnoreCase("residents")) {
-            List<Resident> data = reportService.getResidentsReport(status, keyword, month, year, startDate, endDate);
-            model.addAttribute("residentsList", data);
+            Page<Resident> data = reportService.getResidentsReport(status, keyword, month, year, startDate, endDate, pageable);
+            model.addAttribute("reportPage", data);
             model.addAttribute("title", "Resident Management Preview Report");
         } else if (type.equalsIgnoreCase("donors")) {
-            List<Donor> data = reportService.getDonorsReport(status, keyword, donationType);
-            model.addAttribute("donorsList", data);
+            Page<Donor> data = reportService.getDonorsReport(status, keyword, donationType, pageable);
+            model.addAttribute("reportPage", data);
             model.addAttribute("title", "Donor List Preview Report");
         } else if (type.equalsIgnoreCase("donations")) {
-            List<Donor> data = reportService.getDonationsReport(paymentMethod, month, year, startDate, endDate, donationType);
-            model.addAttribute("donationsList", data);
+            Page<Donor> data = reportService.getDonationsReport(paymentMethod, month, year, startDate, endDate, donationType, pageable);
+            model.addAttribute("reportPage", data);
             model.addAttribute("title", "Donation Collection Preview Report");
         } else if (type.equalsIgnoreCase("inventory")) {
-            List<Inventory> data = reportService.getInventoryReport(status, keyword, category, startDate, endDate);
-            model.addAttribute("inventoryList", data);
+            Page<Inventory> data = reportService.getInventoryReport(status, keyword, category, startDate, endDate, pageable);
+            model.addAttribute("reportPage", data);
             model.addAttribute("title", "Medicine Inventory Preview Report");
         }
 
         return "reports/preview";
+    }
+
+    private Pageable buildReportPageable(String type, int page, int size, String sort, String direction) {
+        String normalizedSort = sort != null ? sort.trim().toLowerCase() : "";
+        String property = AppConstants.Pagination.DEFAULT_SORT_BY;
+        String resolvedDirection = direction;
+
+        if (type != null && type.equalsIgnoreCase("residents")) {
+            switch (normalizedSort) {
+                case "name":
+                case "fullname":
+                    property = "fullName";
+                    break;
+                case "residentid":
+                    property = "residentId";
+                    break;
+                case "age":
+                    property = "dateOfBirth";
+                    resolvedDirection = "desc".equalsIgnoreCase(direction) ? "asc" : "desc";
+                    break;
+                case "dateadded":
+                case "joiningdate":
+                    property = "joiningDate";
+                    break;
+                default:
+                    property = AppConstants.Pagination.DEFAULT_SORT_BY;
+                    break;
+            }
+        } else if (type != null && type.equalsIgnoreCase("donors")) {
+            switch (normalizedSort) {
+                case "name":
+                case "fullname":
+                    property = "fullName";
+                    break;
+                case "donorid":
+                    property = "donorId";
+                    break;
+                case "dateadded":
+                case "donationdate":
+                    property = "donationDate";
+                    break;
+                case "amount":
+                case "donationamount":
+                    property = "donationAmount";
+                    break;
+                default:
+                    property = AppConstants.Pagination.DEFAULT_SORT_BY;
+                    break;
+            }
+        } else if (type != null && type.equalsIgnoreCase("donations")) {
+            switch (normalizedSort) {
+                case "name":
+                case "fullname":
+                    property = "fullName";
+                    break;
+                case "dateadded":
+                case "donationdate":
+                    property = "donationDate";
+                    break;
+                case "amount":
+                case "donationamount":
+                    property = "donationAmount";
+                    break;
+                default:
+                    property = AppConstants.Pagination.DEFAULT_SORT_BY;
+                    break;
+            }
+        } else if (type != null && type.equalsIgnoreCase("inventory")) {
+            switch (normalizedSort) {
+                case "name":
+                case "medicinename":
+                    property = "medicineName";
+                    break;
+                case "code":
+                case "medicinecode":
+                    property = "medicineCode";
+                    break;
+                case "category":
+                    property = "category";
+                    break;
+                case "dateadded":
+                case "purchasedate":
+                    property = "purchaseDate";
+                    break;
+                default:
+                    property = AppConstants.Pagination.DEFAULT_SORT_BY;
+                    break;
+            }
+        }
+
+        return PaginationUtils.buildPageable(page, size, property, resolvedDirection, AppConstants.Pagination.DEFAULT_SORT_BY);
     }
 }

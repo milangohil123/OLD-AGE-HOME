@@ -44,7 +44,7 @@
         </div>
 
         <!-- Search Component Filter -->
-        <div th:replace="~{fragments/search :: search(baseUrl='/residents', keyword=${keyword}, placeholder='Search by Name, ID, Guardian, or Phone...')}"></div>
+        <div th:replace="~{fragments/search :: search(baseUrl='/residents', keyword=${keyword}, size=${residentsPage.size}, sort=${sort}, direction=${direction}, placeholder='Search by Name, ID, Guardian, or Phone...')}"></div>
 
         <!-- Main Roster Directory Card -->
         <div class="card">
@@ -123,7 +123,7 @@
             </div>
 
             <!-- Reusable Pagination Component -->
-            <div th:replace="~{fragments/pagination :: pagination(page=${residentsPage}, baseUrl='/residents', keyword=${keyword})}"></div>
+            <div th:replace="~{fragments/pagination :: pagination(page=${residentsPage}, baseUrl='/residents', queryParams=${paginationQuery})}"></div>
         </div>
 
     </div>

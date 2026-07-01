@@ -41,6 +41,13 @@ public class AuditServiceImpl implements AuditService {
 
     @Override
     @Transactional(readOnly = true)
+    public AuditLog getAuditLogById(Long id) {
+        return auditLogRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Audit log entry not found with id: " + id));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Page<AuditLog> getAuditLogs(String keyword, Pageable pageable) {
         if (keyword != null && !keyword.trim().isEmpty()) {
             return auditLogRepository.searchLogs(keyword.trim(), pageable);
@@ -72,8 +79,8 @@ public class AuditServiceImpl implements AuditService {
     public void deleteOldLogs(LocalDateTime beforeDate) {
         // Find logs older than beforeDate and delete them
         List<AuditLog> oldLogs = auditLogRepository.findAll().stream()
-                .filter(log -> log.getTimestamp().isBefore(beforeDate))
-                .toList();
+            .filter(log -> log.getTimestamp().isBefore(beforeDate))
+            .toList();
         auditLogRepository.deleteAll(oldLogs);
     }
 

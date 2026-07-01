@@ -1,6 +1,7 @@
 package com.oldagehome.portal.inventory;
 
 import com.oldagehome.portal.common.AppConstants;
+import com.oldagehome.portal.common.PaginationUtils;
 import com.oldagehome.portal.dto.InventoryImportDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 @Controller
@@ -41,10 +43,20 @@ public class InventoryController {
             @RequestParam(value = "keyword", required = false) String keyword,
             @RequestParam(value = "page", defaultValue = AppConstants.Pagination.DEFAULT_PAGE_NUMBER) int page,
             @RequestParam(value = "size", defaultValue = AppConstants.Pagination.DEFAULT_PAGE_SIZE) int size,
+            @RequestParam(value = "sort", defaultValue = AppConstants.Pagination.DEFAULT_SORT_BY) String sort,
+            @RequestParam(value = "direction", defaultValue = AppConstants.Pagination.DEFAULT_SORT_DIRECTION) String direction,
             Model model) {
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Pageable pageable = buildInventoryPageable(page, size, sort, direction);
         Page<Inventory> inventoryPage = inventoryService.getInventory(keyword, pageable);
+
+        model.addAttribute("sort", sort);
+        model.addAttribute("direction", direction);
+        LinkedHashMap<String, Object> paginationParams = new LinkedHashMap<>();
+        paginationParams.put("keyword", keyword);
+        paginationParams.put("sort", sort);
+        paginationParams.put("direction", direction);
+        model.addAttribute("paginationQuery", PaginationUtils.buildQueryString(paginationParams));
 
         model.addAttribute("inventoryPage", inventoryPage);
         model.addAttribute("keyword", keyword);
@@ -237,5 +249,35 @@ public class InventoryController {
                     "Failed to parse Excel file: " + e.getMessage());
             return "redirect:/inventory";
         }
+    }
+
+    private Pageable buildInventoryPageable(int page, int size, String sort, String direction) {
+        String normalizedSort = sort != null ? sort.trim().toLowerCase() : "";
+        String property;
+
+        switch (normalizedSort) {
+            case "name":
+            case "medicinename":
+            case "medicine_name":
+                property = "medicineName";
+                break;
+            case "code":
+            case "medicinecode":
+            case "medicine_code":
+                property = "medicineCode";
+                break;
+            case "category":
+                property = "category";
+                break;
+            case "dateadded":
+            case "purchasedate":
+                property = "purchaseDate";
+                break;
+            default:
+                property = AppConstants.Pagination.DEFAULT_SORT_BY;
+                break;
+        }
+
+        return PaginationUtils.buildPageable(page, size, property, direction, AppConstants.Pagination.DEFAULT_SORT_BY);
     }
 }

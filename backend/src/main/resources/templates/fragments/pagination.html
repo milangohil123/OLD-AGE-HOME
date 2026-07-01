@@ -5,125 +5,104 @@
     <!--
         Smart Old Age Home — Reusable Pagination Fragment
         Usage:
-            <div th:replace="~{fragments/pagination :: pagination(page=${yourPage}, baseUrl='/your-path', keyword=${keyword})}"></div>
+            <div th:replace="~{fragments/pagination :: pagination(page=${yourPage}, baseUrl='/your-path', queryParams=${paginationQuery})}"></div>
 
         Parameters:
-            - page     : org.springframework.data.domain.Page<?>  (required)
-            - baseUrl  : String — base URL without query params     (required)
-            - keyword  : String — active search term to preserve    (optional, pass null if none)
+            - page       : org.springframework.data.domain.Page<?>  (required)
+            - baseUrl    : String — base URL without query params     (required)
+            - queryParams : String — preserved query string           (optional)
     -->
-    <div th:fragment="pagination(page, baseUrl, keyword)"
+    <div th:fragment="pagination(page, baseUrl, queryParams)"
          th:if="${page != null and page.totalElements > 0}"
-         class="d-flex flex-column flex-md-row justify-content-between align-items-center px-4 py-3 border-top gap-3">
+         class="pagination-shell d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
 
-        <!-- ── Left: Rows per page + entry count ── -->
-        <div class="d-flex align-items-center gap-3" style="font-size: 13px; color: #64748B;">
-            <div class="d-flex align-items-center gap-2">
-                <span class="fw-medium" style="white-space:nowrap;">Rows per page:</span>
+        <div class="pagination-meta d-flex align-items-center gap-3 flex-wrap">
+            <div class="pagination-size-group d-flex align-items-center gap-2">
+                <span class="pagination-label">Rows per page</span>
                 <select class="form-select form-select-sm pagination-size-select"
-                        style="width: 70px; height: 34px; font-size: 13px; border-radius: 8px; border: 1.5px solid #E2E8F0; cursor: pointer;"
-                        th:onchange="|changePaginationSize(this.value, '${baseUrl}', '${keyword}')|">
-                    <option value="10"  th:selected="${page.size == 10}">10</option>
-                    <option value="25"  th:selected="${page.size == 25}">25</option>
-                    <option value="50"  th:selected="${page.size == 50}">50</option>
+                        th:onchange="|changePaginationSize(this.value, '${baseUrl}', '${queryParams}')|">
+                    <option value="10" th:selected="${page.size == 10}">10</option>
+                    <option value="25" th:selected="${page.size == 25}">25</option>
+                    <option value="50" th:selected="${page.size == 50}">50</option>
                     <option value="100" th:selected="${page.size == 100}">100</option>
                 </select>
             </div>
-            <span class="d-none d-sm-inline" style="color:#CBD5E1;">|</span>
-            <span>
+
+            <span class="pagination-divider d-none d-sm-inline">|</span>
+
+            <div class="pagination-summary">
                 Showing
                 <strong th:text="${page.totalElements == 0 ? 0 : page.number * page.size + 1}">1</strong>
                 –
                 <strong th:text="${T(java.lang.Math).min((page.number + 1) * page.size, page.totalElements)}">10</strong>
                 of
                 <strong th:text="${page.totalElements}">100</strong>
-            </span>
+            </div>
         </div>
 
-        <!-- ── Right: Page number controls ── -->
-        <nav th:if="${page.totalPages > 1}" aria-label="Table pagination">
-            <ul class="pagination mb-0" style="gap: 4px; align-items: center;">
-
-                <!-- ‹ Back -->
-                <li class="page-item" th:classappend="${page.first} ? 'disabled'">
-                    <a class="page-link d-flex align-items-center gap-1 px-3"
-                       style="font-weight: 600; height: 36px; border-radius: 8px; white-space: nowrap;"
-                       th:href="@{${baseUrl}(page=${page.number - 1}, size=${page.size}, keyword=${keyword != null and !keyword.isEmpty() ? keyword : null})}"
+        <nav th:if="${page.totalPages > 1}" aria-label="Pagination navigation" class="pagination-nav">
+            <ul class="pagination pagination-rail mb-0">
+                <li class="page-item pagination-item pagination-prev" th:classappend="${page.first} ? 'disabled'">
+                    <a class="page-link pagination-link pagination-prev-link"
+                       th:href="${page.first} ? '#' : |${baseUrl}?page=${page.number - 1}&size=${page.size}${queryParams != null and !queryParams.isBlank() ? '&' + queryParams : ''}|"
                        th:attr="tabindex=${page.first ? '-1' : '0'}"
                        aria-label="Previous page">
-                        <i class="bi bi-chevron-left" style="font-size: 11px;"></i> Back
+                        <span>Back</span>
                     </a>
                 </li>
 
-                <!-- ── Smart windowed page numbers ── -->
-
-                <!-- Always show page 1 -->
-                <li class="page-item" th:classappend="${page.number == 0} ? 'active'">
-                    <a class="page-link d-flex align-items-center justify-content-center"
-                       style="width: 36px; height: 36px; border-radius: 8px; font-weight: 600;"
-                       th:href="@{${baseUrl}(page=0, size=${page.size}, keyword=${keyword != null and !keyword.isEmpty() ? keyword : null})}">1</a>
+                <li class="page-item pagination-item" th:classappend="${page.number == 0} ? 'active'">
+                    <a class="page-link pagination-link pagination-number-link"
+                      th:href="|${baseUrl}?page=0&size=${page.size}${queryParams != null and !queryParams.isBlank() ? '&' + queryParams : ''}|">1</a>
                 </li>
 
-                <!-- Left ellipsis — show when current page > 3 -->
-                <li class="page-item disabled" th:if="${page.number > 3}">
-                    <span class="page-link border-0 bg-transparent px-1" style="height: 36px; line-height: 36px; color: #94A3B8; cursor: default;">…</span>
+                <li class="page-item pagination-item pagination-ellipsis disabled" th:if="${page.number > 3}">
+                    <span class="page-link pagination-link pagination-ellipsis-link">...</span>
                 </li>
 
-                <!-- Middle window: pages around current (excluding first and last) -->
-                <th:block th:each="i : ${#numbers.sequence(1, page.totalPages - 2)}"
-                          th:if="${page.totalPages > 2}">
-                    <li class="page-item"
+                <th:block th:if="${page.totalPages > 2}" th:each="i : ${#numbers.sequence(1, page.totalPages - 2)}">
+                    <li class="page-item pagination-item"
                         th:if="${i >= page.number - 1 and i <= page.number + 1}"
                         th:classappend="${page.number == i} ? 'active'">
-                        <a class="page-link d-flex align-items-center justify-content-center"
-                           style="width: 36px; height: 36px; border-radius: 8px; font-weight: 600;"
-                           th:href="@{${baseUrl}(page=${i}, size=${page.size}, keyword=${keyword != null and !keyword.isEmpty() ? keyword : null})}"
+                        <a class="page-link pagination-link pagination-number-link"
+                                    th:href="|${baseUrl}?page=${i}&size=${page.size}${queryParams != null and !queryParams.isBlank() ? '&' + queryParams : ''}|"
                            th:text="${i + 1}">2</a>
                     </li>
                 </th:block>
 
-                <!-- Right ellipsis — show when current page < totalPages - 4 -->
-                <li class="page-item disabled" th:if="${page.number < page.totalPages - 4}">
-                    <span class="page-link border-0 bg-transparent px-1" style="height: 36px; line-height: 36px; color: #94A3B8; cursor: default;">…</span>
+                <li class="page-item pagination-item pagination-ellipsis disabled" th:if="${page.number < page.totalPages - 4}">
+                    <span class="page-link pagination-link pagination-ellipsis-link">...</span>
                 </li>
 
-                <!-- Always show last page (if more than 1 page) -->
-                <li class="page-item" th:if="${page.totalPages > 1}"
-                    th:classappend="${page.number == page.totalPages - 1} ? 'active'">
-                    <a class="page-link d-flex align-items-center justify-content-center"
-                       style="width: 36px; height: 36px; border-radius: 8px; font-weight: 600;"
-                       th:href="@{${baseUrl}(page=${page.totalPages - 1}, size=${page.size}, keyword=${keyword != null and !keyword.isEmpty() ? keyword : null})}"
+                <li class="page-item pagination-item" th:classappend="${page.number == page.totalPages - 1} ? 'active'">
+                    <a class="page-link pagination-link pagination-number-link"
+                       th:href="|${baseUrl}?page=${page.totalPages - 1}&size=${page.size}${queryParams != null and !queryParams.isBlank() ? '&' + queryParams : ''}|"
                        th:text="${page.totalPages}">12</a>
                 </li>
 
-                <!-- Next › -->
-                <li class="page-item" th:classappend="${page.last} ? 'disabled'">
-                    <a class="page-link d-flex align-items-center gap-1 px-3"
-                       style="font-weight: 600; height: 36px; border-radius: 8px; white-space: nowrap;"
-                       th:href="@{${baseUrl}(page=${page.number + 1}, size=${page.size}, keyword=${keyword != null and !keyword.isEmpty() ? keyword : null})}"
+                <li class="page-item pagination-item pagination-next" th:classappend="${page.last} ? 'disabled'">
+                    <a class="page-link pagination-link pagination-next-link"
+                       th:href="${page.last} ? '#' : |${baseUrl}?page=${page.number + 1}&size=${page.size}${queryParams != null and !queryParams.isBlank() ? '&' + queryParams : ''}|"
                        th:attr="tabindex=${page.last ? '-1' : '0'}"
                        aria-label="Next page">
-                        Next <i class="bi bi-chevron-right" style="font-size: 11px;"></i>
+                        <span>Next</span>
                     </a>
                 </li>
-
             </ul>
         </nav>
 
-        <!-- Single-page note (no nav needed) -->
-        <div th:if="${page.totalPages <= 1}" class="text-muted" style="font-size: 13px;">
+        <div th:if="${page.totalPages <= 1}" class="pagination-single-note">
             All entries shown
         </div>
 
     </div>
 
-    <!-- Script — scoped to avoid duplicates -->
-    <script th:inline="javascript" th:if="${true}">
+    <script th:inline="javascript">
         if (typeof changePaginationSize === 'undefined') {
-            function changePaginationSize(size, baseUrl, keyword) {
+            function changePaginationSize(size, baseUrl, queryParams) {
                 var url = baseUrl + '?page=0&size=' + size;
-                if (keyword && keyword.trim() !== '' && keyword !== 'null') {
-                    url += '&keyword=' + encodeURIComponent(keyword);
+                if (queryParams && queryParams.trim() !== '') {
+                    url += '&' + queryParams;
                 }
                 window.location.href = url;
             }
