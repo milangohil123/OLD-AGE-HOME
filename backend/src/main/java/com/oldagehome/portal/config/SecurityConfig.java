@@ -69,19 +69,14 @@ public class SecurityConfig {
                 })
                 .permitAll()
             )
-            .logout(logout -> logout
-                .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "POST"))
-                .logoutSuccessHandler((request, response, authentication) -> {
-                    if (authentication != null) {
-                        auditService.logActivity(com.oldagehome.portal.audit.AuditModule.AUTH, com.oldagehome.portal.audit.AuditAction.LOGOUT, "User " + authentication.getName() + " logged out successfully", "User", null, true, null);
-                    }
-                    response.sendRedirect(request.getContextPath() + "/login?logout=true");
-                })
-                .invalidateHttpSession(true)
-                .clearAuthentication(true)
-                .deleteCookies("JSESSIONID", "remember-me")
-                .permitAll()
-            )
+           .logout(logout -> logout
+    .logoutUrl("/logout")
+    .logoutSuccessUrl("/login?logout")
+    .invalidateHttpSession(true)
+    .clearAuthentication(true)
+    .deleteCookies("JSESSIONID")
+    .permitAll()
+)
             .sessionManagement(session -> session
                 .invalidSessionUrl("/login?timeout=true")
                 .maximumSessions(1)
