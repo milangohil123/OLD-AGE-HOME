@@ -5,7 +5,7 @@
     <!-- Reusable Search and Filter Component -->
     <!-- Expects baseUrl, keyword, size, sort, direction, and optional placeholder -->
     <div th:fragment="search(baseUrl, keyword, size, sort, direction, placeholder)" class="mb-4">
-        <form th:action="@{${baseUrl}}" method="get" class="row g-3 align-items-center">
+        <form th:attr="action=${baseUrl}" method="get" class="row g-3 align-items-center">
             <div class="col-md-8 col-sm-12">
                 <div class="input-group" style="height: 48px;">
                     <span class="input-group-text bg-white border-end-0 text-muted" style="border-radius: 8px 0 0 8px; font-size: 14px; display: flex; align-items: center; justify-content: center;">
@@ -21,8 +21,9 @@
             </div>
             <div class="col-md-4 col-sm-12 d-flex gap-2">
                 <button type="submit" class="btn btn-primary px-4 flex-grow-1" style="height: 48px;">Search</button>
-                <a th:if="${keyword != null and !keyword.isEmpty()}" th:href="@{${baseUrl}(size=${size}, sort=${sort}, direction=${direction})}" 
-                   class="btn btn-secondary px-3 d-flex align-items-center justify-content-center" style="height: 48px; border-radius: 8px;">
+                <a th:if="${keyword != null and !keyword.isEmpty()}"
+   th:href="|${baseUrl}?size=${size}&sort=${sort}&direction=${direction}|"
+   class="btn btn-secondary">
                     Clear
                 </a>
             </div>
