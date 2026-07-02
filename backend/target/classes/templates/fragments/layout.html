@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${title} + ' - Smart Old Age Home Portal'">Smart Old Age Home Portal</title>
+    <title th:text="${title} + ' - ' + #{app.title}">Smart Old Age Home Portal</title>
     <!-- Bootstrap 5 CSS CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons CDN -->
@@ -30,46 +30,43 @@
                     <path d="M16 8L7 16H10V24H14V19H18V24H22V16H25L16 8Z" fill="white" />
                 </svg>
                 <div>
-                    <span class="sidebar-brand-text" style="display: block; line-height: 1.1;">Smart Home</span>
-                    <small
-                        style="color: #64748B; font-size: 10px; display: block; font-weight: 500; margin-top: 2px;">Old
-                        Age Home Portal</small>
+                    <span class="sidebar-brand-text" style="display: block; line-height: 1.1;" th:text="#{app.subtitle}">Old Age Home Portal</span>
                 </div>
             </div>
             <ul class="sidebar-menu">
-                <li class="sidebar-menu-header">Menu</li>
+                <li class="sidebar-menu-header" th:text="#{nav.menu}">Menu</li>
                 <li class="sidebar-menu-item" th:classappend="${activePage == 'dashboard'} ? 'active'">
                     <a th:href="@{/dashboard}">
-                        <i class="bi bi-house-door" style="font-size: 16px;"></i> Dashboard
+                        <i class="bi bi-house-door" style="font-size: 16px;"></i> <span th:text="#{nav.dashboard}">Dashboard</span>
                     </a>
                 </li>
                 <li class="sidebar-menu-item" th:classappend="${activePage == 'residents'} ? 'active'">
                     <a th:href="@{/residents}">
-                        <i class="bi bi-people" style="font-size: 16px;"></i> Residents
+                        <i class="bi bi-people" style="font-size: 16px;"></i> <span th:text="#{nav.residents}">Residents</span>
                     </a>
                 </li>
                 <li class="sidebar-menu-item" th:classappend="${activePage == 'donors'} ? 'active'">
                     <a th:href="@{/donors}">
-                        <i class="bi bi-gift" style="font-size: 16px;"></i> Donors
+                        <i class="bi bi-gift" style="font-size: 16px;"></i> <span th:text="#{nav.donors}">Donors</span>
                     </a>
                 </li>
                 <li class="sidebar-menu-item" th:classappend="${activePage == 'reports'} ? 'active'">
                     <a th:href="@{/reports}">
-                        <i class="bi bi-bar-chart" style="font-size: 16px;"></i> Reports
+                        <i class="bi bi-bar-chart" style="font-size: 16px;"></i> <span th:text="#{nav.reports}">Reports</span>
                     </a>
                 </li>
                 <!-- Conditional Audit Logs link for Admin only -->
                 <li sec:authorize="hasRole('ADMIN')" class="sidebar-menu-item"
                     th:classappend="${activePage == 'audit'} ? 'active'">
                     <a th:href="@{/admin/audit}">
-                        <i class="bi bi-clipboard-data" style="font-size: 16px;"></i> Audit Logs
+                        <i class="bi bi-clipboard-data" style="font-size: 16px;"></i> <span th:text="#{nav.audit_logs}">Audit Logs</span>
                     </a>
                 </li>
                 <!-- Conditional Settings link for Admin only -->
                 <li sec:authorize="hasRole('ADMIN')" class="sidebar-menu-item"
                     th:classappend="${activePage == 'settings'} ? 'active'">
                     <a th:href="@{/settings}">
-                        <i class="bi bi-gear" style="font-size: 16px;"></i> Settings
+                        <i class="bi bi-gear" style="font-size: 16px;"></i> <span th:text="#{nav.settings}">Settings</span>
                     </a>
                 </li>
                 <!-- Logout link using POST -->
@@ -78,7 +75,7 @@
                     </form>
                     <a href="#" onclick="document.getElementById('layoutSidebarLogoutForm').submit(); return false;"
                         class="text-danger">
-                        <i class="bi bi-box-arrow-right" style="font-size: 16px;"></i> Logout
+                        <i class="bi bi-box-arrow-right" style="font-size: 16px;"></i> <span th:text="#{nav.logout}">Logout</span>
                     </a>
                 </li>
             </ul>
@@ -97,7 +94,7 @@
                     <div style="position: relative;">
                         <i class="bi bi-search"
                             style="position: absolute; left: 14px; top: 10px; color: var(--text-muted); font-size: 12px;"></i>
-                        <input type="text" class="form-control navbar-search-input" placeholder="Search...">
+                        <input type="text" class="form-control navbar-search-input" th:placeholder="#{search.placeholder}">
                     </div>
                     <button class="btn btn-link p-0 text-dark" style="line-height: 1; text-decoration: none;">
                         <i class="bi bi-bell" style="font-size: 18px; color: var(--text-muted);"></i>
@@ -106,6 +103,17 @@
 
                 <div class="navbar-user">
                     <div class="d-flex align-items-center gap-2">
+                        <!-- Language Selector -->
+                        <div class="dropdown me-3">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="langDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-globe"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" aria-labelledby="langDropdown">
+                                <li><a class="dropdown-item" href="?lang=gu" th:text="#{lang.gujarati}">ગુજરાતી</a></li>
+                                <li><a class="dropdown-item" href="?lang=en" th:text="#{lang.english}">English</a></li>
+                                <li><a class="dropdown-item" href="?lang=hi" th:text="#{lang.hindi}">हिन्दी</a></li>
+                            </ul>
+                        </div>
                         <!-- Profile Photo or Initial -->
                         <div th:if="${currentUserInfo != null and currentUserInfo.profilePicture != null}" 
                              class="welcome-icon-circle p-0 border border-2 border-primary overflow-hidden"
@@ -122,14 +130,14 @@
                         
                         <div>
                             <span class="navbar-user-name" th:text="${currentUserInfo != null ? currentUserInfo.fullName : #authentication.name}" style="display: block;">User</span>
-                            <span class="navbar-user-role" sec:authorize="hasRole('ADMIN')">Administrator</span>
-                            <span class="navbar-user-role" sec:authorize="hasRole('MANAGER')">Manager</span>
-                            <span class="navbar-user-role" sec:authorize="hasRole('STAFF')">Staff</span>
+                            <span class="navbar-user-role" sec:authorize="hasRole('ADMIN')" th:text="#{nav.profile.admin}">Administrator</span>
+                            <span class="navbar-user-role" sec:authorize="hasRole('MANAGER')" th:text="#{nav.profile.manager}">Manager</span>
+                            <span class="navbar-user-role" sec:authorize="hasRole('STAFF')" th:text="#{nav.profile.staff}">Staff</span>
                         </div>
                     </div>
                     <form th:action="@{/logout}" method="post" id="layoutNavbarLogoutForm" style="display:none;"></form>
                     <a href="#" onclick="document.getElementById('layoutNavbarLogoutForm').submit(); return false;"
-                        class="text-danger small ms-3" style="font-weight: 600;">
+                        class="text-danger small ms-3" style="font-weight: 600;" th:text="#{nav.logout}">
                         Logout
                     </a>
                 </div>
@@ -143,7 +151,7 @@
             <!-- Footer -->
             <footer class="app-footer">
                 <div>
-                    <span>&copy; 2026 Smart Old Age Home Portal. Built for GTU Societal Internship.</span>
+                    <span th:text="#{app.footer}">&copy; 2026 Smart Old Age Home Portal. Built for GTU Societal Internship.</span>
                 </div>
             </footer>
         </div>

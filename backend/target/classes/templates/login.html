@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In — Smart Old Age Home Portal</title>
+    <title th:text="#{login.title} + ' - ' + #{app.title}">Sign In — Smart Old Age Home Portal</title>
 
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -326,67 +326,67 @@
                     </svg>
                 </div>
                 <div>
-                    <span class="login-brand-text">Smart Home</span>
-                    <span class="login-brand-sub">Old Age Home Portal</span>
+                    <span class="login-brand-text" th:text="#{app.title}">Smart Home</span>
+                    <span class="login-brand-sub" th:text="#{app.subtitle}">Old Age Home Portal</span>
                 </div>
             </div>
 
             <div class="login-hero">
-                <h1>Manage your home with clarity.</h1>
-                <p>A centralized administration portal for residents, donors, reports, and complete audit tracking.</p>
+                <h1 th:text="#{login.hero.title}">Manage your home with clarity.</h1>
+                <p th:text="#{login.hero.desc}">A centralized administration portal for residents, donors, reports, and complete audit tracking.</p>
                 <div class="login-features">
                     <div class="login-feature">
                         <div class="login-feature-dot"><i class="bi bi-people-fill"></i></div>
-                        Resident Management
+                        <span th:text="#{login.feature.resident}">Resident Management</span>
                     </div>
                     <div class="login-feature">
                         <div class="login-feature-dot"><i class="bi bi-gift-fill"></i></div>
-                        Donor Tracking
+                        <span th:text="#{login.feature.donor}">Donor Tracking</span>
                     </div>
                     <div class="login-feature">
                         <div class="login-feature-dot"><i class="bi bi-bar-chart-fill"></i></div>
-                        Reports &amp; Analytics
+                        <span th:text="#{login.feature.report}">Reports &amp; Analytics</span>
                     </div>
                     <div class="login-feature">
                         <div class="login-feature-dot"><i class="bi bi-shield-check"></i></div>
-                        Full Audit Logs
+                        <span th:text="#{login.feature.audit}">Full Audit Logs</span>
                     </div>
                 </div>
             </div>
 
-            <div class="login-footer">&copy; 2026 Smart Old Age Home Portal</div>
+            <div class="login-footer" th:text="#{app.footer}">&copy; 2026 Smart Old Age Home Portal</div>
         </div>
 
         <!-- ─────────────────────────────────── RIGHT: Form panel ── -->
         <div class="login-right">
 
-            <h2 class="login-heading">Welcome back</h2>
-            <p class="login-subheading">Sign in to continue to your administrator account.</p>
+            <h2 class="login-heading" th:text="#{login.heading}">Welcome back</h2>
+            <p class="login-subheading" th:text="#{login.subheading}">Sign in to continue to your administrator account.</p>
 
             <!-- ── Inline status banners (compact — form always stays visible) ── -->
 
             <!-- Login failed -->
             <div th:if="${param.error}" class="login-alert alert-error" role="alert">
                 <i class="bi bi-exclamation-triangle-fill"></i>
-                <span>Invalid username or password. Please try again.</span>
+                <span th:text="#{login.alert.error}">Invalid username or password. Please try again.</span>
             </div>
 
             <!-- Logout success -->
             <div th:if="${param.logout}" class="login-alert alert-success" role="alert">
                 <i class="bi bi-check-circle-fill"></i>
-                <span>You have been logged out successfully. Please sign in again below.</span>
+                <span th:text="#{login.alert.logout}">You have been logged out successfully. Please sign in again below.</span>
             </div>
 
             <!-- Password changed -->
             <div th:if="${param.passwordChanged}" class="login-alert alert-success" role="alert">
                 <i class="bi bi-shield-check-fill"></i>
-                <span>Password updated successfully. Please login with your new password.</span>
+                <span th:text="#{login.alert.password}">Password updated successfully. Please login with your new password.</span>
             </div>
 
             <!-- Session timeout -->
             <div th:if="${param.timeout}" class="login-alert alert-warning" role="alert">
                 <i class="bi bi-clock-fill"></i>
-                <span>Your session expired due to inactivity. Please sign in again.</span>
+                <span th:text="#{login.alert.timeout}">Your session expired due to inactivity. Please sign in again.</span>
             </div>
 
             <!-- ── Login form — ALWAYS visible ── -->
@@ -396,14 +396,14 @@
 
                 <!-- Username -->
                 <div class="field-mb">
-                    <label for="username" class="field-label">Username</label>
+                    <label for="username" class="field-label" th:text="#{login.label.username}">Username</label>
                     <div class="field-wrap">
                         <i class="bi bi-person field-icon"></i>
                         <input type="text"
                                class="login-input"
                                id="username"
                                name="username"
-                               placeholder="Enter your username"
+                               th:placeholder="#{login.placeholder.username}"
                                autocomplete="username"
                                required
                                autofocus
@@ -413,14 +413,14 @@
 
                 <!-- Password -->
                 <div class="field-mb">
-                    <label for="password" class="field-label">Password</label>
+                    <label for="password" class="field-label" th:text="#{login.label.password}">Password</label>
                     <div class="field-wrap">
                         <i class="bi bi-lock field-icon"></i>
                         <input type="password"
                                class="login-input"
                                id="password"
                                name="password"
-                               placeholder="••••••••"
+                               th:placeholder="#{login.placeholder.password}"
                                autocomplete="current-password"
                                required
                                th:classappend="${param.error} ? 'is-invalid' : ''">
@@ -433,7 +433,7 @@
                 <!-- Submit button -->
                 <button type="submit" class="btn-signin" id="signInBtn">
                     <i class="bi bi-box-arrow-in-right"></i>
-                    Sign In
+                    <span th:text="#{login.btn.signin}">Sign In</span>
                 </button>
 
             </form>
@@ -443,7 +443,7 @@
             <!-- Security badge -->
             <div class="login-security mt-3">
                 <i class="bi bi-shield-lock-fill"></i>
-                Secured by Spring Security · Session-based authentication
+                <span th:text="#{login.security}">Secured by Spring Security · Session-based authentication</span>
             </div>
 
         </div>

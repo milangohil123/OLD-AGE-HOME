@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-    th:replace="~{fragments/layout :: main(~{::#dashboard-content}, 'dashboard', 'Dashboard')}">
+    th:replace="~{fragments/layout :: main(~{::#dashboard-content}, 'dashboard', #{dashboard.title})}">
 
 <body>
 
@@ -13,9 +13,9 @@
                     <i class="bi bi-house-door" style="font-size: 20px;"></i>
                 </div>
                 <div>
-                    <h2 class="mb-1 fw-bold" style="color: var(--primary);">Welcome, <span
+                    <h2 class="mb-1 fw-bold" style="color: var(--primary);" th:text="#{dashboard.welcome(${#authentication.name})}">Welcome, <span
                             sec:authentication="name">Admin</span>!</h2>
-                    <p class="text-muted mb-0" style="font-size: 13px;">
+                    <p class="text-muted mb-0" style="font-size: 13px;" th:text="#{dashboard.welcome.desc}">
                         Smart Old Age Home administration portal — manage residents, donors, and reports.
                     </p>
                 </div>
@@ -35,11 +35,11 @@
                             <div>
                                 <h1 class="fw-bold mb-0 text-primary" style="font-size: 32px;"
                                     th:text="${totalResidents}">0</h1>
-                                <span class="text-muted fw-semibold" style="font-size: 13px;">Total Residents</span>
+                                <span class="text-muted fw-semibold" style="font-size: 13px;" th:text="#{dashboard.stat.residents}">Total Residents</span>
                             </div>
                         </div>
                         <div>
-                            <a th:href="@{/residents}" class="btn btn-outline-primary btn-sm">View All</a>
+                            <a th:href="@{/residents}" class="btn btn-outline-primary btn-sm" th:text="#{dashboard.btn.view_all}">View All</a>
                         </div>
                     </div>
                 </div>
@@ -56,11 +56,11 @@
                             <div>
                                 <h1 class="fw-bold mb-0 text-primary" style="font-size: 32px;" th:text="${totalDonors}">
                                     0</h1>
-                                <span class="text-muted fw-semibold" style="font-size: 13px;">Total Donors</span>
+                                <span class="text-muted fw-semibold" style="font-size: 13px;" th:text="#{dashboard.stat.donors}">Total Donors</span>
                             </div>
                         </div>
                         <div>
-                            <a th:href="@{/donors}" class="btn btn-outline-primary btn-sm">View All</a>
+                            <a th:href="@{/donors}" class="btn btn-outline-primary btn-sm" th:text="#{dashboard.btn.view_all}">View All</a>
                         </div>
                     </div>
                 </div>
@@ -77,12 +77,11 @@
                             <div>
                                 <h1 class="fw-bold mb-0 text-primary" style="font-size: 32px;"
                                     th:text="${monthDonations}">0</h1>
-                                <span class="text-muted fw-semibold" style="font-size: 13px;">Reports Generated (This
-                                    Month)</span>
+                                <span class="text-muted fw-semibold" style="font-size: 13px;" th:text="#{dashboard.stat.reports}">Reports Generated (This Month)</span>
                             </div>
                         </div>
                         <div>
-                            <a th:href="@{/reports}" class="btn btn-outline-primary btn-sm">View All</a>
+                            <a th:href="@{/reports}" class="btn btn-outline-primary btn-sm" th:text="#{dashboard.btn.view_all}">View All</a>
                         </div>
                     </div>
                 </div>
@@ -95,7 +94,7 @@
             <div class="col-md-6 mb-3">
                 <div class="card h-100">
                     <h5 class="fw-bold mb-4 text-primary">
-                        <i class="bi bi-lightning-charge me-2" style="font-size: 16px;"></i>Quick Actions
+                        <i class="bi bi-lightning-charge me-2" style="font-size: 16px;"></i><span th:text="#{dashboard.quick_actions}">Quick Actions</span>
                     </h5>
 
                     <div class="d-flex flex-column gap-3">
@@ -107,8 +106,8 @@
                                     <i class="bi bi-plus-lg"></i>
                                 </div>
                                 <div>
-                                    <span class="fw-bold d-block" style="font-size: 14px;">Add Resident</span>
-                                    <small class="text-muted">Register a new resident</small>
+                                    <span class="fw-bold d-block" style="font-size: 14px;" th:text="#{dashboard.action.add_resident}">Add Resident</span>
+                                    <small class="text-muted" th:text="#{dashboard.action.add_resident.desc}">Register a new resident</small>
                                 </div>
                             </div>
                             <span class="text-primary fw-bold">&rarr;</span>
@@ -122,8 +121,8 @@
                                     <i class="bi bi-plus-lg"></i>
                                 </div>
                                 <div>
-                                    <span class="fw-bold d-block" style="font-size: 14px;">Add Donor</span>
-                                    <small class="text-muted">Register a new donor</small>
+                                    <span class="fw-bold d-block" style="font-size: 14px;" th:text="#{dashboard.action.add_donor}">Add Donor</span>
+                                    <small class="text-muted" th:text="#{dashboard.action.add_donor.desc}">Register a new donor</small>
                                 </div>
                             </div>
                             <span class="text-primary fw-bold">&rarr;</span>
@@ -137,8 +136,8 @@
                                     <i class="bi bi-bar-chart"></i>
                                 </div>
                                 <div>
-                                    <span class="fw-bold d-block" style="font-size: 14px;">Generate Report</span>
-                                    <small class="text-muted">View and export reports</small>
+                                    <span class="fw-bold d-block" style="font-size: 14px;" th:text="#{dashboard.action.report}">Generate Report</span>
+                                    <small class="text-muted" th:text="#{dashboard.action.report.desc}">View and export reports</small>
                                 </div>
                             </div>
                             <span class="text-primary fw-bold">&rarr;</span>
@@ -151,48 +150,48 @@
             <div class="col-md-6 mb-3">
                 <div class="card h-100">
                     <h5 class="fw-bold mb-4 text-primary">
-                        <i class="bi bi-clock me-2" style="font-size: 16px;"></i>Recent Activity
+                        <i class="bi bi-clock me-2" style="font-size: 16px;"></i><span th:text="#{dashboard.recent_activity}">Recent Activity</span>
                     </h5>
 
                     <div class="d-flex flex-column gap-3 ps-2">
                         <div class="d-flex align-items-center justify-content-between">
                             <div class="d-flex align-items-center gap-2">
                                 <span class="text-primary">&bull;</span>
-                                <span class="text-dark">New resident registered</span>
+                                <span class="text-dark" th:text="#{dashboard.activity.resident_added}">New resident registered</span>
                             </div>
                             <small class="text-muted">2 hours ago</small>
                         </div>
                         <div class="d-flex align-items-center justify-content-between">
                             <div class="d-flex align-items-center gap-2">
                                 <span class="text-primary">&bull;</span>
-                                <span class="text-dark">New donor added</span>
+                                <span class="text-dark" th:text="#{dashboard.activity.donor_added}">New donor added</span>
                             </div>
                             <small class="text-muted">1 day ago</small>
                         </div>
                         <div class="d-flex align-items-center justify-content-between">
                             <div class="d-flex align-items-center gap-2">
                                 <span class="text-primary">&bull;</span>
-                                <span class="text-dark">Report generated</span>
+                                <span class="text-dark" th:text="#{dashboard.activity.report_generated}">Report generated</span>
                             </div>
                             <small class="text-muted">2 days ago</small>
                         </div>
                         <div class="d-flex align-items-center justify-content-between">
                             <div class="d-flex align-items-center gap-2">
                                 <span class="text-primary">&bull;</span>
-                                <span class="text-dark">Admin logged in</span>
+                                <span class="text-dark" th:text="#{dashboard.activity.admin_login}">Admin logged in</span>
                             </div>
                             <small class="text-muted">2 days ago</small>
                         </div>
                         <div class="d-flex align-items-center justify-content-between">
                             <div class="d-flex align-items-center gap-2">
                                 <span class="text-primary">&bull;</span>
-                                <span class="text-dark">Data export completed</span>
+                                <span class="text-dark" th:text="#{dashboard.activity.export}">Data export completed</span>
                             </div>
                             <small class="text-muted">3 days ago</small>
                         </div>
 
                         <div class="mt-3">
-                            <a th:href="@{/admin/audit}" class="btn btn-outline-primary w-100">View All Activity</a>
+                            <a th:href="@{/admin/audit}" class="btn btn-outline-primary w-100" th:text="#{dashboard.activity.view_all}">View All Activity</a>
                         </div>
                     </div>
                 </div>
