@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{fragments/layout :: main(~{::#donor-profile-container}, 'donors', 'Donor Profile')}">
+      th:replace="~{fragments/layout :: main(~{::#donor-profile-container}, 'donors', #{donor.view.title})}">
 <body>
 
     <div id="donor-profile-container">
@@ -9,13 +9,13 @@
         <div class="card mb-4">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h3 class="mb-0 fw-bold">Donor Profile Card</h3>
-                    <p class="text-muted mb-0">Detailed donation record and contact information for this donor.</p>
+                    <h3 class="mb-0 fw-bold" th:text="#{donor.view.title}">Donor Profile Card</h3>
+                    <p class="text-muted mb-0" th:text="#{donor.view.desc}">Detailed donation record and contact information for this donor.</p>
                 </div>
                 <div class="d-flex gap-2">
-                    <a th:href="@{/donors}" class="btn btn-secondary px-3">Back to Directory</a>
+                    <a th:href="@{/donors}" class="btn btn-secondary px-3" th:text="#{donor.view.btn.back}">Back to Directory</a>
                     <a th:href="@{/donors/edit/{id}(id=${donor.id})}" class="btn btn-primary px-3"
-                       sec:authorize="hasAnyRole('ADMIN', 'MANAGER')">Edit Profile</a>
+                       sec:authorize="hasAnyRole('ADMIN', 'MANAGER')" th:text="#{donor.view.btn.edit}">Edit Profile</a>
                 </div>
             </div>
         </div>
@@ -49,28 +49,28 @@
 
                 <!-- Quick Stats Card -->
                 <div class="card mb-4">
-                    <h4 class="fw-bold border-bottom pb-2 mb-3 text-primary">Donation Summary</h4>
+                    <h4 class="fw-bold border-bottom pb-2 mb-3 text-primary" th:text="#{donor.form.section.donation}">Donation Summary</h4>
                     <ul class="list-unstyled mb-0" style="font-size: 16px;">
                         <li class="mb-3 d-flex justify-content-between">
-                            <span class="text-muted">Donation Type:</span>
+                            <span class="text-muted" th:text="#{donor.view.stat.type}">Donation Type:</span>
                             <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-1 rounded-pill"
                                   th:text="${donor.donationType}">CASH</span>
                         </li>
                         <li class="mb-3 d-flex justify-content-between">
-                            <span class="text-muted">Donation Amount:</span>
+                            <span class="text-muted" th:text="#{donor.view.stat.amount}">Donation Amount:</span>
                             <strong class="text-success fs-5"
                                     th:text="'₹' + ${#numbers.formatDecimal(donor.donationAmount, 1, 'COMMA', 2, 'POINT')}">₹0.00</strong>
                         </li>
                         <li class="mb-3 d-flex justify-content-between">
-                            <span class="text-muted">Donation Date:</span>
+                            <span class="text-muted" th:text="#{donor.view.stat.date}">Donation Date:</span>
                             <strong th:text="${donor.donationDate != null ? #temporals.format(donor.donationDate, 'dd MMM yyyy') : '-'}">01 Jan 2026</strong>
                         </li>
                         <li class="mb-3 d-flex justify-content-between">
-                            <span class="text-muted">Payment Method:</span>
+                            <span class="text-muted" th:text="#{donor.view.stat.method}">Payment Method:</span>
                             <strong th:text="${donor.paymentMethod != null and !donor.paymentMethod.isEmpty() ? donor.paymentMethod : '-'}">-</strong>
                         </li>
                         <li class="mb-0 d-flex justify-content-between">
-                            <span class="text-muted">Age / Gender:</span>
+                            <span class="text-muted" th:text="#{donor.view.stat.age_gender}">Age / Gender:</span>
                             <strong th:text="${(donor.age != null ? donor.age + ' yrs' : 'N/A') + ' / ' + (donor.gender != null ? donor.gender : '-')}">- / -</strong>
                         </li>
                     </ul>
@@ -81,12 +81,12 @@
                     <h4 class="fw-bold border-bottom pb-2 mb-3 text-primary">Record Metadata</h4>
                     <ul class="list-unstyled mb-0" style="font-size: 15px;">
                         <li class="mb-2 d-flex justify-content-between">
-                            <span class="text-muted">Created:</span>
+                            <span class="text-muted" th:text="#{donor.view.meta.created}">Created:</span>
                             <small class="fw-bold"
                                    th:text="${donor.createdAt != null ? #temporals.format(donor.createdAt, 'dd MMM yyyy') : '-'}">-</small>
                         </li>
                         <li class="mb-0 d-flex justify-content-between">
-                            <span class="text-muted">Updated:</span>
+                            <span class="text-muted" th:text="#{donor.view.meta.updated}">Updated:</span>
                             <small class="fw-bold"
                                    th:text="${donor.updatedAt != null ? #temporals.format(donor.updatedAt, 'dd MMM yyyy HH:mm') : '-'}">-</small>
                         </li>
@@ -99,31 +99,31 @@
 
                 <!-- Contact & Personal Info Card -->
                 <div class="card mb-4">
-                    <h4 class="fw-bold border-bottom pb-2 mb-3 text-primary">Personal Information</h4>
+                    <h4 class="fw-bold border-bottom pb-2 mb-3 text-primary" th:text="#{donor.form.section.personal}">Personal Information</h4>
                     <div class="row mb-3">
                         <div class="col-md-6 mb-3">
-                            <span class="text-muted d-block small">Date of Birth</span>
+                            <span class="text-muted d-block small" th:text="#{donor.view.info.dob}">Date of Birth</span>
                             <span class="fw-bold text-dark fs-5"
                                   th:text="${donor.dateOfBirth != null ? #temporals.format(donor.dateOfBirth, 'dd MMM yyyy') : '-'}">-</span>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <span class="text-muted d-block small">Mobile Phone</span>
+                            <span class="text-muted d-block small" th:text="#{donor.view.info.mobile}">Mobile Phone</span>
                             <span class="fw-bold text-dark fs-5"
                                   th:text="${donor.mobile != null and !donor.mobile.isEmpty() ? donor.mobile : '-'}">-</span>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <span class="text-muted d-block small">Email Address</span>
+                            <span class="text-muted d-block small" th:text="#{donor.view.info.email}">Email Address</span>
                             <span class="fw-bold text-dark fs-5"
                                   th:text="${donor.email != null and !donor.email.isEmpty() ? donor.email : '-'}">-</span>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <span class="text-muted d-block small">City / State</span>
+                            <span class="text-muted d-block small" th:text="#{donor.view.info.city_state}">City / State</span>
                             <span class="fw-bold text-dark fs-5">
                                 <span th:text="${(donor.city != null and !donor.city.isEmpty() ? donor.city : '') + (donor.state != null and !donor.state.isEmpty() ? ', ' + donor.state : '')}">-</span>
                             </span>
                         </div>
                         <div class="col-md-12">
-                            <span class="text-muted d-block small">Full Address</span>
+                            <span class="text-muted d-block small" th:text="#{donor.view.info.address}">Full Address</span>
                             <p class="fw-bold text-dark mb-0 fs-5" style="white-space: pre-line;"
                                th:text="${donor.address != null and !donor.address.isEmpty() ? donor.address : '-'}">-</p>
                         </div>
@@ -135,12 +135,12 @@
                     <h4 class="fw-bold border-bottom pb-2 mb-3 text-primary">Transaction Details</h4>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <span class="text-muted d-block small">Transaction ID</span>
+                            <span class="text-muted d-block small" th:text="#{donor.view.txn.id}">Transaction ID</span>
                             <span class="fw-bold text-dark fs-5 font-monospace"
                                   th:text="${donor.transactionId != null and !donor.transactionId.isEmpty() ? donor.transactionId : 'Not Provided'}">-</span>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <span class="text-muted d-block small">Pincode</span>
+                            <span class="text-muted d-block small" th:text="#{donor.view.txn.pincode}">Pincode</span>
                             <span class="fw-bold text-dark fs-5"
                                   th:text="${donor.pincode != null and !donor.pincode.isEmpty() ? donor.pincode : '-'}">-</span>
                         </div>
@@ -149,10 +149,10 @@
 
                 <!-- Remarks Card -->
                 <div class="card">
-                    <h4 class="fw-bold border-bottom pb-2 mb-3 text-primary">Remarks &amp; Notes</h4>
+                    <h4 class="fw-bold border-bottom pb-2 mb-3 text-primary" th:text="#{donor.view.remarks.title}">Remarks &amp; Notes</h4>
                     <div class="p-3 bg-light rounded border">
                         <p class="mb-0 fs-6 text-dark" style="white-space: pre-line; font-weight: 500;"
-                           th:text="${donor.remarks != null and !donor.remarks.isEmpty() ? donor.remarks : 'No remarks or additional notes recorded.'}">
+                           th:text="${donor.remarks != null and !donor.remarks.isEmpty() ? donor.remarks : #{donor.view.remarks.empty}}">
                             No remarks.
                         </p>
                     </div>

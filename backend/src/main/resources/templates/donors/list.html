@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{fragments/layout :: main(~{::#donors-list}, 'donors', 'Donor Management')}">
+      th:replace="~{fragments/layout :: main(~{::#donors-list}, 'donors', #{nav.donors})}">
 <body>
 
     <div id="donors-list">
@@ -19,7 +19,7 @@
                         </div>
                         <div>
                             <h2 class="fw-bold mb-0 text-primary" th:text="${totalDonors}">0</h2>
-                            <span class="text-muted fw-semibold" style="font-size: 13px;">Total Donors</span>
+                            <span class="text-muted fw-semibold" style="font-size: 13px;" th:text="#{dashboard.stat.donors}">Total Donors</span>
                         </div>
                     </div>
                 </div>
@@ -32,7 +32,7 @@
                         </div>
                         <div>
                             <h2 class="fw-bold mb-0 text-primary" th:text="${todayDonations}">0</h2>
-                            <span class="text-muted fw-semibold" style="font-size: 13px;">Today's Donations</span>
+                            <span class="text-muted fw-semibold" style="font-size: 13px;" th:text="#{dashboard.stat.donations.today}">Today's Donations</span>
                         </div>
                     </div>
                 </div>
@@ -45,7 +45,7 @@
                         </div>
                         <div>
                             <h2 class="fw-bold mb-0 text-primary" th:text="${monthDonations}">0</h2>
-                            <span class="text-muted fw-semibold" style="font-size: 13px;">This Month</span>
+                            <span class="text-muted fw-semibold" style="font-size: 13px;" th:text="#{dashboard.stat.donations.month}">This Month</span>
                         </div>
                     </div>
                 </div>
@@ -58,7 +58,7 @@
                         </div>
                         <div>
                             <h2 class="fw-bold mb-0 text-primary" th:text="'₹' + ${#numbers.formatDecimal(totalAmount, 1, 'COMMA', 2, 'POINT')}">₹0.00</h2>
-                            <span class="text-muted fw-semibold" style="font-size: 13px;">Total Raised</span>
+                            <span class="text-muted fw-semibold" style="font-size: 13px;" th:text="#{dashboard.stat.raised}">Total Raised</span>
                         </div>
                     </div>
                 </div>
@@ -69,15 +69,15 @@
         <div class="card mb-4">
             <div class="row align-items-center py-2">
                 <div class="col-md-6">
-                    <h3 class="mb-0 fw-bold">Donors Directory</h3>
-                    <p class="text-muted mb-0" style="font-size: 13px;">Browse, manage, and export donor contribution records.</p>
+                    <h3 class="mb-0 fw-bold" th:text="#{donor.list.title}">Donors Directory</h3>
+                    <p class="text-muted mb-0" style="font-size: 13px;" th:text="#{donor.list.desc}">Browse, manage, and export donor contribution records.</p>
                 </div>
                 <div class="col-md-6 text-md-end text-start mt-3 mt-md-0 d-flex justify-content-md-end gap-2 flex-wrap">
                     <a th:href="@{/donors/new}" class="btn btn-primary px-4">
-                        <i class="bi bi-plus-lg me-1"></i> Add Donor
+                        <i class="bi bi-plus-lg me-1"></i> <span th:text="#{donor.btn.add}">Add Donor</span>
                     </a>
                     <a th:href="@{/donors/export}" class="btn btn-outline-primary px-3">
-                        <i class="bi bi-download me-1"></i> Export Excel
+                        <i class="bi bi-download me-1"></i> <span th:text="#{donor.btn.export}">Export Excel</span>
                     </a>
                 </div>
             </div>
@@ -88,16 +88,16 @@
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
                 <div>
                     <h5 class="mb-1 fw-bold">
-                        <i class="bi bi-file-earmark-arrow-up me-2 text-primary"></i>Bulk Import Donors
+                        <i class="bi bi-file-earmark-arrow-up me-2 text-primary"></i><span th:text="#{donor.import.title}">Bulk Import Donors</span>
                     </h5>
-                    <p class="text-muted mb-0 small">Import multiple donor records from a spreadsheet.<br>
+                    <p class="text-muted mb-0 small" th:utext="#{donor.import.desc}">Import multiple donor records from a spreadsheet.<br>
                         Column order: Donor ID | Name | Gender | Mobile | Email | Donation Type | Amount | Donation Date | Payment Method | Status</p>
                 </div>
                 <div>
                     <form th:action="@{/donors/import}" method="post" enctype="multipart/form-data" class="d-flex gap-2">
                         <input type="file" name="file" class="form-control" accept=".xlsx,.xls" required style="max-width: 240px;">
                         <button type="submit" class="btn btn-primary" style="height: 48px; white-space: nowrap;">
-                            <i class="bi bi-upload me-1"></i> Upload
+                            <i class="bi bi-upload me-1"></i> <span th:text="#{donor.import.btn}">Upload</span>
                         </button>
                     </form>
                 </div>
@@ -105,7 +105,7 @@
         </div>
 
         <!-- ── Search ── -->
-        <div th:replace="~{fragments/search :: search(baseUrl='/donors', keyword=${keyword}, size=${donorsPage.size}, sort=${sort}, direction=${direction}, placeholder='Search by Donor ID, Name, Mobile, or Email...')}"></div>
+        <div th:replace="~{fragments/search :: search(baseUrl='/donors', keyword=${keyword}, size=${donorsPage.size}, sort=${sort}, direction=${direction}, placeholder=#{donor.search.placeholder})}"></div>
 
         <!-- ── Main Table Card ── -->
         <div class="card">
@@ -113,14 +113,14 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead>
                         <tr>
-                            <th style="width: 72px;">Photo</th>
-                            <th>Donor ID</th>
-                            <th>Full Name</th>
-                            <th>Donation Type</th>
-                            <th>Amount</th>
-                            <th>Donation Date</th>
-                            <th>Status</th>
-                            <th class="text-end" style="width: 220px;">Actions</th>
+                            <th style="width: 72px;" th:text="#{donor.table.photo}">Photo</th>
+                            <th th:text="#{donor.table.id}">Donor ID</th>
+                            <th th:text="#{donor.table.name}">Full Name</th>
+                            <th th:text="#{donor.table.type}">Donation Type</th>
+                            <th th:text="#{donor.table.amount}">Amount</th>
+                            <th th:text="#{donor.table.date}">Donation Date</th>
+                            <th th:text="#{donor.table.status}">Status</th>
+                            <th class="text-end" style="width: 220px;" th:text="#{donor.table.actions}">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -128,8 +128,8 @@
                         <tr th:if="${donorsPage == null or donorsPage.totalElements == 0}">
                             <td colspan="8" class="text-center py-5 text-muted">
                                 <i class="bi bi-gift d-block mb-3" style="font-size: 40px; color: #BFDBFE;"></i>
-                                <h5 class="fw-bold">No Donor Records Found</h5>
-                                <p class="mb-0 small">Add a new donor or adjust your search filter.</p>
+                                <h5 class="fw-bold" th:text="#{donor.table.empty.title}">No Donor Records Found</h5>
+                                <p class="mb-0 small" th:text="#{donor.table.empty.desc}">Add a new donor or adjust your search filter.</p>
                             </td>
                         </tr>
 
@@ -182,7 +182,7 @@
                                     </a>
                                     <a th:href="@{/donors/delete/{id}(id=${d.id})}"
                                        class="btn btn-danger btn-sm px-3 text-white"
-                                       onclick="return confirm('Are you sure you want to permanently delete this donor record?');"
+                                       th:data-confirm="#{donor.confirm.delete}" onclick="return confirm(this.getAttribute('data-confirm'));"
                                        sec:authorize="hasRole('ADMIN')">
                                         <i class="bi bi-trash"></i>
                                     </a>

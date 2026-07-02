@@ -82,6 +82,9 @@ public class SecurityConfig {
                 .maximumSessions(1)
                 .expiredUrl("/login?timeout=true")
             )
+            .headers(headers -> headers
+                .cacheControl(cache -> cache.disable())
+            )
             .exceptionHandling(exception -> exception
                 .accessDeniedPage("/403")
             );

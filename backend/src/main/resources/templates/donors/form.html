@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{fragments/layout :: main(~{::#donor-form-container}, 'donors', ${donor.id == null ? 'Register New Donor' : 'Edit Donor Profile'})}">
+      th:replace="~{fragments/layout :: main(~{::#donor-form-container}, 'donors', ${donor.id == null ? #{donor.form.title.new} : #{donor.form.title.edit}})}">
 <body>
 
     <div id="donor-form-container">
@@ -9,10 +9,10 @@
         <div class="card mb-4">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h3 class="mb-0 fw-bold" th:text="${donor.id == null ? 'Register New Donor' : 'Edit Donor Profile'}">Register Donor</h3>
-                    <p class="text-muted mb-0">Fill in the fields below. Required values are marked with an asterisk (*).</p>
+                    <h3 class="mb-0 fw-bold" th:text="${donor.id == null ? #{donor.form.title.new} : #{donor.form.title.edit}}">Register Donor</h3>
+                    <p class="text-muted mb-0" th:text="#{donor.form.subtitle}">Fill in the fields below. Required values are marked with an asterisk (*).</p>
                 </div>
-                <a th:href="@{/donors}" class="btn btn-secondary px-3">Back to List</a>
+                <a th:href="@{/donors}" class="btn btn-secondary px-3" th:text="#{donor.form.btn.back}">Back to List</a>
             </div>
         </div>
 
@@ -31,7 +31,7 @@
 
                     <!-- Section A: Personal Information -->
                     <div class="card mb-4">
-                        <h4 class="mb-4 border-bottom pb-2 text-primary fw-bold">Personal Information</h4>
+                        <h4 class="mb-4 border-bottom pb-2 text-primary fw-bold" th:text="#{donor.form.section.personal}">Personal Information</h4>
 
                         <div class="row">
                             <div class="col-md-6 mb-4">
@@ -116,7 +116,7 @@
 
                     <!-- Section B: Donation Information -->
                     <div class="card mb-4">
-                        <h4 class="mb-4 border-bottom pb-2 text-primary fw-bold">Donation Information</h4>
+                        <h4 class="mb-4 border-bottom pb-2 text-primary fw-bold" th:text="#{donor.form.section.donation}">Donation Information</h4>
 
                         <div class="row">
                             <div class="col-md-6 mb-4">
@@ -165,7 +165,7 @@
 
                     <!-- Section C: Additional Information -->
                     <div class="card mb-4">
-                        <h4 class="mb-4 border-bottom pb-2 text-primary fw-bold">Additional Information</h4>
+                        <h4 class="mb-4 border-bottom pb-2 text-primary fw-bold" th:text="#{donor.form.section.additional}">Additional Information</h4>
 
                         <div class="row">
                             <div class="col-md-6 mb-4">
@@ -191,7 +191,7 @@
 
                     <!-- Profile Photo Card -->
                     <div class="card mb-4 text-center">
-                        <h4 class="mb-4 border-bottom pb-2 text-primary fw-bold">Donor Photo</h4>
+                        <h4 class="mb-4 border-bottom pb-2 text-primary fw-bold" th:text="#{donor.form.section.photo}">Donor Photo</h4>
                         <div class="mb-3 d-flex justify-content-center">
                             <img th:if="*{photo != null}" th:src="@{'/uploads/' + *{photo}}"
                                  class="rounded-circle object-fit-cover border" style="width: 140px; height: 140px;">
@@ -209,11 +209,11 @@
 
                     <!-- Submit Actions Card -->
                     <div class="card">
-                        <h4 class="mb-4 border-bottom pb-2 text-primary fw-bold">Actions</h4>
-                        <button type="submit" class="btn btn-primary w-100 mb-3" style="height: 48px;">
+                        <h4 class="mb-4 border-bottom pb-2 text-primary fw-bold" th:text="#{donor.form.section.actions}">Actions</h4>
+                        <button type="submit" class="btn btn-primary w-100 mb-3" style="height: 48px;" th:text="#{donor.form.btn.save}">
                             Save Donor Record
                         </button>
-                        <a th:href="@{/donors}" class="btn btn-secondary w-100" style="height: 48px;">
+                        <a th:href="@{/donors}" class="btn btn-secondary w-100" style="height: 48px;" th:text="#{donor.form.btn.cancel}">
                             Cancel
                         </a>
                     </div>

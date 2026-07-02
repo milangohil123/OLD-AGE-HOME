@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{fragments/layout :: main(~{::#import-results-container}, 'donors', 'Excel Import Report')}">
+      th:replace="~{fragments/layout :: main(~{::#import-results-container}, 'donors', #{donor.import_result.title})}">
 <body>
 
     <div id="import-results-container">
@@ -9,10 +9,10 @@
         <div class="card mb-4">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h3 class="mb-0 fw-bold">Donor Excel Import Results</h3>
-                    <p class="text-muted mb-0">Batch migration summary. Review the row-by-row parse log below.</p>
+                    <h3 class="mb-0 fw-bold" th:text="#{donor.import_result.title}">Donor Excel Import Results</h3>
+                    <p class="text-muted mb-0" th:text="#{donor.import_result.desc}">Batch migration summary. Review the row-by-row parse log below.</p>
                 </div>
-                <a th:href="@{/donors}" class="btn btn-secondary px-3">Back to Directory</a>
+                <a th:href="@{/donors}" class="btn btn-secondary px-3" th:text="#{donor.import_result.btn.back}">Back to Directory</a>
             </div>
         </div>
 
@@ -22,41 +22,41 @@
                 <div class="card text-center py-4">
                     <span class="fs-1 mb-2">📋</span>
                     <h1 class="fw-bold mb-1 text-dark" th:text="${totalCount}">0</h1>
-                    <span class="fs-5 fw-bold text-muted">Total Rows Processed</span>
+                    <span class="fs-5 fw-bold text-muted" th:text="#{donor.import_result.stat.total}">Total Rows Processed</span>
                 </div>
             </div>
             <div class="col-md-4 mb-3 mb-md-0">
                 <div class="card bg-success bg-opacity-10 border-success text-success text-center py-4">
                     <span class="fs-1 mb-2">✅</span>
                     <h1 class="fw-bold mb-1" th:text="${successCount}">0</h1>
-                    <span class="fs-5 fw-bold">Successfully Imported</span>
+                    <span class="fs-5 fw-bold" th:text="#{donor.import_result.stat.success}">Successfully Imported</span>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card bg-danger bg-opacity-10 border-danger text-danger text-center py-4">
                     <span class="fs-1 mb-2">❌</span>
                     <h1 class="fw-bold mb-1" th:text="${failCount}">0</h1>
-                    <span class="fs-5 fw-bold">Rows Skipped / Failed</span>
+                    <span class="fs-5 fw-bold" th:text="#{donor.import_result.stat.fail}">Rows Skipped / Failed</span>
                 </div>
             </div>
         </div>
 
         <!-- Row-by-Row Parse Log Table -->
         <div class="card">
-            <h4 class="fw-bold mb-3">Row-by-Row Parse Log</h4>
+            <h4 class="fw-bold mb-3" th:text="#{donor.import_result.log.title}">Row-by-Row Parse Log</h4>
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0" style="font-size: 15px;">
                     <thead>
                         <tr>
-                            <th style="width: 60px;">Row</th>
-                            <th>Donor ID</th>
-                            <th>Full Name</th>
-                            <th>Donation Type</th>
-                            <th>Amount</th>
-                            <th>Donation Date</th>
-                            <th>Status</th>
-                            <th>Import Status</th>
-                            <th>Error Details</th>
+                            <th style="width: 60px;" th:text="#{donor.import_result.log.row}">Row</th>
+                            <th th:text="#{donor.table.id}">Donor ID</th>
+                            <th th:text="#{donor.table.name}">Full Name</th>
+                            <th th:text="#{donor.table.type}">Donation Type</th>
+                            <th th:text="#{donor.table.amount}">Amount</th>
+                            <th th:text="#{donor.table.date}">Donation Date</th>
+                            <th th:text="#{donor.table.status}">Status</th>
+                            <th th:text="#{donor.import_result.log.import_status}">Import Status</th>
+                            <th th:text="#{donor.import_result.log.error}">Error Details</th>
                         </tr>
                     </thead>
                     <tbody>
