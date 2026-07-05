@@ -48,7 +48,7 @@
                 </div>
 
                 <!-- Fast Specs Table -->
-                <div class="card">
+                <div class="card mb-4">
                     <h4 class="fw-bold border-bottom pb-2 mb-3 text-primary">Admission Metadata</h4>
                     <ul class="list-unstyled mb-0" style="font-size: 16px;">
                         <li class="mb-2 d-flex justify-content-between">
@@ -59,9 +59,32 @@
                             <span class="text-muted">Age / Gender:</span>
                             <strong th:text="${resident.age} + ' yrs / ' + ${resident.gender}">72 yrs / FEMALE</strong>
                         </li>
-                        <li class="mb-0 d-flex justify-content-between">
+                        <li class="mb-2 d-flex justify-content-between">
                             <span class="text-muted">Blood Group:</span>
                             <strong class="text-danger" th:text="${resident.bloodGroup != null and !resident.bloodGroup.isEmpty()} ? ${resident.bloodGroup} : 'Not Disclosed'">O+</strong>
+                        </li>
+                        <li class="mb-2 d-flex justify-content-between">
+                            <span class="text-muted">Room Number:</span>
+                            <strong th:text="${resident.roomNumber != null and !resident.roomNumber.isEmpty()} ? ${resident.roomNumber} : '-'">A-101</strong>
+                        </li>
+                        <li class="mb-2 d-flex justify-content-between">
+                            <span class="text-muted">Disability:</span>
+                            <span th:text="${resident.disability != null and !resident.disability.isEmpty()} ? ${resident.disability} : 'None'">None</span>
+                        </li>
+                        <li class="mb-0 d-flex justify-content-between">
+                            <span class="text-muted">Occupation:</span>
+                            <span th:text="${resident.occupation != null and !resident.occupation.isEmpty()} ? ${resident.occupation} : '-'">-</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Identity Card (Aadhaar – shown in full on detail page only) -->
+                <div class="card">
+                    <h4 class="fw-bold border-bottom pb-2 mb-3 text-primary">Identity</h4>
+                    <ul class="list-unstyled mb-0" style="font-size: 16px;">
+                        <li class="d-flex justify-content-between">
+                            <span class="text-muted">Aadhaar No.:</span>
+                            <strong th:text="${resident.aadhaarNumber != null and !resident.aadhaarNumber.isEmpty()} ? ${resident.aadhaarNumber} : 'Not Provided'">Not Provided</strong>
                         </li>
                     </ul>
                 </div>
@@ -71,7 +94,7 @@
             <div class="col-lg-8 col-md-12">
                 <!-- Specs Card -->
                 <div class="card mb-4">
-                    <h4 class="fw-bold border-bottom pb-2 mb-3 text-primary">Contact & Profile specs</h4>
+                    <h4 class="fw-bold border-bottom pb-2 mb-3 text-primary">Contact &amp; Profile specs</h4>
                     
                     <div class="row mb-3">
                         <div class="col-md-6">
@@ -93,25 +116,43 @@
                 <!-- Guardian Specs Card -->
                 <div class="card mb-4">
                     <h4 class="fw-bold border-bottom pb-2 mb-3 text-primary">Guardian / Emergency Contact</h4>
-                    <div class="row">
+                    <div class="row mb-3">
                         <div class="col-md-6">
-                            <span class="text-muted d-block small">Emergency Representative Name</span>
+                            <span class="text-muted d-block small">Guardian Name</span>
                             <span class="fw-bold text-dark fs-5" th:text="${resident.guardianName != null and !resident.guardianName.isEmpty()} ? ${resident.guardianName} : '-'">Robert Smith</span>
                         </div>
                         <div class="col-md-6">
-                            <span class="text-muted d-block small">Emergency Representative Phone</span>
+                            <span class="text-muted d-block small">Guardian Phone</span>
                             <span class="fw-bold text-dark fs-5" th:text="${resident.guardianPhone != null and !resident.guardianPhone.isEmpty()} ? ${resident.guardianPhone} : '-'">9876543211</span>
                         </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <span class="text-muted d-block small">Guardian Email</span>
+                            <span class="fw-bold text-dark fs-5" th:text="${resident.guardianEmail != null and !resident.guardianEmail.isEmpty()} ? ${resident.guardianEmail} : '-'">-</span>
+                        </div>
+                    </div>
+                    <div class="mb-0">
+                        <span class="text-muted d-block small">Guardian Address</span>
+                        <p class="fw-bold text-dark mb-0 fs-5" style="white-space: pre-line;" th:text="${resident.guardianAddress != null and !resident.guardianAddress.isEmpty()} ? ${resident.guardianAddress} : '-'">-</p>
                     </div>
                 </div>
 
                 <!-- Medical Logs Card -->
-                <div class="card">
-                    <h4 class="fw-bold border-bottom pb-2 mb-3 text-primary">Medical Prescription & Chronic Info</h4>
-                    <div class="p-3 bg-light rounded border">
+                <div class="card mb-4">
+                    <h4 class="fw-bold border-bottom pb-2 mb-3 text-primary">Medical Prescription &amp; Chronic Info</h4>
+                    <div class="p-3 bg-light rounded border mb-3">
+                        <p class="text-muted small fw-bold mb-1">General Medical Notes</p>
                         <p class="mb-0 fs-6 text-dark" style="white-space: pre-line; font-weight: 500;" 
-                           th:text="${resident.medicalNotes != null and !resident.medicalNotes.isEmpty()} ? ${resident.medicalNotes} : 'No current medical files or prescription logs cataloged.'">
+                           th:text="${resident.medicalNotes != null and !resident.medicalNotes.isEmpty()} ? ${resident.medicalNotes} : 'No general medical notes cataloged.'">
                             Medical Notes details.
+                        </p>
+                    </div>
+                    <div class="p-3 bg-light rounded border">
+                        <p class="text-muted small fw-bold mb-1">Medical Prescription / Doctor Instructions</p>
+                        <p class="mb-0 fs-6 text-dark" style="white-space: pre-line; font-weight: 500;" 
+                           th:text="${resident.medicalPrescription != null and !resident.medicalPrescription.isEmpty()} ? ${resident.medicalPrescription} : 'No prescription details on file.'">
+                            Prescription details.
                         </p>
                     </div>
                 </div>

@@ -32,7 +32,7 @@
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
                 <div>
                     <h4 class="mb-1 fw-bold" th:text="#{resident.import.title}">Bulk Import Residents</h4>
-                    <p class="text-muted mb-0 small" th:text="#{resident.import.desc}">Import multiple records from a spreadsheet. Column format: Resident ID | Name | Gender | DOB | Mobile | Guardian | Guardian Phone</p>
+                    <p class="text-muted mb-0 small" th:text="#{resident.import.desc}">Import multiple records from a spreadsheet. Column format: Resident ID | Name | Gender | DOB | Mobile | Guardian Name | Guardian Phone | Guardian Email | Guardian Address | Room Number | Medical Prescription | Occupation | Disability | Aadhaar</p>
                 </div>
                 <div>
                     <form th:action="@{/residents/import}" method="post" enctype="multipart/form-data" class="d-flex gap-2">
@@ -56,6 +56,7 @@
                             <th th:text="#{resident.table.id}">Resident ID</th>
                             <th th:text="#{resident.table.name}">Full Name</th>
                             <th th:text="#{resident.table.age_gender}">Age / Gender</th>
+                            <th>Room No.</th>
                             <th th:text="#{resident.table.guardian}">Guardian Name</th>
                             <th th:text="#{resident.table.guardian_phone}">Guardian Phone</th>
                             <th th:text="#{resident.table.status}">Status</th>
@@ -65,7 +66,7 @@
                     <tbody>
                         <!-- Empty State -->
                         <tr th:if="${residentsPage == null or residentsPage.totalElements == 0}">
-                            <td colspan="8" class="text-center py-5 text-muted">
+                            <td colspan="9" class="text-center py-5 text-muted">
                                 <i class="bi bi-people d-block mb-3" style="font-size: 40px;"></i>
                                 <h4 class="fw-bold" th:text="#{resident.table.empty.title}">No Resident Records Found</h4>
                                 <p class="mb-0" th:text="#{resident.table.empty.desc}">Add a new resident or adjust your search filter keyword.</p>
@@ -92,6 +93,9 @@
                             <td>
                                 <span th:text="${res.age != null ? res.age : 'N/A'} + ' yrs'">72 yrs</span> / 
                                 <small class="text-muted fw-bold" th:text="${res.gender != null ? res.gender : '-'}">FEMALE</small>
+                            </td>
+                            <td>
+                                <span th:text="${res.roomNumber != null and !res.roomNumber.isEmpty()} ? ${res.roomNumber} : '-'">A-101</span>
                             </td>
                             <td th:text="${res.guardianName != null and !res.guardianName.isEmpty()} ? ${res.guardianName} : '-'">Guardian</td>
                             <td th:text="${res.guardianPhone != null and !res.guardianPhone.isEmpty()} ? ${res.guardianPhone} : '-'">0000000000</td>

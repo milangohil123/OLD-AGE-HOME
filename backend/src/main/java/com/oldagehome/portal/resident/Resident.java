@@ -69,6 +69,7 @@ public class Resident {
     @Column(nullable = false, length = 20)
     private ResidentStatus status = ResidentStatus.ACTIVE;
 
+    @NotBlank(message = "Guardian name is required")
     @Column(name = "guardian_name", length = 100)
     private String guardianName;
 
@@ -76,8 +77,32 @@ public class Resident {
     @Column(name = "guardian_phone", length = 15)
     private String guardianPhone;
 
+    @Email(message = "Please provide a valid guardian email address")
+    @Column(name = "guardian_email", length = 100)
+    private String guardianEmail;
+
+    @Column(name = "guardian_address", columnDefinition = "TEXT")
+    private String guardianAddress;
+
     @Column(name = "medical_notes", columnDefinition = "TEXT")
     private String medicalNotes;
+
+    @Column(name = "medical_prescription", columnDefinition = "TEXT")
+    private String medicalPrescription;
+
+    @NotBlank(message = "Room number is required")
+    @Column(name = "room_number", length = 20)
+    private String roomNumber;
+
+    @Column(name = "occupation", length = 100)
+    private String occupation;
+
+    @Column(name = "disability", length = 100)
+    private String disability;
+
+    @Pattern(regexp = "^$|[0-9]{12}$", message = "Aadhaar number must be exactly 12 digits")
+    @Column(name = "aadhaar_number", length = 12)
+    private String aadhaarNumber;
 
     @Column(length = 255)
     private String photo; // Filepath of the uploaded image

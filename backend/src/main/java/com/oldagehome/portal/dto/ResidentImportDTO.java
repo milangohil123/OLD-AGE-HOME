@@ -21,7 +21,14 @@ public class ResidentImportDTO {
     private String mobile;
     private String guardianName;
     private String guardianPhone;
-    
+    private String guardianEmail;
+    private String guardianAddress;
+    private String medicalPrescription;
+    private String roomNumber;
+    private String occupation;
+    private String disability;
+    private String aadhaarNumber;
+
     // Status tracking for row-level warnings during Excel import
     private boolean valid = true;
     private String errorMessage = "";

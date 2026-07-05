@@ -19,7 +19,21 @@ public class ResidentExcelImporter {
 
     /**
      * Parses an input stream of an Excel file (.xlsx) and extracts a list of DTOs representing the rows.
-     * Validates data values and marks row-level validation errors.
+     * Column order:
+     *   0: Resident ID        (required)
+     *   1: Full Name          (required)
+     *   2: Gender             (required: MALE/FEMALE/OTHER)
+     *   3: Date of Birth      (required: dd-MM-yyyy)
+     *   4: Mobile             (optional)
+     *   5: Guardian Name      (required)
+     *   6: Guardian Phone     (optional)
+     *   7: Guardian Email     (optional)
+     *   8: Guardian Address   (optional)
+     *   9: Room Number        (required)
+     *  10: Medical Prescription (optional)
+     *  11: Occupation         (optional)
+     *  12: Disability         (optional)
+     *  13: Aadhaar Number     (optional, 12 digits)
      */
     public static List<ResidentImportDTO> importResidents(InputStream is) throws Exception {
         List<ResidentImportDTO> dtos = new ArrayList<>();
@@ -40,7 +54,7 @@ public class ResidentExcelImporter {
             dto.setFullName(getCellValue(row.getCell(1), dataFormatter).trim());
             // Column 2: Gender
             dto.setGender(getCellValue(row.getCell(2), dataFormatter).trim().toUpperCase());
-            
+
             // Column 3: Date of Birth
             Cell dobCell = row.getCell(3);
             if (dobCell != null) {
@@ -67,9 +81,24 @@ public class ResidentExcelImporter {
             dto.setGuardianName(getCellValue(row.getCell(5), dataFormatter).trim());
             // Column 6: Guardian Phone
             dto.setGuardianPhone(getCellValue(row.getCell(6), dataFormatter).trim());
+            // Column 7: Guardian Email
+            dto.setGuardianEmail(getCellValue(row.getCell(7), dataFormatter).trim());
+            // Column 8: Guardian Address
+            dto.setGuardianAddress(getCellValue(row.getCell(8), dataFormatter).trim());
+            // Column 9: Room Number
+            dto.setRoomNumber(getCellValue(row.getCell(9), dataFormatter).trim());
+            // Column 10: Medical Prescription
+            dto.setMedicalPrescription(getCellValue(row.getCell(10), dataFormatter).trim());
+            // Column 11: Occupation
+            dto.setOccupation(getCellValue(row.getCell(11), dataFormatter).trim());
+            // Column 12: Disability
+            dto.setDisability(getCellValue(row.getCell(12), dataFormatter).trim());
+            // Column 13: Aadhaar Number
+            dto.setAadhaarNumber(getCellValue(row.getCell(13), dataFormatter).trim());
 
-            // Validation checks
+            // ─── Validation ───────────────────────────────────────────────────────────
             StringBuilder errorBuilder = new StringBuilder(dto.getErrorMessage());
+
             if (dto.getResidentId().isEmpty()) {
                 dto.setValid(false);
                 errorBuilder.append("Resident ID is required. ");
@@ -91,6 +120,18 @@ public class ResidentExcelImporter {
             } else if (dto.getDateOfBirth() != null && dto.getDateOfBirth().isAfter(LocalDate.now())) {
                 dto.setValid(false);
                 errorBuilder.append("Date of Birth cannot be in the future. ");
+            }
+            if (dto.getGuardianName() == null || dto.getGuardianName().isEmpty()) {
+                dto.setValid(false);
+                errorBuilder.append("Guardian Name is required. ");
+            }
+            if (dto.getRoomNumber() == null || dto.getRoomNumber().isEmpty()) {
+                dto.setValid(false);
+                errorBuilder.append("Room Number is required. ");
+            }
+            if (!dto.getAadhaarNumber().isEmpty() && !dto.getAadhaarNumber().matches("[0-9]{12}")) {
+                dto.setValid(false);
+                errorBuilder.append("Aadhaar Number must be exactly 12 digits. ");
             }
 
             dto.setErrorMessage(errorBuilder.toString().trim());

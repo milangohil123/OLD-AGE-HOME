@@ -85,7 +85,14 @@ public class ResidentServiceImpl implements ResidentService {
         existing.setStatus(resident.getStatus());
         existing.setGuardianName(resident.getGuardianName());
         existing.setGuardianPhone(resident.getGuardianPhone());
+        existing.setGuardianEmail(resident.getGuardianEmail());
+        existing.setGuardianAddress(resident.getGuardianAddress());
         existing.setMedicalNotes(resident.getMedicalNotes());
+        existing.setMedicalPrescription(resident.getMedicalPrescription());
+        existing.setRoomNumber(resident.getRoomNumber());
+        existing.setOccupation(resident.getOccupation());
+        existing.setDisability(resident.getDisability());
+        existing.setAadhaarNumber(resident.getAadhaarNumber());
         
         // Only update photo if a new one is set
         if (resident.getPhoto() != null) {
@@ -144,6 +151,13 @@ public class ResidentServiceImpl implements ResidentService {
                             .mobile(dto.getMobile())
                             .guardianName(dto.getGuardianName())
                             .guardianPhone(dto.getGuardianPhone())
+                            .guardianEmail(dto.getGuardianEmail())
+                            .guardianAddress(dto.getGuardianAddress())
+                            .medicalPrescription(dto.getMedicalPrescription())
+                            .roomNumber(dto.getRoomNumber())
+                            .occupation(dto.getOccupation())
+                            .disability(dto.getDisability())
+                            .aadhaarNumber(dto.getAadhaarNumber())
                             .joiningDate(LocalDate.now()) // Default joining date as today
                             .status(ResidentStatus.ACTIVE)
                             .build();

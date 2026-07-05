@@ -18,7 +18,7 @@ public interface ResidentRepository extends JpaRepository<Resident, Long>, JpaSp
     boolean existsByResidentId(String residentId);
 
     /**
-     * Search residents by full name, resident ID, guardian name, mobile, or guardian phone.
+     * Search residents by full name, resident ID, guardian name, mobile, guardian phone, or room number.
      * Supports case-insensitive searching and matches substrings.
      */
     @Query("SELECT r FROM Resident r WHERE " +
@@ -26,6 +26,7 @@ public interface ResidentRepository extends JpaRepository<Resident, Long>, JpaSp
            "LOWER(r.residentId) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
            "LOWER(r.guardianName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
            "LOWER(r.mobile) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-           "LOWER(r.guardianPhone) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+           "LOWER(r.guardianPhone) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+           "LOWER(COALESCE(r.roomNumber, '')) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     Page<Resident> searchResidents(@Param("keyword") String keyword, Pageable pageable);
 }

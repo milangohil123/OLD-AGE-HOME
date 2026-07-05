@@ -131,33 +131,107 @@
 
                     <!-- Section B: Guardian & Emergency Contact -->
                     <div class="card mb-4">
-                        <h4 class="mb-4 border-bottom pb-2 text-primary fw-bold">Guardian Details</h4>
+                        <h4 class="mb-4 border-bottom pb-2 text-primary fw-bold">Guardian Information</h4>
                         
                         <div class="row">
                             <div class="col-md-6 mb-4">
-                                <label th:replace="~{fragments/forms :: label('guardianName', 'Guardian Full Name', false)}"></label>
-                                <input type="text" class="form-control" th:field="*{guardianName}" placeholder="e.g. Robert Smith">
+                                <label th:replace="~{fragments/forms :: label('guardianName', 'Guardian Full Name', true)}"></label>
+                                <input type="text" class="form-control" th:field="*{guardianName}"
+                                       th:classappend="${#fields.hasErrors('guardianName')} ? 'is-invalid' : ''"
+                                       placeholder="e.g. Robert Smith" required>
+                                <div th:replace="~{fragments/forms :: field-error('guardianName')}"></div>
                             </div>
                             
                             <div class="col-md-6 mb-4">
-                                <label th:replace="~{fragments/forms :: label('guardianPhone', 'Guardian Phone Number', false)}"></label>
+                                <label th:replace="~{fragments/forms :: label('guardianPhone', 'Guardian Phone Number', true)}"></label>
                                 <input type="text" class="form-control" th:field="*{guardianPhone}" 
                                        th:classappend="${#fields.hasErrors('guardianPhone')} ? 'is-invalid' : ''"
-                                       placeholder="e.g. 9876543211">
+                                       placeholder="e.g. 9876543211" required>
                                 <div th:replace="~{fragments/forms :: field-error('guardianPhone')}"></div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-4">
+                                <label th:replace="~{fragments/forms :: label('guardianEmail', 'Guardian Email Address (Optional)', false)}"></label>
+                                <input type="email" class="form-control" th:field="*{guardianEmail}"
+                                       th:classappend="${#fields.hasErrors('guardianEmail')} ? 'is-invalid' : ''"
+                                       placeholder="e.g. guardian@example.com">
+                                <div th:replace="~{fragments/forms :: field-error('guardianEmail')}"></div>
+                            </div>
+                        </div>
+
+                        <div class="mb-0">
+                            <label th:replace="~{fragments/forms :: label('guardianAddress', 'Guardian Address (Optional)', false)}"></label>
+                            <textarea class="form-control" th:field="*{guardianAddress}" rows="3" 
+                                      placeholder="Enter guardian's residential address..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Section C: Medical Information -->
+                    <div class="card mb-4">
+                        <h4 class="mb-4 border-bottom pb-2 text-primary fw-bold">Medical Information</h4>
+
+                        <div class="mb-4">
+                            <label th:replace="~{fragments/forms :: label('medicalNotes', 'Medical Notes (General)', false)}"></label>
+                            <textarea class="form-control" th:field="*{medicalNotes}" rows="3" 
+                                      placeholder="List allergies, chronic illness, daily medicine schedules..."></textarea>
+                        </div>
+
+                        <div class="mb-4">
+                            <label th:replace="~{fragments/forms :: label('medicalPrescription', 'Medical Prescription / Doctor Instructions (Optional)', false)}"></label>
+                            <textarea class="form-control" th:field="*{medicalPrescription}" rows="5" 
+                                      placeholder="e.g. Tablet Metformin 500mg – twice daily after meals&#10;Avoid salty and oily food&#10;Doctor: Dr. Sharma – follow-up every 2 weeks"></textarea>
+                        </div>
+
+                        <div class="mb-0">
+                            <label th:replace="~{fragments/forms :: label('disability', 'Disability / Special Care Need (Optional)', false)}"></label>
+                            <input type="text" class="form-control" th:field="*{disability}"
+                                   placeholder="e.g. Wheelchair User, Hearing Impaired, None">
+                        </div>
+                    </div>
+
+                    <!-- Section D: Accommodation -->
+                    <div class="card mb-4">
+                        <h4 class="mb-4 border-bottom pb-2 text-primary fw-bold">Accommodation</h4>
+                        <div class="row">
+                            <div class="col-md-6 mb-0">
+                                <label th:replace="~{fragments/forms :: label('roomNumber', 'Room Number', true)}"></label>
+                                <input type="text" class="form-control" th:field="*{roomNumber}"
+                                       th:classappend="${#fields.hasErrors('roomNumber')} ? 'is-invalid' : ''"
+                                       placeholder="e.g. A-101" required>
+                                <div th:replace="~{fragments/forms :: field-error('roomNumber')}"></div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Section C: Medical Parameters -->
+                    <!-- Section E: Identity Information -->
                     <div class="card mb-4">
-                        <h4 class="mb-4 border-bottom pb-2 text-primary fw-bold">Medical Logs & Details</h4>
-                        <div class="mb-0">
-                            <label th:replace="~{fragments/forms :: label('medicalNotes', 'Medical Notes / Prescription Info', false)}"></label>
-                            <textarea class="form-control" th:field="*{medicalNotes}" rows="4" 
-                                      placeholder="List allergies, chronic illness, daily medicine schedules..."></textarea>
+                        <h4 class="mb-4 border-bottom pb-2 text-primary fw-bold">Identity Information</h4>
+                        <div class="row">
+                            <div class="col-md-6 mb-0">
+                                <label th:replace="~{fragments/forms :: label('aadhaarNumber', 'Aadhaar Card Number (Optional)', false)}"></label>
+                                <input type="text" class="form-control" th:field="*{aadhaarNumber}"
+                                       th:classappend="${#fields.hasErrors('aadhaarNumber')} ? 'is-invalid' : ''"
+                                       placeholder="12-digit Aadhaar number" maxlength="12">
+                                <div th:replace="~{fragments/forms :: field-error('aadhaarNumber')}"></div>
+                                <small class="text-muted mt-1 d-block">Enter exactly 12 digits. This will be masked in lists.</small>
+                            </div>
                         </div>
                     </div>
+
+                    <!-- Section F: Additional Information -->
+                    <div class="card mb-4">
+                        <h4 class="mb-4 border-bottom pb-2 text-primary fw-bold">Additional Information</h4>
+                        <div class="row">
+                            <div class="col-md-12 mb-0">
+                                <label th:replace="~{fragments/forms :: label('occupation', 'Previous Occupation (Optional)', false)}"></label>
+                                <input type="text" class="form-control" th:field="*{occupation}"
+                                       placeholder="e.g. Teacher, Farmer, Doctor, Homemaker">
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
                 <!-- Right Column (Photo Upload & Submit Actions) -->
