@@ -19,7 +19,7 @@ public class DashboardController {
         this.residentService = residentService;
     }
 
-    @GetMapping({"/", "/dashboard"})
+    @GetMapping({ "/", "/dashboard" })
     public String dashboard(Model model) {
         // Resident stats
         model.addAttribute("totalResidents", residentService.getAllResidents().size());

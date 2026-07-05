@@ -9,115 +9,151 @@
         <div th:replace="~{fragments/alerts :: success(${successMessage})}"></div>
         <div th:replace="~{fragments/alerts :: error(${errorMessage})}"></div>
 
-        <!-- Action Ribbon (Apple/Notion style: clear headings, simple alignment) -->
+        <!-- Action Ribbon -->
         <div class="card mb-4">
             <div class="row align-items-center py-2">
                 <div class="col-md-6">
                     <h3 class="mb-0 fw-bold" th:text="#{resident.list.title}">Elderly Residents</h3>
-                    <p class="text-muted mb-0" th:text="#{resident.list.desc}">Browse directory database, run registers, or make updates.</p>
+                    <p class="text-muted mb-0" style="font-size: 13px;" th:text="#{resident.list.desc}">Browse directory database, run registers, or make updates.</p>
                 </div>
-                <div class="col-md-6 text-md-end text-start mt-3 mt-md-0 d-flex justify-content-md-end gap-3 flex-wrap">
+                <div class="col-md-6 text-md-end text-start mt-3 mt-md-0 d-flex justify-content-md-end gap-2 flex-wrap">
                     <a th:href="@{/residents/new}" class="btn btn-primary px-4">
-                        <i class="bi bi-plus-lg"></i> <span th:text="#{resident.btn.add}">Add Resident</span>
+                        <i class="bi bi-plus-lg me-1"></i> <span th:text="#{resident.btn.add}">Add Resident</span>
                     </a>
-                    <a th:href="@{/residents/export}" class="btn btn-secondary px-3">
-                        <i class="bi bi-download"></i> <span th:text="#{resident.btn.export}">Export to Excel</span>
+                    <a th:href="@{/residents/export}" class="btn btn-outline-primary px-3">
+                        <i class="bi bi-download me-1"></i> <span th:text="#{resident.btn.export}">Export to Excel</span>
                     </a>
                 </div>
             </div>
         </div>
 
-        <!-- Excel Bulk Import Panel (Direct, simple, Notion-style card) -->
+        <!-- Excel Bulk Import Panel -->
         <div class="card mb-4" sec:authorize="hasAnyRole('ADMIN', 'MANAGER')">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
                 <div>
-                    <h4 class="mb-1 fw-bold" th:text="#{resident.import.title}">Bulk Import Residents</h4>
-                    <p class="text-muted mb-0 small" th:text="#{resident.import.desc}">Import multiple records from a spreadsheet. Column format: Resident ID | Name | Gender | DOB | Mobile | Guardian Name | Guardian Phone | Guardian Email | Guardian Address | Room Number | Medical Prescription | Occupation | Disability | Aadhaar</p>
+                    <h5 class="mb-1 fw-bold">
+                        <i class="bi bi-file-earmark-arrow-up me-2 text-primary"></i><span th:text="#{resident.import.title}">Bulk Import Residents</span>
+                    </h5>
+                    <p class="text-muted mb-0 small" th:text="#{resident.import.desc}">Column format: Resident ID | Name | Gender | DOB | Mobile | Guardian Name | Guardian Phone | Guardian Email | Guardian Address | Room Number | Medical Prescription | Occupation | Disability | Aadhaar</p>
                 </div>
                 <div>
                     <form th:action="@{/residents/import}" method="post" enctype="multipart/form-data" class="d-flex gap-2">
                         <input type="file" name="file" class="form-control" accept=".xlsx, .xls" required style="max-width: 250px;">
-                        <button type="submit" class="btn btn-primary" style="height: 48px;" th:text="#{resident.import.btn}">Upload Excel</button>
+                        <button type="submit" class="btn btn-primary" style="height: 48px; white-space: nowrap;">
+                            <i class="bi bi-upload me-1"></i> <span th:text="#{resident.import.btn}">Upload</span>
+                        </button>
                     </form>
                 </div>
             </div>
         </div>
 
         <!-- Search Component Filter -->
-        <div th:onclick="~{fragments/search :: search(baseUrl='/residents', keyword=${keyword}, size=${residentsPage.size}, sort=${sort}, direction=${direction}, placeholder=#{resident.search.placeholder})}"></div>
+        <div th:replace="~{fragments/search :: search(baseUrl='/residents', keyword=${keyword}, size=${residentsPage.size}, sort=${sort}, direction=${direction}, placeholder=#{resident.search.placeholder})}"></div>
 
         <!-- Main Roster Directory Card -->
         <div class="card">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
+                <table class="table table-hover align-middle mb-0 residents-compact-table">
                     <thead>
                         <tr>
-                            <th style="width: 80px;" th:text="#{resident.table.photo}">Photo</th>
-                            <th th:text="#{resident.table.id}">Resident ID</th>
-                            <th th:text="#{resident.table.name}">Full Name</th>
-                            <th th:text="#{resident.table.age_gender}">Age / Gender</th>
-                            <th>Room No.</th>
-                            <th th:text="#{resident.table.guardian}">Guardian Name</th>
-                            <th th:text="#{resident.table.guardian_phone}">Guardian Phone</th>
-                            <th th:text="#{resident.table.status}">Status</th>
-                            <th class="text-end" style="width: 240px;" th:text="#{resident.table.actions}">Actions</th>
+                            <th style="width: 70px;" th:text="#{resident.table.photo}">PHOTO</th>
+                            <th style="width: 90px;" th:text="#{resident.table.id}">RESIDENT ID</th>
+                            <th style="width: 180px;" th:text="#{resident.table.name}">FULL NAME</th>
+                            <th style="width: 120px;" th:text="#{resident.table.age_gender}">AGE / GENDER</th>
+                            <th style="width: 90px;">ROOM NO.</th>
+                            <th style="width: 160px;" th:text="#{resident.table.guardian}">GUARDIAN NAME</th>
+                            <th style="width: 140px;" th:text="#{resident.table.guardian_phone}">GUARDIAN PHONE</th>
+                            <th style="width: 110px;" th:text="#{resident.table.status}">STATUS</th>
+                            <th style="width: 160px;" class="text-end" th:text="#{resident.table.actions}">ACTIONS</th>
                         </tr>
                     </thead>
                     <tbody>
                         <!-- Empty State -->
                         <tr th:if="${residentsPage == null or residentsPage.totalElements == 0}">
                             <td colspan="9" class="text-center py-5 text-muted">
-                                <i class="bi bi-people d-block mb-3" style="font-size: 40px;"></i>
-                                <h4 class="fw-bold" th:text="#{resident.table.empty.title}">No Resident Records Found</h4>
-                                <p class="mb-0" th:text="#{resident.table.empty.desc}">Add a new resident or adjust your search filter keyword.</p>
+                                <i class="bi bi-people d-block mb-3" style="font-size: 40px; color: #BFDBFE;"></i>
+                                <h5 class="fw-bold" th:text="#{resident.table.empty.title}">No Resident Records Found</h5>
+                                <p class="mb-0 small" th:text="#{resident.table.empty.desc}">Add a new resident or adjust your search filter keyword.</p>
                             </td>
                         </tr>
                         
                         <!-- Roster Loop -->
                         <tr th:each="res : ${residentsPage.content}" th:if="${res != null}">
+
+                            <!-- Photo -->
                             <td>
-                                <!-- Photo Rendering: Serves default icon if no image filepath exists -->
-                                <img th:if="${res.photo != null}" th:src="@{'/uploads/' + ${res.photo}}" 
-                                     class="rounded-circle object-fit-cover" style="width: 54px; height: 54px; border: 1px solid #E5E7EB;">
-                                <div th:if="${res.photo == null}" class="rounded-circle bg-light d-flex align-items-center justify-content-center border" 
-                                     style="width: 54px; height: 54px; font-size: 20px; color: var(--text-muted);">
+                                <img th:if="${res.photo != null}" th:src="@{'/uploads/' + ${res.photo}}"
+                                     class="res-photo-img">
+                                <div th:if="${res.photo == null}"
+                                     class="res-photo-placeholder">
                                     <i class="bi bi-person"></i>
                                 </div>
                             </td>
+
+                            <!-- Resident ID -->
                             <td>
-                                <strong th:text="${res.residentId}">SAH-0001</strong>
+                                <span class="res-id-cell res-text-clip" style="max-width: 70px;" th:text="${res.residentId}">12</span>
                             </td>
+
+                            <!-- Full Name -->
                             <td>
-                                <span class="fw-bold text-dark fs-5" th:text="${res.fullName}">Jane Doe</span>
+                                <span class="res-name-text res-text-clip" th:text="${res.fullName}">Chman Mehta</span>
                             </td>
+
+                            <!-- Age / Gender -->
                             <td>
-                                <span th:text="${res.age != null ? res.age : 'N/A'} + ' yrs'">72 yrs</span> / 
-                                <small class="text-muted fw-bold" th:text="${res.gender != null ? res.gender : '-'}">FEMALE</small>
+                                <span class="res-age-text" th:text="${res.age != null ? res.age : 'N/A'} + ' yrs /'">38 yrs /</span><br>
+                                <span class="res-gender-text" th:text="${res.gender != null ? res.gender : '-'}">MALE</span>
                             </td>
+
+                            <!-- Room Number -->
                             <td>
-                                <span th:text="${res.roomNumber != null and !res.roomNumber.isEmpty()} ? ${res.roomNumber} : '-'">A-101</span>
+                                <span class="res-meta-text res-text-clip" style="max-width: 70px;" th:text="${res.roomNumber != null and !res.roomNumber.isEmpty()} ? ${res.roomNumber} : '-'">A 101</span>
                             </td>
-                            <td th:text="${res.guardianName != null and !res.guardianName.isEmpty()} ? ${res.guardianName} : '-'">Guardian</td>
-                            <td th:text="${res.guardianPhone != null and !res.guardianPhone.isEmpty()} ? ${res.guardianPhone} : '-'">0000000000</td>
+
+                            <!-- Guardian Name -->
                             <td>
-                                <span th:if="${res.status != null and res.status.name() == 'ACTIVE'}" class="badge bg-success bg-opacity-10 text-success px-3 py-2 fs-6 rounded-pill" th:text="#{resident.status.active}">Active</span>
-                                <span th:if="${res.status != null and res.status.name() == 'DISCHARGED'}" class="badge bg-secondary bg-opacity-10 text-secondary px-3 py-2 fs-6 rounded-pill" th:text="#{resident.status.discharged}">Discharged</span>
-                                <span th:if="${res.status != null and res.status.name() == 'DECEASED'}" class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 fs-6 rounded-pill" th:text="#{resident.status.deceased}">Deceased</span>
-                                <span th:if="${res.status == null}" class="badge bg-warning bg-opacity-10 text-warning px-3 py-2 fs-6 rounded-pill" th:text="#{resident.status.unknown}">Unknown</span>
+                                <span class="res-meta-text res-text-clip" style="max-width: 140px;" th:text="${res.guardianName != null and !res.guardianName.isEmpty()} ? ${res.guardianName} : '-'">Milan Gohil</span>
                             </td>
-                            <td class="text-end">
-                                <div class="d-inline-flex gap-2">
-                                    <a th:href="@{/residents/view/{id}(id=${res.id})}" class="btn btn-secondary px-3" style="height: 38px; font-size: 16px;" th:text="#{resident.btn.view}">
-                                        View
+
+                            <!-- Guardian Phone -->
+                            <td>
+                                <span class="res-meta-text res-text-clip" style="max-width: 120px;" th:text="${res.guardianPhone != null and !res.guardianPhone.isEmpty()} ? ${res.guardianPhone} : '-'">07894561230</span>
+                            </td>
+
+                            <!-- Status Badge -->
+                            <td>
+                                <span th:if="${res.status != null and res.status.name() == 'ACTIVE'}"
+                                      class="res-badge res-badge-active" th:text="#{resident.status.active}">Active</span>
+                                <span th:if="${res.status != null and res.status.name() == 'DISCHARGED'}"
+                                      class="res-badge res-badge-discharged" th:text="#{resident.status.discharged}">Discharged</span>
+                                <span th:if="${res.status != null and res.status.name() == 'DECEASED'}"
+                                      class="res-badge res-badge-deceased" th:text="#{resident.status.deceased}">Deceased</span>
+                                <span th:if="${res.status == null}"
+                                      class="res-badge res-badge-unknown" th:text="#{resident.status.unknown}">Unknown</span>
+                            </td>
+
+                            <!-- Actions -->
+                            <td>
+                                <div class="res-actions">
+                                    <a th:href="@{/residents/view/{id}(id=${res.id})}"
+                                       class="res-btn res-btn-outline"
+                                       th:title="#{resident.btn.view}">
+                                        <i class="bi bi-eye"></i>
                                     </a>
-                                    <a th:href="@{/residents/edit/{id}(id=${res.id})}" class="btn btn-secondary px-3" style="height: 38px; font-size: 16px;"
-                                       sec:authorize="hasAnyRole('ADMIN', 'MANAGER')" th:text="#{resident.btn.edit}">
-                                        Edit
+                                    <a th:href="@{/residents/edit/{id}(id=${res.id})}"
+                                       class="res-btn res-btn-outline"
+                                       sec:authorize="hasAnyRole('ADMIN', 'MANAGER')"
+                                       th:title="#{resident.btn.edit}">
+                                        <i class="bi bi-pencil"></i>
                                     </a>
-                                    <a th:href="@{/residents/delete/{id}(id=${res.id})}" class="btn btn-danger px-3 text-white" style="height: 38px; font-size: 16px;"
-                                       th:data-confirm="#{resident.confirm.delete}" onclick="return confirm(this.getAttribute('data-confirm'));"
-                                       sec:authorize="hasRole('ADMIN')" th:text="#{resident.btn.delete}">
-                                        Delete
+                                    <a th:href="@{/residents/delete/{id}(id=${res.id})}"
+                                       class="res-btn res-btn-danger"
+                                       th:data-confirm="#{resident.confirm.delete}"
+                                       onclick="return confirm(this.getAttribute('data-confirm'));"
+                                       sec:authorize="hasRole('ADMIN')"
+                                       th:title="#{resident.btn.delete}">
+                                        <i class="bi bi-trash"></i>
                                     </a>
                                 </div>
                             </td>
@@ -131,6 +167,171 @@
         </div>
 
     </div>
+
+    <!-- ── Scoped Styles: Residents Table Compact Layout ────────────────── -->
+    <style>
+        /* Table Headers */
+        .residents-compact-table thead th {
+            font-size: 12px;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: #64748b;
+            padding: 12px 16px;
+            border-bottom: 1px solid #e2e8f0;
+            background: #f8fafc;
+        }
+
+        /* Table Cells - Compact row height ~70-80px */
+        .residents-compact-table tbody td {
+            padding: 12px 16px;
+            vertical-align: middle;
+            font-size: 14px;
+            color: #334155;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        /* Photo */
+        .res-photo-img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid #e2e8f0;
+        }
+
+        .res-photo-placeholder {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        /* Text clipping */
+        .res-text-clip {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        /* Full Name */
+        .res-name-text {
+            font-size: 15px;
+            font-weight: 600;
+            color: #0f172a;
+            max-width: 160px;
+        }
+
+        /* ID and Meta Text */
+        .res-id-cell {
+            font-size: 14px;
+            color: #0f172a;
+            font-weight: 500;
+        }
+
+        .res-meta-text {
+            font-size: 14px;
+            color: #334155;
+        }
+
+        /* Age / Gender */
+        .res-age-text {
+            font-size: 14px;
+            color: #334155;
+        }
+
+        .res-gender-text {
+            font-size: 12px;
+            color: #64748b;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        /* Status Badge */
+        .res-badge {
+            font-size: 13px;
+            font-weight: 500;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .res-badge-active {
+            background-color: #d1fae5;
+            color: #059669;
+        }
+        
+        .res-badge-discharged {
+            background-color: #f1f5f9;
+            color: #475569;
+        }
+        
+        .res-badge-deceased {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .res-badge-unknown {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        /* Action Buttons */
+        .res-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .res-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            padding: 0;
+            border: 1px solid transparent;
+        }
+
+        .res-btn-outline {
+            background-color: #ffffff;
+            border-color: #e2e8f0;
+            color: #3b82f6;
+        }
+
+        .res-btn-outline:hover {
+            background-color: #eff6ff;
+            border-color: #bfdbfe;
+            color: #2563eb;
+        }
+
+        .res-btn-danger {
+            background-color: #ef4444;
+            border-color: #ef4444;
+            color: #ffffff;
+        }
+
+        .res-btn-danger:hover {
+            background-color: #dc2626;
+            border-color: #dc2626;
+        }
+
+        .res-btn i {
+            font-size: 14px;
+        }
+    </style>
 
 </body>
 </html>
