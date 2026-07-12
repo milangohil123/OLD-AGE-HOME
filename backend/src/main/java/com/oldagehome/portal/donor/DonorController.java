@@ -270,7 +270,7 @@ public class DonorController {
             List<DonorImportDTO> results = donorService.importFromExcel(file);
 
             long successCount = results.stream().filter(DonorImportDTO::isValid).count();
-            long failCount    = results.stream().filter(r -> !r.isValid()).count();
+            long failCount = results.stream().filter(r -> !r.isValid()).count();
 
             model.addAttribute("importResults", results);
             model.addAttribute("successCount", successCount);

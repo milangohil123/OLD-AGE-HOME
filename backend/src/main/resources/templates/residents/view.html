@@ -5,7 +5,7 @@
 
     <div id="resident-profile-container">
 
-        <!-- ── Action Bar ──────────────────────────────────────────────── -->
+        <!-- ── Action Bar ──────────────────────────────────────────── -->
         <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
             <div>
                 <h3 class="mb-0 fw-bold">Resident Profile</h3>
@@ -22,30 +22,29 @@
             </div>
         </div>
 
-        <!-- ── Profile Header Card ────────────────────────────────────── -->
+        <!-- ── Profile Header Card ─────────────────────────────────── -->
         <div class="card mb-4 p-0" style="overflow: hidden;">
             <div class="d-flex flex-column flex-md-row">
 
                 <!-- Avatar Column -->
                 <div class="d-flex flex-column align-items-center justify-content-center p-4"
-                     style="min-width: 200px; border-right: 1px solid var(--border); background: #FAFBFC;">
-                    <!-- Uploaded Photo -->
+                     style="min-width: 210px; border-right: 1px solid var(--border); background: #FAFBFC;">
                     <img th:if="${resident.photo != null}"
                          th:src="@{'/uploads/' + ${resident.photo}}"
                          class="rounded-circle object-fit-cover"
                          style="width: 120px; height: 120px; border: 3px solid var(--border);">
-                    <!-- Professional SVG Placeholder -->
                     <div th:if="${resident.photo == null}"
                          class="rounded-circle d-flex align-items-center justify-content-center"
                          style="width: 120px; height: 120px; background: var(--primary-light); border: 3px solid var(--border); flex-shrink: 0;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24"
-                             fill="none" stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24"
+                             fill="none" stroke="var(--primary)" stroke-width="1.5"
+                             stroke-linecap="round" stroke-linejoin="round">
                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                             <circle cx="12" cy="7" r="4"/>
                         </svg>
                     </div>
-                    <h4 class="fw-bold mb-1 mt-3 text-center" th:text="${resident.fullName}">Resident Name</h4>
-                    <span class="text-muted small mb-2">Resident</span>
+                    <h4 class="fw-bold mb-1 mt-3 text-center" style="font-size: 18px;" th:text="${resident.fullName}">Resident Name</h4>
+                    <p class="text-muted mb-2" style="font-size: 13px;">Resident</p>
                     <span th:if="${resident.status.name() == 'ACTIVE'}"
                           class="badge bg-success bg-opacity-10 text-success px-3 py-1 rounded-pill">Active</span>
                     <span th:if="${resident.status.name() == 'DISCHARGED'}"
@@ -56,64 +55,68 @@
 
                 <!-- Quick Info Grid -->
                 <div class="p-4 flex-grow-1">
-                    <p class="fw-bold text-muted small text-uppercase mb-3" style="letter-spacing: .06em;">Quick Information</p>
-                    <div class="row g-3">
+                    <p class="pf-section-eyebrow mb-3">Quick Information</p>
+                    <div class="row g-4">
                         <div class="col-sm-6 col-lg-4">
                             <div class="d-flex align-items-start gap-2">
-                                <i class="bi bi-telephone text-primary mt-1" style="font-size: 15px; flex-shrink:0;"></i>
+                                <i class="bi bi-telephone pf-quick-icon"></i>
                                 <div>
-                                    <div class="text-muted" style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em;">Mobile</div>
-                                    <div class="fw-semibold text-dark" style="font-size: 14px;"
+                                    <div class="pf-quick-label">Mobile</div>
+                                    <div class="pf-quick-value"
+                                         th:classappend="${resident.mobile == null or resident.mobile.isEmpty()} ? 'pf-empty'"
                                          th:text="${resident.mobile != null and !resident.mobile.isEmpty()} ? ${resident.mobile} : 'Not Provided'">—</div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-sm-6 col-lg-4">
                             <div class="d-flex align-items-start gap-2">
-                                <i class="bi bi-envelope text-primary mt-1" style="font-size: 15px; flex-shrink:0;"></i>
+                                <i class="bi bi-envelope pf-quick-icon"></i>
                                 <div>
-                                    <div class="text-muted" style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em;">Email</div>
-                                    <div class="fw-semibold text-dark" style="font-size: 14px;"
+                                    <div class="pf-quick-label">Email</div>
+                                    <div class="pf-quick-value"
+                                         th:classappend="${resident.email == null or resident.email.isEmpty()} ? 'pf-empty'"
                                          th:text="${resident.email != null and !resident.email.isEmpty()} ? ${resident.email} : 'Not Provided'">—</div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-sm-6 col-lg-4">
                             <div class="d-flex align-items-start gap-2">
-                                <i class="bi bi-calendar3 text-primary mt-1" style="font-size: 15px; flex-shrink:0;"></i>
+                                <i class="bi bi-calendar3 pf-quick-icon"></i>
                                 <div>
-                                    <div class="text-muted" style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em;">Joining Date</div>
-                                    <div class="fw-semibold text-dark" style="font-size: 14px;"
+                                    <div class="pf-quick-label">Joining Date</div>
+                                    <div class="pf-quick-value"
                                          th:text="${T(com.oldagehome.portal.utils.DateFormatter).displayDate(resident.joiningDate)}">—</div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-sm-6 col-lg-4">
                             <div class="d-flex align-items-start gap-2">
-                                <i class="bi bi-person-badge text-primary mt-1" style="font-size: 15px; flex-shrink:0;"></i>
+                                <i class="bi bi-person-badge pf-quick-icon"></i>
                                 <div>
-                                    <div class="text-muted" style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em;">Age / Gender</div>
-                                    <div class="fw-semibold text-dark" style="font-size: 14px;"
+                                    <div class="pf-quick-label">Age / Gender</div>
+                                    <div class="pf-quick-value"
                                          th:text="${resident.age} + ' yrs / ' + ${resident.gender}">—</div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-sm-6 col-lg-4">
                             <div class="d-flex align-items-start gap-2">
-                                <i class="bi bi-door-open text-primary mt-1" style="font-size: 15px; flex-shrink:0;"></i>
+                                <i class="bi bi-door-open pf-quick-icon"></i>
                                 <div>
-                                    <div class="text-muted" style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em;">Room Number</div>
-                                    <div class="fw-semibold text-dark" style="font-size: 14px;"
+                                    <div class="pf-quick-label">Room Number</div>
+                                    <div class="pf-quick-value"
+                                         th:classappend="${resident.roomNumber == null or resident.roomNumber.isEmpty()} ? 'pf-empty'"
                                          th:text="${resident.roomNumber != null and !resident.roomNumber.isEmpty()} ? ${resident.roomNumber} : '—'">—</div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-sm-6 col-lg-4">
                             <div class="d-flex align-items-start gap-2">
-                                <i class="bi bi-droplet-half text-primary mt-1" style="font-size: 15px; flex-shrink:0;"></i>
+                                <i class="bi bi-droplet-half pf-quick-icon"></i>
                                 <div>
-                                    <div class="text-muted" style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em;">Blood Group</div>
-                                    <div class="fw-semibold text-dark" style="font-size: 14px;"
+                                    <div class="pf-quick-label">Blood Group</div>
+                                    <div class="pf-quick-value"
+                                         th:classappend="${resident.bloodGroup == null or resident.bloodGroup.isEmpty()} ? 'pf-empty'"
                                          th:text="${resident.bloodGroup != null and !resident.bloodGroup.isEmpty()} ? ${resident.bloodGroup} : 'Not Disclosed'">—</div>
                                 </div>
                             </div>
@@ -126,56 +129,61 @@
         <!-- ── Detail Sections ────────────────────────────────────────── -->
         <div class="row g-4">
 
-            <!-- ── Left Column ──────────────────────────────────────── -->
+            <!-- Left Column -->
             <div class="col-lg-4 col-md-12">
 
-                <!-- Personal Information Card -->
+                <!-- Personal Information -->
                 <div class="card mb-4">
-                    <h5 class="fw-bold border-bottom pb-3 mb-3 text-primary d-flex align-items-center gap-2">
+                    <h5 class="pf-card-title">
                         <i class="bi bi-person-lines-fill"></i> Personal Information
                     </h5>
-                    <div class="profile-info-list">
-                        <div class="profile-info-row">
-                            <span class="profile-info-label">Date of Birth</span>
-                            <span class="profile-info-value"
+                    <div class="pf-field-group">
+                        <div class="pf-field">
+                            <span class="pf-label">Date of Birth</span>
+                            <span class="pf-value"
+                                  th:classappend="${resident.dateOfBirth == null} ? 'pf-empty'"
                                   th:text="${resident.dateOfBirth != null ? #temporals.format(resident.dateOfBirth, 'dd MMM yyyy') : 'Not Provided'}">—</span>
                         </div>
-                        <div class="profile-info-row">
-                            <span class="profile-info-label">Occupation</span>
-                            <span class="profile-info-value"
+                        <div class="pf-field">
+                            <span class="pf-label">Occupation</span>
+                            <span class="pf-value"
+                                  th:classappend="${resident.occupation == null or resident.occupation.isEmpty()} ? 'pf-empty'"
                                   th:text="${resident.occupation != null and !resident.occupation.isEmpty()} ? ${resident.occupation} : 'Not Provided'">—</span>
                         </div>
-                        <div class="profile-info-row">
-                            <span class="profile-info-label">Disability</span>
-                            <span class="profile-info-value"
+                        <div class="pf-field pf-field--last">
+                            <span class="pf-label">Disability / Special Care</span>
+                            <span class="pf-value"
+                                  th:classappend="${resident.disability == null or resident.disability.isEmpty()} ? 'pf-empty'"
                                   th:text="${resident.disability != null and !resident.disability.isEmpty()} ? ${resident.disability} : 'None'">—</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Contact Information Card -->
+                <!-- Address -->
                 <div class="card mb-4">
-                    <h5 class="fw-bold border-bottom pb-3 mb-3 text-primary d-flex align-items-center gap-2">
-                        <i class="bi bi-geo-alt"></i> Address
+                    <h5 class="pf-card-title">
+                        <i class="bi bi-geo-alt"></i> Permanent Address
                     </h5>
-                    <div class="profile-info-list">
-                        <div class="profile-info-row">
-                            <span class="profile-info-label">Permanent Address</span>
+                    <div class="pf-field-group">
+                        <div class="pf-field pf-field--last">
+                            <span class="pf-label">Full Address</span>
+                            <p class="pf-value mb-0" style="white-space: pre-line;"
+                               th:classappend="${resident.address == null or resident.address.isEmpty()} ? 'pf-empty'"
+                               th:text="${resident.address != null and !resident.address.isEmpty()} ? ${resident.address} : 'Not Provided'">—</p>
                         </div>
-                        <p class="text-dark mb-0 mt-1" style="font-size: 14px; white-space: pre-line; line-height: 1.6;"
-                           th:text="${resident.address != null and !resident.address.isEmpty()} ? ${resident.address} : 'Not Provided'">—</p>
                     </div>
                 </div>
 
-                <!-- Identity Card -->
+                <!-- Identity -->
                 <div class="card">
-                    <h5 class="fw-bold border-bottom pb-3 mb-3 text-primary d-flex align-items-center gap-2">
+                    <h5 class="pf-card-title">
                         <i class="bi bi-shield-check"></i> Identity
                     </h5>
-                    <div class="profile-info-list">
-                        <div class="profile-info-row profile-info-row--last">
-                            <span class="profile-info-label">Aadhaar Number</span>
-                            <span class="profile-info-value font-monospace"
+                    <div class="pf-field-group">
+                        <div class="pf-field pf-field--last">
+                            <span class="pf-label">Aadhaar Number</span>
+                            <span class="pf-value font-monospace"
+                                  th:classappend="${resident.aadhaarNumber == null or resident.aadhaarNumber.isEmpty()} ? 'pf-empty'"
                                   th:text="${resident.aadhaarNumber != null and !resident.aadhaarNumber.isEmpty()} ? ${resident.aadhaarNumber} : 'Not Provided'">—</span>
                         </div>
                     </div>
@@ -183,69 +191,72 @@
 
             </div>
 
-            <!-- ── Right Column ─────────────────────────────────────── -->
+            <!-- Right Column -->
             <div class="col-lg-8 col-md-12">
 
-                <!-- Guardian / Emergency Contact Card -->
+                <!-- Guardian / Emergency Contact -->
                 <div class="card mb-4">
-                    <h5 class="fw-bold border-bottom pb-3 mb-3 text-primary d-flex align-items-center gap-2">
+                    <h5 class="pf-card-title">
                         <i class="bi bi-people"></i> Guardian / Emergency Contact
                     </h5>
-                    <div class="row g-3">
-                        <div class="col-sm-6">
-                            <div class="profile-field-block">
-                                <span class="profile-field-label">Guardian Name</span>
-                                <span class="profile-field-value"
+                    <div class="row g-0">
+                        <div class="col-sm-6 pf-field-group pf-field-grid">
+                            <div class="pf-field">
+                                <span class="pf-label">Guardian Name</span>
+                                <span class="pf-value"
+                                      th:classappend="${resident.guardianName == null or resident.guardianName.isEmpty()} ? 'pf-empty'"
                                       th:text="${resident.guardianName != null and !resident.guardianName.isEmpty()} ? ${resident.guardianName} : '—'">—</span>
                             </div>
                         </div>
-                        <div class="col-sm-6">
-                            <div class="profile-field-block">
-                                <span class="profile-field-label">Guardian Phone</span>
-                                <span class="profile-field-value"
+                        <div class="col-sm-6 pf-field-group pf-field-grid">
+                            <div class="pf-field">
+                                <span class="pf-label">Guardian Phone</span>
+                                <span class="pf-value"
+                                      th:classappend="${resident.guardianPhone == null or resident.guardianPhone.isEmpty()} ? 'pf-empty'"
                                       th:text="${resident.guardianPhone != null and !resident.guardianPhone.isEmpty()} ? ${resident.guardianPhone} : '—'">—</span>
                             </div>
                         </div>
-                        <div class="col-sm-6">
-                            <div class="profile-field-block">
-                                <span class="profile-field-label">Guardian Email</span>
-                                <span class="profile-field-value"
+                        <div class="col-sm-6 pf-field-group pf-field-grid">
+                            <div class="pf-field">
+                                <span class="pf-label">Guardian Email</span>
+                                <span class="pf-value"
+                                      th:classappend="${resident.guardianEmail == null or resident.guardianEmail.isEmpty()} ? 'pf-empty'"
                                       th:text="${resident.guardianEmail != null and !resident.guardianEmail.isEmpty()} ? ${resident.guardianEmail} : '—'">—</span>
                             </div>
                         </div>
-                        <div class="col-12">
-                            <div class="profile-field-block">
-                                <span class="profile-field-label">Guardian Address</span>
-                                <p class="profile-field-value mb-0" style="white-space: pre-line;"
+                        <div class="col-sm-6 pf-field-group pf-field-grid">
+                            <div class="pf-field">
+                                <span class="pf-label">Guardian Address</span>
+                                <p class="pf-value mb-0" style="white-space: pre-line;"
+                                   th:classappend="${resident.guardianAddress == null or resident.guardianAddress.isEmpty()} ? 'pf-empty'"
                                    th:text="${resident.guardianAddress != null and !resident.guardianAddress.isEmpty()} ? ${resident.guardianAddress} : '—'">—</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Medical Information Card -->
+                <!-- Medical Information -->
                 <div class="card">
-                    <h5 class="fw-bold border-bottom pb-3 mb-3 text-primary d-flex align-items-center gap-2">
+                    <h5 class="pf-card-title">
                         <i class="bi bi-clipboard2-pulse"></i> Medical Information
                     </h5>
 
-                    <div class="profile-field-block mb-3">
-                        <span class="profile-field-label d-flex align-items-center gap-1 mb-2">
-                            <i class="bi bi-journal-medical" style="font-size: 13px;"></i> General Medical Notes
-                        </span>
-                        <div class="p-3 rounded" style="background: #F8FAFC; border: 1px solid var(--border);">
-                            <p class="mb-0 text-dark" style="font-size: 14px; white-space: pre-line; line-height: 1.7;"
-                               th:text="${resident.medicalNotes != null and !resident.medicalNotes.isEmpty()} ? ${resident.medicalNotes} : 'No medical notes on file.'">—</p>
+                    <div class="pf-field-group">
+                        <div class="pf-field">
+                            <span class="pf-label d-flex align-items-center gap-1">
+                                <i class="bi bi-journal-medical" style="font-size: 12px;"></i> General Medical Notes
+                            </span>
+                            <div class="pf-prose-block"
+                                 th:classappend="${resident.medicalNotes == null or resident.medicalNotes.isEmpty()} ? 'pf-empty'"
+                                 th:text="${resident.medicalNotes != null and !resident.medicalNotes.isEmpty()} ? ${resident.medicalNotes} : 'No medical notes on file.'">—</div>
                         </div>
-                    </div>
-
-                    <div class="profile-field-block">
-                        <span class="profile-field-label d-flex align-items-center gap-1 mb-2">
-                            <i class="bi bi-capsule" style="font-size: 13px;"></i> Medical Prescription &amp; Doctor Instructions
-                        </span>
-                        <div class="p-3 rounded" style="background: #F8FAFC; border: 1px solid var(--border);">
-                            <p class="mb-0 text-dark" style="font-size: 14px; white-space: pre-line; line-height: 1.7;"
-                               th:text="${resident.medicalPrescription != null and !resident.medicalPrescription.isEmpty()} ? ${resident.medicalPrescription} : 'No prescription details on file.'">—</p>
+                        <div class="pf-field pf-field--last">
+                            <span class="pf-label d-flex align-items-center gap-1">
+                                <i class="bi bi-capsule" style="font-size: 12px;"></i> Medical Prescription &amp; Doctor Instructions
+                            </span>
+                            <div class="pf-prose-block"
+                                 th:classappend="${resident.medicalPrescription == null or resident.medicalPrescription.isEmpty()} ? 'pf-empty'"
+                                 th:text="${resident.medicalPrescription != null and !resident.medicalPrescription.isEmpty()} ? ${resident.medicalPrescription} : 'No prescription details on file.'">—</div>
                         </div>
                     </div>
                 </div>
@@ -255,64 +266,135 @@
 
     </div>
 
-    <!-- ── Profile Page Shared Styles ──────────────────────────────── -->
     <style>
-        /* Info row inside a card: label / value side by side */
-        .profile-info-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0;
-        }
-
-        .profile-info-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            padding: 10px 0;
-            border-bottom: 1px solid #F1F5F9;
-            gap: 12px;
-        }
-
-        .profile-info-row--last,
-        .profile-info-list .profile-info-row:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
-        }
-
-        .profile-info-label {
-            font-size: 13px;
+        /* ── Eye-brow label above quick-info grid ──────────────── */
+        .pf-section-eyebrow {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .07em;
             color: var(--text-muted);
-            font-weight: 500;
+        }
+
+        /* ── Quick-info row (icon + label + value) ─────────────── */
+        .pf-quick-icon {
+            font-size: 16px;
+            color: var(--primary);
+            margin-top: 2px;
             flex-shrink: 0;
         }
 
-        .profile-info-value {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-primary);
-            text-align: right;
-        }
-
-        /* Block style: label on top, value below */
-        .profile-field-block {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .profile-field-label {
+        .pf-quick-label {
             font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: .05em;
             color: var(--text-muted);
-            margin-bottom: 4px;
+            line-height: 1.3;
+            margin-bottom: 2px;
         }
 
-        .profile-field-value {
+        .pf-quick-value {
             font-size: 14px;
             font-weight: 600;
             color: var(--text-primary);
-            line-height: 1.5;
+            line-height: 1.4;
+        }
+
+        /* ── Card section heading ───────────────────────────────── */
+        .pf-card-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--primary);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 12px;
+            margin-bottom: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ── Field group container ─────────────────────────────── */
+        .pf-field-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── Individual field: label on top, value below ────────── */
+        .pf-field {
+            padding: 16px 0;
+            border-bottom: 1px solid #F1F5F9;
+        }
+
+        .pf-field--last,
+        .pf-field-group > .pf-field:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .pf-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+            line-height: 1.3;
+        }
+
+        .pf-value {
+            display: block;
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.4;
+        }
+
+        /* ── Empty State Muted Text ────────────────────────────── */
+        .pf-value.pf-empty,
+        .pf-quick-value.pf-empty,
+        .pf-prose-block.pf-empty {
+            color: var(--text-muted) !important;
+            font-weight: 500;
+        }
+
+        /* ── Multi-line prose block (notes, prescriptions) ─────── */
+        .pf-prose-block {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-primary);
+            line-height: 1.75;
+            white-space: pre-line;
+            background: #F8FAFC;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-top: 2px;
+        }
+
+        /* ── Grid variant for guardian (2-col) ─────────────────── */
+        .pf-field-grid {
+            padding: 0 0 0 0;
+        }
+
+        .pf-field-grid .pf-field {
+            padding: 16px 20px 16px 0;
+            border-bottom: 1px solid #F1F5F9;
+            border-right: none;
+            height: 100%;
+        }
+
+        @media (min-width: 576px) {
+            .pf-field-grid:nth-child(odd) .pf-field {
+                border-right: 1px solid #F1F5F9;
+                padding-right: 20px;
+            }
+            .pf-field-grid:nth-last-child(-n+2) .pf-field {
+                border-bottom: none;
+                padding-bottom: 0;
+            }
+        }
+        @media (max-width: 575.98px) {
+            .pf-field-grid:last-child .pf-field { border-bottom: none; padding-bottom: 0; }
         }
     </style>
 
