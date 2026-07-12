@@ -28,9 +28,6 @@ public interface DonorService {
     /** Delete a donor by primary key. */
     void deleteDonor(Long id);
 
-    /** Check uniqueness of donorId. */
-    boolean existsByDonorId(String donorId);
-
     /** Parse, validate, persist from Excel; returns row-level result DTOs. */
     List<com.oldagehome.portal.dto.DonorImportDTO> importFromExcel(MultipartFile file) throws Exception;
 

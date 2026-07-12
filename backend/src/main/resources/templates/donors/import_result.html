@@ -49,7 +49,6 @@
                     <thead>
                         <tr>
                             <th style="width: 60px;" th:text="#{donor.import_result.log.row}">Row</th>
-                            <th th:text="#{donor.table.id}">Donor ID</th>
                             <th th:text="#{donor.table.name}">Full Name</th>
                             <th th:text="#{donor.table.type}">Donation Type</th>
                             <th th:text="#{donor.table.amount}">Amount</th>
@@ -63,7 +62,6 @@
                         <tr th:each="row : ${importResults}"
                             th:classappend="${row.valid} ? 'table-success-row' : 'table-danger-row'">
                             <td class="fw-bold" th:text="${row.rowNum}">2</td>
-                            <td th:text="${row.donorId}">DON-0001</td>
                             <td class="fw-bold" th:text="${row.fullName}">Donor Name</td>
                             <td>
                                 <span th:if="${row.donationType != null}"

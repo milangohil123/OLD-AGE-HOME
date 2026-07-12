@@ -34,14 +34,7 @@
                         <h4 class="mb-4 border-bottom pb-2 text-primary fw-bold" th:text="#{donor.form.section.personal}">Personal Information</h4>
 
                         <div class="row">
-                            <div class="col-md-6 mb-4">
-                                <label th:replace="~{fragments/forms :: label('donorId', 'Donor ID Code', true)}"></label>
-                                <input type="text" class="form-control" th:field="*{donorId}"
-                                       th:classappend="${#fields.hasErrors('donorId')} ? 'is-invalid' : ''"
-                                       placeholder="e.g. DON-2026-0001" required>
-                                <div th:replace="~{fragments/forms :: field-error('donorId')}"></div>
-                            </div>
-                            <div class="col-md-6 mb-4">
+                            <div class="col-md-12 mb-4">
                                 <label th:replace="~{fragments/forms :: label('fullName', 'Full Name', true)}"></label>
                                 <input type="text" class="form-control" th:field="*{fullName}"
                                        th:classappend="${#fields.hasErrors('fullName')} ? 'is-invalid' : ''"

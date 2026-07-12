@@ -58,10 +58,6 @@ public class DonorServiceImpl implements DonorService {
 
     @Override
     public Donor saveDonor(Donor donor) {
-        if (donorRepository.existsByDonorId(donor.getDonorId())) {
-            auditService.logActivity(com.oldagehome.portal.audit.AuditModule.DONOR, com.oldagehome.portal.audit.AuditAction.CREATE, "Failed to save donor: Donor ID already exists", "Donor", null, false, "Duplicate Donor ID: " + donor.getDonorId());
-            throw new RuntimeException("Donor ID '" + donor.getDonorId() + "' already exists in the system.");
-        }
         Donor saved = donorRepository.save(donor);
         auditService.logActivity(com.oldagehome.portal.audit.AuditModule.DONOR, com.oldagehome.portal.audit.AuditAction.CREATE, "Created donor record for: " + saved.getFullName(), "Donor", saved.getId(), true, null);
         auditService.logActivity(com.oldagehome.portal.audit.AuditModule.DONATION, com.oldagehome.portal.audit.AuditAction.CREATE, "Created donation record for: " + saved.getFullName() + ", Amount: ₹" + saved.getDonationAmount(), "Donation", saved.getId(), true, null);
@@ -72,16 +68,7 @@ public class DonorServiceImpl implements DonorService {
     public Donor updateDonor(Donor donor) {
         Donor existing = getDonorById(donor.getId());
 
-        // If donor ID changed, verify uniqueness
-        if (!existing.getDonorId().equals(donor.getDonorId())) {
-            if (donorRepository.existsByDonorId(donor.getDonorId())) {
-                auditService.logActivity(com.oldagehome.portal.audit.AuditModule.DONOR, com.oldagehome.portal.audit.AuditAction.UPDATE, "Failed to update donor: Donor ID already exists", "Donor", donor.getId(), false, "Duplicate Donor ID: " + donor.getDonorId());
-                throw new RuntimeException("Donor ID '" + donor.getDonorId() + "' already exists in the system.");
-            }
-        }
-
         // Merge all editable fields
-        existing.setDonorId(donor.getDonorId());
         existing.setFullName(donor.getFullName());
         existing.setGender(donor.getGender());
         existing.setDateOfBirth(donor.getDateOfBirth());
@@ -116,10 +103,7 @@ public class DonorServiceImpl implements DonorService {
         auditService.logActivity(com.oldagehome.portal.audit.AuditModule.DONOR, com.oldagehome.portal.audit.AuditAction.DELETE, "Deleted donor record of: " + existing.getFullName(), "Donor", id, true, null);
     }
 
-    @Override
-    public boolean existsByDonorId(String donorId) {
-        return donorRepository.existsByDonorId(donorId);
-    }
+
 
     // -------------------------------------------------------------------------
     // Excel Import
@@ -145,17 +129,8 @@ public class DonorServiceImpl implements DonorService {
                 continue;
             }
 
-            // Duplicate check
-            if (donorRepository.existsByDonorId(dto.getDonorId())) {
-                dto.setValid(false);
-                dto.setErrorMessage("Donor ID already exists in system.");
-                failCount++;
-                continue;
-            }
-
             try {
                 Donor donor = Donor.builder()
-                        .donorId(dto.getDonorId())
                         .fullName(dto.getFullName())
                         .gender(dto.getGender())
                         .dateOfBirth(LocalDate.of(1980, 1, 1)) // Default DOB for imported records

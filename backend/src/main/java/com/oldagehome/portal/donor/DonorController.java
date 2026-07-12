@@ -118,10 +118,6 @@ public class DonorController {
             Model model,
             RedirectAttributes redirectAttributes) {
 
-        // Duplicate donor ID check
-        if (donor.getDonorId() != null && donorService.existsByDonorId(donor.getDonorId())) {
-            bindingResult.rejectValue("donorId", "error.donor", "Donor ID already exists.");
-        }
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("donationTypes", DonationType.values());
@@ -175,14 +171,6 @@ public class DonorController {
             Model model,
             RedirectAttributes redirectAttributes) {
 
-        // Duplicate donor ID check (excluding self)
-        if (donor.getId() != null && donor.getDonorId() != null) {
-            Donor existing = donorService.getDonorById(donor.getId());
-            if (!existing.getDonorId().equals(donor.getDonorId())
-                    && donorService.existsByDonorId(donor.getDonorId())) {
-                bindingResult.rejectValue("donorId", "error.donor", "Donor ID already exists.");
-            }
-        }
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("donationTypes", DonationType.values());
@@ -296,11 +284,6 @@ public class DonorController {
             case "fullname":
             case "full_name":
                 property = "fullName";
-                break;
-            case "donorid":
-            case "donor_id":
-            case "idcode":
-                property = "donorId";
                 break;
             case "amount":
             case "donationamount":

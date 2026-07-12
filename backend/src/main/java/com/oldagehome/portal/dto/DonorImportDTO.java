@@ -23,7 +23,6 @@ public class DonorImportDTO {
     private int rowNum;
 
     // Excel columns
-    private String donorId;
     private String fullName;
     private String gender;
     private String mobile;

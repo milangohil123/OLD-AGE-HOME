@@ -378,9 +378,6 @@ public class ReportController {
                 case "fullname":
                     property = "fullName";
                     break;
-                case "donorid":
-                    property = "donorId";
-                    break;
                 case "dateadded":
                 case "donationdate":
                     property = "donationDate";

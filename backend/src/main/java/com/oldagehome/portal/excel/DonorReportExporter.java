@@ -36,8 +36,9 @@ public class DonorReportExporter {
         headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         headerStyle.setBorderBottom(BorderStyle.THIN);
 
+        // Donor ID removed from headers
         String[] headers = {
-            "Donor ID", "Full Name", "Gender", "Age", "Mobile", "Email", "Donation Type", "Status", "City", "State"
+            "Full Name", "Gender", "Age", "Mobile", "Email", "Donation Type", "Status", "City", "State"
         };
 
         Row headerRow = sheet.createRow(2);
@@ -50,16 +51,15 @@ public class DonorReportExporter {
         int rowIdx = 3;
         for (Donor d : donors) {
             Row row = sheet.createRow(rowIdx++);
-            row.createCell(0).setCellValue(d.getDonorId() != null ? d.getDonorId() : "");
-            row.createCell(1).setCellValue(d.getFullName() != null ? d.getFullName() : "");
-            row.createCell(2).setCellValue(d.getGender() != null ? d.getGender() : "");
-            row.createCell(3).setCellValue(d.getAge() != null ? d.getAge() : 0);
-            row.createCell(4).setCellValue(d.getMobile() != null ? d.getMobile() : "");
-            row.createCell(5).setCellValue(d.getEmail() != null ? d.getEmail() : "");
-            row.createCell(6).setCellValue(d.getDonationType() != null ? d.getDonationType().name() : "");
-            row.createCell(7).setCellValue(d.getStatus() != null ? d.getStatus().name() : "");
-            row.createCell(8).setCellValue(d.getCity() != null ? d.getCity() : "");
-            row.createCell(9).setCellValue(d.getState() != null ? d.getState() : "");
+            row.createCell(0).setCellValue(d.getFullName() != null ? d.getFullName() : "");
+            row.createCell(1).setCellValue(d.getGender() != null ? d.getGender() : "");
+            row.createCell(2).setCellValue(d.getAge() != null ? d.getAge() : 0);
+            row.createCell(3).setCellValue(d.getMobile() != null ? d.getMobile() : "");
+            row.createCell(4).setCellValue(d.getEmail() != null ? d.getEmail() : "");
+            row.createCell(5).setCellValue(d.getDonationType() != null ? d.getDonationType().name() : "");
+            row.createCell(6).setCellValue(d.getStatus() != null ? d.getStatus().name() : "");
+            row.createCell(7).setCellValue(d.getCity() != null ? d.getCity() : "");
+            row.createCell(8).setCellValue(d.getState() != null ? d.getState() : "");
         }
 
         for (int i = 0; i < headers.length; i++) {

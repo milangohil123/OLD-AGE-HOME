@@ -42,7 +42,8 @@
                         </svg>
                     </div>
                     <h4 class="fw-bold mb-1 mt-3 text-center" style="font-size: 18px;" th:text="${donor.fullName}">Donor Name</h4>
-                    <p class="text-muted mb-2" style="font-size: 13px;" th:text="'ID: ' + ${donor.donorId}">DON-0001</p>
+                    <p class="text-muted mb-2" style="font-size: 13px;"
+                       th:text="${donor.createdAt != null ? 'Member since ' + #temporals.format(donor.createdAt, 'MMM yyyy') : 'Member'}">Member</p>
                     <span th:if="${donor.status.name() == 'ACTIVE'}"
                           class="badge bg-success bg-opacity-10 text-success px-3 py-1 rounded-pill">Active</span>
                     <span th:if="${donor.status.name() == 'INACTIVE'}"
@@ -83,8 +84,8 @@
                                 <div>
                                     <div class="pf-quick-label" th:text="#{donor.view.stat.type}">Donation Type</div>
                                     <div class="pf-quick-value"
-                                         th:classappend="${donor.donationType == null or donor.donationType.isEmpty()} ? 'pf-empty'"
-                                         th:text="${donor.donationType != null and !donor.donationType.isEmpty()} ? ${donor.donationType} : '—'">—</div>
+                                         th:classappend="${donor.donationType == null} ? 'pf-empty'"
+                                         th:text="${donor.donationType != null} ? ${donor.donationType} : '—'">—</div>
                                 </div>
                             </div>
                         </div>

@@ -89,11 +89,11 @@ public class ReportServiceImpl implements ReportService {
             String pattern = likePattern(keyword);
             specification = specification.and((root, query, cb) -> cb.or(
                     cb.like(cb.lower(root.get("fullName")), pattern),
-                    cb.like(cb.lower(root.get("donorId")), pattern),
                     cb.like(cb.lower(root.get("mobile")), pattern),
                     cb.like(cb.lower(root.get("email")), pattern)
             ));
         }
+
 
         if (hasText(donationType) && !donationType.equalsIgnoreCase("ALL")) {
             DonationType type = DonationType.valueOf(donationType.toUpperCase());

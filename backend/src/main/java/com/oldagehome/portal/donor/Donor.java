@@ -26,9 +26,7 @@ public class Donor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Donor ID is required")
-    @Column(name = "donor_id", unique = true, nullable = false, length = 50)
-    private String donorId;
+
 
     @NotBlank(message = "Full name is required")
     @Size(min = 2, max = 100, message = "Full name must be between 2 and 100 characters")

@@ -15,16 +15,7 @@ import java.util.Optional;
 @Repository
 public interface DonorRepository extends JpaRepository<Donor, Long>, JpaSpecificationExecutor<Donor> {
 
-    Optional<Donor> findByDonorId(String donorId);
-
-    boolean existsByDonorId(String donorId);
-
-    /**
-     * Search donors by donor ID, full name, mobile, or email.
-     * Case-insensitive substring match.
-     */
     @Query("SELECT d FROM Donor d WHERE " +
-           "LOWER(d.donorId) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
            "LOWER(d.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
            "LOWER(d.mobile) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
            "LOWER(d.email) LIKE LOWER(CONCAT('%', :keyword, '%'))")

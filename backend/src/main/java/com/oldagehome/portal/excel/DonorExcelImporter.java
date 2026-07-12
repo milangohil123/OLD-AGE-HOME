@@ -19,17 +19,16 @@ import java.util.List;
 /**
  * Parses an uploaded Excel file (.xlsx) containing donor records.
  *
- * Expected column order:
- *  0 - Donor ID
- *  1 - Full Name
- *  2 - Gender         (MALE / FEMALE / OTHER)
- *  3 - Mobile
- *  4 - Email
- *  5 - Donation Type  (enum name)
- *  6 - Amount
- *  7 - Donation Date  (dd-MM-yyyy or numeric Excel date)
- *  8 - Payment Method
- *  9 - Status         (ACTIVE / INACTIVE / BLOCKED)
+ * Expected column order (Donor ID removed):
+ *  0 - Full Name
+ *  1 - Gender         (MALE / FEMALE / OTHER)
+ *  2 - Mobile
+ *  3 - Email
+ *  4 - Donation Type  (enum name)
+ *  5 - Amount
+ *  6 - Donation Date  (dd-MM-yyyy or numeric Excel date)
+ *  7 - Payment Method
+ *  8 - Status         (ACTIVE / INACTIVE / BLOCKED)
  */
 public class DonorExcelImporter {
 
@@ -49,24 +48,16 @@ public class DonorExcelImporter {
             dto.setRowNum(i + 1);
             StringBuilder errors = new StringBuilder();
 
-            // --- Column 0: Donor ID ---
-            String donorId = getCellValue(row.getCell(0), dataFormatter).trim();
-            dto.setDonorId(donorId);
-            if (donorId.isEmpty()) {
-                dto.setValid(false);
-                errors.append("Donor ID is required. ");
-            }
-
-            // --- Column 1: Full Name ---
-            String fullName = getCellValue(row.getCell(1), dataFormatter).trim();
+            // --- Column 0: Full Name ---
+            String fullName = getCellValue(row.getCell(0), dataFormatter).trim();
             dto.setFullName(fullName);
             if (fullName.isEmpty()) {
                 dto.setValid(false);
                 errors.append("Full name is required. ");
             }
 
-            // --- Column 2: Gender ---
-            String gender = getCellValue(row.getCell(2), dataFormatter).trim().toUpperCase();
+            // --- Column 1: Gender ---
+            String gender = getCellValue(row.getCell(1), dataFormatter).trim().toUpperCase();
             dto.setGender(gender);
             if (gender.isEmpty()) {
                 dto.setValid(false);
@@ -76,14 +67,14 @@ public class DonorExcelImporter {
                 errors.append("Gender must be MALE, FEMALE, or OTHER. ");
             }
 
-            // --- Column 3: Mobile ---
-            dto.setMobile(getCellValue(row.getCell(3), dataFormatter).trim());
+            // --- Column 2: Mobile ---
+            dto.setMobile(getCellValue(row.getCell(2), dataFormatter).trim());
 
-            // --- Column 4: Email ---
-            dto.setEmail(getCellValue(row.getCell(4), dataFormatter).trim());
+            // --- Column 3: Email ---
+            dto.setEmail(getCellValue(row.getCell(3), dataFormatter).trim());
 
-            // --- Column 5: Donation Type ---
-            String donationTypeStr = getCellValue(row.getCell(5), dataFormatter).trim();
+            // --- Column 4: Donation Type ---
+            String donationTypeStr = getCellValue(row.getCell(4), dataFormatter).trim();
             if (!donationTypeStr.isEmpty()) {
                 DonationType parsedType = parseDonationType(donationTypeStr);
                 if (parsedType == null) {
@@ -98,8 +89,8 @@ public class DonorExcelImporter {
                 errors.append("Donation Type is required. ");
             }
 
-            // --- Column 6: Donation Amount ---
-            Cell amountCell = row.getCell(6);
+            // --- Column 5: Donation Amount ---
+            Cell amountCell = row.getCell(5);
             if (amountCell != null && amountCell.getCellType() == CellType.NUMERIC) {
                 double amountVal = amountCell.getNumericCellValue();
                 if (amountVal < 0) {
@@ -129,8 +120,8 @@ public class DonorExcelImporter {
                 }
             }
 
-            // --- Column 7: Donation Date ---
-            Cell dateCell = row.getCell(7);
+            // --- Column 6: Donation Date ---
+            Cell dateCell = row.getCell(6);
             if (dateCell != null) {
                 if (dateCell.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(dateCell)) {
                     Date date = dateCell.getDateCellValue();
@@ -153,11 +144,11 @@ public class DonorExcelImporter {
                 dto.setDonationDate(LocalDate.now());
             }
 
-            // --- Column 8: Payment Method ---
-            dto.setPaymentMethod(getCellValue(row.getCell(8), dataFormatter).trim());
+            // --- Column 7: Payment Method ---
+            dto.setPaymentMethod(getCellValue(row.getCell(7), dataFormatter).trim());
 
-            // --- Column 9: Status ---
-            String statusStr = getCellValue(row.getCell(9), dataFormatter).trim().toUpperCase();
+            // --- Column 8: Status ---
+            String statusStr = getCellValue(row.getCell(8), dataFormatter).trim().toUpperCase();
             if (!statusStr.isEmpty()) {
                 try {
                     dto.setStatus(DonorStatus.valueOf(statusStr));
