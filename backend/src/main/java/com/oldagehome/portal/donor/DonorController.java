@@ -103,6 +103,9 @@ public class DonorController {
         model.addAttribute("donationTypes", DonationType.values());
         model.addAttribute("donorStatuses", DonorStatus.values());
         model.addAttribute("activePage", "donors");
+
+        model.addAttribute("pageTitle", "Register Donor");
+
         return "donors/form";
     }
 
@@ -117,7 +120,6 @@ public class DonorController {
             @RequestParam("photoFile") MultipartFile photoFile,
             Model model,
             RedirectAttributes redirectAttributes) {
-
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("donationTypes", DonationType.values());
@@ -148,17 +150,18 @@ public class DonorController {
     // -------------------------------------------------------------------------
     // GET /donors/edit/{id} — Show pre-populated edit form
     // -------------------------------------------------------------------------
-
     @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable("id") Long id, Model model) {
-        Donor donor = donorService.getDonorById(id);
-        model.addAttribute("donor", donor);
+    public String showEditForm(@PathVariable Long id, Model model) {
+
+        model.addAttribute("donor", donorService.getDonorById(id));
         model.addAttribute("donationTypes", DonationType.values());
         model.addAttribute("donorStatuses", DonorStatus.values());
         model.addAttribute("activePage", "donors");
+
+        model.addAttribute("pageTitle", "Edit Donor");
+
         return "donors/form";
     }
-
     // -------------------------------------------------------------------------
     // POST /donors/update — Persist edits
     // -------------------------------------------------------------------------
@@ -170,7 +173,6 @@ public class DonorController {
             @RequestParam("photoFile") MultipartFile photoFile,
             Model model,
             RedirectAttributes redirectAttributes) {
-
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("donationTypes", DonationType.values());
