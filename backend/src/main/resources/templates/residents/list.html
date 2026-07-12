@@ -53,13 +53,12 @@
         <!-- Main Roster Directory Card -->
         <div class="card">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0 residents-compact-table">
+                <table class="table table-hover align-middle mb-0">
                     <thead>
                         <tr>
                             <th style="width: 70px;" th:text="#{resident.table.photo}">PHOTO</th>
-                            <th style="width: 90px;" th:text="#{resident.table.id}">RESIDENT ID</th>
                             <th style="width: 180px;" th:text="#{resident.table.name}">FULL NAME</th>
-                            <th style="width: 120px;" th:text="#{resident.table.age_gender}">AGE / GENDER</th>
+                            <th style="width: 120px;" th:text="#{resident.table.age}">AGE</th>
                             <th style="width: 90px;">ROOM NO.</th>
                             <th style="width: 160px;" th:text="#{resident.table.guardian}">GUARDIAN NAME</th>
                             <th style="width: 140px;" th:text="#{resident.table.guardian_phone}">GUARDIAN PHONE</th>
@@ -70,7 +69,7 @@
                     <tbody>
                         <!-- Empty State -->
                         <tr th:if="${residentsPage == null or residentsPage.totalElements == 0}">
-                            <td colspan="9" class="text-center py-5 text-muted">
+                            <td colspan="8" class="text-center py-5 text-muted">
                                 <i class="bi bi-people d-block mb-3" style="font-size: 40px; color: #BFDBFE;"></i>
                                 <h5 class="fw-bold" th:text="#{resident.table.empty.title}">No Resident Records Found</h5>
                                 <p class="mb-0 small" th:text="#{resident.table.empty.desc}">Add a new resident or adjust your search filter keyword.</p>
@@ -83,42 +82,38 @@
                             <!-- Photo -->
                             <td>
                                 <img th:if="${res.photo != null}" th:src="@{'/uploads/' + ${res.photo}}"
-                                     class="res-photo-img">
+                                     class="rounded-circle object-fit-cover"
+                                     style="width: 48px; height: 48px; border: 2px solid #E2E8F0;">
                                 <div th:if="${res.photo == null}"
-                                     class="res-photo-placeholder">
-                                    <i class="bi bi-person"></i>
+                                     class="rounded-circle bg-light d-flex align-items-center justify-content-center"
+                                     style="width: 48px; height: 48px; border: 2px solid #E2E8F0; color: #64748B;">
+                                    <i class="bi bi-person" style="font-size: 18px;"></i>
                                 </div>
-                            </td>
-
-                            <!-- Resident ID -->
-                            <td>
-                                <span class="res-id-cell res-text-clip" style="max-width: 70px;" th:text="${res.residentId}">12</span>
                             </td>
 
                             <!-- Full Name -->
                             <td>
-                                <span class="res-name-text res-text-clip" th:text="${res.fullName}">Chman Mehta</span>
+                                <span class="fw-bold text-dark" th:text="${res.fullName}">Chman Mehta</span>
                             </td>
 
-                            <!-- Age / Gender -->
+                            <!-- Age -->
                             <td>
-                                <span class="res-age-text" th:text="${res.age != null ? res.age : 'N/A'} + ' yrs /'">38 yrs /</span><br>
-                                <span class="res-gender-text" th:text="${res.gender != null ? res.gender : '-'}">MALE</span>
+                                <span class="text-dark" th:text="${res.age != null ? res.age : 'N/A'} + ' yrs'">38 yrs</span>
                             </td>
 
                             <!-- Room Number -->
                             <td>
-                                <span class="res-meta-text res-text-clip" style="max-width: 70px;" th:text="${res.roomNumber != null and !res.roomNumber.isEmpty()} ? ${res.roomNumber} : '-'">A 101</span>
+                                <span class="text-dark" th:text="${res.roomNumber != null and !res.roomNumber.isEmpty()} ? ${res.roomNumber} : '-'">A 101</span>
                             </td>
 
                             <!-- Guardian Name -->
                             <td>
-                                <span class="res-meta-text res-text-clip" style="max-width: 140px;" th:text="${res.guardianName != null and !res.guardianName.isEmpty()} ? ${res.guardianName} : '-'">Milan Gohil</span>
+                                <span class="text-dark" th:text="${res.guardianName != null and !res.guardianName.isEmpty()} ? ${res.guardianName} : '-'">Milan Gohil</span>
                             </td>
 
                             <!-- Guardian Phone -->
                             <td>
-                                <span class="res-meta-text res-text-clip" style="max-width: 120px;" th:text="${res.guardianPhone != null and !res.guardianPhone.isEmpty()} ? ${res.guardianPhone} : '-'">07894561230</span>
+                                <span class="text-dark" th:text="${res.guardianPhone != null and !res.guardianPhone.isEmpty()} ? ${res.guardianPhone} : '-'">07894561230</span>
                             </td>
 
                             <!-- Status Badge -->
@@ -134,21 +129,21 @@
                             </td>
 
                             <!-- Actions -->
-                            <td>
-                                <div class="res-actions">
+                            <td class="text-end">
+                                <div class="d-inline-flex gap-2">
                                     <a th:href="@{/residents/view/{id}(id=${res.id})}"
-                                       class="res-btn res-btn-outline"
+                                       class="btn btn-outline-primary btn-sm px-3"
                                        th:title="#{resident.btn.view}">
                                         <i class="bi bi-eye"></i>
                                     </a>
                                     <a th:href="@{/residents/edit/{id}(id=${res.id})}"
-                                       class="res-btn res-btn-outline"
+                                       class="btn btn-outline-primary btn-sm px-3"
                                        sec:authorize="hasAnyRole('ADMIN', 'MANAGER')"
                                        th:title="#{resident.btn.edit}">
                                         <i class="bi bi-pencil"></i>
                                     </a>
                                     <a th:href="@{/residents/delete/{id}(id=${res.id})}"
-                                       class="res-btn res-btn-danger"
+                                       class="btn btn-danger btn-sm px-3 text-white"
                                        th:data-confirm="#{resident.confirm.delete}"
                                        onclick="return confirm(this.getAttribute('data-confirm'));"
                                        sec:authorize="hasRole('ADMIN')"
@@ -168,170 +163,7 @@
 
     </div>
 
-    <!-- ── Scoped Styles: Residents Table Compact Layout ────────────────── -->
-    <style>
-        /* Table Headers */
-        .residents-compact-table thead th {
-            font-size: 12px;
-            text-transform: uppercase;
-            font-weight: 600;
-            color: #64748b;
-            padding: 12px 16px;
-            border-bottom: 1px solid #e2e8f0;
-            background: #f8fafc;
-        }
 
-        /* Table Cells - Compact row height ~70-80px */
-        .residents-compact-table tbody td {
-            padding: 12px 16px;
-            vertical-align: middle;
-            font-size: 14px;
-            color: #334155;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        /* Photo */
-        .res-photo-img {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 1px solid #e2e8f0;
-        }
-
-        .res-photo-placeholder {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            border: 1px solid #e2e8f0;
-            background: #f8fafc;
-            color: #94a3b8;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-        }
-
-        /* Text clipping */
-        .res-text-clip {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: inline-block;
-            vertical-align: middle;
-        }
-
-        /* Full Name */
-        .res-name-text {
-            font-size: 15px;
-            font-weight: 600;
-            color: #0f172a;
-            max-width: 160px;
-        }
-
-        /* ID and Meta Text */
-        .res-id-cell {
-            font-size: 14px;
-            color: #0f172a;
-            font-weight: 500;
-        }
-
-        .res-meta-text {
-            font-size: 14px;
-            color: #334155;
-        }
-
-        /* Age / Gender */
-        .res-age-text {
-            font-size: 14px;
-            color: #334155;
-        }
-
-        .res-gender-text {
-            font-size: 12px;
-            color: #64748b;
-            text-transform: uppercase;
-            font-weight: 500;
-        }
-
-        /* Status Badge */
-        .res-badge {
-            font-size: 13px;
-            font-weight: 500;
-            padding: 4px 12px;
-            border-radius: 9999px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .res-badge-active {
-            background-color: #d1fae5;
-            color: #059669;
-        }
-        
-        .res-badge-discharged {
-            background-color: #f1f5f9;
-            color: #475569;
-        }
-        
-        .res-badge-deceased {
-            background-color: #fee2e2;
-            color: #991b1b;
-        }
-        
-        .res-badge-unknown {
-            background-color: #fef3c7;
-            color: #92400e;
-        }
-
-        /* Action Buttons */
-        .res-actions {
-            display: flex;
-            gap: 8px;
-            justify-content: flex-end;
-        }
-
-        .res-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            transition: all 0.2s ease;
-            padding: 0;
-            border: 1px solid transparent;
-        }
-
-        .res-btn-outline {
-            background-color: #ffffff;
-            border-color: #e2e8f0;
-            color: #3b82f6;
-        }
-
-        .res-btn-outline:hover {
-            background-color: #eff6ff;
-            border-color: #bfdbfe;
-            color: #2563eb;
-        }
-
-        .res-btn-danger {
-            background-color: #ef4444;
-            border-color: #ef4444;
-            color: #ffffff;
-        }
-
-        .res-btn-danger:hover {
-            background-color: #dc2626;
-            border-color: #dc2626;
-        }
-
-        .res-btn i {
-            font-size: 14px;
-        }
-    </style>
 
 </body>
 </html>

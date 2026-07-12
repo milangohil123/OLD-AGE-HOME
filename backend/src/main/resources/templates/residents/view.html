@@ -38,7 +38,7 @@
                         </div>
                     </div>
                     <h3 class="fw-bold mb-1" th:text="${resident.fullName}">Jane Doe</h3>
-                    <p class="text-muted mb-3" th:text="'Resident ID: ' + ${resident.residentId}">SAH-0001</p>
+
                     
                     <div class="d-flex justify-content-center gap-2">
                         <span th:if="${resident.status.name() == 'ACTIVE'}" class="badge bg-success bg-opacity-10 text-success px-3 py-2 fs-6 rounded-pill">Active</span>

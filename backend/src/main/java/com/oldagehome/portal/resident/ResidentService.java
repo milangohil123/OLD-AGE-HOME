@@ -14,7 +14,6 @@ public interface ResidentService {
     Resident saveResident(Resident resident);
     Resident updateResident(Resident resident);
     void deleteResident(Long id);
-    boolean existsByResidentId(String residentId);
     
     /**
      * Bulk imports resident entries from an uploaded Excel file.

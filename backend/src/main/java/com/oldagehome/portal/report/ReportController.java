@@ -359,9 +359,7 @@ public class ReportController {
                 case "fullname":
                     property = "fullName";
                     break;
-                case "residentid":
-                    property = "residentId";
-                    break;
+
                 case "age":
                     property = "dateOfBirth";
                     resolvedDirection = "desc".equalsIgnoreCase(direction) ? "asc" : "desc";

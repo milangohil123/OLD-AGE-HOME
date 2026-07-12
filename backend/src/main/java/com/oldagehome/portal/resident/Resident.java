@@ -25,10 +25,6 @@ public class Resident {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Resident ID is required")
-    @Column(name = "resident_id", unique = true, nullable = false, length = 50)
-    private String residentId;
-
     @NotBlank(message = "Full name is required")
     @Size(min = 2, max = 100, message = "Full name must be between 2 and 100 characters")
     @Column(name = "full_name", nullable = false, length = 100)

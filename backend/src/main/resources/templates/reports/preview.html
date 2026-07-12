@@ -41,8 +41,6 @@
             <div th:if="${type == 'residents'}" class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
                     <thead>
-                        <tr>
-                            <th>Resident ID</th>
                             <th>Full Name</th>
                             <th>Gender</th>
                             <th>Age</th>
@@ -52,7 +50,6 @@
                     </thead>
                     <tbody>
                         <tr th:each="r : ${reportPage.content}">
-                            <td><strong th:text="${r.residentId}">ID</strong></td>
                             <td class="fw-bold" th:text="${r.fullName}">Name</td>
                             <td th:text="${r.gender}">Gender</td>
                             <td th:text="${r.age}">Age</td>
@@ -62,7 +59,7 @@
                             </td>
                         </tr>
                         <tr th:if="${reportPage.totalElements == 0}">
-                            <td colspan="6" class="text-center py-4 text-muted">No resident records matched the criteria.</td>
+                            <td colspan="5" class="text-center py-4 text-muted">No resident records matched the criteria.</td>
                         </tr>
                     </tbody>
                 </table>

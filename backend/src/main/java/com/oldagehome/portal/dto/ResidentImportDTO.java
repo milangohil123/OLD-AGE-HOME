@@ -13,7 +13,6 @@ import java.time.LocalDate;
 @Builder
 public class ResidentImportDTO {
     private int rowNum;
-    private String residentId;
     private String fullName;
     private String gender;
     private String dateOfBirthString;

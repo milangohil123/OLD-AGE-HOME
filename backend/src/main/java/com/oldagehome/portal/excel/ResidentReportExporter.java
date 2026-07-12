@@ -39,7 +39,7 @@ public class ResidentReportExporter {
         headerStyle.setBorderBottom(BorderStyle.THIN);
 
         String[] headers = {
-            "Resident ID", "Full Name", "Gender", "Age", "Blood Group", "Mobile", "Email", "Room Number", "Joining Date", "Status", "Guardian Name", "Guardian Phone"
+            "Full Name", "Gender", "Age", "Blood Group", "Mobile", "Email", "Room Number", "Joining Date", "Status", "Guardian Name", "Guardian Phone"
         };
 
         Row headerRow = sheet.createRow(2);
@@ -54,18 +54,17 @@ public class ResidentReportExporter {
         int rowIdx = 3;
         for (Resident r : residents) {
             Row row = sheet.createRow(rowIdx++);
-            row.createCell(0).setCellValue(r.getResidentId() != null ? r.getResidentId() : "");
-            row.createCell(1).setCellValue(r.getFullName() != null ? r.getFullName() : "");
-            row.createCell(2).setCellValue(r.getGender() != null ? r.getGender() : "");
-            row.createCell(3).setCellValue(r.getAge() != null ? r.getAge() : 0);
-            row.createCell(4).setCellValue(r.getBloodGroup() != null ? r.getBloodGroup() : "");
-            row.createCell(5).setCellValue(r.getMobile() != null ? r.getMobile() : "");
-            row.createCell(6).setCellValue(r.getEmail() != null ? r.getEmail() : "");
-            row.createCell(7).setCellValue(r.getRoomNumber() != null ? r.getRoomNumber() : "");
-            row.createCell(8).setCellValue(r.getJoiningDate() != null ? r.getJoiningDate().format(dtf) : "");
-            row.createCell(9).setCellValue(r.getStatus() != null ? r.getStatus().name() : "");
-            row.createCell(10).setCellValue(r.getGuardianName() != null ? r.getGuardianName() : "");
-            row.createCell(11).setCellValue(r.getGuardianPhone() != null ? r.getGuardianPhone() : "");
+            row.createCell(0).setCellValue(r.getFullName() != null ? r.getFullName() : "");
+            row.createCell(1).setCellValue(r.getGender() != null ? r.getGender() : "");
+            row.createCell(2).setCellValue(r.getAge() != null ? r.getAge() : 0);
+            row.createCell(3).setCellValue(r.getBloodGroup() != null ? r.getBloodGroup() : "");
+            row.createCell(4).setCellValue(r.getMobile() != null ? r.getMobile() : "");
+            row.createCell(5).setCellValue(r.getEmail() != null ? r.getEmail() : "");
+            row.createCell(6).setCellValue(r.getRoomNumber() != null ? r.getRoomNumber() : "");
+            row.createCell(7).setCellValue(r.getJoiningDate() != null ? r.getJoiningDate().format(dtf) : "");
+            row.createCell(8).setCellValue(r.getStatus() != null ? r.getStatus().name() : "");
+            row.createCell(9).setCellValue(r.getGuardianName() != null ? r.getGuardianName() : "");
+            row.createCell(10).setCellValue(r.getGuardianPhone() != null ? r.getGuardianPhone() : "");
         }
 
         for (int i = 0; i < headers.length; i++) {

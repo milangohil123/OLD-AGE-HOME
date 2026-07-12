@@ -62,12 +62,12 @@ public class ResidentReportGenerator {
             document.add(details);
 
             // Add Table
-            PdfPTable table = new PdfPTable(7);
+            PdfPTable table = new PdfPTable(6);
             table.setWidthPercentage(100);
-            table.setWidths(new float[]{1.5f, 2.5f, 1.2f, 1f, 1.8f, 1.8f, 1.5f});
+            table.setWidths(new float[]{2.5f, 1.2f, 1f, 1.8f, 1.8f, 1.5f});
 
             // Headers
-            String[] headers = {"ID", "Name", "Gender", "Age", "Mobile", "Joining Date", "Status"};
+            String[] headers = {"Name", "Gender", "Age", "Mobile", "Joining Date", "Status"};
             Font headerCellFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10, BaseColor.WHITE);
             for (String h : headers) {
                 PdfPCell cell = new PdfPCell(new Phrase(h, headerCellFont));
@@ -81,7 +81,6 @@ public class ResidentReportGenerator {
             Font rowFont = FontFactory.getFont(FontFactory.HELVETICA, 9, BaseColor.BLACK);
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
             for (Resident r : residents) {
-                table.addCell(new PdfPCell(new Phrase(r.getResidentId(), rowFont)));
                 table.addCell(new PdfPCell(new Phrase(r.getFullName(), rowFont)));
                 table.addCell(new PdfPCell(new Phrase(r.getGender(), rowFont)));
                 table.addCell(new PdfPCell(new Phrase(String.valueOf(r.getAge() != null ? r.getAge() : ""), rowFont)));

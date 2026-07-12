@@ -51,7 +51,6 @@ public class ReportServiceImpl implements ReportService {
             String pattern = likePattern(keyword);
             specification = specification.and((root, query, cb) -> cb.or(
                     cb.like(cb.lower(root.get("fullName")), pattern),
-                    cb.like(cb.lower(root.get("residentId")), pattern),
                     cb.like(cb.lower(root.get("mobile")), pattern),
                     cb.like(cb.lower(root.get("guardianName")), pattern),
                     cb.like(cb.lower(root.get("guardianPhone")), pattern)

@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{fragments/layout :: main(~{::#import-results-container}, 'residents', 'Excel Import Report')}">
+    th:replace="~{fragments/layout :: main(~{::#import-results-container}, 'residents', 'Excel Import Report')}">
+
 <body>
 
     <div id="import-results-container">
-        
+
         <!-- Header -->
         <div class="card mb-4">
             <div class="d-flex justify-content-between align-items-center">
@@ -42,7 +43,6 @@
                     <thead>
                         <tr>
                             <th style="width: 80px;">Row</th>
-                            <th>Resident ID</th>
                             <th>Full Name</th>
                             <th>Gender</th>
                             <th>Mobile</th>
@@ -51,18 +51,20 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:each="row : ${importResults}" th:classappend="${row.valid} ? 'table-success-row' : 'table-danger-row'">
+                        <tr th:each="row : ${importResults}"
+                            th:classappend="${row.valid} ? 'table-success-row' : 'table-danger-row'">
                             <td class="fw-bold" th:text="${row.rowNum}">2</td>
-                            <td th:text="${row.residentId}">SAH-0002</td>
                             <td class="fw-bold" th:text="${row.fullName}">Jane Doe</td>
                             <td th:text="${row.gender}">FEMALE</td>
                             <td th:text="${row.mobile}">0000000000</td>
                             <td>
-                                <span th:if="${row.valid}" class="badge bg-success px-3 py-2 rounded-pill">Success</span>
+                                <span th:if="${row.valid}"
+                                    class="badge bg-success px-3 py-2 rounded-pill">Success</span>
                                 <span th:if="${!row.valid}" class="badge bg-danger px-3 py-2 rounded-pill">Failed</span>
                             </td>
                             <td>
-                                <span th:if="${!row.valid}" th:text="${row.errorMessage}" class="text-danger fw-bold">Error message</span>
+                                <span th:if="${!row.valid}" th:text="${row.errorMessage}"
+                                    class="text-danger fw-bold">Error message</span>
                                 <span th:if="${row.valid}" class="text-success">-</span>
                             </td>
                         </tr>
@@ -74,4 +76,5 @@
     </div>
 
 </body>
+
 </html>

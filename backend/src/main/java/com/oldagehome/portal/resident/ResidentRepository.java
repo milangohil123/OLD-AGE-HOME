@@ -13,9 +13,6 @@ import java.util.Optional;
 @Repository
 public interface ResidentRepository extends JpaRepository<Resident, Long>, JpaSpecificationExecutor<Resident> {
 
-    Optional<Resident> findByResidentId(String residentId);
-
-    boolean existsByResidentId(String residentId);
 
     /**
      * Search residents by full name, resident ID, guardian name, mobile, guardian phone, or room number.
@@ -23,7 +20,6 @@ public interface ResidentRepository extends JpaRepository<Resident, Long>, JpaSp
      */
     @Query("SELECT r FROM Resident r WHERE " +
            "LOWER(r.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-           "LOWER(r.residentId) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
            "LOWER(r.guardianName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
            "LOWER(r.mobile) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
            "LOWER(r.guardianPhone) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +

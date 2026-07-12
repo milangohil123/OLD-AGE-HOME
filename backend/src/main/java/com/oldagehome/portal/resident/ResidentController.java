@@ -105,10 +105,7 @@ public class ResidentController {
             Model model,
             RedirectAttributes redirectAttributes) {
 
-        // Check for duplicate Resident ID code
-        if (resident.getResidentId() != null && residentService.existsByResidentId(resident.getResidentId())) {
-            bindingResult.rejectValue("residentId", "error.resident", "Resident ID code already exists.");
-        }
+
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("statuses", ResidentStatus.values());
@@ -157,14 +154,7 @@ public class ResidentController {
             Model model,
             RedirectAttributes redirectAttributes) {
 
-        // Check for duplicate Resident ID code (excluding own ID)
-        if (resident.getId() != null && resident.getResidentId() != null) {
-            Resident existing = residentService.getResidentById(resident.getId());
-            if (!existing.getResidentId().equals(resident.getResidentId()) 
-                    && residentService.existsByResidentId(resident.getResidentId())) {
-                bindingResult.rejectValue("residentId", "error.resident", "Resident ID code already exists.");
-            }
-        }
+
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("statuses", ResidentStatus.values());
@@ -275,11 +265,7 @@ public class ResidentController {
             case "full_name":
                 property = "fullName";
                 break;
-            case "residentid":
-            case "resident_id":
-            case "idcode":
-                property = "residentId";
-                break;
+
             case "age":
                 property = "dateOfBirth";
                 resolvedDirection = "desc".equalsIgnoreCase(direction) ? "asc" : "desc";

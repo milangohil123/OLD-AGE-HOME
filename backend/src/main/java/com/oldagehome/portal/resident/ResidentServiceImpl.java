@@ -51,10 +51,6 @@ public class ResidentServiceImpl implements ResidentService {
 
     @Override
     public Resident saveResident(Resident resident) {
-        if (residentRepository.existsByResidentId(resident.getResidentId())) {
-            auditService.logActivity(com.oldagehome.portal.audit.AuditModule.RESIDENT, com.oldagehome.portal.audit.AuditAction.CREATE, "Failed to create resident: Resident ID already exists", "Resident", null, false, "Duplicate Resident ID: " + resident.getResidentId());
-            throw new RuntimeException("Resident ID '" + resident.getResidentId() + "' already exists in the system.");
-        }
         Resident saved = residentRepository.save(resident);
         auditService.logActivity(com.oldagehome.portal.audit.AuditModule.RESIDENT, com.oldagehome.portal.audit.AuditAction.CREATE, "Created resident: " + saved.getFullName(), "Resident", saved.getId(), true, null);
         return saved;
@@ -64,16 +60,7 @@ public class ResidentServiceImpl implements ResidentService {
     public Resident updateResident(Resident resident) {
         Resident existing = getResidentById(resident.getId());
         
-        // If resident ID is changed, check uniqueness
-        if (!existing.getResidentId().equals(resident.getResidentId())) {
-            if (residentRepository.existsByResidentId(resident.getResidentId())) {
-                auditService.logActivity(com.oldagehome.portal.audit.AuditModule.RESIDENT, com.oldagehome.portal.audit.AuditAction.UPDATE, "Failed to update resident: Resident ID already exists", "Resident", resident.getId(), false, "Duplicate Resident ID: " + resident.getResidentId());
-                throw new RuntimeException("Resident ID '" + resident.getResidentId() + "' already exists in the system.");
-            }
-        }
-        
         // Merge attributes
-        existing.setResidentId(resident.getResidentId());
         existing.setFullName(resident.getFullName());
         existing.setGender(resident.getGender());
         existing.setDateOfBirth(resident.getDateOfBirth());
@@ -111,10 +98,6 @@ public class ResidentServiceImpl implements ResidentService {
         auditService.logActivity(com.oldagehome.portal.audit.AuditModule.RESIDENT, com.oldagehome.portal.audit.AuditAction.DELETE, "Deleted resident: " + existing.getFullName(), "Resident", id, true, null);
     }
 
-    @Override
-    public boolean existsByResidentId(String residentId) {
-        return residentRepository.existsByResidentId(residentId);
-    }
 
     @Override
     public List<ResidentImportDTO> importFromExcel(MultipartFile file) throws Exception {
@@ -133,18 +116,9 @@ public class ResidentServiceImpl implements ResidentService {
         // Validate and insert into database
         for (ResidentImportDTO dto : dtos) {
             if (dto.isValid()) {
-                // Check if Resident ID already exists
-                if (residentRepository.existsByResidentId(dto.getResidentId())) {
-                    dto.setValid(false);
-                    dto.setErrorMessage("Resident ID already exists in system.");
-                    failCount++;
-                    continue;
-                }
-
                 try {
                     // Create Resident object and persist
                     Resident resident = Resident.builder()
-                            .residentId(dto.getResidentId())
                             .fullName(dto.getFullName())
                             .gender(dto.getGender())
                             .dateOfBirth(dto.getDateOfBirth())
