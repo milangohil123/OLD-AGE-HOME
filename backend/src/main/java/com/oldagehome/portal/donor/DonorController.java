@@ -3,14 +3,11 @@ package com.oldagehome.portal.donor;
 import com.oldagehome.portal.common.AppConstants;
 import com.oldagehome.portal.common.PaginationUtils;
 import com.oldagehome.portal.dto.DonorImportDTO;
-import com.oldagehome.portal.excel.DonorExcelExporter;
 import com.oldagehome.portal.utils.FileUploadUtility;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -99,11 +97,18 @@ public class DonorController {
 
     @GetMapping("/new")
     public String showNewForm(Model model) {
-        model.addAttribute("donor", new Donor());
+        DonorFormDTO dto = new DonorFormDTO();
+        // Add 3 default empty rows for medicine and food item tables
+        for (int i = 0; i < 3; i++) {
+            dto.getMedicineItems().add(new DonorFormDTO.MedicineItemDTO());
+            dto.getFoodItems().add(new DonorFormDTO.FoodItemDTO());
+        }
+
+        model.addAttribute("donor", dto);
+        model.addAttribute("donationFrequencies", DonationFrequency.values());
         model.addAttribute("donationTypes", DonationType.values());
         model.addAttribute("donorStatuses", DonorStatus.values());
         model.addAttribute("activePage", "donors");
-
         model.addAttribute("pageTitle", "Register Donor");
 
         return "donors/form";
@@ -115,16 +120,21 @@ public class DonorController {
 
     @PostMapping("/save")
     public String saveDonor(
-            @Valid @ModelAttribute("donor") Donor donor,
+            @Valid @ModelAttribute("donor") DonorFormDTO donorFormDto,
             BindingResult bindingResult,
             @RequestParam("photoFile") MultipartFile photoFile,
             Model model,
             RedirectAttributes redirectAttributes) {
 
+        // Validate conditional donation fields (medicine list, food list, amount)
+        validateDonorForm(donorFormDto, bindingResult);
+
         if (bindingResult.hasErrors()) {
+            model.addAttribute("donationFrequencies", DonationFrequency.values());
             model.addAttribute("donationTypes", DonationType.values());
             model.addAttribute("donorStatuses", DonorStatus.values());
             model.addAttribute("activePage", "donors");
+            model.addAttribute("pageTitle", "Register Donor");
             return "donors/form";
         }
 
@@ -132,17 +142,19 @@ public class DonorController {
         try {
             if (!photoFile.isEmpty()) {
                 String photoPath = fileUploadUtility.saveFile(DONORS_DIR, photoFile);
-                donor.setPhoto(photoPath);
+                donorFormDto.setPhoto(photoPath);
             }
         } catch (IOException e) {
             bindingResult.reject(AppConstants.Messages.ERROR_GENERIC, "Failed to upload photo file.");
+            model.addAttribute("donationFrequencies", DonationFrequency.values());
             model.addAttribute("donationTypes", DonationType.values());
             model.addAttribute("donorStatuses", DonorStatus.values());
             model.addAttribute("activePage", "donors");
+            model.addAttribute("pageTitle", "Register Donor");
             return "donors/form";
         }
 
-        donorService.saveDonor(donor);
+        donorService.saveDonor(donorFormDto);
         redirectAttributes.addFlashAttribute("successMessage", AppConstants.Messages.SUCCESS_SAVE);
         return "redirect:/donors";
     }
@@ -152,54 +164,71 @@ public class DonorController {
     // -------------------------------------------------------------------------
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Long id, Model model) {
+        DonorFormDTO dto = donorService.getDonorFormDtoById(id);
 
-        model.addAttribute("donor", donorService.getDonorById(id));
+        // Ensure at least 3 rows exist in lists to display properly in the UI tables
+        while (dto.getMedicineItems().size() < 3) {
+            dto.getMedicineItems().add(new DonorFormDTO.MedicineItemDTO());
+        }
+        while (dto.getFoodItems().size() < 3) {
+            dto.getFoodItems().add(new DonorFormDTO.FoodItemDTO());
+        }
+
+        model.addAttribute("donor", dto);
+        model.addAttribute("donationFrequencies", DonationFrequency.values());
         model.addAttribute("donationTypes", DonationType.values());
         model.addAttribute("donorStatuses", DonorStatus.values());
         model.addAttribute("activePage", "donors");
-
         model.addAttribute("pageTitle", "Edit Donor");
 
         return "donors/form";
     }
+
     // -------------------------------------------------------------------------
     // POST /donors/update — Persist edits
     // -------------------------------------------------------------------------
 
     @PostMapping("/update")
     public String updateDonor(
-            @Valid @ModelAttribute("donor") Donor donor,
+            @Valid @ModelAttribute("donor") DonorFormDTO donorFormDto,
             BindingResult bindingResult,
             @RequestParam("photoFile") MultipartFile photoFile,
             Model model,
             RedirectAttributes redirectAttributes) {
 
+        // Validate conditional donation fields
+        validateDonorForm(donorFormDto, bindingResult);
+
         if (bindingResult.hasErrors()) {
+            model.addAttribute("donationFrequencies", DonationFrequency.values());
             model.addAttribute("donationTypes", DonationType.values());
             model.addAttribute("donorStatuses", DonorStatus.values());
             model.addAttribute("activePage", "donors");
+            model.addAttribute("pageTitle", "Edit Donor");
             return "donors/form";
         }
 
         // Handle photo update
         try {
             if (!photoFile.isEmpty()) {
-                Donor oldDonor = donorService.getDonorById(donor.getId());
+                Donor oldDonor = donorService.getDonorById(donorFormDto.getId());
                 if (oldDonor.getPhoto() != null) {
                     fileUploadUtility.deleteFile(oldDonor.getPhoto());
                 }
                 String photoPath = fileUploadUtility.saveFile(DONORS_DIR, photoFile);
-                donor.setPhoto(photoPath);
+                donorFormDto.setPhoto(photoPath);
             }
         } catch (IOException e) {
             bindingResult.reject(AppConstants.Messages.ERROR_GENERIC, "Failed to upload new photo file.");
+            model.addAttribute("donationFrequencies", DonationFrequency.values());
             model.addAttribute("donationTypes", DonationType.values());
             model.addAttribute("donorStatuses", DonorStatus.values());
             model.addAttribute("activePage", "donors");
+            model.addAttribute("pageTitle", "Edit Donor");
             return "donors/form";
         }
 
-        donorService.updateDonor(donor);
+        donorService.updateDonor(donorFormDto);
         redirectAttributes.addFlashAttribute("successMessage", AppConstants.Messages.SUCCESS_UPDATE);
         return "redirect:/donors";
     }
@@ -301,5 +330,67 @@ public class DonorController {
         }
 
         return PaginationUtils.buildPageable(page, size, property, direction, AppConstants.Pagination.DEFAULT_SORT_BY);
+    }
+
+    private void validateDonorForm(DonorFormDTO dto, BindingResult bindingResult) {
+        if (dto.getDonationFrequency() == null) {
+            bindingResult.rejectValue("donationFrequency", "error.donationFrequency", "Donation Frequency is required");
+        }
+        if (dto.getDonationType() == null) {
+            bindingResult.rejectValue("donationType", "error.donationType", "Donation Type is required");
+            return;
+        }
+
+        if (dto.getDonationType() == DonationType.MEDICINE) {
+            List<DonorFormDTO.MedicineItemDTO> items = dto.getMedicineItems();
+            boolean hasAtLeastOne = false;
+            for (int i = 0; i < items.size(); i++) {
+                DonorFormDTO.MedicineItemDTO item = items.get(i);
+                boolean hasAnyField = (item.getMedicineName() != null && !item.getMedicineName().isBlank())
+                        || item.getPrice() != null
+                        || item.getExpiryDate() != null;
+                if (hasAnyField) {
+                    hasAtLeastOne = true;
+                    if (item.getMedicineName() == null || item.getMedicineName().isBlank()) {
+                        bindingResult.rejectValue("medicineItems[" + i + "].medicineName", "error.medicineName", "Medicine Name is required");
+                    }
+                    if (item.getPrice() == null) {
+                        bindingResult.rejectValue("medicineItems[" + i + "].price", "error.price", "Price is required");
+                    } else if (item.getPrice().compareTo(BigDecimal.ZERO) < 0) {
+                        bindingResult.rejectValue("medicineItems[" + i + "].price", "error.price", "Price cannot be negative");
+                    }
+                    if (item.getExpiryDate() == null) {
+                        bindingResult.rejectValue("medicineItems[" + i + "].expiryDate", "error.expiryDate", "Expiry Date is required");
+                    }
+                }
+            }
+            if (!hasAtLeastOne) {
+                bindingResult.rejectValue("medicineItems", "error.medicineItems", "At least one medicine row is required");
+            }
+        } else if (dto.getDonationType() == DonationType.FOOD) {
+            List<DonorFormDTO.FoodItemDTO> items = dto.getFoodItems();
+            boolean hasAtLeastOne = false;
+            for (int i = 0; i < items.size(); i++) {
+                DonorFormDTO.FoodItemDTO item = items.get(i);
+                boolean hasAnyField = (item.getFoodName() != null && !item.getFoodName().isBlank())
+                        || (item.getQuantity() != null && !item.getQuantity().isBlank());
+                if (hasAnyField) {
+                    hasAtLeastOne = true;
+                    if (item.getFoodName() == null || item.getFoodName().isBlank()) {
+                        bindingResult.rejectValue("foodItems[" + i + "].foodName", "error.foodName", "Food Name is required");
+                    }
+                    if (item.getQuantity() == null || item.getQuantity().isBlank()) {
+                        bindingResult.rejectValue("foodItems[" + i + "].quantity", "error.quantity", "Quantity is required");
+                    }
+                }
+            }
+            if (!hasAtLeastOne) {
+                bindingResult.rejectValue("foodItems", "error.foodItems", "At least one food row is required");
+            }
+        } else if (dto.getDonationType() == DonationType.CASH || dto.getDonationType() == DonationType.UPI || dto.getDonationType() == DonationType.CHEQUE) {
+            if (dto.getDonationAmount() == null) {
+                bindingResult.rejectValue("donationAmount", "error.donationAmount", "Donation Amount is required");
+            }
+        }
     }
 }

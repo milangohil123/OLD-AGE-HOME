@@ -19,11 +19,17 @@ public interface DonorService {
     /** Fetch single donor by primary key. */
     Donor getDonorById(Long id);
 
-    /** Create a new donor record. */
-    Donor saveDonor(Donor donor);
+    /** Fetch single donor by primary key and convert to Form DTO for editing. */
+    DonorFormDTO getDonorFormDtoById(Long id);
 
-    /** Update an existing donor record. */
-    Donor updateDonor(Donor donor);
+    /** Create a new donor record from Form DTO. */
+    Donor saveDonor(DonorFormDTO dto);
+
+    /** Update an existing donor record from Form DTO. */
+    Donor updateDonor(DonorFormDTO dto);
+
+    /** Keep basic save/update for entities if needed (e.g. import). */
+    Donor saveDonor(Donor donor);
 
     /** Delete a donor by primary key. */
     void deleteDonor(Long id);

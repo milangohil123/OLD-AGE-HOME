@@ -13,6 +13,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "donors")
@@ -25,8 +27,6 @@ public class Donor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-
 
     @NotBlank(message = "Full name is required")
     @Size(min = 2, max = 100, message = "Full name must be between 2 and 100 characters")
@@ -66,14 +66,20 @@ public class Donor {
     @Column(length = 10)
     private String pincode;
 
+    // ── Donation Frequency (new field — column already added in Supabase) ──────
+    @NotNull(message = "Donation frequency is required")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "donation_frequency", nullable = false, length = 20)
+    private DonationFrequency donationFrequency;
+
     @NotNull(message = "Donation type is required")
     @Enumerated(EnumType.STRING)
     @Column(name = "donation_type", nullable = false, length = 20)
     private DonationType donationType;
 
-    @NotNull(message = "Donation amount is required")
+    // Nullable — not required for MEDICINE and FOOD donation types
     @DecimalMin(value = "0.0", inclusive = true, message = "Donation amount cannot be negative")
-    @Column(name = "donation_amount", nullable = false, precision = 10, scale = 2)
+    @Column(name = "donation_amount", precision = 10, scale = 2)
     private BigDecimal donationAmount;
 
     @NotNull(message = "Donation date is required")
@@ -105,7 +111,19 @@ public class Donor {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    // Age calculation callback hook
+    // ── Child Collections ─────────────────────────────────────────────────────
+
+    @OneToMany(mappedBy = "donor", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OrderBy("displayOrder ASC")
+    @Builder.Default
+    private List<MedicineDonationItem> medicineItems = new ArrayList<>();
+
+    @OneToMany(mappedBy = "donor", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OrderBy("displayOrder ASC")
+    @Builder.Default
+    private List<FoodDonationItem> foodItems = new ArrayList<>();
+
+    // ── Age calculation callback hook ─────────────────────────────────────────
     @PrePersist
     @PreUpdate
     public void calculateAge() {

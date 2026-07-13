@@ -122,23 +122,132 @@
                         <div class="row">
                             <div class="col-md-6 mb-4">
                                 <label
+                                    th:replace="~{fragments/forms :: label('donationFrequency', 'Donation Frequency', true)}"></label>
+                                <select class="form-select" th:field="*{donationFrequency}"
+                                    th:classappend="${#fields.hasErrors('donationFrequency')} ? 'is-invalid' : ''" required>
+                                    <option value="">-- Select Frequency --</option>
+                                    <option th:each="df : ${donationFrequencies}" th:value="${df}" th:text="${df}"></option>
+                                </select>
+                                <div th:replace="~{fragments/forms :: field-error('donationFrequency')}"></div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label
                                     th:replace="~{fragments/forms :: label('donationType', 'Donation Type', true)}"></label>
-                                <select class="form-select" th:field="*{donationType}"
+                                <select class="form-select" th:field="*{donationType}" id="donationTypeSelect"
                                     th:classappend="${#fields.hasErrors('donationType')} ? 'is-invalid' : ''" required>
                                     <option value="">-- Select Type --</option>
                                     <option th:each="dt : ${donationTypes}" th:value="${dt}" th:text="${dt}"></option>
                                 </select>
                                 <div th:replace="~{fragments/forms :: field-error('donationType')}"></div>
                             </div>
-                            <div class="col-md-6 mb-4">
+                        </div>
+
+                        <div class="row" id="donationAmountContainer">
+                            <div class="col-md-12 mb-4">
                                 <label
                                     th:replace="~{fragments/forms :: label('donationAmount', 'Donation Amount (₹)', true)}"></label>
-                                <input type="number" step="0.01" min="0" class="form-control"
+                                <input type="number" step="0.01" min="0" class="form-control" id="donationAmountInput"
                                     th:field="*{donationAmount}"
                                     th:classappend="${#fields.hasErrors('donationAmount')} ? 'is-invalid' : ''"
-                                    placeholder="e.g. 5000.00" required>
+                                    placeholder="e.g. 5000.00">
                                 <div th:replace="~{fragments/forms :: field-error('donationAmount')}"></div>
                             </div>
+                        </div>
+
+                        <!-- Medicine Table Container -->
+                        <div id="medicineTableContainer" class="mb-4" style="display: none;">
+                            <h5 class="fw-bold mb-3 text-secondary">Medicines List</h5>
+                            <div class="table-responsive">
+                                <table class="table table-bordered align-middle" id="medicineTable">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Medicine Name <span class="text-danger">*</span></th>
+                                            <th style="width: 150px;">Price (₹) <span class="text-danger">*</span></th>
+                                            <th style="width: 200px;">Expiry Date <span class="text-danger">*</span></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="item, stat : *{medicineItems}">
+                                            <td>
+                                                <input type="text" class="form-control med-name" 
+                                                       th:field="*{medicineItems[__${stat.index}__].medicineName}"
+                                                       th:classappend="${#fields.hasErrors('medicineItems[__${stat.index}__].medicineName')} ? 'is-invalid' : ''"
+                                                       placeholder="e.g. Paracetamol 500mg">
+                                                <div th:replace="~{fragments/forms :: field-error('medicineItems[__${stat.index}__].medicineName')}"></div>
+                                            </td>
+                                            <td>
+                                                <input type="number" step="0.01" min="0" class="form-control med-price" 
+                                                       th:field="*{medicineItems[__${stat.index}__].price}"
+                                                       th:classappend="${#fields.hasErrors('medicineItems[__${stat.index}__].price')} ? 'is-invalid' : ''"
+                                                       placeholder="0.00">
+                                                <div th:replace="~{fragments/forms :: field-error('medicineItems[__${stat.index}__].price')}"></div>
+                                            </td>
+                                            <td>
+                                                <input type="date" class="form-control med-expiry" 
+                                                       th:field="*{medicineItems[__${stat.index}__].expiryDate}"
+                                                       th:classappend="${#fields.hasErrors('medicineItems[__${stat.index}__].expiryDate')} ? 'is-invalid' : ''">
+                                                <div th:replace="~{fragments/forms :: field-error('medicineItems[__${stat.index}__].expiryDate')}"></div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-outline-primary btn-sm px-3" onclick="addMedicineRow()">
+                                    <i class="bi bi-plus-circle"></i> Add Row
+                                </button>
+                                <button type="button" class="btn btn-outline-danger btn-sm px-3" onclick="removeMedicineRow()">
+                                    <i class="bi bi-dash-circle"></i> Remove Row
+                                </button>
+                            </div>
+                            <div th:if="${#fields.hasErrors('medicineItems')}" class="text-danger small mt-2" th:errors="*{medicineItems}"></div>
+                        </div>
+
+                        <!-- Food Table Container -->
+                        <div id="foodTableContainer" class="mb-4" style="display: none;">
+                            <h5 class="fw-bold mb-3 text-secondary">Food Items List</h5>
+                            <div class="table-responsive">
+                                <table class="table table-bordered align-middle" id="foodTable">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Food Name <span class="text-danger">*</span></th>
+                                            <th style="width: 250px;">Quantity <span class="text-danger">*</span></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="item, stat : *{foodItems}">
+                                            <td>
+                                                <input type="text" class="form-control food-name" 
+                                                       th:field="*{foodItems[__${stat.index}__].foodName}"
+                                                       th:classappend="${#fields.hasErrors('foodItems[__${stat.index}__].foodName')} ? 'is-invalid' : ''"
+                                                       placeholder="e.g. Basmati Rice">
+                                                <div th:replace="~{fragments/forms :: field-error('foodItems[__${stat.index}__].foodName')}"></div>
+                                            </td>
+                                            <td>
+                                                <input type="text" class="form-control food-qty" 
+                                                       th:field="*{foodItems[__${stat.index}__].quantity}"
+                                                       th:classappend="${#fields.hasErrors('foodItems[__${stat.index}__].quantity')} ? 'is-invalid' : ''"
+                                                       placeholder="e.g. 50 kg" oninput="calculateTotalFoodQuantity()">
+                                                <div th:replace="~{fragments/forms :: field-error('foodItems[__${stat.index}__].quantity')}"></div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-outline-primary btn-sm px-3" onclick="addFoodRow()">
+                                        <i class="bi bi-plus-circle"></i> Add Row
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger btn-sm px-3" onclick="removeFoodRow()">
+                                        <i class="bi bi-dash-circle"></i> Remove Row
+                                    </button>
+                                </div>
+                                <div class="fw-bold fs-5 text-primary">
+                                    Total Quantity: <span id="total-food-quantity">0</span>
+                                </div>
+                            </div>
+                            <div th:if="${#fields.hasErrors('foodItems')}" class="text-danger small mt-2" th:errors="*{foodItems}"></div>
                         </div>
 
                         <div class="row">
@@ -235,6 +344,125 @@
             </div>
         </form>
 
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                const donationTypeSelect = document.getElementById("donationTypeSelect");
+                const donationAmountContainer = document.getElementById("donationAmountContainer");
+                const donationAmountInput = document.getElementById("donationAmountInput");
+                const medicineTableContainer = document.getElementById("medicineTableContainer");
+                const foodTableContainer = document.getElementById("foodTableContainer");
+
+                function toggleFields() {
+                    const type = donationTypeSelect.value;
+                    
+                    if (type === "MEDICINE") {
+                        donationAmountContainer.style.display = "none";
+                        donationAmountInput.removeAttribute("required");
+                        medicineTableContainer.style.display = "block";
+                        foodTableContainer.style.display = "none";
+                    } else if (type === "FOOD") {
+                        donationAmountContainer.style.display = "none";
+                        donationAmountInput.removeAttribute("required");
+                        medicineTableContainer.style.display = "none";
+                        foodTableContainer.style.display = "block";
+                        calculateTotalFoodQuantity();
+                    } else {
+                        donationAmountContainer.style.display = "flex";
+                        if (type === "CASH" || type === "UPI" || type === "CHEQUE") {
+                            donationAmountInput.setAttribute("required", "required");
+                        } else {
+                            donationAmountInput.removeAttribute("required");
+                        }
+                        medicineTableContainer.style.display = "none";
+                        foodTableContainer.style.display = "none";
+                    }
+                }
+
+                donationTypeSelect.addEventListener("change", toggleFields);
+                toggleFields(); // Initial call
+            });
+
+            function addMedicineRow() {
+                const tbody = document.querySelector('#medicineTable tbody');
+                const idx = tbody.rows.length;
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <input type="text" class="form-control med-name" name="medicineItems[${idx}].medicineName" placeholder="e.g. Paracetamol 500mg">
+                    </td>
+                    <td>
+                        <input type="number" step="0.01" min="0" class="form-control med-price" name="medicineItems[${idx}].price" placeholder="0.00">
+                    </td>
+                    <td>
+                        <input type="date" class="form-control med-expiry" name="medicineItems[${idx}].expiryDate">
+                    </td>
+                `;
+                tbody.appendChild(row);
+            }
+
+            function removeMedicineRow() {
+                const tbody = document.querySelector('#medicineTable tbody');
+                if (tbody.rows.length > 1) {
+                    tbody.removeChild(tbody.lastChild);
+                    reindexMedicineRows();
+                }
+            }
+
+            function reindexMedicineRows() {
+                const rows = document.querySelectorAll('#medicineTable tbody tr');
+                rows.forEach((row, idx) => {
+                    row.querySelector('.med-name').name = `medicineItems[${idx}].medicineName`;
+                    row.querySelector('.med-price').name = `medicineItems[${idx}].price`;
+                    row.querySelector('.med-expiry').name = `medicineItems[${idx}].expiryDate`;
+                });
+            }
+
+            function addFoodRow() {
+                const tbody = document.querySelector('#foodTable tbody');
+                const idx = tbody.rows.length;
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <input type="text" class="form-control food-name" name="foodItems[${idx}].foodName" placeholder="e.g. Basmati Rice">
+                    </td>
+                    <td>
+                        <input type="text" class="form-control food-qty" name="foodItems[${idx}].quantity" placeholder="e.g. 50 kg" oninput="calculateTotalFoodQuantity()">
+                    </td>
+                `;
+                tbody.appendChild(row);
+                calculateTotalFoodQuantity();
+            }
+
+            function removeFoodRow() {
+                const tbody = document.querySelector('#foodTable tbody');
+                if (tbody.rows.length > 1) {
+                    tbody.removeChild(tbody.lastChild);
+                    reindexFoodRows();
+                    calculateTotalFoodQuantity();
+                }
+            }
+
+            function reindexFoodRows() {
+                const rows = document.querySelectorAll('#foodTable tbody tr');
+                rows.forEach((row, idx) => {
+                    row.querySelector('.food-name').name = `foodItems[${idx}].foodName`;
+                    row.querySelector('.food-qty').name = `foodItems[${idx}].quantity`;
+                });
+            }
+
+            function calculateTotalFoodQuantity() {
+                let total = 0;
+                const qtyInputs = document.querySelectorAll('#foodTable tbody .food-qty');
+                qtyInputs.forEach(input => {
+                    const val = input.value.trim();
+                    const num = parseFloat(val);
+                    if (!isNaN(num)) {
+                        total += num;
+                    }
+                });
+                document.getElementById('total-food-quantity').textContent = total;
+            }
+        </script>
     </div>
 
 </body>

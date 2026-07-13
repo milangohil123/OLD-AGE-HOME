@@ -80,23 +80,23 @@
                         </div>
                         <div class="col-sm-6 col-lg-4">
                             <div class="d-flex align-items-start gap-2">
+                                <i class="bi bi-arrow-repeat pf-quick-icon"></i>
+                                <div>
+                                    <div class="pf-quick-label">Donation Frequency</div>
+                                    <div class="pf-quick-value"
+                                         th:classappend="${donor.donationFrequency == null} ? 'pf-empty'"
+                                         th:text="${donor.donationFrequency != null} ? ${donor.donationFrequency} : '—'">—</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-4">
+                            <div class="d-flex align-items-start gap-2">
                                 <i class="bi bi-gift pf-quick-icon"></i>
                                 <div>
                                     <div class="pf-quick-label" th:text="#{donor.view.stat.type}">Donation Type</div>
                                     <div class="pf-quick-value"
                                          th:classappend="${donor.donationType == null} ? 'pf-empty'"
                                          th:text="${donor.donationType != null} ? ${donor.donationType} : '—'">—</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-lg-4">
-                            <div class="d-flex align-items-start gap-2">
-                                <i class="bi bi-currency-rupee pf-quick-icon"></i>
-                                <div>
-                                    <div class="pf-quick-label" th:text="#{donor.view.stat.amount}">Amount</div>
-                                    <div class="pf-quick-value"
-                                         th:classappend="${donor.donationAmount == null} ? 'pf-empty'"
-                                         th:text="${donor.donationAmount != null} ? '₹' + ${#numbers.formatDecimal(donor.donationAmount, 1, 'COMMA', 2, 'POINT')} : '—'">—</div>
                                 </div>
                             </div>
                         </div>
@@ -185,6 +185,72 @@
 
             <!-- Right Column -->
             <div class="col-lg-8 col-md-12">
+
+                <!-- Donation specific tables (Medicine / Food) or Donation Amount -->
+                <div class="card mb-4">
+                    <h5 class="pf-card-title">
+                        <i class="bi bi-gift-fill"></i> Donation Details
+                    </h5>
+                    <div class="p-3">
+                        <!-- Medicine Table -->
+                        <div th:if="${donor.donationType.name() == 'MEDICINE'}">
+                            <h6 class="fw-bold text-secondary mb-3">Medicine Donation Items</h6>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Medicine Name</th>
+                                            <th style="width: 150px;">Price</th>
+                                            <th style="width: 180px;">Expiry Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="m : ${donor.medicineItems}">
+                                            <td class="fw-bold" th:text="${m.medicineName}">Medicine Name</td>
+                                            <td th:text="'₹' + ${#numbers.formatDecimal(m.price != null ? m.price : 0, 1, 'COMMA', 2, 'POINT')}">₹0.00</td>
+                                            <td th:text="${m.expiryDate != null ? #temporals.format(m.expiryDate, 'dd-MM-yyyy') : '—'}">—</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Food Table -->
+                        <div th:if="${donor.donationType.name() == 'FOOD'}">
+                            <h6 class="fw-bold text-secondary mb-3">Food Donation Items</h6>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Food Name</th>
+                                            <th style="width: 250px;">Quantity</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="f : ${donor.foodItems}">
+                                            <td class="fw-bold" th:text="${f.foodName}">Food Name</td>
+                                            <td th:text="${f.quantity}">Quantity</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Other types: Display Donation Amount -->
+                        <div th:if="${donor.donationType.name() != 'MEDICINE' and donor.donationType.name() != 'FOOD'}">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="bg-primary bg-opacity-10 text-primary rounded px-3 py-2 fs-3">
+                                    <i class="bi bi-cash-coin"></i>
+                                </div>
+                                <div>
+                                    <span class="text-muted small d-block">Donation Amount</span>
+                                    <h3 class="fw-bold text-primary mb-0" 
+                                        th:text="${donor.donationAmount != null ? '₹' + #numbers.formatDecimal(donor.donationAmount, 1, 'COMMA', 2, 'POINT') : '₹0.00'}">₹0.00</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Contact & Address -->
                 <div class="card mb-4">
