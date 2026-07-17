@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Money Receipt - ' + ${receipt.receiptNumber}">Money Receipt</title>
+    <style>
+        /* ─── Reset ─────────────────────────────────────────────────────────── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 13px;
+            color: #000;
+            background: #f0f0f0;
+        }
+
+        /* ─── Screen preview wrapper ─────────────────────────────────────── */
+        .preview-actions {
+            background: #1a1a2e;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .preview-actions h6 {
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0;
+            flex: 1;
+        }
+        .btn-print {
+            background: #c0392b;
+            color: #fff;
+            border: none;
+            padding: 8px 24px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-back {
+            background: transparent;
+            color: #ccc;
+            border: 1px solid #555;
+            padding: 8px 18px;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-back:hover { background: #333; color: #fff; }
+
+        .page-wrapper {
+            display: flex;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        /* ─── Receipt Paper ──────────────────────────────────────────────── */
+        .receipt {
+            width: 210mm;
+            min-height: 297mm;
+            background: #fff;
+            padding: 14mm 14mm 10mm 14mm;
+            box-shadow: 0 4px 32px rgba(0,0,0,0.18);
+            position: relative;
+        }
+
+        /* ─── Header ─────────────────────────────────────────────────────── */
+        .receipt-header {
+            display: flex;
+            align-items: stretch;
+            gap: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #8b0000;
+            margin-bottom: 8px;
+        }
+        .header-logo {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 70px;
+        }
+        .logo-svg { width: 62px; height: 62px; }
+        .header-center { flex: 1; padding: 0 8px; }
+        .org-subtitle {
+            font-size: 9.5px;
+            color: #8b0000;
+            font-weight: 500;
+            margin-bottom: 1px;
+        }
+        .org-name {
+            font-size: 20px;
+            font-weight: 900;
+            color: #8b0000;
+            line-height: 1.1;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .org-tagline {
+            font-family: Georgia, serif;
+            font-style: italic;
+            font-size: 12px;
+            color: #8b0000;
+            margin-top: 4px;
+            border-top: 1px solid #8b0000;
+            padding-top: 3px;
+            display: inline-block;
+        }
+        .header-contact {
+            font-size: 10.5px;
+            line-height: 1.7;
+            text-align: left;
+            white-space: nowrap;
+            min-width: 200px;
+        }
+        .header-contact .ci { display: flex; align-items: flex-start; gap: 4px; }
+        .header-contact .ci-icon { color: #8b0000; font-size: 11px; flex-shrink: 0; margin-top: 1px; }
+
+        /* ─── Receipt Number Row ─────────────────────────────────────────── */
+        .receipt-no-row {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin: 10px 0 4px 0;
+            font-size: 13px;
+        }
+        .receipt-no-row .no-label { font-weight: 700; white-space: nowrap; }
+        .receipt-no-input {
+            border: none;
+            border-bottom: 1px solid #555;
+            outline: none;
+            width: 160px;
+            font-size: 13px;
+            padding: 0 4px;
+            margin: 0 8px;
+            font-family: inherit;
+        }
+        .receipt-type-box {
+            border: 2px solid #8b0000;
+            color: #8b0000;
+            font-weight: 900;
+            font-size: 15px;
+            padding: 3px 14px;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+        .dt-label { font-weight: 700; white-space: nowrap; margin-left: auto; }
+        .dt-input {
+            border: none;
+            border-bottom: 1px solid #555;
+            outline: none;
+            width: 120px;
+            font-size: 13px;
+            padding: 0 4px;
+            margin-left: 6px;
+            font-family: inherit;
+        }
+
+        /* ─── Trust Info Lines ───────────────────────────────────────────── */
+        .trust-info {
+            text-align: center;
+            font-size: 11.5px;
+            line-height: 1.7;
+            border-bottom: 1px solid #000;
+            padding-bottom: 6px;
+            margin-bottom: 10px;
+        }
+
+        /* ─── Field Lines ────────────────────────────────────────────────── */
+        .field-row {
+            display: flex;
+            align-items: flex-end;
+            margin-bottom: 10px;
+            gap: 4px;
+        }
+        .field-label {
+            font-weight: 700;
+            white-space: nowrap;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+        .field-input {
+            flex: 1;
+            border: none;
+            border-bottom: 1px solid #333;
+            outline: none;
+            font-size: 13px;
+            padding: 0 4px 1px 4px;
+            font-family: inherit;
+            background: transparent;
+            min-width: 0;
+        }
+        .field-row-multi {
+            display: flex;
+            gap: 8px;
+        }
+        .field-row-multi .field-chunk {
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+            flex: 1;
+        }
+
+        /* ─── Particulars Table ──────────────────────────────────────────── */
+        .section-divider {
+            border: none;
+            border-top: 1px solid #333;
+            margin: 10px 0 6px 0;
+        }
+        .particulars-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 6px;
+        }
+        .particulars-table th {
+            background: #fff;
+            font-size: 13px;
+            font-weight: 700;
+            color: #8b0000;
+            border: 1.5px solid #333;
+            padding: 5px 8px;
+        }
+        .particulars-table td {
+            border: 1.5px solid #333;
+            padding: 4px 8px;
+            font-size: 13px;
+            vertical-align: middle;
+        }
+        .particulars-table td.amount-col { width: 120px; text-align: right; }
+        .particulars-table td input,
+        .particulars-table th input {
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 13px;
+            font-family: inherit;
+            background: transparent;
+        }
+        .particulars-table tr.highlight td { background: #fff8f8; }
+
+        .fund-row { display: flex; gap: 28px; align-items: center; padding: 6px 8px; }
+        .fund-row label { display: flex; align-items: center; gap: 6px; font-weight: 600; cursor: pointer; }
+        .fund-check { width: 14px; height: 14px; border: 1.5px solid #333; }
+
+        .amount-words-row {
+            border-top: 1.5px solid #333;
+            padding: 6px 8px;
+            font-size: 13px;
+        }
+        .amount-words-row strong { margin-right: 4px; }
+        .amount-words-input {
+            border: none;
+            border-bottom: 1px solid #333;
+            outline: none;
+            font-size: 13px;
+            padding: 0 4px;
+            font-family: inherit;
+            min-width: 260px;
+            background: transparent;
+        }
+
+        /* ─── Footer ─────────────────────────────────────────────────────── */
+        .receipt-footer {
+            margin-top: 10px;
+            border-top: 1px solid #333;
+            padding-top: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        .footer-disclaimer { font-size: 9.5px; line-height: 1.6; max-width: 55%; }
+        .footer-right { text-align: right; font-size: 12px; line-height: 1.8; }
+        .footer-right .for-text { font-size: 10.5px; }
+        .footer-right .org-footer { font-weight: 700; font-size: 12px; }
+
+        .thankyou-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 18px;
+        }
+        .thankyou {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #8b0000;
+        }
+        .thankyou .ty-icon { font-size: 26px; }
+        .thankyou .ty-text h4 { font-size: 16px; font-weight: 900; color: #8b0000; margin: 0; }
+        .thankyou .ty-text p { font-size: 10px; color: #555; margin: 0; }
+        .manager-sign { text-align: right; font-size: 13px; font-weight: 700; }
+
+        /* ─── Print styles ───────────────────────────────────────────────── */
+        @media print {
+            body { background: #fff; }
+            .preview-actions { display: none !important; }
+            .page-wrapper { padding: 0; }
+            .receipt {
+                width: 100%;
+                min-height: auto;
+                padding: 8mm 10mm;
+                box-shadow: none;
+            }
+            input, textarea {
+                border-color: transparent !important;
+                border-bottom-color: #999 !important;
+            }
+        }
+        @page { size: A4 portrait; margin: 8mm; }
+    </style>
+</head>
+<body>
+
+    <!-- ── Screen Action Bar (hidden on print) ──────────────────────────────── -->
+    <div class="preview-actions">
+        <h6>🖨 Receipt Preview — <span th:text="${receipt.receiptNumber}"></span></h6>
+        <a th:href="${receipt.backUrl}" class="btn-back">← Back to Profile</a>
+        <button class="btn-print" onclick="window.print()">🖨 Print Receipt</button>
+    </div>
+
+    <div class="page-wrapper">
+        <div class="receipt">
+
+            <!-- ─── HEADER ──────────────────────────────────────────────────── -->
+            <div class="receipt-header">
+                <!-- Logo (SVG silhouette of two people — approximates the physical receipt) -->
+                <div class="header-logo">
+                    <svg class="logo-svg" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Two elderly figures in red -->
+                        <circle cx="24" cy="16" r="8" fill="#8b0000"/>
+                        <path d="M14 30 Q18 24 24 24 Q30 24 34 30 L36 52 L12 52 Z" fill="#8b0000"/>
+                        <line x1="24" y1="45" x2="20" y2="62" stroke="#8b0000" stroke-width="3"/>
+                        <line x1="24" y1="45" x2="28" y2="62" stroke="#8b0000" stroke-width="3"/>
+                        <!-- Walking stick -->
+                        <line x1="34" y1="32" x2="38" y2="62" stroke="#8b0000" stroke-width="2.5"/>
+                        <!-- Second figure -->
+                        <circle cx="54" cy="14" r="7" fill="#8b0000"/>
+                        <path d="M44 28 Q49 22 54 22 Q60 22 64 28 L65 50 L43 50 Z" fill="#8b0000"/>
+                        <line x1="54" y1="44" x2="50" y2="60" stroke="#8b0000" stroke-width="3"/>
+                        <line x1="54" y1="44" x2="58" y2="60" stroke="#8b0000" stroke-width="3"/>
+                    </svg>
+                </div>
+
+                <div class="header-center">
+                    <div class="org-subtitle">Indian Council of Social Welfare</div>
+                    <div class="org-name">SHRI M. P. SHAH MUNICIPAL<br>VRUDHASHRAM</div>
+                    <div class="org-tagline">We Care for Seniors</div>
+                </div>
+
+                <div class="header-contact">
+                    <div class="ci"><span class="ci-icon">📍</span><span>Beside S. B. Sharma School, Mehulnagar<br>Road, Khodiyar Colony, Jamnagar 961006</span></div>
+                    <div class="ci"><span class="ci-icon">✉</span><span>: mpsm.vrudhashram@gmail.com</span></div>
+                    <div class="ci"><span class="ci-icon">🌐</span><span>: www.mpshahvruddhashram.org</span></div>
+                    <div class="ci"><span class="ci-icon">📘</span><span>: /mpshahvruddhashram</span></div>
+                    <div class="ci"><span class="ci-icon">📞</span><span>: +91 99788 97720 &nbsp;☎ 0288-2710780<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+91 9512710780</span></div>
+                </div>
+            </div>
+
+            <!-- ─── RECEIPT NUMBER ROW ─────────────────────────────────────── -->
+            <div class="receipt-no-row">
+                <span class="no-label">No. :</span>
+                <input class="receipt-no-input" type="text" th:value="${receipt.receiptNumber}" placeholder="Receipt No.">
+                <div class="receipt-type-box">MONEY RECEIPT</div>
+                <span class="dt-label">Dt. :</span>
+                <input class="dt-input" type="date" th:value="${receipt.donationDate}">
+            </div>
+
+            <!-- ─── TRUST REGISTRATION LINES ─────────────────────────────── -->
+            <div class="trust-info">
+                Trust Reg. No. E-201 &nbsp;|&nbsp; PAN : AAETM3334R<br>
+                80G Regn. No. AAETM3334RF20214 Dt. 28-05-2021<br>
+                FRCA Registration No. : 042020056
+            </div>
+
+            <!-- ─── RECEIVED FROM ─────────────────────────────────────────── -->
+            <div class="field-row">
+                <span class="field-label">Received with thanks from</span>
+                <input class="field-input" type="text" th:value="${receipt.donorName}" placeholder="Donor Name">
+            </div>
+
+            <!-- ─── ADDRESS (2 lines) ─────────────────────────────────────── -->
+            <div class="field-row">
+                <span class="field-label">Address</span>
+                <input class="field-input" type="text" th:value="${receipt.address}" placeholder="Address">
+            </div>
+            <div class="field-row" style="margin-top: -6px;">
+                <input class="field-input" type="text" value="" placeholder="">
+            </div>
+
+            <!-- ─── EMAIL ─────────────────────────────────────────────────── -->
+            <div class="field-row">
+                <span class="field-label">E-mail ID :</span>
+                <input class="field-input" type="text" th:value="${receipt.email}" placeholder="Email">
+            </div>
+
+            <!-- ─── ID PROOF / BIRTH DATE / MARRIAGE DATE ─────────────────── -->
+            <div class="field-row-multi" style="margin-bottom: 12px;">
+                <div class="field-chunk" style="flex: 2;">
+                    <span class="field-label">ID Proof</span>
+                    <input class="field-input" type="text" th:value="${receipt.idProof}" placeholder="Aadhaar / PAN">
+                </div>
+                <div class="field-chunk">
+                    <span class="field-label">Birth Dt:</span>
+                    <input class="field-input" type="text"
+                           th:value="${receipt.birthDate != null ? #temporals.format(receipt.birthDate, 'dd-MM-yyyy') : ''}"
+                           placeholder="DD-MM-YYYY">
+                </div>
+                <div class="field-chunk">
+                    <span class="field-label">Marriage Dt:</span>
+                    <input class="field-input" type="text" value="" placeholder="DD-MM-YYYY">
+                </div>
+            </div>
+
+            <!-- ─── PARTICULARS TABLE ─────────────────────────────────────── -->
+            <table class="particulars-table">
+                <thead>
+                    <tr>
+                        <th style="text-align: left; color: #8b0000;">Particulars</th>
+                        <th class="amount-col" style="color: #8b0000;">Amount - INR</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Cash/Cheque/UTR row -->
+                    <tr>
+                        <td>
+                            Received With Thanks by Cash/Cheque/UTR No.&nbsp;
+                            <input type="text" th:value="${receipt.transactionId}" placeholder="Transaction / UTR No." style="width: 180px; border-bottom: 1px solid #555;">
+                        </td>
+                        <td class="amount-col" rowspan="3" style="vertical-align: middle; text-align: center;">
+                            <input type="text"
+                                   th:value="${receipt.donationAmount != null ? receipt.donationAmount : ''}"
+                                   placeholder="0.00"
+                                   style="text-align: right; font-weight: 700; font-size: 14px; width: 100px;">
+                        </td>
+                    </tr>
+                    <!-- Date line -->
+                    <tr>
+                        <td>
+                            <span style="display:flex; align-items:flex-end; gap:6px;">
+                                <input type="text" th:value="${receipt.paymentMethod}" placeholder="Payment Method / Bank" style="flex:1; border-bottom:1px solid #555;">
+                                <span style="white-space:nowrap;">Date :</span>
+                                <input type="date" th:value="${receipt.donationDate}" style="border-bottom:1px solid #555; border-top:none; border-left:none; border-right:none; outline:none; font-family:inherit; font-size:13px;">
+                            </span>
+                        </td>
+                    </tr>
+                    <!-- Drawn on -->
+                    <tr>
+                        <td>
+                            Drawn on <input type="text" placeholder="Bank Name" style="width: 200px; border-bottom:1px solid #555;"> for the following
+                        </td>
+                    </tr>
+                    <!-- Fund checkboxes -->
+                    <tr>
+                        <td colspan="2">
+                            <div class="fund-row">
+                                <label>
+                                    <input type="checkbox" class="fund-check"> General Fund
+                                </label>
+                                <label>
+                                    <input type="checkbox" class="fund-check"> Corpus Fund
+                                </label>
+                                <label>
+                                    <input type="checkbox" class="fund-check"> Others
+                                </label>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- ─── AMOUNT IN WORDS ───────────────────────────────────────── -->
+            <div class="amount-words-row">
+                <strong>Amount in Rupees :</strong>
+                <input class="amount-words-input" type="text"
+                       th:value="${receipt.amountInWords}"
+                       placeholder="Amount in words">
+            </div>
+
+            <!-- ─── FOOTER ────────────────────────────────────────────────── -->
+            <div class="receipt-footer">
+                <div class="footer-disclaimer">
+                    Cheque Subject to realisation : Subject to Jamnagar Jurisdiction<br>
+                    As per Govt. GR - Charitable Trust are exempted from Revenue stamp
+                </div>
+                <div class="footer-right">
+                    <div class="for-text">For &nbsp;&nbsp;&nbsp; Indian Council of Social Welfare</div>
+                    <div class="org-footer">Shri M. P. Shah Municipal Vrudhashram</div>
+                </div>
+            </div>
+
+            <!-- ─── THANK YOU ─────────────────────────────────────────────── -->
+            <div class="thankyou-row">
+                <div class="thankyou">
+                    <div class="ty-icon">🙏</div>
+                    <div class="ty-text">
+                        <h4>Thank You...</h4>
+                        <p>for your kind support</p>
+                    </div>
+                </div>
+                <div class="manager-sign">Manager / Trustee</div>
+            </div>
+
+        </div><!-- /.receipt -->
+    </div><!-- /.page-wrapper -->
+
+</body>
+</html>
