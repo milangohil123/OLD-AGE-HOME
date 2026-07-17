@@ -245,7 +245,7 @@ public class DonorServiceImpl implements DonorService {
                              (dto.getMobile() != null ? dto.getMobile() : "") + "|" +
                              (dto.getEmail() != null ? dto.getEmail() : "") + "|" +
                              dto.getDonationDate().toString() + "|" +
-                             dto.getDonationType().name() + "|" +
+                             (dto.getDonationType() != null ? dto.getDonationType().name() : "") + "|" +
                              (dto.getTransactionId() != null ? dto.getTransactionId() : "");
 
                 Donor donor = activeImportMap.get(key);

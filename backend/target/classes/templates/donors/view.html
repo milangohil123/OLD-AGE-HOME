@@ -193,7 +193,7 @@
                     </h5>
                     <div class="p-3">
                         <!-- Medicine Table -->
-                        <div th:if="${donor.donationType.name() == 'MEDICINE'}">
+                        <div th:if="${donor.donationType != null and donor.donationType.name() == 'MEDICINE'}">
                             <h6 class="fw-bold text-secondary mb-3">Medicine Donation Items</h6>
                             <div class="table-responsive">
                                 <table class="table table-bordered table-hover align-middle">
@@ -216,7 +216,7 @@
                         </div>
 
                         <!-- Food Table -->
-                        <div th:if="${donor.donationType.name() == 'FOOD'}">
+                        <div th:if="${donor.donationType != null and donor.donationType.name() == 'FOOD'}">
                             <h6 class="fw-bold text-secondary mb-3">Food Donation Items</h6>
                             <div class="table-responsive">
                                 <table class="table table-bordered table-hover align-middle">
@@ -243,7 +243,7 @@
                         </div>
 
                         <!-- Other types: Display Donation Amount -->
-                        <div th:if="${donor.donationType.name() != 'MEDICINE' and donor.donationType.name() != 'FOOD'}">
+                        <div th:if="${donor.donationType == null or (donor.donationType.name() != 'MEDICINE' and donor.donationType.name() != 'FOOD')}">
                             <div class="d-flex align-items-center gap-3">
                                 <div class="bg-primary bg-opacity-10 text-primary rounded px-3 py-2 fs-3">
                                     <i class="bi bi-cash-coin"></i>

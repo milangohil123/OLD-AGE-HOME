@@ -159,7 +159,7 @@
                             </td>
                             <td>
                                 <strong class="text-primary"
-                                        th:text="${d.donationType.name() != 'MEDICINE' and d.donationType.name() != 'FOOD' ? (d.donationAmount != null ? '₹' + #numbers.formatDecimal(d.donationAmount, 1, 'COMMA', 2, 'POINT') : '₹0.00') : '—'}">₹0.00</strong>
+                                        th:text="${(d.donationType != null and (d.donationType.name() == 'MEDICINE' or d.donationType.name() == 'FOOD')) ? '—' : (d.donationAmount != null ? '₹' + #numbers.formatDecimal(d.donationAmount, 1, 'COMMA', 2, 'POINT') : '₹0.00')}">₹0.00</strong>
                             </td>
                             <td th:text="${d.donationDate != null ? #temporals.format(d.donationDate, 'dd MMM yyyy') : '-'}">01 Jan 2026</td>
                             <td>

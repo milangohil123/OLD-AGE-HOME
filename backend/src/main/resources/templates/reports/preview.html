@@ -115,7 +115,7 @@
                             <td class="fw-bold" th:text="${d.fullName}">Name</td>
                             <td th:text="${d.donationFrequency != null ? d.donationFrequency.displayName : '-'}">Frequency</td>
                             <td th:text="${d.donationType != null ? d.donationType.displayName : '-'}">Type</td>
-                            <td class="text-success fw-bold" th:text="${d.donationType.name() != 'MEDICINE' and d.donationType.name() != 'FOOD' ? '₹' + d.donationAmount : '—'}">Amount</td>
+                            <td class="text-success fw-bold" th:text="${(d.donationType != null and (d.donationType.name() == 'MEDICINE' or d.donationType.name() == 'FOOD')) ? '—' : (d.donationAmount != null ? '₹' + d.donationAmount : '₹0.00')}">Amount</td>
                             <td th:text="${d.donationDate != null ? #temporals.format(d.donationDate, 'dd-MM-yyyy') : '-'}">Date</td>
                             <td th:text="${d.paymentMethod != null ? d.paymentMethod : '-'}">Method</td>
                             <td th:text="${d.transactionId != null ? d.transactionId : '-'}">Txn ID</td>
