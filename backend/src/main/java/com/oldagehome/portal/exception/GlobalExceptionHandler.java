@@ -20,20 +20,12 @@ public class GlobalExceptionHandler {
         
         String requestUrl = request.getRequestURI();
         
-        // Define fallback URL based on context
+        // Define fallback URL based on context.
+        // Always fall back to /dashboard to prevent infinite redirect loops on the same module,
+        // unless the error actually occurred on /dashboard itself.
         String fallbackUrl = "/dashboard";
-        if (requestUrl != null) {
-            if (requestUrl.startsWith("/residents")) {
-                fallbackUrl = "/residents";
-            } else if (requestUrl.startsWith("/donors")) {
-                fallbackUrl = "/donors";
-            } else if (requestUrl.startsWith("/reports")) {
-                fallbackUrl = "/reports";
-            } else if (requestUrl.startsWith("/settings")) {
-                fallbackUrl = "/settings";
-            } else if (requestUrl.startsWith("/inventory")) {
-                fallbackUrl = "/inventory";
-            }
+        if (requestUrl != null && (requestUrl.equals("/dashboard") || requestUrl.equals("/"))) {
+            fallbackUrl = "/login";
         }
         
         redirectAttributes.addFlashAttribute("errorMessage", "An unexpected error occurred while processing your request. The issue has been logged safely.");
