@@ -21,12 +21,15 @@ import java.util.*;
 public class DonorServiceImpl implements DonorService {
 
     private final DonorRepository donorRepository;
+    private final DonationRepository donationRepository;
     private final com.oldagehome.portal.audit.AuditService auditService;
 
     @Autowired
     public DonorServiceImpl(DonorRepository donorRepository,
+                            DonationRepository donationRepository,
                             com.oldagehome.portal.audit.AuditService auditService) {
         this.donorRepository = donorRepository;
+        this.donationRepository = donationRepository;
         this.auditService = auditService;
     }
 
@@ -140,6 +143,61 @@ public class DonorServiceImpl implements DonorService {
         Donor existing = getDonorById(id);
         donorRepository.delete(existing);
         auditService.logActivity(com.oldagehome.portal.audit.AuditModule.DONOR, com.oldagehome.portal.audit.AuditAction.DELETE, "Deleted donor record of: " + existing.getFullName(), "Donor", id, true, null);
+    }
+
+    @Override
+    public void saveDonation(DonationFormDTO dto) {
+        Donor donor = getDonorById(dto.getDonorId());
+        
+        Donation donation = Donation.builder()
+                .donor(donor)
+                .donationFrequency(dto.getDonationFrequency())
+                .donationType(dto.getDonationType())
+                .donationDate(dto.getDonationDate())
+                .paymentMethod(dto.getPaymentMethod())
+                .transactionId(dto.getTransactionId())
+                .remarks(dto.getRemarks())
+                .build();
+                
+        if (dto.getDonationType() == DonationType.MEDICINE || dto.getDonationType() == DonationType.FOOD) {
+            donation.setDonationAmount(BigDecimal.ZERO);
+        } else {
+            donation.setDonationAmount(dto.getDonationAmount());
+        }
+
+        if (dto.getDonationType() == DonationType.MEDICINE && dto.getMedicineItems() != null) {
+            int displayOrder = 1;
+            for (DonorFormDTO.MedicineItemDTO itemDto : dto.getMedicineItems()) {
+                if (itemDto.getMedicineName() == null || itemDto.getMedicineName().isBlank()) continue;
+                MedicineDonationItem item = MedicineDonationItem.builder()
+                        .donor(donor)
+                        .donation(donation)
+                        .medicineName(itemDto.getMedicineName().trim())
+                        .price(itemDto.getPrice() != null ? itemDto.getPrice() : BigDecimal.ZERO)
+                        .expiryDate(itemDto.getExpiryDate())
+                        .displayOrder(displayOrder++)
+                        .build();
+                donation.getMedicineItems().add(item);
+            }
+        } else if (dto.getDonationType() == DonationType.FOOD && dto.getFoodItems() != null) {
+            int displayOrder = 1;
+            for (DonorFormDTO.FoodItemDTO itemDto : dto.getFoodItems()) {
+                if (itemDto.getFoodName() == null || itemDto.getFoodName().isBlank()) continue;
+                FoodDonationItem item = FoodDonationItem.builder()
+                        .donor(donor)
+                        .donation(donation)
+                        .foodName(itemDto.getFoodName().trim())
+                        .quantity(itemDto.getQuantity() != null ? itemDto.getQuantity().trim() : "")
+                        .displayOrder(displayOrder++)
+                        .build();
+                donation.getFoodItems().add(item);
+            }
+        }
+        
+        Donation saved = donationRepository.save(donation);
+        
+        BigDecimal amount = saved.getDonationAmount() != null ? saved.getDonationAmount() : BigDecimal.ZERO;
+        auditService.logActivity(com.oldagehome.portal.audit.AuditModule.DONATION, com.oldagehome.portal.audit.AuditAction.CREATE, "Added new donation for: " + donor.getFullName() + ", Type: " + saved.getDonationType() + ", Amount: ₹" + amount, "Donation", saved.getId(), true, null);
     }
 
     private void mapDtoToEntity(DonorFormDTO dto, Donor donor) {

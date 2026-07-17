@@ -114,6 +114,11 @@ public class Donor {
     // ── Child Collections ─────────────────────────────────────────────────────
 
     @OneToMany(mappedBy = "donor", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OrderBy("donationDate DESC")
+    @Builder.Default
+    private List<Donation> donations = new ArrayList<>();
+
+    @OneToMany(mappedBy = "donor", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @OrderBy("displayOrder ASC")
     @Builder.Default
     private List<MedicineDonationItem> medicineItems = new ArrayList<>();

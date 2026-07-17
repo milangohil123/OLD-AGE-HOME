@@ -34,6 +34,9 @@ public interface DonorService {
     /** Delete a donor by primary key. */
     void deleteDonor(Long id);
 
+    /** Save a new donation to an existing donor */
+    void saveDonation(DonationFormDTO dto);
+
     /** Parse, validate, persist from Excel; returns row-level result DTOs. */
     List<com.oldagehome.portal.dto.DonorImportDTO> importFromExcel(MultipartFile file) throws Exception;
 

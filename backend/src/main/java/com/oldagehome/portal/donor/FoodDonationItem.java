@@ -30,6 +30,10 @@ public class FoodDonationItem {
     @JoinColumn(name = "donor_id", nullable = false)
     private Donor donor;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "donation_id")
+    private Donation donation;
+
     @Column(name = "food_name", nullable = false, length = 200)
     private String foodName;
 

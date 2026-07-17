@@ -32,6 +32,10 @@ public class MedicineDonationItem {
     @JoinColumn(name = "donor_id", nullable = false)
     private Donor donor;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "donation_id")
+    private Donation donation;
+
     @Column(name = "medicine_name", nullable = false, length = 200)
     private String medicineName;
 

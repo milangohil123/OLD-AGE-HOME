@@ -17,6 +17,9 @@
                 </a>
                 <a th:href="@{/donors/edit/{id}(id=${donor.id})}" class="btn btn-primary px-3"
                    sec:authorize="hasAnyRole('ADMIN', 'MANAGER')" th:text="#{donor.view.btn.edit}">Edit Profile</a>
+                <a th:href="@{/donors/{id}/donations/new(id=${donor.id})}" class="btn btn-success px-3">
+                    <i class="bi bi-plus-lg me-1"></i> Add Donation
+                </a>
             </div>
         </div>
 
@@ -302,6 +305,89 @@
                             <div class="pf-prose-block"
                                  th:classappend="${donor.remarks == null or donor.remarks.isEmpty()} ? 'pf-empty'"
                                  th:text="${donor.remarks != null and !donor.remarks.isEmpty()} ? ${donor.remarks} : #{donor.view.remarks.empty}">No remarks.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Donation History -->
+                <div class="card mt-4">
+                    <h5 class="pf-card-title">
+                        <i class="bi bi-clock-history"></i> Donation History
+                    </h5>
+                    <div class="p-3">
+                        <div th:if="${donor.donations == null or donor.donations.isEmpty()}" class="text-muted">
+                            No additional donations found.
+                        </div>
+                        <div class="list-group list-group-flush" th:if="${donor.donations != null and !donor.donations.isEmpty()}">
+                            <div th:each="d : ${donor.donations}" class="list-group-item px-0 py-3 border-bottom">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <div class="fw-bold mb-1" th:text="${d.donationDate != null ? #temporals.format(d.donationDate, 'dd MMM yyyy') : '—'}">Date</div>
+                                        
+                                        <!-- If Cash/UPI/Cheque -->
+                                        <div th:if="${d.donationType == null or (d.donationType.name() != 'MEDICINE' and d.donationType.name() != 'FOOD')}" class="text-primary fw-bold fs-5 mb-2" th:text="${d.donationAmount != null ? '₹' + #numbers.formatDecimal(d.donationAmount, 1, 'COMMA', 2, 'POINT') : '₹0.00'}">₹0.00</div>
+                                        
+                                        <!-- If Food -->
+                                        <div th:if="${d.donationType != null and d.donationType.name() == 'FOOD'}" class="mb-2">
+                                            <span class="badge bg-success bg-opacity-10 text-success me-2">Food Donation</span>
+                                            <span th:each="item, iterStat : ${d.foodItems}" th:text="${item.foodName} + ${!iterStat.last ? ', ' : ''}" class="text-muted small">Items</span>
+                                        </div>
+                                        
+                                        <!-- If Medicine -->
+                                        <div th:if="${d.donationType != null and d.donationType.name() == 'MEDICINE'}" class="mb-2">
+                                            <span class="badge bg-info bg-opacity-10 text-info me-2">Medicine Donation</span>
+                                            <span th:each="item, iterStat : ${d.medicineItems}" th:text="${item.medicineName} + ${!iterStat.last ? ', ' : ''}" class="text-muted small">Items</span>
+                                        </div>
+
+                                        <div class="text-muted small">
+                                            <span th:text="${d.paymentMethod != null and !d.paymentMethod.isEmpty() ? d.paymentMethod : d.donationType != null ? d.donationType.displayName : ''}">Method</span>
+                                            <span th:if="${d.transactionId != null and !d.transactionId.isEmpty()}" th:text="' | Txn: ' + ${d.transactionId}"></span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" th:data-bs-target="'#donationDetails' + ${d.id}">
+                                            View Details
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="collapse mt-3" th:id="'donationDetails' + ${d.id}">
+                                    <div class="card card-body bg-light border-0 p-3">
+                                        <div class="row">
+                                            <div class="col-sm-6 mb-2">
+                                                <small class="text-muted d-block fw-bold text-uppercase" style="font-size:10px;">Date</small>
+                                                <span th:text="${d.donationDate != null ? #temporals.format(d.donationDate, 'dd MMM yyyy') : '—'}"></span>
+                                            </div>
+                                            <div class="col-sm-6 mb-2">
+                                                <small class="text-muted d-block fw-bold text-uppercase" style="font-size:10px;">Payment Method</small>
+                                                <span th:text="${d.paymentMethod != null and !d.paymentMethod.isEmpty() ? d.paymentMethod : '—'}"></span>
+                                            </div>
+                                            <div class="col-sm-6 mb-2">
+                                                <small class="text-muted d-block fw-bold text-uppercase" style="font-size:10px;">Transaction ID</small>
+                                                <span th:text="${d.transactionId != null and !d.transactionId.isEmpty() ? d.transactionId : '—'}"></span>
+                                            </div>
+                                            <div class="col-12 mt-2" th:if="${d.remarks != null and !d.remarks.isEmpty()}">
+                                                <small class="text-muted d-block fw-bold text-uppercase" style="font-size:10px;">Remarks</small>
+                                                <span th:text="${d.remarks}"></span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Nested Tables for items -->
+                                        <div class="mt-3" th:if="${d.donationType != null and d.donationType.name() == 'FOOD' and d.foodItems != null and !d.foodItems.isEmpty()}">
+                                            <table class="table table-sm table-bordered mb-0 bg-white">
+                                                <thead class="table-light"><tr><th>Food Name</th><th>Quantity</th></tr></thead>
+                                                <tbody><tr th:each="f : ${d.foodItems}"><td th:text="${f.foodName}"></td><td th:text="${f.quantity}"></td></tr></tbody>
+                                            </table>
+                                        </div>
+                                        
+                                        <div class="mt-3" th:if="${d.donationType != null and d.donationType.name() == 'MEDICINE' and d.medicineItems != null and !d.medicineItems.isEmpty()}">
+                                            <table class="table table-sm table-bordered mb-0 bg-white">
+                                                <thead class="table-light"><tr><th>Medicine Name</th><th>Price</th><th>Expiry Date</th></tr></thead>
+                                                <tbody><tr th:each="m : ${d.medicineItems}"><td th:text="${m.medicineName}"></td><td th:text="${m.price}"></td><td th:text="${m.expiryDate}"></td></tr></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
