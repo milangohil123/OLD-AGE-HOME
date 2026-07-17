@@ -126,7 +126,7 @@
                                 <select class="form-select" th:field="*{donationFrequency}"
                                     th:classappend="${#fields.hasErrors('donationFrequency')} ? 'is-invalid' : ''" required>
                                     <option value="">-- Select Frequency --</option>
-                                    <option th:each="df : ${donationFrequencies}" th:value="${df}" th:text="${df}"></option>
+                                    <option th:each="df : ${donationFrequencies}" th:value="${df}" th:text="${df.displayName}"></option>
                                 </select>
                                 <div th:replace="~{fragments/forms :: field-error('donationFrequency')}"></div>
                             </div>
@@ -136,7 +136,7 @@
                                 <select class="form-select" th:field="*{donationType}" id="donationTypeSelect"
                                     th:classappend="${#fields.hasErrors('donationType')} ? 'is-invalid' : ''" required>
                                     <option value="">-- Select Type --</option>
-                                    <option th:each="dt : ${donationTypes}" th:value="${dt}" th:text="${dt}"></option>
+                                    <option th:each="dt : ${donationTypes}" th:value="${dt}" th:text="${dt.displayName}"></option>
                                 </select>
                                 <div th:replace="~{fragments/forms :: field-error('donationType')}"></div>
                             </div>
@@ -266,8 +266,6 @@
                                     <option value="CASH">Cash</option>
                                     <option value="UPI">UPI</option>
                                     <option value="CHEQUE">Cheque</option>
-                                    <option value="BANK_TRANSFER">Bank Transfer</option>
-                                    <option value="ONLINE">Online</option>
                                 </select>
                             </div>
                             <div class="col-md-4 mb-4">

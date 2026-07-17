@@ -37,7 +37,7 @@ public class DonationReportExporter {
         headerStyle.setBorderBottom(BorderStyle.THIN);
 
         String[] headers = {
-            "Donor Name", "Donation Type", "Amount (₹)", "Donation Date", "Payment Method", "Transaction ID", "Remarks"
+            "Donor Name", "Donation Frequency", "Donation Type", "Amount (₹)", "Donation Date", "Payment Method", "Transaction ID", "Remarks"
         };
 
         Row headerRow = sheet.createRow(2);
@@ -53,12 +53,13 @@ public class DonationReportExporter {
         for (Donor d : donations) {
             Row row = sheet.createRow(rowIdx++);
             row.createCell(0).setCellValue(d.getFullName() != null ? d.getFullName() : "");
-            row.createCell(1).setCellValue(d.getDonationType() != null ? d.getDonationType().name() : "");
-            row.createCell(2).setCellValue(d.getDonationAmount() != null ? d.getDonationAmount().doubleValue() : 0.0);
-            row.createCell(3).setCellValue(d.getDonationDate() != null ? d.getDonationDate().format(dtf) : "");
-            row.createCell(4).setCellValue(d.getPaymentMethod() != null ? d.getPaymentMethod() : "");
-            row.createCell(5).setCellValue(d.getTransactionId() != null ? d.getTransactionId() : "");
-            row.createCell(6).setCellValue(d.getRemarks() != null ? d.getRemarks() : "");
+            row.createCell(1).setCellValue(d.getDonationFrequency() != null ? d.getDonationFrequency().getDisplayName() : "");
+            row.createCell(2).setCellValue(d.getDonationType() != null ? d.getDonationType().getDisplayName() : "");
+            row.createCell(3).setCellValue(d.getDonationAmount() != null ? d.getDonationAmount().doubleValue() : 0.0);
+            row.createCell(4).setCellValue(d.getDonationDate() != null ? d.getDonationDate().format(dtf) : "");
+            row.createCell(5).setCellValue(d.getPaymentMethod() != null ? d.getPaymentMethod() : "");
+            row.createCell(6).setCellValue(d.getTransactionId() != null ? d.getTransactionId() : "");
+            row.createCell(7).setCellValue(d.getRemarks() != null ? d.getRemarks() : "");
         }
 
         for (int i = 0; i < headers.length; i++) {

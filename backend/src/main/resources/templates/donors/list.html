@@ -151,15 +151,15 @@
                             </td>
                             <td>
                                 <span class="badge bg-secondary bg-opacity-10 text-secondary px-3 py-2 rounded-pill"
-                                      th:text="${d.donationFrequency != null ? d.donationFrequency : 'Unknown'}">ONE_TIME</span>
+                                      th:text="${d.donationFrequency != null ? d.donationFrequency.displayName : 'Unknown'}">ONE_TIME</span>
                             </td>
                             <td>
                                 <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill"
-                                      th:text="${d.donationType != null ? d.donationType : 'Unknown'}">CASH</span>
+                                      th:text="${d.donationType != null ? d.donationType.displayName : 'Unknown'}">CASH</span>
                             </td>
                             <td>
                                 <strong class="text-primary"
-                                        th:text="${d.donationAmount != null ? '₹' + #numbers.formatDecimal(d.donationAmount, 1, 'COMMA', 2, 'POINT') : '₹0.00'}">₹0.00</strong>
+                                        th:text="${d.donationType.name() != 'MEDICINE' and d.donationType.name() != 'FOOD' ? (d.donationAmount != null ? '₹' + #numbers.formatDecimal(d.donationAmount, 1, 'COMMA', 2, 'POINT') : '₹0.00') : '—'}">₹0.00</strong>
                             </td>
                             <td th:text="${d.donationDate != null ? #temporals.format(d.donationDate, 'dd MMM yyyy') : '-'}">01 Jan 2026</td>
                             <td>

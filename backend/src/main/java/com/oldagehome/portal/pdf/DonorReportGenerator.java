@@ -54,12 +54,11 @@ public class DonorReportGenerator {
             details.setSpacingAfter(20);
             document.add(details);
 
-            // Donor ID column removed — 5 columns remain
-            PdfPTable table = new PdfPTable(5);
+            PdfPTable table = new PdfPTable(6);
             table.setWidthPercentage(100);
-            table.setWidths(new float[]{2.5f, 1.8f, 2f, 1.8f, 1.5f});
+            table.setWidths(new float[]{2.2f, 1.6f, 1.8f, 1.6f, 1.6f, 1.2f});
 
-            String[] headers = {"Name", "Mobile", "Email", "Donation Type", "Status"};
+            String[] headers = {"Name", "Mobile", "Email", "Frequency", "Donation Type", "Status"};
             Font headerCellFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10, BaseColor.WHITE);
             for (String h : headers) {
                 PdfPCell cell = new PdfPCell(new Phrase(h, headerCellFont));
@@ -74,7 +73,8 @@ public class DonorReportGenerator {
                 table.addCell(new PdfPCell(new Phrase(d.getFullName() != null ? d.getFullName() : "-", rowFont)));
                 table.addCell(new PdfPCell(new Phrase(d.getMobile() != null ? d.getMobile() : "-", rowFont)));
                 table.addCell(new PdfPCell(new Phrase(d.getEmail() != null ? d.getEmail() : "-", rowFont)));
-                table.addCell(new PdfPCell(new Phrase(d.getDonationType() != null ? d.getDonationType().name() : "-", rowFont)));
+                table.addCell(new PdfPCell(new Phrase(d.getDonationFrequency() != null ? d.getDonationFrequency().getDisplayName() : "-", rowFont)));
+                table.addCell(new PdfPCell(new Phrase(d.getDonationType() != null ? d.getDonationType().getDisplayName() : "-", rowFont)));
 
                 PdfPCell statusCell = new PdfPCell(new Phrase(d.getStatus() != null ? d.getStatus().name() : "", rowFont));
                 statusCell.setHorizontalAlignment(Element.ALIGN_CENTER);

@@ -85,7 +85,7 @@
                                     <div class="pf-quick-label">Donation Frequency</div>
                                     <div class="pf-quick-value"
                                          th:classappend="${donor.donationFrequency == null} ? 'pf-empty'"
-                                         th:text="${donor.donationFrequency != null} ? ${donor.donationFrequency} : '—'">—</div>
+                                         th:text="${donor.donationFrequency != null} ? ${donor.donationFrequency.displayName} : '—'">—</div>
                                 </div>
                             </div>
                         </div>
@@ -96,7 +96,7 @@
                                     <div class="pf-quick-label" th:text="#{donor.view.stat.type}">Donation Type</div>
                                     <div class="pf-quick-value"
                                          th:classappend="${donor.donationType == null} ? 'pf-empty'"
-                                         th:text="${donor.donationType != null} ? ${donor.donationType} : '—'">—</div>
+                                         th:text="${donor.donationType != null} ? ${donor.donationType.displayName} : '—'">—</div>
                                 </div>
                             </div>
                         </div>
@@ -232,6 +232,12 @@
                                             <td th:text="${f.quantity}">Quantity</td>
                                         </tr>
                                     </tbody>
+                                    <tfoot>
+                                        <tr class="table-light fw-bold">
+                                            <td>Total Quantity</td>
+                                            <td th:text="${donor.formattedTotalFoodQuantity}">0</td>
+                                        </tr>
+                                    </tfoot>
                                 </table>
                             </div>
                         </div>

@@ -26,7 +26,7 @@ import java.util.List;
  *  2 - Email
  *  3 - Address
  *  4 - Donation Frequency (ONE_TIME / MONTHLY / YEARLY)
- *  5 - Donation Type      (FOOD / MEDICINE / CASH / CHEQUE / UPI / GOODS / OTHER)
+ *  5 - Donation Type      (FOOD / MEDICINE / CASH / CHEQUE / UPI)
  *  6 - Payment Method
  *  7 - Transaction ID
  *  8 - Donation Date      (dd-MM-yyyy or numeric Excel date)
@@ -35,7 +35,7 @@ import java.util.List;
  *  11 - Expiry Date       (Only for MEDICINE type)
  *  12 - Food Name         (Only for FOOD type)
  *  13 - Quantity          (Only for FOOD type)
- *  14 - Donation Amount   (Only for CASH / UPI / CHEQUE / GOODS / OTHER types)
+ *  14 - Donation Amount   (Only for CASH / UPI / CHEQUE types)
  */
 public class DonorExcelImporter {
 
@@ -100,7 +100,7 @@ public class DonorExcelImporter {
                 if (parsedType == null) {
                     dto.setValid(false);
                     errors.append("Invalid Donation Type: '").append(donationTypeStr)
-                          .append("'. Supported values: FOOD, MEDICINE, CASH, CHEQUE, UPI, GOODS, OTHER. ");
+                          .append("'. Supported values: CASH, UPI, CHEQUE, FOOD, MEDICINE. ");
                 } else {
                     dto.setDonationType(parsedType);
                 }
@@ -211,7 +211,7 @@ public class DonorExcelImporter {
                     }
 
                 } else {
-                    // Cash/UPI/Cheque/Goods/Other
+                    // Cash/UPI/Cheque
                     // --- Column 14: Donation Amount ---
                     Cell amtCell = row.getCell(14);
                     if (amtCell != null && amtCell.getCellType() == CellType.NUMERIC) {

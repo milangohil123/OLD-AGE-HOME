@@ -55,11 +55,11 @@ public class DonationReportGenerator {
             details.setSpacingAfter(20);
             document.add(details);
 
-            PdfPTable table = new PdfPTable(6);
+            PdfPTable table = new PdfPTable(7);
             table.setWidthPercentage(100);
-            table.setWidths(new float[]{2f, 1.5f, 1.8f, 1.5f, 1.8f, 2.5f});
+            table.setWidths(new float[]{2f, 1.4f, 1.4f, 1.6f, 1.3f, 1.3f, 2f});
 
-            String[] headers = {"Donor Name", "Type", "Amount (INR)", "Date", "Method", "Txn ID"};
+            String[] headers = {"Donor Name", "Frequency", "Type", "Amount (INR)", "Date", "Method", "Txn ID"};
             Font headerCellFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10, BaseColor.WHITE);
             for (String h : headers) {
                 PdfPCell cell = new PdfPCell(new Phrase(h, headerCellFont));
@@ -74,7 +74,8 @@ public class DonationReportGenerator {
             Font rowFont = FontFactory.getFont(FontFactory.HELVETICA, 9, BaseColor.BLACK);
             for (Donor d : donations) {
                 table.addCell(new PdfPCell(new Phrase(d.getFullName(), rowFont)));
-                table.addCell(new PdfPCell(new Phrase(d.getDonationType() != null ? d.getDonationType().name() : "-", rowFont)));
+                table.addCell(new PdfPCell(new Phrase(d.getDonationFrequency() != null ? d.getDonationFrequency().getDisplayName() : "-", rowFont)));
+                table.addCell(new PdfPCell(new Phrase(d.getDonationType() != null ? d.getDonationType().getDisplayName() : "-", rowFont)));
                 
                 BigDecimal amt = d.getDonationAmount() != null ? d.getDonationAmount() : BigDecimal.ZERO;
                 totalAmount = totalAmount.add(amt);

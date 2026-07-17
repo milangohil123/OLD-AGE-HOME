@@ -131,4 +131,34 @@ public class Donor {
             this.age = Period.between(dateOfBirth, LocalDate.now()).getYears();
         }
     }
+
+    public double getTotalFoodQuantity() {
+        if (foodItems == null || foodItems.isEmpty()) {
+            return 0.0;
+        }
+        double total = 0.0;
+        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("^\\s*([0-9]+(?:\\.[0-9]+)?).*");
+        for (FoodDonationItem item : foodItems) {
+            if (item.getQuantity() != null) {
+                java.util.regex.Matcher matcher = pattern.matcher(item.getQuantity());
+                if (matcher.matches()) {
+                    try {
+                        total += Double.parseDouble(matcher.group(1));
+                    } catch (NumberFormatException e) {
+                        // Ignore
+                    }
+                }
+            }
+        }
+        return total;
+    }
+
+    public String getFormattedTotalFoodQuantity() {
+        double total = getTotalFoodQuantity();
+        if (total == (long) total) {
+            return String.format("%d", (long) total);
+        } else {
+            return String.format("%s", total);
+        }
+    }
 }

@@ -97,8 +97,8 @@ public class DonorExcelExporter {
         row.createCell(1).setCellValue(d.getMobile() != null ? d.getMobile() : "");
         row.createCell(2).setCellValue(d.getEmail() != null ? d.getEmail() : "");
         row.createCell(3).setCellValue(d.getAddress() != null ? d.getAddress() : "");
-        row.createCell(4).setCellValue(d.getDonationFrequency() != null ? d.getDonationFrequency().name() : "");
-        row.createCell(5).setCellValue(d.getDonationType() != null ? d.getDonationType().name() : "");
+        row.createCell(4).setCellValue(d.getDonationFrequency() != null ? d.getDonationFrequency().getDisplayName() : "");
+        row.createCell(5).setCellValue(d.getDonationType() != null ? d.getDonationType().getDisplayName() : "");
         row.createCell(6).setCellValue(d.getPaymentMethod() != null ? d.getPaymentMethod() : "");
         row.createCell(7).setCellValue(d.getTransactionId() != null ? d.getTransactionId() : "");
         row.createCell(8).setCellValue(d.getDonationDate() != null ? d.getDonationDate().format(dtf) : "");
