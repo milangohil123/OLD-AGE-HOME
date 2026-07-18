@@ -24,12 +24,14 @@ public class FoodScheduleDTO {
     private Long id;
 
     @NotNull(message = "Schedule date is required")
+    @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE)
     private LocalDate scheduleDate;
 
     @NotNull(message = "Meal type is required")
     private MealType mealType;
 
     @NotNull(message = "Serving time is required")
+    @org.springframework.format.annotation.DateTimeFormat(pattern = "HH:mm")
     private LocalTime servingTime;
 
     @NotBlank(message = "Menu items are required")

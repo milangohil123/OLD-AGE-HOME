@@ -50,38 +50,32 @@ public class FoodScheduleController {
         this.auditService = auditService;
     }
 
-    // ── Main page ─────────────────────────────────────────────────────────────
+    private void populateListPageModel(Model model, FoodScheduleDTO formDto) {
+        model.addAttribute("todaySchedule", foodScheduleService.findTodaysSchedule());
+        model.addAttribute("lastSevenDays", foodScheduleService.findLastSevenDays());
+        model.addAttribute("stats", foodScheduleService.getTodayStats());
 
-    @GetMapping
-    public String listPage(Model model, Authentication authentication) {
-
-        // Today's schedule
-        List<FoodSchedule> todaySchedule = foodScheduleService.findTodaysSchedule();
-
-        // Last 7 days grouped
-        Map<LocalDate, List<FoodSchedule>> lastSevenDays = foodScheduleService.findLastSevenDays();
-
-        // Dashboard stats
-        FoodScheduleStatsDTO stats = foodScheduleService.getTodayStats();
-
-        // Food donors for dropdown (filter strictly by donation category 'Food Donation')
         List<Donor> foodDonors = donorRepository.findAll().stream()
                 .filter(d -> "Food Donation".equals(d.getDonationCategory()))
                 .sorted(Comparator.comparing(Donor::getFullName))
                 .toList();
 
-        // Empty DTO for the Add form
-        FoodScheduleDTO formDto = new FoodScheduleDTO();
-        formDto.setScheduleDate(LocalDate.now());
-
-        model.addAttribute("todaySchedule", todaySchedule);
-        model.addAttribute("lastSevenDays", lastSevenDays);
-        model.addAttribute("stats", stats);
         model.addAttribute("foodDonors", foodDonors);
         model.addAttribute("formDto", formDto);
         model.addAttribute("mealTypes", MealType.values());
         model.addAttribute("sponsorshipTypes", SponsorshipType.values());
         model.addAttribute("today", LocalDate.now());
+    }
+
+    // ── Main page ─────────────────────────────────────────────────────────────
+
+    @GetMapping
+    public String listPage(Model model, Authentication authentication) {
+        // Empty DTO for the Add form
+        FoodScheduleDTO formDto = new FoodScheduleDTO();
+        formDto.setScheduleDate(LocalDate.now());
+
+        populateListPageModel(model, formDto);
 
         // Empty search results by default
         model.addAttribute("searchResults", null);
@@ -96,20 +90,24 @@ public class FoodScheduleController {
     public String save(@Valid @ModelAttribute("formDto") FoodScheduleDTO dto,
                        BindingResult result,
                        Authentication authentication,
-                       RedirectAttributes redirectAttributes,
-                       Model model) {
+                       Model model,
+                       RedirectAttributes redirectAttributes) {
 
         // Additional validation: either donorId or manualDonorName must be present
         if (!dto.isDonorNotFound() && dto.getDonorId() == null) {
-            result.rejectValue("donorId", "required", "Please select a donor or check 'Donor Not Found'.");
+            result.rejectValue("donorId", "required", "Please select a Food Donor.");
         }
         if (dto.isDonorNotFound() && (dto.getManualDonorName() == null || dto.getManualDonorName().isBlank())) {
-            result.rejectValue("manualDonorName", "required", "Please enter the donor name.");
+            result.rejectValue("manualDonorName", "required", "Manual Donor Name is required.");
         }
 
         if (result.hasErrors()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Please fix the validation errors and try again.");
-            return "redirect:/food-schedule";
+            populateListPageModel(model, dto);
+            model.addAttribute("openAddModalOnError", true);
+            model.addAttribute("searchResults", null);
+            model.addAttribute("searchPerformed", false);
+            model.addAttribute("errorMessage", "Please fix the validation errors and try again.");
+            return "food-schedule/list";
         }
 
         try {
@@ -126,7 +124,12 @@ public class FoodScheduleController {
             auditService.logActivity(AuditModule.FOOD_SCHEDULE, AuditAction.CREATE,
                     "Failed to save food schedule: " + e.getMessage(),
                     "FoodSchedule", null, false, e.getMessage());
-            redirectAttributes.addFlashAttribute("errorMessage", "Failed to save: " + e.getMessage());
+            populateListPageModel(model, dto);
+            model.addAttribute("openAddModalOnError", true);
+            model.addAttribute("searchResults", null);
+            model.addAttribute("searchPerformed", false);
+            model.addAttribute("errorMessage", "Failed to save: " + e.getMessage());
+            return "food-schedule/list";
         }
 
         return "redirect:/food-schedule";
@@ -139,18 +142,24 @@ public class FoodScheduleController {
                          @Valid @ModelAttribute("formDto") FoodScheduleDTO dto,
                          BindingResult result,
                          Authentication authentication,
+                         Model model,
                          RedirectAttributes redirectAttributes) {
 
         if (!dto.isDonorNotFound() && dto.getDonorId() == null) {
-            result.rejectValue("donorId", "required", "Please select a donor or check 'Donor Not Found'.");
+            result.rejectValue("donorId", "required", "Please select a Food Donor.");
         }
         if (dto.isDonorNotFound() && (dto.getManualDonorName() == null || dto.getManualDonorName().isBlank())) {
-            result.rejectValue("manualDonorName", "required", "Please enter the donor name.");
+            result.rejectValue("manualDonorName", "required", "Manual Donor Name is required.");
         }
 
         if (result.hasErrors()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Please fix the validation errors and try again.");
-            return "redirect:/food-schedule";
+            populateListPageModel(model, dto);
+            model.addAttribute("openEditModalOnError", true);
+            model.addAttribute("editRecordId", id);
+            model.addAttribute("searchResults", null);
+            model.addAttribute("searchPerformed", false);
+            model.addAttribute("errorMessage", "Please fix the validation errors and try again.");
+            return "food-schedule/list";
         }
 
         try {
@@ -166,7 +175,13 @@ public class FoodScheduleController {
             auditService.logActivity(AuditModule.FOOD_SCHEDULE, AuditAction.UPDATE,
                     "Failed to update food schedule: " + e.getMessage(),
                     "FoodSchedule", id, false, e.getMessage());
-            redirectAttributes.addFlashAttribute("errorMessage", "Failed to update: " + e.getMessage());
+            populateListPageModel(model, dto);
+            model.addAttribute("openEditModalOnError", true);
+            model.addAttribute("editRecordId", id);
+            model.addAttribute("searchResults", null);
+            model.addAttribute("searchPerformed", false);
+            model.addAttribute("errorMessage", "Failed to update: " + e.getMessage());
+            return "food-schedule/list";
         }
 
         return "redirect:/food-schedule";
