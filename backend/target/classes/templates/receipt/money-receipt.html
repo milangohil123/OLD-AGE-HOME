@@ -334,8 +334,8 @@
 
         .amount-input {
             position: absolute;
-            left: 10px;
-            right: 10px;
+            left: 0;
+            right: 50px; /* Center the input within the area to the left of the vertical divider */
             top: 50%;
             transform: translateY(-50%);
             border: none;
@@ -494,15 +494,24 @@
         @media print {
             @page {
                 size: A4 portrait;
-                margin: 15mm;
+                margin: 0; /* Suppress browser-generated headers and footers */
+            }
+
+            html, body {
+                height: 100%;
+                overflow: hidden; /* Force content onto exactly one A4 page without page-breaks */
             }
 
             body {
                 background-color: #ffffff;
                 color: #000000;
-                padding: 0;
+                padding: 15mm 20mm; /* Re-introduce borders inside the printable page margins */
                 margin: 0;
                 display: block;
+                width: 100%;
+                box-sizing: border-box;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
 
             .action-bar {
@@ -513,8 +522,8 @@
                 box-shadow: none;
                 width: 100%;
                 max-width: 100%;
-                padding: 0;
-                margin: 0;
+                padding: 0 !important;
+                margin: 0 !important;
                 border: none;
                 page-break-inside: avoid;
             }
