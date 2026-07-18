@@ -120,7 +120,7 @@
                             th:text="#{donor.form.section.donation}">Donation Information</h4>
 
                         <div class="row">
-                            <div class="col-md-6 mb-4">
+                            <div class="col-md-4 mb-4">
                                 <label
                                     th:replace="~{fragments/forms :: label('donationFrequency', 'Donation Frequency', true)}"></label>
                                 <select class="form-select" th:field="*{donationFrequency}"
@@ -130,7 +130,7 @@
                                 </select>
                                 <div th:replace="~{fragments/forms :: field-error('donationFrequency')}"></div>
                             </div>
-                            <div class="col-md-6 mb-4">
+                            <div class="col-md-4 mb-4">
                                 <label
                                     th:replace="~{fragments/forms :: label('donationType', 'Donation Type', true)}"></label>
                                 <select class="form-select" th:field="*{donationType}" id="donationTypeSelect"
@@ -139,6 +139,21 @@
                                     <option th:each="dt : ${donationTypes}" th:value="${dt}" th:text="${dt.displayName}"></option>
                                 </select>
                                 <div th:replace="~{fragments/forms :: field-error('donationType')}"></div>
+                            </div>
+                            <div class="col-md-4 mb-4">
+                                <label
+                                    th:replace="~{fragments/forms :: label('donationCategory', 'Donation Category', true)}"></label>
+                                <select class="form-select" th:field="*{donationCategory}"
+                                    th:classappend="${#fields.hasErrors('donationCategory')} ? 'is-invalid' : ''" required>
+                                    <option value="">-- Select Category --</option>
+                                    <option value="Food Donation">Food Donation</option>
+                                    <option value="Cash Donation">Cash Donation</option>
+                                    <option value="Medicine Donation">Medicine Donation</option>
+                                    <option value="Clothes Donation">Clothes Donation</option>
+                                    <option value="General Donation">General Donation</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <div th:replace="~{fragments/forms :: field-error('donationCategory')}"></div>
                             </div>
                         </div>
 

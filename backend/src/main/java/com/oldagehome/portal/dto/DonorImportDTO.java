@@ -31,6 +31,7 @@ public class DonorImportDTO {
     private String address;
     private DonationFrequency donationFrequency;
     private DonationType donationType;
+    private String donationCategory;
     private String paymentMethod;
     private String transactionId;
     private String donationDateString;

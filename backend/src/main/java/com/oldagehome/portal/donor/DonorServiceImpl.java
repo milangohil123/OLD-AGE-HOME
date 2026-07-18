@@ -76,6 +76,7 @@ public class DonorServiceImpl implements DonorService {
                 .pincode(donor.getPincode())
                 .donationFrequency(donor.getDonationFrequency())
                 .donationType(donor.getDonationType())
+                .donationCategory(donor.getDonationCategory())
                 .donationAmount(donor.getDonationAmount())
                 .donationDate(donor.getDonationDate())
                 .paymentMethod(donor.getPaymentMethod())
@@ -212,6 +213,7 @@ public class DonorServiceImpl implements DonorService {
         donor.setPincode(dto.getPincode());
         donor.setDonationFrequency(dto.getDonationFrequency());
         donor.setDonationType(dto.getDonationType());
+        donor.setDonationCategory(dto.getDonationCategory());
         
         // Handle specific type requirements
         if (dto.getDonationType() == DonationType.MEDICINE || dto.getDonationType() == DonationType.FOOD) {
@@ -310,15 +312,27 @@ public class DonorServiceImpl implements DonorService {
                 boolean isNew = false;
 
                 if (donor == null) {
+                    String category = "Other";
+                    if (dto.getDonationType() == DonationType.FOOD) {
+                        category = "Food Donation";
+                    } else if (dto.getDonationType() == DonationType.MEDICINE) {
+                        category = "Medicine Donation";
+                    } else if (dto.getDonationType() == DonationType.CASH
+                            || dto.getDonationType() == DonationType.UPI
+                            || dto.getDonationType() == DonationType.CHEQUE) {
+                        category = "Cash Donation";
+                    }
+
                     donor = Donor.builder()
                             .fullName(dto.getFullName())
                             .gender(dto.getGender() != null ? dto.getGender() : "OTHER")
-                            .dateOfBirth(LocalDate.of(1980, 1, 1)) // Default DOB for imported records
+                            .dateOfBirth(LocalDate.of(1980, 1, 1))
                             .mobile(dto.getMobile())
                             .email(dto.getEmail())
                             .address(dto.getAddress())
                             .donationFrequency(dto.getDonationFrequency() != null ? dto.getDonationFrequency() : DonationFrequency.ONE_TIME)
                             .donationType(dto.getDonationType())
+                            .donationCategory(category)
                             .donationAmount(dto.getDonationAmount() != null ? dto.getDonationAmount() : BigDecimal.ZERO)
                             .donationDate(dto.getDonationDate())
                             .paymentMethod(dto.getPaymentMethod())

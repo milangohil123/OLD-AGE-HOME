@@ -62,6 +62,9 @@ public class DonorFormDTO {
     @NotNull(message = "Donation type is required")
     private DonationType donationType;
 
+    @NotBlank(message = "Donation category is required")
+    private String donationCategory;
+
     // Conditionally required — validated in the controller for CASH/UPI/CHEQUE/GOODS/OTHER
     @DecimalMin(value = "0.0", inclusive = true, message = "Donation amount cannot be negative")
     private BigDecimal donationAmount;

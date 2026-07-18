@@ -5,7 +5,6 @@ import com.oldagehome.portal.audit.AuditModule;
 import com.oldagehome.portal.audit.AuditService;
 import com.oldagehome.portal.donor.Donor;
 import com.oldagehome.portal.donor.DonorRepository;
-import com.oldagehome.portal.donor.DonationType;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -65,10 +64,9 @@ public class FoodScheduleController {
         // Dashboard stats
         FoodScheduleStatsDTO stats = foodScheduleService.getTodayStats();
 
-        // Food donors for dropdown (strictly filter by allowed categories: Breakfast, Lunch, Dinner, Food Donation, Today's Sponsor)
-        List<String> allowedCategories = Arrays.asList("Breakfast", "Lunch", "Dinner", "Food Donation", "Today's Sponsor");
+        // Food donors for dropdown (filter strictly by donation category 'Food Donation')
         List<Donor> foodDonors = donorRepository.findAll().stream()
-                .filter(d -> d.getDonationCategory() != null && allowedCategories.contains(d.getDonationCategory()))
+                .filter(d -> "Food Donation".equals(d.getDonationCategory()))
                 .sorted(Comparator.comparing(Donor::getFullName))
                 .toList();
 
@@ -229,9 +227,8 @@ public class FoodScheduleController {
         Map<LocalDate, List<FoodSchedule>> lastSevenDays = foodScheduleService.findLastSevenDays();
         FoodScheduleStatsDTO stats = foodScheduleService.getTodayStats();
 
-        List<String> allowedCategories = Arrays.asList("Breakfast", "Lunch", "Dinner", "Food Donation", "Today's Sponsor");
         List<Donor> foodDonors = donorRepository.findAll().stream()
-                .filter(d -> d.getDonationCategory() != null && allowedCategories.contains(d.getDonationCategory()))
+                .filter(d -> "Food Donation".equals(d.getDonationCategory()))
                 .sorted(Comparator.comparing(Donor::getFullName))
                 .toList();
 

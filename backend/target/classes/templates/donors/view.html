@@ -105,6 +105,17 @@
                         </div>
                         <div class="col-sm-6 col-lg-4">
                             <div class="d-flex align-items-start gap-2">
+                                <i class="bi bi-tags pf-quick-icon"></i>
+                                <div>
+                                    <div class="pf-quick-label" th:text="#{donor.view.stat.category}">Donation Category</div>
+                                    <div class="pf-quick-value"
+                                         th:classappend="${donor.donationCategory == null or donor.donationCategory.isEmpty()} ? 'pf-empty'"
+                                         th:text="${donor.donationCategory != null and !donor.donationCategory.isEmpty()} ? ${donor.donationCategory} : '—'">—</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-lg-4">
+                            <div class="d-flex align-items-start gap-2">
                                 <i class="bi bi-calendar3 pf-quick-icon"></i>
                                 <div>
                                     <div class="pf-quick-label" th:text="#{donor.view.stat.date}">Donation Date</div>
