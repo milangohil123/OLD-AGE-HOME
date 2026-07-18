@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{fragments/layout :: main(~{::#food-schedule-content}, 'food-schedule', 'Food Schedule')}">
+
+<body>
+
+<div id="food-schedule-content">
+
+    <!-- ── Flash Alerts ─────────────────────────────────────────────────── -->
+    <div th:replace="~{fragments/alerts :: success(${successMessage})}"></div>
+    <div th:replace="~{fragments/alerts :: error(${errorMessage})}"></div>
+
+    <!-- ── Page Header ──────────────────────────────────────────────────── -->
+    <div class="card mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <h3 class="mb-0 fw-bold">Food Schedule</h3>
+                <p class="text-muted mb-0" style="font-size: 13px;">
+                    Manage daily breakfast, lunch and dinner schedule for the residents.
+                </p>
+            </div>
+            <div>
+                <button type="button" class="btn btn-primary px-4"
+                        data-bs-toggle="modal" data-bs-target="#addFoodScheduleModal"
+                        onclick="resetAddModal()">
+                    <i class="bi bi-plus-lg me-1"></i> Add Food Schedule
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Dashboard Stats Cards ────────────────────────────────────────── -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card text-center py-3">
+                <span class="fs-1 mb-2">🍽️</span>
+                <h2 class="fw-bold mb-1 text-primary" th:text="${stats.todayMealsCount}">0</h2>
+                <span class="text-muted fw-semibold">Today's Meals</span>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card text-center py-3">
+                <span class="fs-1 mb-2">🤝</span>
+                <h2 class="fw-bold mb-1 text-success" th:text="${stats.todayFoodDonorsCount}">0</h2>
+                <span class="text-muted fw-semibold">Today's Food Donors</span>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card text-center py-3">
+                <span class="fs-1 mb-2">💰</span>
+                <h2 class="fw-bold mb-1 text-warning"
+                    th:text="${'₹' + #numbers.formatDecimal(stats.todayDonationAmount, 1, 'COMMA', 0, 'POINT')}">₹0</h2>
+                <span class="text-muted fw-semibold">Today's Donation Amount</span>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card text-center py-3">
+                <span class="fs-1 mb-2">📅</span>
+                <h2 class="fw-bold mb-1 text-info" th:text="${stats.upcomingMealsCount}">0</h2>
+                <span class="text-muted fw-semibold">Upcoming Sponsored Meals</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Today's Food Schedule Table ──────────────────────────────────── -->
+    <div class="card mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <div>
+                <h5 class="fw-bold mb-0 text-primary">
+                    <i class="bi bi-calendar-check me-2"></i>Today's Food Schedule
+                </h5>
+                <small class="text-muted"
+                       th:text="${#temporals.format(today, 'EEEE, dd MMMM yyyy')}">Today's date</small>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Meal</th>
+                        <th>Time</th>
+                        <th>Menu</th>
+                        <th>Food Donor</th>
+                        <th>Sponsorship</th>
+                        <th>Amount</th>
+                        <th class="text-end" style="min-width: 220px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Empty State -->
+                    <tr th:if="${todaySchedule == null or todaySchedule.isEmpty()}">
+                        <td colspan="7" class="text-center py-5 text-muted">
+                            <span class="fs-1 d-block mb-3">🍽️</span>
+                            <h5 class="fw-bold">No meals scheduled for today</h5>
+                            <p class="mb-0">Click <strong>+ Add Food Schedule</strong> to add today's first meal.</p>
+                        </td>
+                    </tr>
+                    <!-- Schedule Rows -->
+                    <tr th:each="fs : ${todaySchedule}">
+                        <td>
+                            <span th:if="${fs.mealType.name() == 'Breakfast'}"
+                                  class="badge bg-warning bg-opacity-15 text-warning px-3 py-2 rounded-pill fw-semibold">
+                                🌅 Breakfast
+                            </span>
+                            <span th:if="${fs.mealType.name() == 'Lunch'}"
+                                  class="badge bg-success bg-opacity-15 text-success px-3 py-2 rounded-pill fw-semibold">
+                                ☀️ Lunch
+                            </span>
+                            <span th:if="${fs.mealType.name() == 'Dinner'}"
+                                  class="badge bg-primary bg-opacity-15 text-primary px-3 py-2 rounded-pill fw-semibold">
+                                🌙 Dinner
+                            </span>
+                        </td>
+                        <td>
+                            <strong th:text="${#temporals.format(fs.servingTime, 'hh:mm a')}">8:00 AM</strong>
+                        </td>
+                        <td style="max-width: 250px;">
+                            <span class="text-dark" style="white-space: pre-line; font-size: 13px;"
+                                  th:text="${fs.menuItems}">Tea, Milk, Poha</span>
+                        </td>
+                        <td>
+                            <span class="fw-semibold text-dark" th:text="${fs.donorDisplayName}">—</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-info bg-opacity-15 text-info px-2 py-1 rounded-pill"
+                                  th:text="${fs.sponsorshipType.displayName}">One Time</span>
+                        </td>
+                        <td>
+                            <strong class="text-success"
+                                    th:text="${'₹' + #numbers.formatDecimal(fs.amount, 1, 'COMMA', 0, 'POINT')}">₹0</strong>
+                        </td>
+                        <td class="text-end">
+                            <div class="d-inline-flex gap-2">
+                                <button type="button"
+                                        class="btn btn-secondary px-3" style="height: 38px; font-size: 13px;"
+                                        th:onclick="|openViewModal(${fs.id})|">View</button>
+                                <button type="button"
+                                        class="btn btn-secondary px-3" style="height: 38px; font-size: 13px;"
+                                        th:onclick="|openEditModal(${fs.id})|"
+                                        sec:authorize="hasAnyRole('ADMIN','MANAGER')">Edit</button>
+                                <button type="button"
+                                        class="btn btn-secondary px-3" style="height: 38px; font-size: 13px;"
+                                        th:onclick="|printRow(${fs.id})|">Print</button>
+                                <a th:href="@{/food-schedule/delete/{id}(id=${fs.id})}"
+                                   class="btn btn-danger px-3 text-white" style="height: 38px; font-size: 13px;"
+                                   onclick="return confirm('Are you sure you want to delete this food schedule?');"
+                                   sec:authorize="hasRole('ADMIN')">Delete</a>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ── Past 7 Days Accordion ─────────────────────────────────────────── -->
+    <div class="card mb-4" th:if="${lastSevenDays != null and !lastSevenDays.isEmpty()}">
+        <h5 class="fw-bold mb-3 text-primary">
+            <i class="bi bi-clock-history me-2"></i>Past 7 Days
+        </h5>
+        <div class="accordion" id="sevenDaysAccordion">
+            <div th:each="entry, iterStat : ${lastSevenDays}" class="accordion-item border mb-2 rounded-3"
+                 style="overflow: hidden;">
+                <h2 class="accordion-header" th:id="|heading${iterStat.index}|">
+                    <button class="accordion-button collapsed fw-semibold" type="button"
+                            data-bs-toggle="collapse"
+                            th:data-bs-target="|#collapse${iterStat.index}|"
+                            th:aria-controls="|collapse${iterStat.index}|"
+                            aria-expanded="false">
+                        <i class="bi bi-calendar3 me-2 text-primary"></i>
+                        <span th:text="${#temporals.format(entry.key, 'EEEE, dd MMMM yyyy')}">Date</span>
+                        <span class="badge bg-primary ms-2 rounded-pill"
+                              th:text="${entry.value.size() + ' meal' + (entry.value.size() != 1 ? 's' : '')}">0 meals</span>
+                    </button>
+                </h2>
+                <div th:id="|collapse${iterStat.index}|" class="accordion-collapse collapse"
+                     th:aria-labelledby="|heading${iterStat.index}|"
+                     data-bs-parent="#sevenDaysAccordion">
+                    <div class="accordion-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0" style="font-size: 13px;">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Meal</th>
+                                        <th>Time</th>
+                                        <th>Menu</th>
+                                        <th>Food Donor</th>
+                                        <th>Sponsorship</th>
+                                        <th>Amount</th>
+                                        <th class="text-end">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="fs : ${entry.value}">
+                                        <td>
+                                            <span th:if="${fs.mealType.name() == 'Breakfast'}"
+                                                  class="badge bg-warning bg-opacity-15 text-warning px-2 py-1 rounded-pill">🌅 Breakfast</span>
+                                            <span th:if="${fs.mealType.name() == 'Lunch'}"
+                                                  class="badge bg-success bg-opacity-15 text-success px-2 py-1 rounded-pill">☀️ Lunch</span>
+                                            <span th:if="${fs.mealType.name() == 'Dinner'}"
+                                                  class="badge bg-primary bg-opacity-15 text-primary px-2 py-1 rounded-pill">🌙 Dinner</span>
+                                        </td>
+                                        <td th:text="${#temporals.format(fs.servingTime, 'hh:mm a')}">—</td>
+                                        <td style="max-width: 200px; white-space: pre-line;"
+                                            th:text="${fs.menuItems}">—</td>
+                                        <td th:text="${fs.donorDisplayName}">—</td>
+                                        <td>
+                                            <span class="badge bg-info bg-opacity-15 text-info px-2 py-1 rounded-pill"
+                                                  th:text="${fs.sponsorshipType.displayName}">—</span>
+                                        </td>
+                                        <td class="text-success fw-semibold"
+                                            th:text="${'₹' + #numbers.formatDecimal(fs.amount, 1, 'COMMA', 0, 'POINT')}">₹0</td>
+                                        <td class="text-end">
+                                            <div class="d-inline-flex gap-1">
+                                                <button type="button" class="btn btn-secondary btn-sm px-2"
+                                                        th:onclick="|openViewModal(${fs.id})|">View</button>
+                                                <button type="button" class="btn btn-secondary btn-sm px-2"
+                                                        th:onclick="|openEditModal(${fs.id})|"
+                                                        sec:authorize="hasAnyRole('ADMIN','MANAGER')">Edit</button>
+                                                <a th:href="@{/food-schedule/delete/{id}(id=${fs.id})}"
+                                                   class="btn btn-danger btn-sm px-2 text-white"
+                                                   onclick="return confirm('Delete this record?');"
+                                                   sec:authorize="hasRole('ADMIN')">Delete</a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Search History ────────────────────────────────────────────────── -->
+    <div class="card mb-4">
+        <h5 class="fw-bold mb-3 text-primary">
+            <i class="bi bi-search me-2"></i>Search History
+        </h5>
+        <form th:action="@{/food-schedule/search}" method="get">
+            <div class="row g-3 mb-3">
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold" style="font-size: 13px;">From Date</label>
+                    <input type="date" name="fromDate" class="form-control"
+                           th:value="${srFromDate}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold" style="font-size: 13px;">To Date</label>
+                    <input type="date" name="toDate" class="form-control"
+                           th:value="${srToDate}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold" style="font-size: 13px;">Meal Type</label>
+                    <select name="mealType" class="form-select">
+                        <option value="">All Meals</option>
+                        <option th:each="mt : ${mealTypes}"
+                                th:value="${mt.name()}"
+                                th:text="${mt.displayName}"
+                                th:selected="${srMealType != null and srMealType == mt.name()}">Breakfast</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold" style="font-size: 13px;">Sponsorship Type</label>
+                    <select name="sponsorshipType" class="form-select">
+                        <option value="">All Types</option>
+                        <option th:each="st : ${sponsorshipTypes}"
+                                th:value="${st.name()}"
+                                th:text="${st.displayName}"
+                                th:selected="${srSponsorshipType != null and srSponsorshipType == st.name()}">One Time</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold" style="font-size: 13px;">Food Donor</label>
+                    <input type="text" name="donorKeyword" class="form-control"
+                           placeholder="Donor name..." th:value="${srDonorKeyword}">
+                </div>
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary px-4">
+                    <i class="bi bi-search me-1"></i> Search
+                </button>
+                <a th:href="@{/food-schedule}" class="btn btn-secondary px-4 ms-2">Clear</a>
+            </div>
+        </form>
+
+        <!-- Search Results -->
+        <div th:if="${searchPerformed}" class="mt-4">
+            <h6 class="fw-bold text-primary mb-3"
+                th:text="${'Search Results (' + (searchResults != null ? searchResults.size() : 0) + ' records found)'}">
+                Search Results
+            </h6>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" style="font-size: 13px;">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Meal</th>
+                            <th>Time</th>
+                            <th>Menu</th>
+                            <th>Food Donor</th>
+                            <th>Sponsorship</th>
+                            <th>Amount</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${searchResults == null or searchResults.isEmpty()}">
+                            <td colspan="8" class="text-center py-4 text-muted">
+                                <i class="bi bi-inbox d-block mb-2" style="font-size: 28px;"></i>
+                                No records found for the selected filters.
+                            </td>
+                        </tr>
+                        <tr th:each="fs : ${searchResults}">
+                            <td>
+                                <strong th:text="${#temporals.format(fs.scheduleDate, 'dd MMM yyyy')}">—</strong>
+                            </td>
+                            <td>
+                                <span th:if="${fs.mealType.name() == 'Breakfast'}"
+                                      class="badge bg-warning bg-opacity-15 text-warning px-2 py-1 rounded-pill">🌅 Breakfast</span>
+                                <span th:if="${fs.mealType.name() == 'Lunch'}"
+                                      class="badge bg-success bg-opacity-15 text-success px-2 py-1 rounded-pill">☀️ Lunch</span>
+                                <span th:if="${fs.mealType.name() == 'Dinner'}"
+                                      class="badge bg-primary bg-opacity-15 text-primary px-2 py-1 rounded-pill">🌙 Dinner</span>
+                            </td>
+                            <td th:text="${#temporals.format(fs.servingTime, 'hh:mm a')}">—</td>
+                            <td style="max-width: 180px; white-space: pre-line;" th:text="${fs.menuItems}">—</td>
+                            <td th:text="${fs.donorDisplayName}">—</td>
+                            <td>
+                                <span class="badge bg-info bg-opacity-15 text-info px-2 py-1 rounded-pill"
+                                      th:text="${fs.sponsorshipType.displayName}">—</span>
+                            </td>
+                            <td class="text-success fw-semibold"
+                                th:text="${'₹' + #numbers.formatDecimal(fs.amount, 1, 'COMMA', 0, 'POINT')}">₹0</td>
+                            <td class="text-end">
+                                <div class="d-inline-flex gap-1">
+                                    <button type="button" class="btn btn-secondary btn-sm px-2"
+                                            th:onclick="|openViewModal(${fs.id})|">View</button>
+                                    <button type="button" class="btn btn-secondary btn-sm px-2"
+                                            th:onclick="|openEditModal(${fs.id})|"
+                                            sec:authorize="hasAnyRole('ADMIN','MANAGER')">Edit</button>
+                                    <a th:href="@{/food-schedule/delete/{id}(id=${fs.id})}"
+                                       class="btn btn-danger btn-sm px-2 text-white"
+                                       onclick="return confirm('Delete this record?');"
+                                       sec:authorize="hasRole('ADMIN')">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- ── Add Food Schedule Modal ─────────────────────────────────────── -->
+    <!-- ================================================================ -->
+    <div class="modal fade" id="addFoodScheduleModal" tabindex="-1"
+         aria-labelledby="addFoodScheduleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="addFoodScheduleModalLabel">
+                        <i class="bi bi-plus-circle me-2 text-primary"></i>Add Food Schedule
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form th:action="@{/food-schedule/save}" th:object="${formDto}" method="post" id="addFoodScheduleForm">
+                    <div class="modal-body">
+
+                        <!-- Row 1: Date, Meal Type, Serving Time -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold" for="add_scheduleDate">
+                                    Schedule Date <span class="text-danger">*</span>
+                                </label>
+                                <input type="date" id="add_scheduleDate" name="scheduleDate"
+                                       class="form-control" required
+                                       th:value="${#temporals.format(today, 'yyyy-MM-dd')}">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold" for="add_mealType">
+                                    Meal Type <span class="text-danger">*</span>
+                                </label>
+                                <select id="add_mealType" name="mealType" class="form-select" required
+                                        onchange="fetchRate('add')">
+                                    <option value="">-- Select Meal --</option>
+                                    <option th:each="mt : ${mealTypes}"
+                                            th:value="${mt.name()}"
+                                            th:text="${mt.displayName}">Breakfast</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold" for="add_servingTime">
+                                    Serving Time <span class="text-danger">*</span>
+                                </label>
+                                <input type="time" id="add_servingTime" name="servingTime"
+                                       class="form-control" required>
+                            </div>
+                        </div>
+
+                        <!-- Row 2: Menu Items -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" for="add_menuItems">
+                                Menu Items <span class="text-danger">*</span>
+                            </label>
+                            <textarea id="add_menuItems" name="menuItems" class="form-control" rows="4" required
+                                      placeholder="e.g.&#10;Tea&#10;Milk&#10;Poha&#10;Banana"></textarea>
+                            <small class="text-muted">Enter each item on a new line.</small>
+                        </div>
+
+                        <!-- Row 3: Sponsorship Type -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold" for="add_sponsorshipType">
+                                    Sponsorship Type <span class="text-danger">*</span>
+                                </label>
+                                <select id="add_sponsorshipType" name="sponsorshipType" class="form-select" required
+                                        onchange="fetchRate('add')">
+                                    <option value="">-- Select Sponsorship --</option>
+                                    <option th:each="st : ${sponsorshipTypes}"
+                                            th:value="${st.name()}"
+                                            th:text="${st.displayName}">One Time</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold" for="add_amount">
+                                    Amount (₹) <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">₹</span>
+                                    <input type="number" id="add_amount" name="amount" class="form-control"
+                                           step="0.01" min="0" required placeholder="Auto-filled from rates">
+                                </div>
+                                <small id="add_rateMessage" class="text-muted d-none"></small>
+                            </div>
+                        </div>
+
+                        <!-- Row 4: Food Donor -->
+                        <div class="mb-2">
+                            <label class="form-label fw-semibold" for="add_donorId">
+                                Food Donor
+                            </label>
+                            <div id="add_donorDropdownContainer">
+                                <select id="add_donorId" name="donorId" class="form-select">
+                                    <option value="">-- Select Donor --</option>
+                                    <option th:each="d : ${foodDonors}"
+                                            th:value="${d.id}"
+                                            th:text="${d.fullName + (d.mobile != null ? ' (' + d.mobile + ')' : '')}">Donor Name</option>
+                                </select>
+                                <small class="text-muted">Only food donors are listed here.</small>
+                            </div>
+                            <div id="add_manualDonorContainer" style="display: none;">
+                                <input type="text" id="add_manualDonorName" name="manualDonorName"
+                                       class="form-control mt-1" placeholder="Enter donor name manually">
+                            </div>
+                        </div>
+
+                        <!-- Donor Not Found Checkbox -->
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="add_donorNotFound"
+                                       name="donorNotFound" value="true"
+                                       onchange="toggleManualDonor('add')">
+                                <label class="form-check-label text-muted" for="add_donorNotFound">
+                                    Donor Not Found — enter name manually
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Notes -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" for="add_notes">Notes (Optional)</label>
+                            <textarea id="add_notes" name="notes" class="form-control" rows="2"
+                                      placeholder="Any additional remarks..."></textarea>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="bi bi-check-circle me-1"></i> Save Food Schedule
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- ── Edit Food Schedule Modal ────────────────────────────────────── -->
+    <!-- ================================================================ -->
+    <div class="modal fade" id="editFoodScheduleModal" tabindex="-1"
+         aria-labelledby="editFoodScheduleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="editFoodScheduleModalLabel">
+                        <i class="bi bi-pencil-square me-2 text-primary"></i>Edit Food Schedule
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="editFoodScheduleForm" method="post">
+                    <div class="modal-body">
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Schedule Date <span class="text-danger">*</span></label>
+                                <input type="date" id="edit_scheduleDate" name="scheduleDate"
+                                       class="form-control" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Meal Type <span class="text-danger">*</span></label>
+                                <select id="edit_mealType" name="mealType" class="form-select" required
+                                        onchange="fetchRate('edit')">
+                                    <option value="">-- Select Meal --</option>
+                                    <option th:each="mt : ${mealTypes}"
+                                            th:value="${mt.name()}"
+                                            th:text="${mt.displayName}">Breakfast</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Serving Time <span class="text-danger">*</span></label>
+                                <input type="time" id="edit_servingTime" name="servingTime"
+                                       class="form-control" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Menu Items <span class="text-danger">*</span></label>
+                            <textarea id="edit_menuItems" name="menuItems" class="form-control" rows="4" required></textarea>
+                            <small class="text-muted">Enter each item on a new line.</small>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Sponsorship Type <span class="text-danger">*</span></label>
+                                <select id="edit_sponsorshipType" name="sponsorshipType" class="form-select" required
+                                        onchange="fetchRate('edit')">
+                                    <option value="">-- Select Sponsorship --</option>
+                                    <option th:each="st : ${sponsorshipTypes}"
+                                            th:value="${st.name()}"
+                                            th:text="${st.displayName}">One Time</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Amount (₹) <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">₹</span>
+                                    <input type="number" id="edit_amount" name="amount" class="form-control"
+                                           step="0.01" min="0" required>
+                                </div>
+                                <small id="edit_rateMessage" class="text-muted d-none"></small>
+                            </div>
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label fw-semibold">Food Donor</label>
+                            <div id="edit_donorDropdownContainer">
+                                <select id="edit_donorId" name="donorId" class="form-select">
+                                    <option value="">-- Select Donor --</option>
+                                    <option th:each="d : ${foodDonors}"
+                                            th:value="${d.id}"
+                                            th:text="${d.fullName + (d.mobile != null ? ' (' + d.mobile + ')' : '')}">Donor Name</option>
+                                </select>
+                                <small class="text-muted">Only food donors are listed here.</small>
+                            </div>
+                            <div id="edit_manualDonorContainer" style="display: none;">
+                                <input type="text" id="edit_manualDonorName" name="manualDonorName"
+                                       class="form-control mt-1" placeholder="Enter donor name manually">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="edit_donorNotFound"
+                                       name="donorNotFound" value="true"
+                                       onchange="toggleManualDonor('edit')">
+                                <label class="form-check-label text-muted" for="edit_donorNotFound">
+                                    Donor Not Found — enter name manually
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Notes (Optional)</label>
+                            <textarea id="edit_notes" name="notes" class="form-control" rows="2"></textarea>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="bi bi-check-circle me-1"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================ -->
+    <!-- ── View Food Schedule Modal ────────────────────────────────────── -->
+    <!-- ================================================================ -->
+    <div class="modal fade" id="viewFoodScheduleModal" tabindex="-1"
+         aria-labelledby="viewFoodScheduleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-md modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="viewFoodScheduleModalLabel">
+                        <i class="bi bi-eye me-2 text-primary"></i>Food Schedule Details
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="viewModalBody">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div><!-- /#food-schedule-content -->
+
+<!-- ================================================================ -->
+<!-- ── Page-level JavaScript ──────────────────────────────────────── -->
+<!-- ================================================================ -->
+<script th:inline="javascript">
+/*<![CDATA[*/
+
+// ── Sponsorship type → display name map (for human-readable labels in view modal) ──
+const sponsorshipDisplayNames = {
+    'ONE_TIME': 'One Time',
+    'ONE_DAY': '1 Day',
+    'FIVE_YEAR_TITHI': '5 Year Tithi',
+    'TODAY_SPONSOR': "Today's Sponsor",
+    'LUNCH_WITH_SWEET': 'Lunch With Sweet'
+};
+
+const mealDisplayNames = {
+    'Breakfast': '🌅 Breakfast',
+    'Lunch': '☀️ Lunch',
+    'Dinner': '🌙 Dinner'
+};
+
+// ── Reset Add Modal to defaults ────────────────────────────────────────────────
+function resetAddModal() {
+    document.getElementById('addFoodScheduleForm').reset();
+    // Reset date to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('add_scheduleDate').value = today;
+    // Reset donor area
+    document.getElementById('add_donorDropdownContainer').style.display = '';
+    document.getElementById('add_manualDonorContainer').style.display = 'none';
+    document.getElementById('add_donorNotFound').checked = false;
+    // Clear rate message
+    const msg = document.getElementById('add_rateMessage');
+    msg.textContent = '';
+    msg.classList.add('d-none');
+}
+
+// ── Toggle manual donor name field ────────────────────────────────────────────
+function toggleManualDonor(prefix) {
+    const checkbox = document.getElementById(prefix + '_donorNotFound');
+    const dropdown = document.getElementById(prefix + '_donorDropdownContainer');
+    const manual   = document.getElementById(prefix + '_manualDonorContainer');
+    if (checkbox.checked) {
+        dropdown.style.display = 'none';
+        manual.style.display = '';
+        // Clear the dropdown selection
+        const sel = document.getElementById(prefix + '_donorId');
+        if (sel) sel.value = '';
+    } else {
+        dropdown.style.display = '';
+        manual.style.display = 'none';
+        // Clear manual input
+        const inp = document.getElementById(prefix + '_manualDonorName');
+        if (inp) inp.value = '';
+    }
+}
+
+// ── Fetch donation rate dynamically from the DB ───────────────────────────────
+function fetchRate(prefix) {
+    const mealTypeEl  = document.getElementById(prefix + '_mealType');
+    const stypeEl     = document.getElementById(prefix + '_sponsorshipType');
+    const amountEl    = document.getElementById(prefix + '_amount');
+    const msgEl       = document.getElementById(prefix + '_rateMessage');
+
+    const mealType       = mealTypeEl ? mealTypeEl.value : '';
+    const sponsorshipType = stypeEl ? stypeEl.value : '';
+
+    if (!mealType || !sponsorshipType) return;
+
+    // Map enum name back to display name for the API call
+    const mealDisplayMap = {
+        'Breakfast': 'Breakfast',
+        'Lunch': 'Lunch',
+        'Dinner': 'Dinner'
+    };
+    const stypeDisplayMap = {
+        'ONE_TIME': 'One Time',
+        'ONE_DAY': '1 Day',
+        'FIVE_YEAR_TITHI': '5 Year Tithi',
+        'TODAY_SPONSOR': "Today's Sponsor",
+        'LUNCH_WITH_SWEET': 'Lunch With Sweet'
+    };
+
+    const mealForApi  = mealDisplayMap[mealType]  || mealType;
+    const stypeForApi = stypeDisplayMap[sponsorshipType] || sponsorshipType;
+
+    fetch('/food-schedule/rate?mealType=' + encodeURIComponent(mealForApi)
+          + '&sponsorshipType=' + encodeURIComponent(stypeForApi))
+        .then(resp => resp.json())
+        .then(data => {
+            msgEl.classList.remove('d-none');
+            if (data.found) {
+                amountEl.value = data.amount;
+                msgEl.textContent = '✓ Rate auto-filled from database. You can edit manually.';
+                msgEl.className = 'text-success small';
+            } else {
+                msgEl.textContent = 'ℹ No rate configured for this combination. Enter amount manually.';
+                msgEl.className = 'text-warning small';
+            }
+        })
+        .catch(() => {
+            msgEl.classList.remove('d-none');
+            msgEl.textContent = 'Could not fetch rate. Please enter amount manually.';
+            msgEl.className = 'text-danger small';
+        });
+}
+
+// ── Open Edit Modal ─────────────────────────────────────────────────────────────
+function openEditModal(id) {
+    fetch('/food-schedule/api/item/' + id)
+        .then(resp => {
+            if (!resp.ok) throw new Error('Not found');
+            return resp.json();
+        })
+        .then(data => {
+            // Set form action
+            document.getElementById('editFoodScheduleForm').action = '/food-schedule/update/' + data.id;
+
+            // Populate fields
+            document.getElementById('edit_scheduleDate').value   = data.scheduleDate;
+            document.getElementById('edit_menuItems').value      = data.menuItems || '';
+            document.getElementById('edit_notes').value          = data.notes || '';
+            document.getElementById('edit_amount').value         = data.amount;
+            document.getElementById('edit_servingTime').value    = data.servingTime ? data.servingTime.substring(0, 5) : '';
+
+            // Meal type
+            const mealSel = document.getElementById('edit_mealType');
+            if (mealSel) mealSel.value = data.mealType;
+
+            // Sponsorship type
+            const stypeSel = document.getElementById('edit_sponsorshipType');
+            if (stypeSel) stypeSel.value = data.sponsorshipType;
+
+            // Donor handling
+            const donorNotFound = data.donorNotFound;
+            const donorNotFoundChk = document.getElementById('edit_donorNotFound');
+            donorNotFoundChk.checked = donorNotFound;
+
+            if (donorNotFound) {
+                document.getElementById('edit_donorDropdownContainer').style.display = 'none';
+                document.getElementById('edit_manualDonorContainer').style.display = '';
+                const inp = document.getElementById('edit_manualDonorName');
+                if (inp) inp.value = data.manualDonorName || '';
+            } else {
+                document.getElementById('edit_donorDropdownContainer').style.display = '';
+                document.getElementById('edit_manualDonorContainer').style.display = 'none';
+                const donorSel = document.getElementById('edit_donorId');
+                if (donorSel && data.donorId) donorSel.value = data.donorId;
+            }
+
+            // Clear rate message
+            const msg = document.getElementById('edit_rateMessage');
+            if (msg) { msg.textContent = ''; msg.classList.add('d-none'); }
+
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('editFoodScheduleModal'));
+            modal.show();
+        })
+        .catch(err => {
+            alert('Failed to load record: ' + err.message);
+        });
+}
+
+// ── Open View Modal ─────────────────────────────────────────────────────────────
+function openViewModal(id) {
+    const viewBody = document.getElementById('viewModalBody');
+    viewBody.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+
+    const modal = new bootstrap.Modal(document.getElementById('viewFoodScheduleModal'));
+    modal.show();
+
+    fetch('/food-schedule/api/item/' + id)
+        .then(resp => {
+            if (!resp.ok) throw new Error('Not found');
+            return resp.json();
+        })
+        .then(data => {
+            const mealLabel = mealDisplayNames[data.mealType] || data.mealType;
+            const stypeLabel = sponsorshipDisplayNames[data.sponsorshipType] || data.sponsorshipType;
+            const donorLabel = data.donorNotFound
+                ? (data.manualDonorName || '—')
+                : (data.donorId ? 'Donor #' + data.donorId : '—');
+            const formattedAmount = '₹' + Number(data.amount).toLocaleString('en-IN');
+            const menuLines = (data.menuItems || '').split('\n').map(l => '<li class="py-1">' + l + '</li>').join('');
+
+            viewBody.innerHTML = `
+                <table class="table table-bordered align-middle mb-0" style="font-size: 14px;">
+                    <tr><th class="bg-light" style="width: 38%;">Date</th><td><strong>${data.scheduleDate}</strong></td></tr>
+                    <tr><th class="bg-light">Meal</th><td>${mealLabel}</td></tr>
+                    <tr><th class="bg-light">Serving Time</th><td>${data.servingTime ? data.servingTime.substring(0, 5) : '—'}</td></tr>
+                    <tr><th class="bg-light">Menu Items</th><td><ul class="mb-0 ps-3">${menuLines}</ul></td></tr>
+                    <tr><th class="bg-light">Food Donor</th><td>${donorLabel}</td></tr>
+                    <tr><th class="bg-light">Sponsorship</th><td>${stypeLabel}</td></tr>
+                    <tr><th class="bg-light">Amount</th><td><strong class="text-success">${formattedAmount}</strong></td></tr>
+                    <tr><th class="bg-light">Notes</th><td>${data.notes || '<span class="text-muted">—</span>'}</td></tr>
+                </table>
+            `;
+        })
+        .catch(err => {
+            viewBody.innerHTML = '<div class="alert alert-danger">Failed to load details: ' + err.message + '</div>';
+        });
+}
+
+// ── Print Row (basic window.print for the view modal) ─────────────────────────
+function printRow(id) {
+    openViewModal(id);
+    // Give the modal 800ms to load data then print
+    setTimeout(() => { window.print(); }, 800);
+}
+
+/*]]>*/
+</script>
+
+</body>
+</html>

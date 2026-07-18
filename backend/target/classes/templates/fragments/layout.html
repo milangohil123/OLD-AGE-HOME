@@ -59,6 +59,12 @@
                             th:text="#{nav.reports}">Reports</span>
                     </a>
                 </li>
+                <li class="sidebar-menu-item" th:classappend="${activePage == 'food-schedule'} ? 'active'">
+                    <a th:href="@{/food-schedule}">
+                        <i class="bi bi-calendar3" style="font-size: 16px;"></i> <span
+                            th:text="#{nav.food_schedule}">Food Schedule</span>
+                    </a>
+                </li>
                 <!-- Conditional Audit Logs link for Admin only -->
                 <li sec:authorize="hasRole('ADMIN')" class="sidebar-menu-item"
                     th:classappend="${activePage == 'audit'} ? 'active'">

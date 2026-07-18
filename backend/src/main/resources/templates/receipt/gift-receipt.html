@@ -1,25 +1,465 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Great+Vibes&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <title th:text="'Gift Receipt – ' + ${receipt.receiptNumber}">Gift Receipt</title>
     <style>
-        /* ══════════════════════════════════════════════════════════════
-           RESET
-        ══════════════════════════════════════════════════════════════ */
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        /* ══════════════════════════════════════════════════════════════
-           SCREEN SHELL
-        ══════════════════════════════════════════════════════════════ */
-        body {
-            background: #d0d0d0;
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 13px;
-            color: #000;
+        :root {
+            --primary-maroon: #801824;
+            --text-dark: #1f1f1f;
+            --text-muted: #4e4e4e;
+            --line-color: #2b2b2b;
         }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f7f7f7;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 20px;
+            color: var(--text-dark);
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .receipt-container {
+            width: 850px;
+            background-color: #ffffff;
+            padding: 45px 40px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            position: relative;
+        }
+
+        /* --- HEADER SECTION --- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 5px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .logo-container {
+            width: 80px;
+            height: 110px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .header-logo {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .title-area {
+            text-align: center;
+            flex: 1;
+            padding-top: 2px;
+        }
+
+        .sub-title {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--text-dark);
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .main-title {
+            font-family: 'Cinzel', serif;
+            font-size: 23px;
+            font-weight: 700;
+            color: var(--primary-maroon);
+            line-height: 1.25;
+            letter-spacing: 0.5px;
+        }
+
+        .tagline {
+            font-family: 'Great Vibes', 'Brush Script MT', 'Lucida Handwriting', 'Segoe Script', 'Apple Chancery', cursive;
+            font-size: 24px;
+            color: var(--text-dark);
+            margin-top: 6px;
+        }
+
+        .header-right {
+            width: 300px;
+            font-size: 12px;
+            line-height: 1.45;
+        }
+
+        .contact-item {
+            display: grid;
+            grid-template-columns: 20px 8px 1fr;
+            align-items: start;
+            margin-bottom: 4px;
+        }
+
+        .contact-icon {
+            color: var(--primary-maroon);
+            font-size: 12px;
+            text-align: center;
+            margin-top: 3px;
+        }
+
+        .contact-separator {
+            color: var(--primary-maroon);
+            font-weight: bold;
+            margin-top: 1px;
+            text-align: center;
+        }
+
+        .contact-text {
+            color: var(--text-dark);
+            padding-left: 2px;
+        }
+
+        .header-separator {
+            border: none;
+            border-top: 1.5px solid var(--primary-maroon);
+            margin: 8px 0;
+            width: 100%;
+        }
+
+        /* --- META DATA ROW --- */
+        .meta-row-1 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .meta-field {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .receipt-title-box {
+            border: 2px solid var(--primary-maroon);
+            border-radius: 5px;
+            padding: 5px 25px;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-maroon);
+            letter-spacing: 1px;
+            text-align: center;
+        }
+
+        .reg-details-box {
+            border-top: 1.5px solid var(--line-color);
+            border-bottom: 1.5px solid var(--line-color);
+            padding: 8px 0;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 500;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        /* --- BLANK FIELDS --- */
+        .field-group {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+
+        .form-row {
+            display: flex;
+            align-items: flex-end;
+            width: 100%;
+        }
+
+        .form-label {
+            font-size: 15px;
+            font-weight: 700;
+            white-space: nowrap;
+            padding-right: 8px;
+            color: var(--text-dark);
+        }
+
+        .form-line {
+            flex: 1;
+            border-bottom: 1.5px solid var(--line-color);
+            height: 22px;
+        }
+
+        .form-line-input {
+            flex: 1;
+            border: none;
+            border-bottom: 1.5px solid var(--line-color);
+            outline: none;
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 500;
+            background: transparent;
+            padding: 0 5px;
+            color: var(--text-dark);
+            height: 22px;
+        }
+
+        .meta-input {
+            border: none;
+            border-bottom: 1px solid var(--line-color);
+            outline: none;
+            font-family: inherit;
+            font-size: 16px;
+            font-weight: 500;
+            background: transparent;
+            padding: 0 5px;
+            color: var(--text-dark);
+        }
+
+        .multi-field-row {
+            display: flex;
+            width: 100%;
+            gap: 20px;
+        }
+
+        /* --- PARTICULARS TABLE --- */
+        .particulars-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 5px;
+            margin-bottom: 18px;
+        }
+
+        .particulars-table th,
+        .particulars-table td {
+            border: 1.5px solid var(--line-color);
+            vertical-align: top;
+        }
+
+        .particulars-table th {
+            font-size: 16px;
+            font-weight: 700;
+            padding: 8px 12px;
+            text-align: left;
+        }
+
+        .particulars-table th.header-particulars {
+            color: var(--primary-maroon);
+            width: 78%;
+        }
+
+        .particulars-table th.header-amount {
+            color: var(--primary-maroon);
+            width: 22%;
+            text-align: center;
+        }
+
+        .table-inner-row {
+            display: flex;
+            align-items: flex-end;
+            padding: 10px 12px 6px 12px;
+            width: 100%;
+        }
+
+        .table-inner-line {
+            flex: 1;
+            border-bottom: 1.5px solid var(--line-color);
+            height: 20px;
+        }
+
+        .table-inner-input {
+            flex: 1;
+            border: none;
+            border-bottom: 1.5px solid var(--line-color);
+            outline: none;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 500;
+            background: transparent;
+            padding: 0 5px;
+            color: var(--text-dark);
+            height: 20px;
+        }
+
+        /* Checkboxes */
+        .checkbox-container {
+            display: flex;
+            gap: 45px;
+            padding: 15px 12px 20px 12px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .checkbox-box {
+            width: 14px;
+            height: 14px;
+            border: 1.5px solid var(--line-color);
+            margin-right: 8px;
+            flex-shrink: 0;
+            cursor: pointer;
+            accent-color: var(--primary-maroon);
+        }
+
+        .checkbox-label-line {
+            border-bottom: 1.5px solid var(--line-color);
+            padding-right: 20px;
+            padding-bottom: 2px;
+        }
+
+        .amount-column-space {
+            height: 155px;
+            position: relative;
+        }
+
+        .amount-input {
+            position: absolute;
+            left: 0;
+            right: 50px;
+            /* Center the input within the area to the left of the vertical divider */
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            outline: none;
+            background: transparent;
+            font-family: inherit;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-maroon);
+            text-align: center;
+        }
+
+        .amount-vertical-divider {
+            position: absolute;
+            right: 50px;
+            top: 0;
+            bottom: 0;
+            border-right: 1.5px solid var(--line-color);
+        }
+
+        .amount-rupees-row {
+            display: flex;
+            align-items: flex-end;
+            margin-bottom: 20px;
+            padding: 0 4px;
+        }
+
+        /* --- FOOTER AREA --- */
+        .footer-notes {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            font-size: 12px;
+            font-weight: 500;
+            line-height: 1.5;
+            margin-top: 15px;
+        }
+
+        .legal-text {
+            max-width: 58%;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .thank-you-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .badge-logo-container {
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-right: 8px;
+        }
+
+        .badge-logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .thank-you-text-wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .thank-you-main {
+            font-size: 21px;
+            font-weight: 700;
+            color: var(--primary-maroon);
+            line-height: 1.1;
+        }
+
+        .thank-you-sub {
+            font-size: 12px;
+            font-style: italic;
+            font-weight: 500;
+            color: var(--text-dark);
+            margin-top: 2px;
+        }
+
+        .signature-block {
+            text-align: right;
+            max-width: 42%;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .signature-title {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 50px;
+            text-align: right;
+            line-height: 1.5;
+            color: var(--text-dark);
+        }
+
+        .signature-org-line {
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 3px;
+        }
+
+        .signature-space {
+            font-size: 13px;
+            font-weight: bold;
+            color: var(--text-dark);
+        }
+
+        /* ══════════════════════════════════════════════════════════════
+           SCREEN — action bar (hidden on print)
+        ══════════════════════════════════════════════════════════════ */
         .action-bar {
             background: #1c1c2e;
             padding: 10px 20px;
@@ -29,424 +469,518 @@
             position: sticky;
             top: 0;
             z-index: 999;
-        }
-        .action-bar h6 { color: #fff; font-size: 13px; font-weight: 600; flex: 1; margin: 0; }
-        .ab-btn { padding: 7px 20px; border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: none; border: none; display: inline-flex; align-items: center; gap: 5px; }
-        .ab-btn-print  { background: #9b1c1c; color: #fff; }
-        .ab-btn-back   { background: transparent; color: #ccc; border: 1px solid #555; }
-        .ab-btn-addrow { background: #e8e8e8; color: #333; border: 1px solid #aaa; font-size: 12px; padding: 5px 12px; }
-
-        .page-wrap { display: flex; justify-content: center; padding: 20px; }
-
-        /* ══════════════════════════════════════════════════════════════
-           RECEIPT PAPER
-        ══════════════════════════════════════════════════════════════ */
-        .receipt {
-            width: 210mm;
-            min-height: 297mm;
-            background: #fff;
-            padding: 12mm 14mm 12mm 14mm;
-            position: relative;
+            width: 100%;
         }
 
-        /* ══════════════════════════════════════════════════════════════
-           HEADER  (identical to money receipt)
-        ══════════════════════════════════════════════════════════════ */
-        .hdr {
-            display: flex;
-            align-items: center;
-            gap: 0;
-            border-bottom: 2.5px solid #8b0000;
-            padding-bottom: 7px;
-            margin-bottom: 7px;
-        }
-        .hdr-logo { width: 72px; flex-shrink: 0; }
-        .hdr-centre { flex: 1; padding: 0 10px; border-right: 1px solid #ccc; }
-        .hdr-icsw { font-size: 9.5px; color: #000; margin-bottom: 1px; }
-        .hdr-orgname {
-            font-size: 21px;
-            font-weight: 900;
-            color: #8b0000;
-            line-height: 1.1;
-            letter-spacing: 0.3px;
-            font-family: Arial Black, Arial, sans-serif;
-        }
-        .hdr-tagline-wrap { margin-top: 5px; padding-top: 4px; border-top: 1.5px solid #8b0000; display: inline-block; }
-        .hdr-tagline { font-family: "Times New Roman", Times, Georgia, serif; font-style: italic; font-size: 13px; color: #8b0000; }
-        .hdr-contact { padding-left: 12px; font-size: 10.5px; line-height: 1.65; min-width: 210px; }
-        .hdr-contact .crow { display: flex; align-items: flex-start; gap: 5px; }
-        .hdr-contact .cicon { flex-shrink: 0; width: 13px; margin-top: 1px; }
-
-        /* ══════════════════════════════════════════════════════════════
-           RECEIPT NUMBER ROW  (Gift Receipt style — all on one line)
-        ══════════════════════════════════════════════════════════════ */
-        .rn-row {
-            display: flex;
-            align-items: center;
-            border-bottom: 1.5px solid #000;
-            padding: 6px 0 5px 0;
+        .action-bar h6 {
+            color: #fff;
             font-size: 13px;
-            gap: 0;
-        }
-        .rn-no-lbl { font-weight: 700; white-space: nowrap; margin-right: 4px; }
-        .rn-no-input {
-            border: none;
-            border-bottom: 1px solid #000;
-            outline: none;
-            width: 100px;
-            font-size: 13px;
-            font-family: inherit;
-            padding: 0 4px;
-            margin-right: 14px;
-            background: transparent;
-        }
-        .rn-dt-lbl { font-weight: 700; white-space: nowrap; margin-right: 4px; }
-        .rn-dt-input {
-            border: none;
-            border-bottom: 1px solid #000;
-            outline: none;
-            width: 130px;
-            font-size: 13px;
-            font-family: inherit;
-            padding: 0 4px;
-            margin-right: 14px;
-            background: transparent;
-        }
-        .rn-trust-info {
-            font-size: 10.5px;
-            white-space: nowrap;
-            margin-right: 10px;
-        }
-        .rn-title-box {
-            border: 2px solid #000;
-            color: #000;
-            font-weight: 900;
-            font-size: 14px;
-            padding: 3px 14px;
-            letter-spacing: 1px;
-            white-space: nowrap;
-            font-family: Arial Black, Arial, sans-serif;
-            margin-left: auto;
-        }
-
-        /* ══════════════════════════════════════════════════════════════
-           SEPARATOR
-        ══════════════════════════════════════════════════════════════ */
-        .sep { border: none; border-top: 1.5px solid #000; margin: 8px 0; }
-
-        /* ══════════════════════════════════════════════════════════════
-           FIELD LINES
-        ══════════════════════════════════════════════════════════════ */
-        .fl { display: flex; align-items: flex-end; margin-bottom: 12px; gap: 4px; }
-        .fl-lbl { font-weight: 700; white-space: nowrap; font-size: 13px; flex-shrink: 0; }
-        .fl-val {
+            font-weight: 600;
             flex: 1;
-            border: none;
-            border-bottom: 1px solid #000;
-            outline: none;
-            font-size: 13px;
-            font-family: inherit;
-            padding: 0 4px 1px 4px;
-            background: transparent;
-            min-width: 0;
+            margin: 0;
         }
-        /* extra blank underline below address */
-        .fl-bare { display: block; border-bottom: 1px solid #000; margin-bottom: 12px; height: 18px; }
 
-        /* ══════════════════════════════════════════════════════════════
-           GIFT TABLE — 10 rows  (exact match to photo)
-        ══════════════════════════════════════════════════════════════ */
-        .gtable {
+        .ab-btn {
+            padding: 7px 20px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .ab-btn-print {
+            background: #9b1c1c;
+            color: #fff;
+        }
+
+        .ab-btn-back {
+            background: transparent;
+            color: #ccc;
+            border: 1px solid #555;
+        }
+
+        /* * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        @page {
+            size: A4;
+            margin: 20mm 15mm;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            color: #000000;
+            background-color: #ffffff;
+            font-size: 11pt;
+            line-height: 1.5;
+            -webkit-print-color-adjust: exact;
+        }
+
+        .receipt-container {
+            width: 100%;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        /* Header Layout */
+        .header-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 4px;
+            margin-bottom: 5px;
         }
-        .gtable th {
-            border: 1.5px solid #000;
-            padding: 6px 8px;
-            font-size: 13px;
-            font-weight: 700;
-            background: #fff;
-        }
-        .gtable th.th-part { text-align: left; }
-        .gtable th.th-qty  { text-align: center; width: 130px; }
 
-        .gtable td { border: 1.5px solid #000; padding: 5px 8px; font-size: 13px; }
-        .gtable td.td-num { width: 36px; font-weight: 700; color: #000; white-space: nowrap; }
-        .gtable td.td-part { }
-        .gtable td.td-qty  { width: 130px; }
-        .gtable td input {
-            border: none;
-            outline: none;
+        .header-table td {
+            vertical-align: top;
+        }
+
+        .logo-col {
+            width: 15%;
+        }
+
+        .logo-img {
+            width: 85px;
+            height: auto;
+            display: block;
+        }
+
+        .title-col {
+            width: 53%;
+            text-align: center;
+            padding-top: 5px;
+        }
+
+        .org-parent {
+            font-size: 11pt;
+            font-weight: bold;
+            color: #000000;
+            margin-bottom: 3px;
+        }
+
+        .org-main {
+            font-size: 18pt;
+            font-weight: bold;
+            color: #800000;
+            /* Dark Maroon */
+            line-height: 1.2;
+            letter-spacing: 0.5px;
+        }
+
+        .tagline {
+            font-family: 'Georgia', serif;
+            font-style: italic;
+            font-size: 15pt;
+            color: #000000;
+            margin-top: 5px;
+        }
+
+        .info-col {
+            width: 32%;
+            font-size: 8.5pt;
+            padding-left: 10px;
+            line-height: 1.4;
+        }
+
+        .info-item {
+            margin-bottom: 3px;
+        }
+
+        /* Top Master Divider */
+        .top-divider {
+            border-top: 2px solid #800000;
+            margin-bottom: 15px;
+        }
+        */
+
+        /* Meta Row Layout matching the master printed booklet structure */
+        .meta-table {
             width: 100%;
-            font-size: 13px;
-            font-family: inherit;
-            background: transparent;
+            border-collapse: collapse;
+            margin-bottom: 12px;
         }
 
-        /* Table action buttons (screen only) */
-        .tbl-actions { margin-top: 6px; display: flex; gap: 8px; }
-        .tbl-btn {
-            border: 1px solid #888;
-            background: #f5f5f5;
-            padding: 3px 12px;
-            font-size: 11px;
-            cursor: pointer;
-            border-radius: 3px;
+        .meta-label {
+            font-weight: bold;
+            font-size: 12pt;
         }
 
-        /* ══════════════════════════════════════════════════════════════
-           FOOTER
-        ══════════════════════════════════════════════════════════════ */
-        .footer-block {
-            display: flex;
-            justify-content: flex-end;
-            font-size: 11px;
-            line-height: 1.65;
+        .meta-underline {
+            border-bottom: 1px solid #000000;
+            display: inline-block;
+            padding-bottom: 1px;
+        }
+
+        .receipt-title-box {
+            border: 1px solid #000000;
+            color: #000000;
+            font-weight: bold;
+            font-size: 12pt;
+            text-align: center;
+            padding: 3px 15px;
+            border-radius: 4px;
+            display: inline-block;
+            letter-spacing: 0.5px;
+        }
+
+        .reg-text-inline {
+            font-size: 8.5pt;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        /* Master Line Separator */
+        .master-separator {
+            border-top: 1px solid #000000;
+            margin-bottom: 15px;
+        }
+
+        /* Donor Details Block */
+        .donor-section {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            margin-bottom: 16px;
+            width: 100%;
+            display: table;
+        }
+
+        .form-label {
+            display: table-cell;
+            font-weight: bold;
+            white-space: nowrap;
+            width: 1%;
+            padding-right: 8px;
+            font-size: 11.5pt;
+        }
+
+        .form-underline {
+            display: table-cell;
+            border-bottom: 1px solid #000000;
+            vertical-align: bottom;
+            padding-left: 5px;
+        }
+
+        /* Gift Items Table Structure matching exact proportions */
+        .gift-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            margin-bottom: 25px;
+            border: 1px solid #000000;
+        }
+
+        .gift-table th {
+            border: 1px solid #000000;
+            padding: 8px 12px;
+            font-weight: bold;
+            font-size: 12pt;
+            color: #000000;
+            text-align: left;
+        }
+
+        .gift-table th.qty-header {
+            width: 22%;
+            text-align: center;
+        }
+
+        .gift-table td {
+            border: 1px solid #000000;
+            padding: 7px 12px;
+            height: 38px;
+            font-size: 11pt;
+            vertical-align: middle;
+        }
+
+        .gift-table td.qty-cell {
+            text-align: center;
+        }
+
+        /* Footer Area Layout */
+        .footer-table {
+            width: 100%;
+            border-collapse: collapse;
             margin-top: 10px;
+        }
+
+        .footer-left {
+            width: 55%;
+            vertical-align: top;
+            font-size: 9pt;
+            line-height: 1.5;
+        }
+
+        .footer-right {
+            width: 45%;
             text-align: right;
+            vertical-align: top;
+            font-size: 10pt;
         }
-        .footer-block .f-for { font-size: 10px; }
-        .footer-block .f-org { font-weight: 700; font-size: 12px; }
 
-        .ty-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 22px; }
-        .ty-left { display: flex; align-items: center; gap: 8px; }
-        .ty-text h4 { font-size: 16px; font-weight: 900; color: #8b0000; margin: 0; line-height: 1.1; }
-        .ty-text p  { font-size: 10px; color: #555; margin: 0; }
-        .mgr-sign   { font-weight: 700; font-size: 13px; }
+        .sign-space {
+            margin-top: 65px;
+            font-weight: bold;
+            padding-right: 5px;
+        }
 
-        /* ══════════════════════════════════════════════════════════════
-           PRINT RULES
-        ══════════════════════════════════════════════════════════════ */
+        /* Brand Thank You Signature */
+        .thankyou-container {
+            margin-top: 25px;
+            display: table;
+        }
+
+        .thankyou-logo {
+            display: table-cell;
+            vertical-align: middle;
+            width: 45px;
+            padding-right: 12px;
+        }
+
+        .thankyou-logo img {
+            width: 40px;
+            height: auto;
+            display: block;
+        }
+
+        .thankyou-text {
+            display: table-cell;
+            vertical-align: middle;
+        }
+
+        .ty-title {
+            font-size: 15pt;
+            font-weight: bold;
+            color: #800000;
+            line-height: 1.1;
+        }
+
+        .ty-subtitle {
+            font-size: 9.5pt;
+            font-style: italic;
+            color: #000000;
+        }
+
+        /* --- PRINT STYLES --- */
         @media print {
-            body { background: #fff !important; }
-            .action-bar { display: none !important; }
-            .tbl-actions { display: none !important; }
-            .page-wrap { padding: 0 !important; }
-            .receipt {
-                width: 100% !important;
-                min-height: auto !important;
-                padding: 8mm 10mm !important;
-                box-shadow: none !important;
+            @page {
+                size: A4 portrait;
+                margin: 0; /* Suppress browser-generated headers and footers */
             }
-            .fl-val, .rn-no-input, .rn-dt-input, .gtable td input {
-                border-color: transparent !important;
-                border-bottom-color: #000 !important;
+
+            html, body {
+                height: 100%;
+                overflow: hidden; /* Force content onto exactly one A4 page without page-breaks */
+            }
+
+            body {
+                background-color: #ffffff;
+                color: #000000;
+                padding: 15mm 20mm; /* Re-introduce borders inside the printable page margins */
+                margin: 0;
+                display: block;
+                width: 100%;
+                box-sizing: border-box;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .action-bar {
+                display: none !important;
+            }
+
+            .receipt-container {
+                box-shadow: none;
+                width: 100%;
+                max-width: 100%;
+                padding: 0 !important;
+                margin: 0 !important;
+                border: none;
+                page-break-inside: avoid;
+            }
+
+            :root {
+                --line-color: #000000;
+            }
+
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
         }
-        @page { size: A4 portrait; margin: 6mm; }
     </style>
 </head>
+
 <body>
 
-<!-- ── Action bar ─────────────────────────────────────────────────────────── -->
-<div class="action-bar">
-    <h6>&#128438; Gift Receipt Preview &mdash; <span th:text="${receipt.receiptNumber}"></span></h6>
-    <a th:href="${receipt.backUrl}" class="ab-btn ab-btn-back">&#8592; Back to Profile</a>
-    <button class="ab-btn ab-btn-print" onclick="window.print()">&#128438; Print</button>
-</div>
+    <!-- ── Action bar (screen only) ──────────────────────────────────────────── -->
+    <div class="action-bar">
+        <h6>&#128438; Gift Receipt Preview &mdash; <span th:text="${receipt.receiptNumber}"></span></h6>
+        <a th:href="${receipt.backUrl}" class="ab-btn ab-btn-back">&#8592; Back to Profile</a>
+        <button class="ab-btn ab-btn-print" onclick="window.print()">&#128438; Print</button>
+    </div>
 
-<div class="page-wrap">
-<div class="receipt">
+    <div class="receipt-container" style="margin-top: 20px;">
+        <!-- Header Fragment -->
+        <div class="header">
+            <div class="header-left">
+                <!-- Exact Trace of the Elder Couple Silhouette Logo -->
+                <div class="logo-container">
+                    <img th:src="@{/images/vrudhashram-logo.png}" alt="Vrudhashram Logo" class="header-logo">
+                </div>
+                <div class="title-area">
+                    <div class="sub-title">Indian Council of Social Welfare</div>
+                    <h1 class="main-title">SHRI M. P. SHAH MUNICIPAL<br>VRUDHASHRAM</h1>
+                    <hr class="header-separator">
+                    <div class="tagline">We Care for Seniors</div>
+                </div>
+            </div>
 
-    <!-- ══════════════════════════════════════════════
-         HEADER  (same as Money Receipt)
-    ══════════════════════════════════════════════ -->
-    <div class="hdr">
+            <div class="header-right">
 
-        <div class="hdr-logo">
-            <svg viewBox="0 0 80 90" width="68" height="78" xmlns="http://www.w3.org/2000/svg" aria-label="Vrudhashram Logo">
-                <circle cx="20" cy="13" r="7.5" fill="#8b0000"/>
-                <path d="M11 28 Q12 22 20 22 Q24 22 26 25 L28 45 L12 45 Z" fill="#8b0000"/>
-                <path d="M12 42 L8 62 L32 62 L28 42 Z" fill="#8b0000"/>
-                <rect x="14" y="60" width="4" height="14" rx="2" fill="#8b0000"/>
-                <rect x="22" y="60" width="4" height="14" rx="2" fill="#8b0000"/>
-                <line x1="30" y1="30" x2="34" y2="76" stroke="#8b0000" stroke-width="2.5" stroke-linecap="round"/>
-                <circle cx="55" cy="12" r="7" fill="#8b0000"/>
-                <path d="M46 27 Q48 21 55 21 Q62 21 64 27 L65 45 L45 45 Z" fill="#8b0000"/>
-                <rect x="46" y="44" width="7" height="20" rx="1" fill="#8b0000"/>
-                <rect x="55" y="44" width="7" height="20" rx="1" fill="#8b0000"/>
-                <ellipse cx="49" cy="66" rx="5" ry="3" fill="#8b0000"/>
-                <ellipse cx="58" cy="66" rx="5" ry="3" fill="#8b0000"/>
-                <line x1="65" y1="30" x2="70" y2="76" stroke="#8b0000" stroke-width="2.5" stroke-linecap="round"/>
-                <line x1="46" y1="33" x2="30" y2="36" stroke="#8b0000" stroke-width="2.5" stroke-linecap="round"/>
-            </svg>
+                <div class="contact-item">
+                    <i class="fas fa-location-dot contact-icon"></i>
+                    <span class="contact-separator"></span>
+                    <span class="contact-text">Beside S. B. Sharma School, Mehulnagar Road,<br>
+                        Khodiyar Colony, Jamnagar-361006</span>
+                </div>
+
+                <div class="contact-item">
+                    <i class="fas fa-envelope contact-icon"></i>
+                    <span class="contact-separator">:</span>
+                    <span class="contact-text">mpsm.vrudhashram@gmail.com</span>
+                </div>
+
+                <div class="contact-item">
+                    <i class="fas fa-globe contact-icon"></i>
+                    <span class="contact-separator">:</span>
+                    <span class="contact-text">www.mpsshahvrudhashram.org</span>
+                </div>
+
+                <div class="contact-item">
+                    <i class="fab fa-square-facebook contact-icon"></i>
+                    <span class="contact-separator">:</span>
+                    <span class="contact-text">/mpshahvrudhashram</span>
+                </div>
+
+                <div class="contact-item">
+                    <i class="fas fa-mobile-screen-button contact-icon"></i>
+                    <span class="contact-separator">:</span>
+                    <span class="contact-text">
+                        +91 99788 97722 &nbsp;|&nbsp;
+                        <i class="fas fa-phone contact-icon"
+                            style="font-size: 11px; margin-top: 0; display: inline;"></i>
+                        0288-2710760<br>
+                        +91 95127 10760
+                    </span>
+                </div>
+
+            </div>
         </div>
 
-        <div class="hdr-centre">
-            <div class="hdr-icsw">Indian Council of Social Welfare</div>
-            <div class="hdr-orgname">SHRI M. P. SHAH MUNICIPAL<br>VRUDHASHRAM</div>
-            <div class="hdr-tagline-wrap">
-                <span class="hdr-tagline">We Care for Seniors</span>
-            </div>
-        </div>
+        <div class="top-divider"></div>
 
-        <div class="hdr-contact">
-            <div class="crow">
-                <span class="cicon">
-                    <svg viewBox="0 0 10 14" width="9" height="12"><path d="M5 0a5 5 0 0 0-5 5c0 3.5 5 9 5 9s5-5.5 5-9a5 5 0 0 0-5-5zm0 7a2 2 0 1 1 0-4 2 2 0 0 1 0 4z" fill="#8b0000"/></svg>
-                </span>
-                <span>Beside S. B. Sharma School, Mehulnagar<br>Road, Khodiyar Colony, Jamnagar-361006</span>
-            </div>
-            <div class="crow">
-                <span class="cicon">
-                    <svg viewBox="0 0 14 10" width="11" height="9"><rect x="0" y="0" width="14" height="10" rx="1.5" fill="none" stroke="#8b0000" stroke-width="1.2"/><polyline points="0,0 7,6 14,0" fill="none" stroke="#8b0000" stroke-width="1.2"/></svg>
-                </span>
-                <span>: mpsm.vrudhashram@gmail.com</span>
-            </div>
-            <div class="crow">
-                <span class="cicon">
-                    <svg viewBox="0 0 14 14" width="11" height="11"><circle cx="7" cy="7" r="6" fill="none" stroke="#8b0000" stroke-width="1.2"/><line x1="7" y1="1" x2="7" y2="13" stroke="#8b0000" stroke-width="1"/><ellipse cx="7" cy="7" rx="3.2" ry="6" fill="none" stroke="#8b0000" stroke-width="1"/></svg>
-                </span>
-                <span>: www.mpshahvruddhashram.org</span>
-            </div>
-            <div class="crow">
-                <span class="cicon">
-                    <svg viewBox="0 0 14 14" width="11" height="11"><rect x="1" y="1" width="12" height="12" rx="3" fill="#8b0000"/><path d="M8.5 7h-2V12H5V7H3.5V5.5H5V4.5C5 3 5.8 2 7.5 2H9v1.5H8c-.6 0-.8.3-.8.8v1.2H9L8.5 7z" fill="#fff"/></svg>
-                </span>
-                <span>: /mpshahvruddhashram</span>
-            </div>
-            <div class="crow">
-                <span class="cicon">
-                    <svg viewBox="0 0 14 14" width="11" height="11"><rect x="1" y="3" width="12" height="8" rx="1.5" fill="none" stroke="#8b0000" stroke-width="1.2"/><path d="M4 6l-.5-2.5a1 1 0 0 1 1-1.2h5a1 1 0 0 1 1 1.2L10 6" fill="none" stroke="#8b0000" stroke-width="1"/><circle cx="7" cy="8" r="1.5" fill="#8b0000"/></svg>
-                </span>
-                <span>: +91 99788 97722 &nbsp; &#9990; 0288-2710760</span>
-            </div>
-        </div>
-    </div><!-- /.hdr -->
-
-    <!-- ══════════════════════════════════════════════
-         RECEIPT NUMBER ROW  (Gift Receipt layout)
-         No. | Dt.: ______ | Trust Reg... | GIFT RECEIPT
-    ══════════════════════════════════════════════ -->
-    <div class="rn-row">
-        <span class="rn-no-lbl">No.</span>
-        <input class="rn-no-input" type="text" th:value="${receipt.receiptNumber}">
-
-        <span class="rn-dt-lbl">Dt. :</span>
-        <input class="rn-dt-input" type="text"
-               th:value="${receipt.donationDate != null ? #temporals.format(receipt.donationDate,'dd-MM-yyyy') : ''}">
-
-        <span class="rn-trust-info">Trust Reg. No. E-201 &nbsp;|&nbsp; PAN : AAETM3334R</span>
-        <div class="rn-title-box">GIFT RECEIPT</div>
-    </div>
-
-    <hr class="sep">
-
-    <!-- ══════════════════════════════════════════════
-         DONOR FIELDS
-    ══════════════════════════════════════════════ -->
-
-    <!-- Received with thanks from -->
-    <div class="fl" style="margin-top:8px;">
-        <span class="fl-lbl">Received with thanks from</span>
-        <input class="fl-val" type="text" th:value="${receipt.donorName}">
-    </div>
-
-    <!-- Address line 1 -->
-    <div class="fl">
-        <span class="fl-lbl">Address</span>
-        <input class="fl-val" type="text" th:value="${receipt.address}">
-    </div>
-
-    <!-- Address line 2 blank -->
-    <div class="fl-bare"></div>
-
-    <!-- ID Proof -->
-    <div class="fl">
-        <span class="fl-lbl">ID Proof No.</span>
-        <input class="fl-val" type="text" th:value="${receipt.idProof}">
-    </div>
-
-    <!-- ══════════════════════════════════════════════
-         GIFT TABLE — exactly 10 rows, numbered
-    ══════════════════════════════════════════════ -->
-    <table class="gtable" id="giftTable">
-        <thead>
+        <!-- Structured Meta Row mapping the booklet layout -->
+        <table class="meta-table">
             <tr>
-                <th class="th-part" colspan="2">Particulars</th>
-                <th class="th-qty">Quantity</th>
+                <td style="width: 22%; vertical-align: middle;">
+                    <span class="meta-label">No. :</span>
+                    <span class="meta-underline" style="width: 110px;" th:text="${receipt.receiptNumber}"></span>
+                </td>
+                <td style="width: 23%; vertical-align: middle; text-align: left;">
+                    <span class="meta-label">Dt. :</span>
+                    <span class="meta-underline" style="width: 120px;" th:text="${receipt.donationDate != null ? #temporals.format(receipt.donationDate, 'dd-MM-yyyy') : ''}"></span>
+                </td>
+                <td style="width: 35%; vertical-align: middle; text-align: right; padding-right: 15px;">
+                    <div class="reg-text-inline">Trust Reg. No. E-201 | PAN : AAETM3334R</div>
+                </td>
+                <td style="width: 20%; text-align: right; vertical-align: middle;">
+                    <div class="receipt-title-box">GIFT RECEIPT</div>
+                </td>
             </tr>
-        </thead>
-        <tbody id="giftTableBody">
-            <tr th:each="item, stat : ${receipt.items}">
-                <td class="td-num" th:text="${stat.index + 1} + '.'">1.</td>
-                <td class="td-part"><input type="text" th:value="${item.particulars}"></td>
-                <td class="td-qty"><input type="text" th:value="${item.quantity}"></td>
-            </tr>
-        </tbody>
-    </table>
+        </table>
 
-    <!-- Table row management (hidden on print) -->
-    <div class="tbl-actions">
-        <button class="tbl-btn" type="button" onclick="addGiftRow()">+ Add Row</button>
-        <button class="tbl-btn" type="button" onclick="removeGiftRow()">&#8722; Remove Row</button>
-    </div>
+        <div class="master-separator"></div>
 
-    <!-- ══════════════════════════════════════════════
-         FOOTER
-    ══════════════════════════════════════════════ -->
-    <div class="footer-block">
-        <div>
-            <div class="f-for">For Indian Councidl of Social Welfare</div>
-            <div class="f-org">Shri M. P. Shah Municipal Vrudhashram</div>
-        </div>
-    </div>
+        <!-- Donor Field Matrix -->
+        <div class="donor-section">
+            <div class="form-row">
+                <div class="form-label">Received with thanks from</div>
+                <div class="form-underline" th:text="${receipt.donorName}"></div>
+            </div>
 
-    <!-- ══════════════════════════════════════════════
-         THANK YOU + SIGNATURE
-    ══════════════════════════════════════════════ -->
-    <div class="ty-row">
-        <div class="ty-left">
-            <!-- Folded hands SVG — no emoji -->
-            <svg width="38" height="40" viewBox="0 0 38 40" xmlns="http://www.w3.org/2000/svg" aria-label="Folded hands">
-                <path d="M8 32 C4 28 3 20 5 14 L9 8 C10 6 13 6 14 8 L16 14 L16 30 Z" fill="#8b0000"/>
-                <path d="M30 32 C34 28 35 20 33 14 L29 8 C28 6 25 6 24 8 L22 14 L22 30 Z" fill="#8b0000"/>
-                <ellipse cx="19" cy="32" rx="11" ry="6" fill="#8b0000"/>
-                <path d="M9 14 C8 10 10 6 12 5 C13.5 4 15 5 15 7 L15 14" fill="#8b0000"/>
-                <path d="M11 13 C10 9 12 5 14 4 C15.5 3 17 4.5 16.5 7 L16 14" fill="#8b0000"/>
-                <path d="M29 14 C30 10 28 6 26 5 C24.5 4 23 5 23 7 L23 14" fill="#8b0000"/>
-                <path d="M27 13 C28 9 26 5 24 4 C22.5 3 21 4.5 21.5 7 L22 14" fill="#8b0000"/>
-            </svg>
-            <div class="ty-text">
-                <h4>Thank You...</h4>
-                <p>for your kind support</p>
+            <div class="form-row">
+                <div class="form-label">Address</div>
+                <div class="form-underline" th:text="${receipt.address}"></div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-label">ID Proof No.</div>
+                <div class="form-underline" th:text="${receipt.idProof}"></div>
             </div>
         </div>
-        <div class="mgr-sign">Manager / Trustee</div>
+
+        <!-- Precise 10-Row Matrix Table -->
+        <table class="gift-table">
+            <thead>
+                <tr>
+                    <th>Particulars</th>
+                    <th class="qty-header">Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Dynamic Thymeleaf Loops -->
+                <tr th:each="item, stat : ${receipt.items}">
+                    <td>
+                        <span th:text="${stat.count} + '. ' + ${item.particulars}"></span>
+                    </td>
+                    <td class="qty-cell" th:text="${item.quantity}"></td>
+                </tr>
+                <!-- Structural Fillers to consistently output 10 grid spaces if items count is less than 10 -->
+                <tr th:block th:if="${#lists.size(receipt.items) < 10}"
+                    th:each="i : ${#numbers.sequence(#lists.size(receipt.items) + 1, 10)}">
+                    <td><span th:text="${i} + '.'"></span></td>
+                    <td class="qty-cell"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Footer System -->
+        <table class="footer-table">
+            <tr>
+                <td class="footer-left">
+                    <!-- Retained layout strings from parent identity context -->
+                    <div style="visibility: hidden; height: 0; margin: 0;">Cheque Subject to realisation : Subject to
+                        Jamnagar Jurisdiction</div>
+                    <div style="visibility: hidden; height: 0; margin: 0;">As per Govt. GR - Charitable Trust are
+                        exempted from Revenue stamp</div>
+
+                    <div class="thankyou-container">
+                        <div class="thankyou-logo">
+                            <img th:src="@{/images/thank-you.jpeg}" alt="Thank You">
+                        </div>
+                        <div class="thankyou-text">
+                            <div class="ty-title">Thank You...</div>
+                            <div class="ty-subtitle">for your kind support</div>
+                        </div>
+                    </div>
+                </td>
+                <td class="footer-right">
+                    <div style="font-weight: bold; font-size: 9.5pt;">For, Indian Council of Social Welfare</div>
+                    <div style="font-weight: bold; font-size: 9.5pt; margin-top: 1px;">Shri M. P. Shah Municipal
+                        Vrudhashram</div>
+                    <div class="sign-space">Manager / Trustee</div>
+                </td>
+            </tr>
+        </table>
     </div>
 
-</div><!-- /.receipt -->
-</div><!-- /.page-wrap -->
-
-<script>
-    var giftRowCount = document.querySelectorAll('#giftTableBody tr').length;
-
-    function addGiftRow() {
-        giftRowCount++;
-        var tbody = document.getElementById('giftTableBody');
-        var tr = document.createElement('tr');
-        tr.innerHTML =
-            '<td class="td-num">' + giftRowCount + '.</td>' +
-            '<td class="td-part"><input type="text" placeholder=""></td>' +
-            '<td class="td-qty"><input type="text" placeholder=""></td>';
-        tbody.appendChild(tr);
-        reindex();
-    }
-
-    function removeGiftRow() {
-        var tbody = document.getElementById('giftTableBody');
-        if (tbody.rows.length > 1) {
-            tbody.removeChild(tbody.lastChild);
-            giftRowCount--;
-            reindex();
-        }
-    }
-
-    function reindex() {
-        var rows = document.querySelectorAll('#giftTableBody tr');
-        rows.forEach(function(row, i) { row.cells[0].textContent = (i + 1) + '.'; });
-    }
-</script>
 </body>
+
 </html>

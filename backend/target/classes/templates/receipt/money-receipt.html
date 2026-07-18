@@ -5,10 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Great+Vibes&family=Roboto:wght@400;500;700&display=swap"
+        rel="stylesheet">
     <title th:text="'Money Receipt – ' + ${receipt.receiptNumber}">Money Receipt</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Great+Vibes&family=Roboto:wght@400;500;700&display=swap');
-
         :root {
             --primary-maroon: #801824;
             --text-dark: #1f1f1f;
@@ -97,7 +100,7 @@
         }
 
         .tagline {
-            font-family: 'Great Vibes', cursive;
+            font-family: 'Great Vibes', 'Brush Script MT', 'Lucida Handwriting', 'Segoe Script', 'Apple Chancery', cursive;
             font-size: 24px;
             color: var(--text-dark);
             margin-top: 6px;
@@ -335,7 +338,8 @@
         .amount-input {
             position: absolute;
             left: 0;
-            right: 50px; /* Center the input within the area to the left of the vertical divider */
+            right: 50px;
+            /* Center the input within the area to the left of the vertical divider */
             top: 50%;
             transform: translateY(-50%);
             border: none;
@@ -468,6 +472,7 @@
             z-index: 999;
             width: 100%;
         }
+
         .action-bar h6 {
             color: #fff;
             font-size: 13px;
@@ -475,6 +480,7 @@
             flex: 1;
             margin: 0;
         }
+
         .ab-btn {
             padding: 7px 20px;
             border-radius: 4px;
@@ -487,25 +493,38 @@
             align-items: center;
             gap: 5px;
         }
-        .ab-btn-print  { background: #9b1c1c; color: #fff; }
-        .ab-btn-back   { background: transparent; color: #ccc; border: 1px solid #555; }
+
+        .ab-btn-print {
+            background: #9b1c1c;
+            color: #fff;
+        }
+
+        .ab-btn-back {
+            background: transparent;
+            color: #ccc;
+            border: 1px solid #555;
+        }
 
         /* --- PRINT STYLES --- */
         @media print {
             @page {
                 size: A4 portrait;
-                margin: 0; /* Suppress browser-generated headers and footers */
+                margin: 0;
+                /* Suppress browser-generated headers and footers */
             }
 
-            html, body {
+            html,
+            body {
                 height: 100%;
-                overflow: hidden; /* Force content onto exactly one A4 page without page-breaks */
+                overflow: hidden;
+                /* Force content onto exactly one A4 page without page-breaks */
             }
 
             body {
                 background-color: #ffffff;
                 color: #000000;
-                padding: 15mm 20mm; /* Re-introduce borders inside the printable page margins */
+                padding: 15mm 20mm;
+                /* Re-introduce borders inside the printable page margins */
                 margin: 0;
                 display: block;
                 width: 100%;
@@ -598,7 +617,8 @@
                     <span class="contact-separator">:</span>
                     <span class="contact-text">
                         +91 99788 97722 &nbsp;|&nbsp;
-                        <i class="fas fa-phone contact-icon" style="font-size: 11px; margin-top: 0; display: inline;"></i>
+                        <i class="fas fa-phone contact-icon"
+                            style="font-size: 11px; margin-top: 0; display: inline;"></i>
                         0288-2710760<br>
                         +91 95127 10760
                     </span>
@@ -611,9 +631,12 @@
 
         <!-- --- RECEIPT META DATA --- -->
         <div class="meta-row-1">
-            <div class="meta-field">No. : <input class="meta-input" type="text" th:value="${receipt.receiptNumber}" style="width: 140px;"></div>
+            <div class="meta-field">No. : <input class="meta-input" type="text" th:value="${receipt.receiptNumber}"
+                    style="width: 140px;"></div>
             <div class="receipt-title-box">MONEY RECEIPT</div>
-            <div class="meta-field">Dt. : <input class="meta-input" type="text" th:value="${receipt.donationDate != null ? #temporals.format(receipt.donationDate, 'dd-MM-yyyy') : ''}" style="width: 110px;"></div>
+            <div class="meta-field">Dt. : <input class="meta-input" type="text"
+                    th:value="${receipt.donationDate != null ? #temporals.format(receipt.donationDate, 'dd-MM-yyyy') : ''}"
+                    style="width: 110px;"></div>
         </div>
 
         <div class="reg-details-box">
@@ -673,7 +696,8 @@
                 <tr>
                     <td>
                         <div class="table-inner-row">
-                            <span class="form-label" style="font-size: 14px;">Received With Thanks by Cash/Cheque/UTR No.</span>
+                            <span class="form-label" style="font-size: 14px;">Received With Thanks by Cash/Cheque/UTR
+                                No.</span>
                             <input class="table-inner-input" type="text" th:value="${receipt.transactionId}">
                         </div>
                         <div class="table-inner-row">
@@ -687,7 +711,8 @@
                         <div class="table-inner-row">
                             <span class="form-label" style="font-size: 14px;">Drawn on</span>
                             <input class="table-inner-input" type="text">
-                            <span class="form-label" style="padding-left: 10px; font-size: 14px;">for the following</span>
+                            <span class="form-label" style="padding-left: 10px; font-size: 14px;">for the
+                                following</span>
                         </div>
 
                         <!-- Fund Selection Area -->
@@ -708,7 +733,7 @@
                     </td>
                     <td class="amount-column-space">
                         <input class="amount-input" type="text"
-                               th:value="${receipt.donationAmount != null ? #numbers.formatDecimal(receipt.donationAmount,1,'COMMA',2,'POINT') : ''}">
+                            th:value="${receipt.donationAmount != null ? #numbers.formatDecimal(receipt.donationAmount,1,'COMMA',2,'POINT') : ''}">
                         <div class="amount-vertical-divider"></div>
                     </td>
                 </tr>

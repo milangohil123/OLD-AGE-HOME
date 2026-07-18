@@ -77,6 +77,9 @@ public class Donor {
     @Column(name = "donation_type", nullable = false, length = 20)
     private DonationType donationType;
 
+    @Column(name = "donation_category", length = 50)
+    private String donationCategory;
+
     // Nullable — not required for MEDICINE and FOOD donation types
     @DecimalMin(value = "0.0", inclusive = true, message = "Donation amount cannot be negative")
     @Column(name = "donation_amount", precision = 10, scale = 2)
