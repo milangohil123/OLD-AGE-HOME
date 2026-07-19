@@ -2,6 +2,7 @@ package com.oldagehome.portal.foodschedule;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,6 +12,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
@@ -18,10 +20,12 @@ public interface FoodScheduleRepository extends JpaRepository<FoodSchedule, Long
 
        // ── Today's schedule ──────────────────────────────────────────────────────
 
+       @EntityGraph(attributePaths = {"donor"})
        List<FoodSchedule> findByScheduleDateOrderByServingTimeAsc(LocalDate date);
 
        // ── Date range ────────────────────────────────────────────────────────────
 
+       @EntityGraph(attributePaths = {"donor"})
        List<FoodSchedule> findByScheduleDateBetweenOrderByScheduleDateDescServingTimeAsc(
                      LocalDate from, LocalDate to);
 
@@ -78,6 +82,7 @@ public interface FoodScheduleRepository extends JpaRepository<FoodSchedule, Long
 
        // ── History search (existing — unchanged) ──────────────────────────────────
 
+       @EntityGraph(attributePaths = {"donor"})
        @Query("SELECT fs FROM FoodSchedule fs " +
                      "WHERE (:fromDate IS NULL OR fs.scheduleDate >= :fromDate) " +
                      "AND (:toDate IS NULL OR fs.scheduleDate <= :toDate) " +
@@ -100,6 +105,7 @@ public interface FoodScheduleRepository extends JpaRepository<FoodSchedule, Long
         * Paginated version of history search. Adds amount range filters.
         * Backend pagination — no records loaded into the browser.
         */
+       @EntityGraph(attributePaths = {"donor"})
        @Query("SELECT fs FROM FoodSchedule fs " +
                      "WHERE (:fromDate IS NULL OR fs.scheduleDate >= :fromDate) " +
                      "AND (:toDate IS NULL OR fs.scheduleDate <= :toDate) " +
@@ -118,4 +124,8 @@ public interface FoodScheduleRepository extends JpaRepository<FoodSchedule, Long
                      @Param("minAmount") BigDecimal minAmount,
                      @Param("maxAmount") BigDecimal maxAmount,
                      Pageable pageable);
+
+       @Override
+       @EntityGraph(attributePaths = {"donor"})
+       Optional<FoodSchedule> findById(Long id);
 }

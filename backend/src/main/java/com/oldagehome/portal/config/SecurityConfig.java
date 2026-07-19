@@ -21,7 +21,7 @@ public class SecurityConfig {
     private final com.oldagehome.portal.audit.AuditService auditService;
 
     public SecurityConfig(CustomUserDetailsService userDetailsService,
-                          com.oldagehome.portal.audit.AuditService auditService) {
+            com.oldagehome.portal.audit.AuditService auditService) {
         this.userDetailsService = userDetailsService;
         this.auditService = auditService;
     }
@@ -42,52 +42,63 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(
-                    new AntPathRequestMatcher("/login"),
-                    new AntPathRequestMatcher("/login/**"),
-                    new AntPathRequestMatcher("/css/**"),
-                    new AntPathRequestMatcher("/js/**"),
-                    new AntPathRequestMatcher("/images/**"),
-                    new AntPathRequestMatcher("/uploads/**"),
-                    new AntPathRequestMatcher("/favicon.ico"),
-                    new AntPathRequestMatcher("/error/**")
-                ).permitAll()
-                .anyRequest().authenticated()
-            )
-            .formLogin(form -> form
-                .loginPage("/login")
-                .loginProcessingUrl("/login")
-                .successHandler((request, response, authentication) -> {
-                    auditService.logActivity(com.oldagehome.portal.audit.AuditModule.AUTH, com.oldagehome.portal.audit.AuditAction.LOGIN, "User " + authentication.getName() + " logged in successfully", "User", null, true, null);
-                    response.sendRedirect(request.getContextPath() + "/dashboard");
-                })
-                .failureHandler((request, response, exception) -> {
-                    String username = request.getParameter("username");
-                    auditService.logActivity(com.oldagehome.portal.audit.AuditModule.AUTH, com.oldagehome.portal.audit.AuditAction.LOGIN, "Failed login attempt for user: " + username, "User", null, false, exception.getMessage());
-                    response.sendRedirect(request.getContextPath() + "/login?error=true");
-                })
-                .permitAll()
-            )
-           .logout(logout -> logout
-    .logoutUrl("/logout")
-    .logoutSuccessUrl("/login?logout")
-    .invalidateHttpSession(true)
-    .clearAuthentication(true)
-    .deleteCookies("JSESSIONID")
-    .permitAll()
-)
-            .sessionManagement(session -> session
-                .invalidSessionUrl("/login?timeout=true")
-                .maximumSessions(1)
-                .expiredUrl("/login?timeout=true")
-            )
-            .headers(headers -> headers
-                .cacheControl(cache -> cache.disable())
-            )
-            .exceptionHandling(exception -> exception
-                .accessDeniedPage("/403")
-            );
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                new AntPathRequestMatcher("/login"),
+                                new AntPathRequestMatcher("/login/**"),
+                                new AntPathRequestMatcher("/css/**"),
+                                new AntPathRequestMatcher("/js/**"),
+                                new AntPathRequestMatcher("/images/**"),
+                                new AntPathRequestMatcher("/uploads/**"),
+                                new AntPathRequestMatcher("/favicon.ico"),
+                                new AntPathRequestMatcher("/error/**"))
+                        .permitAll()
+                        .anyRequest().authenticated())
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .loginProcessingUrl("/login")
+                        .successHandler((request, response, authentication) -> {
+                            auditService.logActivity(com.oldagehome.portal.audit.AuditModule.AUTH,
+                                    com.oldagehome.portal.audit.AuditAction.LOGIN,
+                                    "User " + authentication.getName() + " logged in successfully", "User", null, true,
+                                    null);
+                            response.sendRedirect(request.getContextPath() + "/dashboard");
+                        })
+                        .failureHandler((request, response, exception) -> {
+                            String username = request.getParameter("username");
+                            auditService.logActivity(com.oldagehome.portal.audit.AuditModule.AUTH,
+                                    com.oldagehome.portal.audit.AuditAction.LOGIN,
+                                    "Failed login attempt for user: " + username, "User", null, false,
+                                    exception.getMessage());
+                            response.sendRedirect(request.getContextPath() + "/login?error=true");
+                        })
+                        .permitAll())
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/login?logout")
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                        .deleteCookies("JSESSIONID")
+                        .permitAll())
+                .sessionManagement(session -> session
+                        .invalidSessionUrl("/login?timeout=true")
+                        .maximumSessions(1)
+                        .expiredUrl("/login?timeout=true"))
+                .headers(headers -> headers
+                        .cacheControl(cache -> cache.disable())
+
+                        .contentSecurityPolicy(csp -> csp.policyDirectives(
+                                "default-src 'self'; " +
+                                        "img-src 'self' data: https:; " +
+                                        "script-src 'self' 'unsafe-inline'; " +
+                                        "style-src 'self' 'unsafe-inline';"))
+
+                        .frameOptions(frame -> frame.sameOrigin())
+
+                        .httpStrictTransportSecurity(hsts -> hsts.includeSubDomains(true)
+                                .maxAgeInSeconds(31536000)))
+                .exceptionHandling(exception -> exception
+                        .accessDeniedPage("/403"));
 
         http.authenticationProvider(authenticationProvider());
 
