@@ -18,10 +18,12 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // Expose the local upload directory via the URL path /uploads/**
         Path uploadPath = Paths.get(uploadDir);
-        String uploadAbsolutePath = uploadPath.toFile().getAbsolutePath();
+        String resourceLocation = uploadPath.toAbsolutePath().toUri().toString();
         
         // Ensure trailing slash is appended for proper resource mapping resolution
-        String resourceLocation = "file:" + uploadAbsolutePath + "/";
+        if (!resourceLocation.endsWith("/")) {
+            resourceLocation += "/";
+        }
         
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations(resourceLocation);

@@ -25,7 +25,7 @@
         <!-- ── Stats Overview Cards ──────────────────────────────────────── -->
         <div class="row mb-4">
             <!-- Total Residents -->
-            <div class="col-xl-4 col-md-6 mb-3">
+            <div class="col-xl-3 col-md-6 mb-3">
                 <div class="card py-3">
                     <div class="d-flex align-items-center justify-content-between">
                         <div class="d-flex align-items-center gap-3">
@@ -46,7 +46,7 @@
             </div>
 
             <!-- Total Donors -->
-            <div class="col-xl-4 col-md-6 mb-3">
+            <div class="col-xl-3 col-md-6 mb-3">
                 <div class="card py-3">
                     <div class="d-flex align-items-center justify-content-between">
                         <div class="d-flex align-items-center gap-3">
@@ -66,22 +66,43 @@
                 </div>
             </div>
 
-            <!-- Reports Generated -->
-            <div class="col-xl-4 col-md-6 mb-3">
+            <!-- Donations This Month -->
+            <div class="col-xl-3 col-md-6 mb-3">
                 <div class="card py-3">
                     <div class="d-flex align-items-center justify-content-between">
                         <div class="d-flex align-items-center gap-3">
                             <div class="stat-icon-circle">
-                                <i class="bi bi-file-earmark-text" style="font-size: 20px;"></i>
+                                <i class="bi bi-gift" style="font-size: 20px;"></i>
                             </div>
                             <div>
                                 <h1 class="fw-bold mb-0 text-primary" style="font-size: 32px;"
                                     th:text="${monthDonations}">0</h1>
-                                <span class="text-muted fw-semibold" style="font-size: 13px;" th:text="#{dashboard.stat.reports}">Reports Generated (This Month)</span>
+                                <span class="text-muted fw-semibold" style="font-size: 13px;">Donations (This Month)</span>
                             </div>
                         </div>
                         <div>
-                            <a th:href="@{/reports}" class="btn btn-outline-primary btn-sm" th:text="#{dashboard.btn.view_all}">View All</a>
+                            <a th:href="@{/reports/donations}" class="btn btn-outline-primary btn-sm" th:text="#{dashboard.btn.view_all}">View All</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Donation Amount -->
+            <div class="col-xl-3 col-md-6 mb-3">
+                <div class="card py-3">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="stat-icon-circle">
+                                <i class="bi bi-currency-rupee" style="font-size: 20px;"></i>
+                            </div>
+                            <div>
+                                <h1 class="fw-bold mb-0 text-primary" style="font-size: 24px;"
+                                    th:text="'₹' + ${#numbers.formatDecimal(totalDonationAmount != null ? totalDonationAmount : 0, 1, 'COMMA', 2, 'POINT')}">₹0.00</h1>
+                                <span class="text-muted fw-semibold" style="font-size: 13px;">Total Raised</span>
+                            </div>
+                        </div>
+                        <div>
+                            <a th:href="@{/reports/donations}" class="btn btn-outline-primary btn-sm" th:text="#{dashboard.btn.view_all}">View All</a>
                         </div>
                     </div>
                 </div>

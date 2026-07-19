@@ -18,7 +18,7 @@ public class GlobalExceptionHandler {
 
         ModelAndView mv = new ModelAndView();
 
-        mv.setViewName("error");
+        mv.setViewName("error/500");
 
         mv.addObject("exception", ex);
 

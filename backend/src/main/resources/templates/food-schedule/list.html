@@ -483,13 +483,13 @@
                     <!-- Rows -->
                     <tr th:each="fs : ${todaySchedule}">
                         <td data-label="Meal">
-                            <span th:if="${fs.mealType.name() == 'Breakfast'}" class="fs-badge fs-badge-breakfast">☀️ Breakfast</span>
-                            <span th:if="${fs.mealType.name() == 'Lunch'}"     class="fs-badge fs-badge-lunch">🌤️ Lunch</span>
-                            <span th:if="${fs.mealType.name() == 'Dinner'}"    class="fs-badge fs-badge-dinner">🌙 Dinner</span>
+                            <span th:if="${fs.mealType != null and fs.mealType.name() == 'Breakfast'}" class="fs-badge fs-badge-breakfast">☀️ Breakfast</span>
+                            <span th:if="${fs.mealType != null and fs.mealType.name() == 'Lunch'}"     class="fs-badge fs-badge-lunch">🌤️ Lunch</span>
+                            <span th:if="${fs.mealType != null and fs.mealType.name() == 'Dinner'}"    class="fs-badge fs-badge-dinner">🌙 Dinner</span>
                         </td>
                         <td data-label="Time">
                             <strong style="color:var(--fs-text);"
-                                    th:text="${#temporals.format(fs.servingTime, 'hh:mm a')}">8:00 AM</strong>
+                                    th:text="${fs.servingTime != null ? #temporals.format(fs.servingTime, 'hh:mm a') : '—'}">8:00 AM</strong>
                         </td>
                         <td data-label="Menu" style="max-width:200px;">
                             <span style="white-space:pre-line;font-size:12px;color:var(--fs-text);"
@@ -499,11 +499,11 @@
                             <span style="font-weight:600;font-size:12px;" th:text="${fs.donorDisplayName}">—</span>
                         </td>
                         <td data-label="Sponsorship">
-                            <span class="fs-badge fs-badge-info" th:text="${fs.sponsorshipType.displayName}">—</span>
+                            <span class="fs-badge fs-badge-info" th:text="${fs.sponsorshipType != null ? fs.sponsorshipType.displayName : '—'}">—</span>
                         </td>
                         <td data-label="Amount">
                             <strong style="color:var(--fs-success);font-size:13px;"
-                                    th:text="'₹' + ${#numbers.formatDecimal(fs.amount, 1, 'COMMA', 0, 'POINT')}">₹0</strong>
+                                    th:text="${fs.amount != null ? '₹' + #numbers.formatDecimal(fs.amount, 1, 'COMMA', 0, 'POINT') : '₹0'}">₹0</strong>
                         </td>
                         <td data-label="Actions" style="text-align:right;">
                             <div class="d-inline-flex gap-1">
@@ -725,22 +725,22 @@
                                     th:text="${#temporals.format(fs.scheduleDate, 'dd MMM yyyy')}">—</strong>
                         </td>
                         <td data-label="Meal">
-                            <span th:if="${fs.mealType.name() == 'Breakfast'}" class="fs-badge fs-badge-breakfast">☀️ Breakfast</span>
-                            <span th:if="${fs.mealType.name() == 'Lunch'}"     class="fs-badge fs-badge-lunch">🌤️ Lunch</span>
-                            <span th:if="${fs.mealType.name() == 'Dinner'}"    class="fs-badge fs-badge-dinner">🌙 Dinner</span>
+                            <span th:if="${fs.mealType != null and fs.mealType.name() == 'Breakfast'}" class="fs-badge fs-badge-breakfast">☀️ Breakfast</span>
+                            <span th:if="${fs.mealType != null and fs.mealType.name() == 'Lunch'}"     class="fs-badge fs-badge-lunch">🌤️ Lunch</span>
+                            <span th:if="${fs.mealType != null and fs.mealType.name() == 'Dinner'}"    class="fs-badge fs-badge-dinner">🌙 Dinner</span>
                         </td>
                         <td data-label="Time"
-                            th:text="${#temporals.format(fs.servingTime, 'hh:mm a')}">—</td>
+                            th:text="${fs.servingTime != null ? #temporals.format(fs.servingTime, 'hh:mm a') : '—'}">—</td>
                         <td data-label="Menu" style="max-width:160px;white-space:pre-line;font-size:12px;"
                             th:text="${fs.menuItems}">—</td>
                         <td data-label="Donor" style="font-size:12px;font-weight:600;"
                             th:text="${fs.donorDisplayName}">—</td>
                         <td data-label="Sponsorship">
-                            <span class="fs-badge fs-badge-info" th:text="${fs.sponsorshipType.displayName}">—</span>
+                            <span class="fs-badge fs-badge-info" th:text="${fs.sponsorshipType != null ? fs.sponsorshipType.displayName : '—'}">—</span>
                         </td>
                         <td data-label="Amount">
                             <strong style="color:var(--fs-success);"
-                                    th:text="'₹' + ${#numbers.formatDecimal(fs.amount, 1, 'COMMA', 0, 'POINT')}">₹0</strong>
+                                    th:text="${fs.amount != null ? '₹' + #numbers.formatDecimal(fs.amount, 1, 'COMMA', 0, 'POINT') : '₹0'}">₹0</strong>
                         </td>
                         <td data-label="Actions" style="text-align:right;">
                             <div class="d-inline-flex gap-1">

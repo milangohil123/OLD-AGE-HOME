@@ -71,7 +71,7 @@ public class FoodScheduleController {
 
         List<Donor> foodDonors = donorRepository.findAll().stream()
                 .filter(d -> "Food Donation".equals(d.getDonationCategory()))
-                .sorted(Comparator.comparing(Donor::getFullName))
+                .sorted(Comparator.comparing(d -> d.getFullName() == null ? "" : d.getFullName()))
                 .toList();
 
         model.addAttribute("foodDonors", foodDonors);
