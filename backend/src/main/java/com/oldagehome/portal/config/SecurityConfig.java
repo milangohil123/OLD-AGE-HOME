@@ -95,12 +95,14 @@ public class SecurityConfig {
 
                                                 .contentSecurityPolicy(csp -> csp.policyDirectives(
                                                                 "default-src 'self'; " +
-                                                                                "img-src 'self' data: https: blob:; " +
+                                                                                "img-src 'self' data: blob: https:; " +
                                                                                 "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
                                                                                 +
                                                                                 "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; "
                                                                                 +
-                                                                                "font-src 'self' https://fonts.gstatic.com data:;"))
+                                                                                "font-src 'self' data: https://fonts.gstatic.com https://cdn.jsdelivr.net; "
+                                                                                +
+                                                                                "connect-src 'self';"))
 
                                                 .frameOptions(frame -> frame.sameOrigin())
 
