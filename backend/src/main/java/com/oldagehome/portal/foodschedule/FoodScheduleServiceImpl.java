@@ -3,11 +3,17 @@ package com.oldagehome.portal.foodschedule;
 import com.oldagehome.portal.donor.Donor;
 import com.oldagehome.portal.donor.DonorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -118,6 +124,8 @@ public class FoodScheduleServiceImpl implements FoodScheduleService {
         return grouped;
     }
 
+    // ── Search ────────────────────────────────────────────────────────────────
+
     @Override
     @Transactional(readOnly = true)
     public List<FoodSchedule> searchSchedule(LocalDate fromDate,
@@ -127,6 +135,21 @@ public class FoodScheduleServiceImpl implements FoodScheduleService {
                                                String donorKeyword) {
         String keyword = (donorKeyword != null && donorKeyword.isBlank()) ? null : donorKeyword;
         return foodScheduleRepository.searchSchedule(fromDate, toDate, mealType, sponsorshipType, keyword);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<FoodSchedule> searchSchedulePaged(LocalDate fromDate,
+                                                   LocalDate toDate,
+                                                   MealType mealType,
+                                                   SponsorshipType sponsorshipType,
+                                                   String donorKeyword,
+                                                   BigDecimal minAmount,
+                                                   BigDecimal maxAmount,
+                                                   Pageable pageable) {
+        String keyword = (donorKeyword != null && donorKeyword.isBlank()) ? null : donorKeyword;
+        return foodScheduleRepository.searchSchedulePaged(
+                fromDate, toDate, mealType, sponsorshipType, keyword, minAmount, maxAmount, pageable);
     }
 
     // ── Stats ─────────────────────────────────────────────────────────────────
@@ -145,8 +168,66 @@ public class FoodScheduleServiceImpl implements FoodScheduleService {
                 mealsCount,
                 donorsCount,
                 totalAmount != null ? totalAmount : BigDecimal.ZERO,
-                upcomingCount
+                upcomingCount,
+                "", "", 0L, 0L, 0L, BigDecimal.ZERO
         );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public FoodScheduleStatsDTO getEnrichedStats() {
+        LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
+
+        // ── Existing KPIs ─────────────────────────────────────────────────────
+        long mealsCount = foodScheduleRepository.countByScheduleDate(today);
+        long donorsCount = foodScheduleRepository.countDistinctDonorsByDate(today);
+        BigDecimal totalAmount = foodScheduleRepository.sumAmountByDate(today);
+        long upcomingCount = foodScheduleRepository.countUpcomingMeals(today);
+
+        // ── Next Meal KPI ─────────────────────────────────────────────────────
+        List<FoodSchedule> nextMeals = foodScheduleRepository.findNextUpcomingMeals(
+                today, now, PageRequest.of(0, 1));
+        String nextMealName = "";
+        String nextMealTime = "";
+        if (!nextMeals.isEmpty()) {
+            FoodSchedule next = nextMeals.get(0);
+            nextMealName = next.getMealType().getDisplayName();
+            nextMealTime = next.getServingTime().format(DateTimeFormatter.ofPattern("hh:mm a"));
+        }
+
+        // ── Today's Menu Item Count ───────────────────────────────────────────
+        List<FoodSchedule> todayMeals = foodScheduleRepository.findByScheduleDateOrderByServingTimeAsc(today);
+        long menuItemCount = todayMeals.stream()
+                .filter(fs -> fs.getMenuItems() != null && !fs.getMenuItems().isBlank())
+                .mapToLong(fs -> Arrays.stream(fs.getMenuItems().split("[\\n,]"))
+                        .filter(line -> !line.isBlank())
+                        .count())
+                .sum();
+
+        // ── Weekly Analytics ──────────────────────────────────────────────────
+        LocalDate weekStart = today.with(DayOfWeek.MONDAY);
+        LocalDate weekEnd   = today.with(DayOfWeek.SUNDAY);
+        long mealsThisWeek     = foodScheduleRepository.countByScheduleDateBetween(weekStart, weekEnd);
+        long sponsorsThisWeek  = foodScheduleRepository.countDistinctDonorsBetween(weekStart, weekEnd);
+
+        // ── Monthly Analytics ─────────────────────────────────────────────────
+        LocalDate monthStart = today.withDayOfMonth(1);
+        LocalDate monthEnd   = today.withDayOfMonth(today.lengthOfMonth());
+        BigDecimal donationsThisMonth = foodScheduleRepository.sumAmountBetween(monthStart, monthEnd);
+
+        return FoodScheduleStatsDTO.builder()
+                .todayMealsCount(mealsCount)
+                .todayFoodDonorsCount(donorsCount)
+                .todayDonationAmount(totalAmount != null ? totalAmount : BigDecimal.ZERO)
+                .upcomingMealsCount(upcomingCount)
+                .nextScheduledMeal(nextMealName)
+                .nextMealTime(nextMealTime)
+                .todayMenuItemCount(menuItemCount)
+                .mealsThisWeek(mealsThisWeek)
+                .sponsorsThisWeek(sponsorsThisWeek)
+                .donationsThisMonth(donationsThisMonth != null ? donationsThisMonth : BigDecimal.ZERO)
+                .build();
     }
 
     // ── Rate Lookup ───────────────────────────────────────────────────────────

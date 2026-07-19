@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Today\'s Food Schedule – ' + ${#temporals.format(today, 'dd MMM yyyy')}">Today's Food Schedule</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1d4ed8;
+            --text-dark: #111827;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --badge-breakfast: #fef3c7;
+            --badge-breakfast-text: #92400e;
+            --badge-lunch: #d1fae5;
+            --badge-lunch-text: #065f46;
+            --badge-dinner: #dbeafe;
+            --badge-dinner-text: #1e40af;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f9fafb;
+            color: var(--text-dark);
+            padding: 30px 20px;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        .print-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        /* Header */
+        .print-header {
+            background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+            color: #fff;
+            padding: 32px 40px 24px;
+        }
+        .print-header-top {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .org-logo {
+            width: 48px; height: 48px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px;
+        }
+        .org-name { font-size: 20px; font-weight: 700; }
+        .org-tagline { font-size: 12px; opacity: 0.8; margin-top: 2px; }
+        .print-title { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+        .print-subtitle { font-size: 14px; opacity: 0.85; margin-top: 4px; }
+        .header-meta {
+            display: flex; gap: 24px; margin-top: 20px;
+            padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.2);
+            font-size: 13px;
+        }
+        .header-meta-item { display: flex; flex-direction: column; gap: 2px; }
+        .header-meta-label { opacity: 0.7; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px; }
+        .header-meta-value { font-weight: 600; }
+        /* Body */
+        .print-body { padding: 32px 40px; }
+        /* Summary row */
+        .summary-row {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 16px; margin-bottom: 28px;
+        }
+        .summary-card {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px 16px;
+            text-align: center;
+        }
+        .summary-card-value { font-size: 22px; font-weight: 700; color: var(--primary); }
+        .summary-card-label { font-size: 11px; color: var(--text-muted); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+        /* Table */
+        .section-title {
+            font-size: 14px; font-weight: 600; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 0.5px;
+            margin-bottom: 12px; padding-bottom: 8px;
+            border-bottom: 2px solid var(--border);
+        }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        thead th {
+            background: #f1f5f9; padding: 10px 12px;
+            text-align: left; font-weight: 600; font-size: 11px;
+            text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+        }
+        tbody td { padding: 12px 12px; border-bottom: 1px solid #f3f4f6; vertical-align: top; }
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr:hover { background: #fafafa; }
+        .badge {
+            display: inline-block; padding: 3px 10px; border-radius: 20px;
+            font-size: 11px; font-weight: 600;
+        }
+        .badge-breakfast { background: var(--badge-breakfast); color: var(--badge-breakfast-text); }
+        .badge-lunch     { background: var(--badge-lunch);     color: var(--badge-lunch-text); }
+        .badge-dinner    { background: var(--badge-dinner);    color: var(--badge-dinner-text); }
+        .badge-sponsor   { background: #f0fdf4; color: #15803d; font-size: 10px; }
+        .amount-cell     { color: #16a34a; font-weight: 600; }
+        .menu-list { margin: 0; padding: 0 0 0 16px; }
+        .menu-list li { margin-bottom: 2px; }
+        /* Empty state */
+        .empty-state {
+            text-align: center; padding: 48px 24px; color: var(--text-muted);
+        }
+        .empty-icon { font-size: 48px; margin-bottom: 12px; }
+        .empty-title { font-size: 16px; font-weight: 600; color: #374151; }
+        .empty-desc { font-size: 13px; margin-top: 4px; }
+        /* Footer */
+        .print-footer {
+            padding: 20px 40px;
+            border-top: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 11px; color: var(--text-muted);
+            background: #f9fafb;
+        }
+        /* Print button (hidden on print) */
+        .print-actions {
+            text-align: center; padding: 20px;
+        }
+        .btn-print {
+            background: var(--primary); color: #fff;
+            border: none; border-radius: 8px;
+            padding: 10px 28px; font-size: 14px; font-weight: 600;
+            cursor: pointer; font-family: 'Inter', sans-serif;
+        }
+        .btn-print:hover { background: #1e40af; }
+
+        @media print {
+            body { background: #fff; padding: 0; }
+            .print-container { box-shadow: none; border-radius: 0; }
+            .print-actions { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="print-actions">
+    <button class="btn-print" onclick="window.print()">🖨️ Print Schedule</button>
+</div>
+
+<div class="print-container">
+
+    <!-- Header -->
+    <div class="print-header">
+        <div class="print-header-top">
+            <div class="org-logo">🏠</div>
+            <div>
+                <div class="org-name">Smart Old Age Home Portal</div>
+                <div class="org-tagline">Serving with compassion</div>
+            </div>
+        </div>
+        <div class="print-title">Today's Food Schedule</div>
+        <div class="print-subtitle" th:text="${#temporals.format(today, 'EEEE, dd MMMM yyyy')}">Date</div>
+        <div class="header-meta">
+            <div class="header-meta-item">
+                <span class="header-meta-label">Total Meals</span>
+                <span class="header-meta-value" th:text="${stats.todayMealsCount}">0</span>
+            </div>
+            <div class="header-meta-item">
+                <span class="header-meta-label">Sponsors</span>
+                <span class="header-meta-value" th:text="${stats.todayFoodDonorsCount}">0</span>
+            </div>
+            <div class="header-meta-item">
+                <span class="header-meta-label">Total Amount</span>
+                <span class="header-meta-value" th:text="'₹' + ${#numbers.formatDecimal(stats.todayDonationAmount, 1, 'COMMA', 0, 'POINT')}">₹0</span>
+            </div>
+            <div class="header-meta-item">
+                <span class="header-meta-label">Menu Items</span>
+                <span class="header-meta-value" th:text="${stats.todayMenuItemCount}">0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Body -->
+    <div class="print-body">
+
+        <!-- Empty state -->
+        <div th:if="${todaySchedule == null or todaySchedule.isEmpty()}" class="empty-state">
+            <div class="empty-icon">🍽️</div>
+            <div class="empty-title">No meals scheduled for today</div>
+            <div class="empty-desc">No food schedule entries have been created for <span th:text="${#temporals.format(today, 'dd MMM yyyy')}"></span>.</div>
+        </div>
+
+        <!-- Schedule table -->
+        <div th:if="${todaySchedule != null and !todaySchedule.isEmpty()}">
+            <div class="section-title">Meal Schedule</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Meal</th>
+                        <th>Serving Time</th>
+                        <th>Menu Items</th>
+                        <th>Food Donor</th>
+                        <th>Sponsorship</th>
+                        <th>Amount</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="fs : ${todaySchedule}">
+                        <td>
+                            <span th:if="${fs.mealType.name() == 'Breakfast'}" class="badge badge-breakfast">☀️ Breakfast</span>
+                            <span th:if="${fs.mealType.name() == 'Lunch'}"     class="badge badge-lunch">🌤️ Lunch</span>
+                            <span th:if="${fs.mealType.name() == 'Dinner'}"    class="badge badge-dinner">🌙 Dinner</span>
+                        </td>
+                        <td><strong th:text="${#temporals.format(fs.servingTime, 'hh:mm a')}">—</strong></td>
+                        <td>
+                            <span style="white-space:pre-line;font-size:13px;" th:text="${fs.menuItems}">—</span>
+                        </td>
+                        <td th:text="${fs.donorDisplayName}">—</td>
+                        <td><span class="badge badge-sponsor" th:text="${fs.sponsorshipType.displayName}">—</span></td>
+                        <td class="amount-cell" th:text="'₹' + ${#numbers.formatDecimal(fs.amount, 1, 'COMMA', 0, 'POINT')}">₹0</td>
+                        <td th:text="${fs.notes != null and !#strings.isEmpty(fs.notes) ? fs.notes : '—'}">—</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="print-footer">
+        <span>Smart Old Age Home Portal · Today's Schedule</span>
+        <span th:text="'Printed on ' + ${#temporals.format(#temporals.createNow(), 'dd MMM yyyy, hh:mm a')}">Printed on —</span>
+    </div>
+
+</div>
+
+</body>
+</html>

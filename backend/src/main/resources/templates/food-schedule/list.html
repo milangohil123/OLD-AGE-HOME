@@ -7,707 +7,1129 @@
 
 <div id="food-schedule-content">
 
-    <!-- ── Flash Alerts ─────────────────────────────────────────────────── -->
-    <div th:replace="~{fragments/alerts :: success(${successMessage})}"></div>
-    <div th:replace="~{fragments/alerts :: error(${errorMessage})}"></div>
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- Page-scoped CSS                                                             -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<style>
+/* ── Design tokens ── */
+#food-schedule-content {
+    --fs-primary:       #2563eb;
+    --fs-primary-dark:  #1d4ed8;
+    --fs-surface:       #ffffff;
+    --fs-bg:            #f8fafc;
+    --fs-border:        #e2e8f0;
+    --fs-text:          #0f172a;
+    --fs-muted:         #64748b;
+    --fs-success:       #16a34a;
+    --fs-warning:       #d97706;
+    --fs-danger:        #dc2626;
+    --fs-radius-sm:     6px;
+    --fs-radius-md:     10px;
+    --fs-radius-lg:     14px;
+    --fs-shadow-sm:     0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+    --fs-shadow-md:     0 4px 12px rgba(0,0,0,.1),  0 2px 4px rgba(0,0,0,.06);
+    --fs-shadow-lg:     0 10px 30px rgba(0,0,0,.12), 0 4px 8px rgba(0,0,0,.06);
+}
 
-    <!-- ── Page Header ──────────────────────────────────────────────────── -->
-    <div class="card mb-4 border-0 shadow-sm rounded-3">
-        <div class="card-body p-4">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-                <div>
-                    <h3 class="mb-1 fw-bold text-dark">Food Schedule</h3>
-                    <p class="text-muted mb-0 small">
-                        Manage daily breakfast, lunch, and dinner schedule for the residents.
-                    </p>
-                </div>
-                <div>
-                    <button type="button" class="btn btn-primary px-4 rounded-2 d-inline-flex align-items-center gap-2"
-                            data-bs-toggle="modal" data-bs-target="#addFoodScheduleModal"
-                            onclick="resetAddModal()" style="height: 40px; font-weight: 500;">
-                        <i class="bi bi-plus-lg"></i> Add Food Schedule
-                    </button>
-                </div>
-            </div>
+/* ── KPI Cards ── */
+.fs-kpi-card {
+    background: var(--fs-surface);
+    border: 1px solid var(--fs-border);
+    border-radius: var(--fs-radius-lg);
+    padding: 20px 16px 16px;
+    box-shadow: var(--fs-shadow-sm);
+    transition: transform .2s ease, box-shadow .2s ease;
+    cursor: default;
+}
+.fs-kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--fs-shadow-md);
+}
+.fs-kpi-icon {
+    width: 40px; height: 40px;
+    border-radius: var(--fs-radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; margin-bottom: 12px;
+}
+.fs-kpi-value {
+    font-size: 24px; font-weight: 700;
+    color: var(--fs-text); line-height: 1.1;
+    margin-bottom: 2px;
+}
+.fs-kpi-label {
+    font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: .5px; color: var(--fs-muted);
+}
+.fs-kpi-sub {
+    font-size: 11px; color: var(--fs-muted); margin-top: 4px;
+}
+
+/* ── Section cards ── */
+.fs-card {
+    background: var(--fs-surface);
+    border: 1px solid var(--fs-border);
+    border-radius: var(--fs-radius-lg);
+    box-shadow: var(--fs-shadow-sm);
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+.fs-card-header {
+    padding: 18px 24px 14px;
+    border-bottom: 1px solid var(--fs-border);
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+}
+.fs-card-title {
+    font-size: 15px; font-weight: 700; color: var(--fs-text);
+    margin: 0; display: flex; align-items: center; gap: 8px;
+}
+.fs-card-body { padding: 20px 24px; }
+.fs-card-body-p0 { padding: 0; }
+
+/* ── Tables ── */
+.fs-table {
+    width: 100%; border-collapse: collapse; font-size: 13px;
+}
+.fs-table thead th {
+    padding: 10px 14px;
+    background: var(--fs-bg);
+    font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: .5px; color: var(--fs-muted);
+    border-bottom: 1px solid var(--fs-border);
+    white-space: nowrap;
+}
+.fs-table tbody td {
+    padding: 12px 14px; border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+}
+.fs-table tbody tr:last-child td { border-bottom: none; }
+.fs-table tbody tr:hover { background: #fafbfc; }
+
+/* ── Badges ── */
+.fs-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 10px; border-radius: 20px;
+    font-size: 11px; font-weight: 600;
+}
+.fs-badge-breakfast { background: #fef3c7; color: #92400e; }
+.fs-badge-lunch     { background: #d1fae5; color: #065f46; }
+.fs-badge-dinner    { background: #dbeafe; color: #1e40af; }
+.fs-badge-info      { background: #e0f2fe; color: #0369a1; }
+.fs-badge-success   { background: #dcfce7; color: #15803d; }
+
+/* ── Action buttons ── */
+.fs-btn {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 6px 14px; border-radius: var(--fs-radius-sm);
+    font-size: 12px; font-weight: 600; border: 1px solid transparent;
+    cursor: pointer; text-decoration: none; transition: all .15s ease;
+    white-space: nowrap;
+}
+.fs-btn-primary   { background: var(--fs-primary); color: #fff; border-color: var(--fs-primary); }
+.fs-btn-primary:hover { background: var(--fs-primary-dark); border-color: var(--fs-primary-dark); color: #fff; }
+.fs-btn-secondary { background: #f8fafc; color: var(--fs-muted); border-color: var(--fs-border); }
+.fs-btn-secondary:hover { background: #f1f5f9; color: var(--fs-text); border-color: #cbd5e1; }
+.fs-btn-danger    { background: #fff; color: var(--fs-danger); border-color: #fecaca; }
+.fs-btn-danger:hover { background: #fef2f2; border-color: var(--fs-danger); }
+.fs-btn-outline   { background: #fff; color: var(--fs-primary); border-color: #bfdbfe; }
+.fs-btn-outline:hover { background: #eff6ff; }
+.fs-btn-icon { padding: 6px; width: 30px; height: 30px; justify-content: center; border-radius: var(--fs-radius-sm); }
+.fs-btn-success { background: #f0fdf4; color: #15803d; border-color: #bbf7d0; }
+.fs-btn-success:hover { background: #dcfce7; }
+
+/* ── Page header ── */
+.fs-page-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    flex-wrap: wrap; gap: 16px;
+    padding: 24px; margin-bottom: 20px;
+    background: var(--fs-surface);
+    border: 1px solid var(--fs-border);
+    border-radius: var(--fs-radius-lg);
+    box-shadow: var(--fs-shadow-sm);
+}
+.fs-page-title {
+    font-size: 22px; font-weight: 800; color: var(--fs-text);
+    letter-spacing: -.3px; margin: 0;
+}
+.fs-page-subtitle { font-size: 13px; color: var(--fs-muted); margin-top: 3px; }
+
+/* ── Analytics section ── */
+.fs-analytics-card {
+    background: var(--fs-bg);
+    border: 1px solid var(--fs-border);
+    border-radius: var(--fs-radius-md);
+    padding: 14px 18px;
+}
+.fs-analytics-label {
+    font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: .5px; color: var(--fs-muted); margin-bottom: 6px;
+}
+.fs-analytics-value {
+    font-size: 20px; font-weight: 700; color: var(--fs-text); margin-bottom: 6px;
+}
+.fs-progress { height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden; }
+.fs-progress-bar { height: 100%; border-radius: 3px; background: var(--fs-primary); transition: width .6s ease; }
+
+/* ── Empty state ── */
+.fs-empty {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; padding: 60px 24px; text-align: center;
+}
+.fs-empty-icon {
+    font-size: 56px; margin-bottom: 16px; opacity: .8;
+}
+.fs-empty-title { font-size: 16px; font-weight: 700; color: var(--fs-text); margin-bottom: 6px; }
+.fs-empty-desc  { font-size: 13px; color: var(--fs-muted); max-width: 300px; margin-bottom: 20px; }
+
+/* ── Pagination ── */
+.fs-pagination { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.fs-page-info  { font-size: 12px; color: var(--fs-muted); }
+.fs-page-links { display: flex; gap: 4px; }
+.fs-page-btn {
+    padding: 5px 10px; border: 1px solid var(--fs-border); border-radius: var(--fs-radius-sm);
+    font-size: 12px; font-weight: 500; color: var(--fs-muted); background: #fff;
+    cursor: pointer; text-decoration: none; display: inline-flex; align-items: center;
+    transition: all .15s;
+}
+.fs-page-btn:hover  { background: #f1f5f9; color: var(--fs-text); border-color: #cbd5e1; }
+.fs-page-btn.active { background: var(--fs-primary); color: #fff; border-color: var(--fs-primary); }
+.fs-page-btn.disabled { opacity: .4; pointer-events: none; }
+
+/* ── Filter form ── */
+.fs-filter-form { background: var(--fs-bg); border-radius: var(--fs-radius-md); padding: 18px; }
+.fs-form-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--fs-muted); display: block; margin-bottom: 5px; }
+.fs-input {
+    width: 100%; padding: 8px 12px;
+    border: 1px solid var(--fs-border); border-radius: var(--fs-radius-sm);
+    font-size: 13px; color: var(--fs-text); background: #fff;
+    transition: border-color .15s, box-shadow .15s;
+    font-family: inherit;
+}
+.fs-input:focus {
+    outline: none; border-color: var(--fs-primary);
+    box-shadow: 0 0 0 3px rgba(37,99,235,.08);
+}
+
+/* ── Quick Action cards ── */
+.fs-quick-card {
+    background: var(--fs-surface); border: 1px solid var(--fs-border);
+    border-radius: var(--fs-radius-md); padding: 16px;
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    cursor: pointer; text-decoration: none; display: block;
+}
+.fs-quick-card:hover {
+    transform: translateY(-2px); box-shadow: var(--fs-shadow-md);
+    border-color: #bfdbfe; text-decoration: none;
+}
+.fs-quick-icon { font-size: 24px; margin-bottom: 8px; }
+.fs-quick-title { font-size: 13px; font-weight: 700; color: var(--fs-text); margin-bottom: 2px; }
+.fs-quick-desc  { font-size: 11px; color: var(--fs-muted); }
+
+/* ── Delete modal ── */
+.fs-delete-modal-icon {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: #fef2f2; color: var(--fs-danger);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; margin: 0 auto 16px;
+}
+
+/* ── Toast ── */
+#fs-toast-container {
+    position: fixed; top: 20px; right: 20px; z-index: 9999;
+    display: flex; flex-direction: column; gap: 10px; pointer-events: none;
+}
+.fs-toast {
+    background: #fff; border-radius: var(--fs-radius-md);
+    box-shadow: var(--fs-shadow-lg); padding: 14px 18px;
+    min-width: 280px; display: flex; align-items: flex-start; gap: 12px;
+    pointer-events: all; animation: fsSlideIn .25s ease;
+    border-left: 4px solid transparent;
+}
+.fs-toast.success { border-left-color: #16a34a; }
+.fs-toast.error   { border-left-color: #dc2626; }
+.fs-toast-icon  { font-size: 18px; flex-shrink: 0; }
+.fs-toast-msg   { font-size: 13px; font-weight: 500; color: var(--fs-text); flex: 1; }
+.fs-toast-close { font-size: 16px; cursor: pointer; color: var(--fs-muted); flex-shrink: 0; }
+@keyframes fsSlideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+
+/* ── Responsive: table → cards on mobile ── */
+@media (max-width: 767px) {
+    .fs-responsive-table thead { display: none; }
+    .fs-responsive-table tbody tr {
+        display: block;
+        border: 1px solid var(--fs-border);
+        border-radius: var(--fs-radius-md);
+        margin-bottom: 12px;
+        padding: 12px;
+        background: var(--fs-surface);
+    }
+    .fs-responsive-table tbody td {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 6px 0;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 12px;
+    }
+    .fs-responsive-table tbody td:last-child { border-bottom: none; }
+    .fs-responsive-table tbody td::before {
+        content: attr(data-label);
+        font-size: 10px; font-weight: 600; text-transform: uppercase;
+        letter-spacing: .5px; color: var(--fs-muted);
+        min-width: 90px; padding-top: 2px;
+    }
+    .fs-page-header { padding: 16px; }
+    .fs-card-header { padding: 14px 16px; }
+    .fs-card-body   { padding: 14px 16px; }
+}
+</style>
+
+<!-- ── Toast Container ──────────────────────────────────────────────────────── -->
+<div id="fs-toast-container"></div>
+
+<!-- ── Flash alert → Toast ─────────────────────────────────────────────────── -->
+<div th:if="${successMessage}" th:attr="data-msg=${successMessage}" id="fs-flash-success" class="d-none"></div>
+<div th:if="${errorMessage}"   th:attr="data-msg=${errorMessage}"   id="fs-flash-error"   class="d-none"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- Page Header                                                                 -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="fs-page-header">
+    <div>
+        <h1 class="fs-page-title"><i class="bi bi-egg-fried" style="color:var(--fs-primary);"></i> Food Schedule</h1>
+        <p class="fs-page-subtitle">Manage daily breakfast, lunch, and dinner schedule for residents.</p>
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+        <!-- Print dropdown -->
+        <div class="dropdown">
+            <button class="fs-btn fs-btn-secondary dropdown-toggle" type="button"
+                    data-bs-toggle="dropdown" id="fs-print-dropdown-btn">
+                <i class="bi bi-printer"></i> Print
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="/food-schedule/print/today" target="_blank">
+                    <i class="bi bi-calendar-day me-2 text-primary"></i>Today's Schedule</a></li>
+                <li><a class="dropdown-item" href="/food-schedule/print/kitchen" target="_blank">
+                    <i class="bi bi-fire me-2 text-warning"></i>Kitchen Copy</a></li>
+                <li><a class="dropdown-item" href="/food-schedule/print/sponsor" target="_blank">
+                    <i class="bi bi-people me-2 text-success"></i>Sponsor Copy</a></li>
+                <li><a class="dropdown-item" href="/food-schedule/print/donation" target="_blank">
+                    <i class="bi bi-receipt me-2 text-danger"></i>Donation Copy</a></li>
+            </ul>
+        </div>
+        <!-- Add -->
+        <button type="button" id="fs-add-btn"
+                class="fs-btn fs-btn-primary"
+                data-bs-toggle="modal" data-bs-target="#addFoodScheduleModal"
+                onclick="resetAddModal()">
+            <i class="bi bi-plus-lg"></i> Add Food Schedule
+        </button>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- KPI Cards — 6 per row (desktop), 3 (tablet), 2 (mobile)                    -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="row g-3 mb-3">
+    <!-- Today's Meals -->
+    <div class="col-xl-2 col-md-4 col-6">
+        <div class="fs-kpi-card">
+            <div class="fs-kpi-icon" style="background:#eff6ff;">☕</div>
+            <div class="fs-kpi-value" th:text="${stats.todayMealsCount}">0</div>
+            <div class="fs-kpi-label">Today's Meals</div>
+            <div class="fs-kpi-sub">scheduled for today</div>
         </div>
     </div>
-
-    <!-- ── Dashboard Stats Cards ────────────────────────────────────────── -->
-    <div class="row mb-4">
-        <div class="col-xl-3 col-md-6 mb-3">
-            <div class="card border-0 shadow-sm rounded-3 h-100">
-                <div class="card-body p-4 text-center">
-                    <span class="fs-1 text-primary d-block mb-2"><i class="bi bi-cup-hot"></i></span>
-                    <h2 class="fw-bold mb-1 text-dark" th:text="${stats.todayMealsCount}">0</h2>
-                    <span class="text-muted fw-semibold small">Today's Meals</span>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-md-6 mb-3">
-            <div class="card border-0 shadow-sm rounded-3 h-100">
-                <div class="card-body p-4 text-center">
-                    <span class="fs-1 text-success d-block mb-2"><i class="bi bi-people"></i></span>
-                    <h2 class="fw-bold mb-1 text-dark" th:text="${stats.todayFoodDonorsCount}">0</h2>
-                    <span class="text-muted fw-semibold small">Today's Food Donors</span>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-md-6 mb-3">
-            <div class="card border-0 shadow-sm rounded-3 h-100">
-                <div class="card-body p-4 text-center">
-                    <span class="fs-1 text-warning d-block mb-2"><i class="bi bi-cash-stack"></i></span>
-                    <h2 class="fw-bold mb-1 text-dark"
-                        th:text="${'₹' + #numbers.formatDecimal(stats.todayDonationAmount, 1, 'COMMA', 0, 'POINT')}">₹0</h2>
-                    <span class="text-muted fw-semibold small">Today's Donation Amount</span>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-md-6 mb-3">
-            <div class="card border-0 shadow-sm rounded-3 h-100">
-                <div class="card-body p-4 text-center">
-                    <span class="fs-1 text-info d-block mb-2"><i class="bi bi-calendar-event"></i></span>
-                    <h2 class="fw-bold mb-1 text-dark" th:text="${stats.upcomingMealsCount}">0</h2>
-                    <span class="text-muted fw-semibold small">Upcoming Sponsored Meals</span>
-                </div>
-            </div>
+    <!-- Today's Sponsors -->
+    <div class="col-xl-2 col-md-4 col-6">
+        <div class="fs-kpi-card">
+            <div class="fs-kpi-icon" style="background:#f0fdf4;">🤝</div>
+            <div class="fs-kpi-value" th:text="${stats.todayFoodDonorsCount}">0</div>
+            <div class="fs-kpi-label">Today's Sponsors</div>
+            <div class="fs-kpi-sub">unique food donors</div>
         </div>
     </div>
-
-    <!-- ── Today's Food Schedule Table ──────────────────────────────────── -->
-    <div class="card border-0 shadow-sm rounded-3 mb-4">
-        <div class="card-body p-4">
-            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-                <div>
-                    <h5 class="fw-bold mb-0 text-dark">
-                        <i class="bi bi-calendar-check me-2 text-primary"></i>Today's Food Schedule
-                    </h5>
-                    <small class="text-muted"
-                           th:text="${#temporals.format(today, 'EEEE, dd MMMM yyyy')}">Today's date</small>
-                </div>
-            </div>
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th class="border-0">Meal</th>
-                            <th class="border-0">Time</th>
-                            <th class="border-0">Menu</th>
-                            <th class="border-0">Food Donor</th>
-                            <th class="border-0">Sponsorship</th>
-                            <th class="border-0">Amount</th>
-                            <th class="border-0 text-end" style="min-width: 220px;">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Empty State -->
-                        <tr th:if="${todaySchedule == null or todaySchedule.isEmpty()}">
-                            <td colspan="7" class="text-center py-5 text-muted">
-                                <span class="d-block mb-3 text-secondary" style="font-size: 48px;">
-                                    <i class="bi bi-calendar-x"></i>
-                                </span>
-                                <h5 class="fw-bold text-dark">No Food Schedule Available</h5>
-                                <p class="text-muted mb-0 small">No meals have been scheduled today. Click <strong>+ Add Food Schedule</strong> to create today's meal schedule.</p>
-                            </td>
-                        </tr>
-                        <!-- Schedule Rows -->
-                        <tr th:each="fs : ${todaySchedule}">
-                            <td>
-                                <span th:if="${fs.mealType.name() == 'Breakfast'}"
-                                      class="badge bg-warning bg-opacity-15 text-warning px-3 py-2 rounded-pill fw-semibold small">
-                                    <i class="bi bi-sunrise-fill me-1"></i> Breakfast
-                                </span>
-                                <span th:if="${fs.mealType.name() == 'Lunch'}"
-                                      class="badge bg-success bg-opacity-15 text-success px-3 py-2 rounded-pill fw-semibold small">
-                                    <i class="bi bi-sun-fill me-1"></i> Lunch
-                                </span>
-                                <span th:if="${fs.mealType.name() == 'Dinner'}"
-                                      class="badge bg-primary bg-opacity-15 text-primary px-3 py-2 rounded-pill fw-semibold small">
-                                    <i class="bi bi-moon-stars-fill me-1"></i> Dinner
-                                </span>
-                            </td>
-                            <td>
-                                <strong class="text-dark" th:text="${#temporals.format(fs.servingTime, 'hh:mm a')}">8:00 AM</strong>
-                            </td>
-                            <td style="max-width: 250px;">
-                                <span class="text-dark small" style="white-space: pre-line;"
-                                      th:text="${fs.menuItems}">Tea, Milk, Poha</span>
-                            </td>
-                            <td>
-                                <span class="fw-semibold text-dark small" th:text="${fs.donorDisplayName}">—</span>
-                            </td>
-                            <td>
-                                <span class="badge bg-info bg-opacity-15 text-info px-2 py-1 rounded-pill small"
-                                      th:text="${fs.sponsorshipType.displayName}">One Time</span>
-                            </td>
-                            <td>
-                                <strong class="text-success small"
-                                        th:text="${'₹' + #numbers.formatDecimal(fs.amount, 1, 'COMMA', 0, 'POINT')}">₹0</strong>
-                            </td>
-                            <td class="text-end">
-                                <div class="d-inline-flex gap-2">
-                                    <button type="button"
-                                            class="btn btn-outline-secondary btn-sm px-3 rounded-2" style="height: 34px;"
-                                            th:onclick="|openViewModal(${fs.id})|">View</button>
-                                    <button type="button"
-                                            class="btn btn-outline-primary btn-sm px-3 rounded-2" style="height: 34px;"
-                                            th:onclick="|openEditModal(${fs.id})|"
-                                            sec:authorize="hasAnyRole('ADMIN','MANAGER')">Edit</button>
-                                    <button type="button"
-                                            class="btn btn-outline-success btn-sm px-3 rounded-2" style="height: 34px;"
-                                            th:onclick="|printRow(${fs.id})|">Print</button>
-                                    <a th:href="@{/food-schedule/delete/{id}(id=${fs.id})}"
-                                       class="btn btn-outline-danger btn-sm px-3 rounded-2" style="height: 34px;"
-                                       onclick="return confirm('Are you sure you want to delete this food schedule?');"
-                                       sec:authorize="hasRole('ADMIN')">Delete</a>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+    <!-- Today's Donation -->
+    <div class="col-xl-2 col-md-4 col-6">
+        <div class="fs-kpi-card">
+            <div class="fs-kpi-icon" style="background:#fffbeb;">💰</div>
+            <div class="fs-kpi-value"
+                 th:text="'₹' + ${#numbers.formatDecimal(stats.todayDonationAmount, 1, 'COMMA', 0, 'POINT')}">₹0</div>
+            <div class="fs-kpi-label">Today's Donations</div>
+            <div class="fs-kpi-sub">total amount received</div>
         </div>
     </div>
+    <!-- Upcoming Sponsored Meals -->
+    <div class="col-xl-2 col-md-4 col-6">
+        <div class="fs-kpi-card">
+            <div class="fs-kpi-icon" style="background:#f0f9ff;">📅</div>
+            <div class="fs-kpi-value" th:text="${stats.upcomingMealsCount}">0</div>
+            <div class="fs-kpi-label">Upcoming Meals</div>
+            <div class="fs-kpi-sub">sponsored future meals</div>
+        </div>
+    </div>
+    <!-- Next Meal -->
+    <div class="col-xl-2 col-md-4 col-6">
+        <div class="fs-kpi-card">
+            <div class="fs-kpi-icon" style="background:#fdf4ff;">⏰</div>
+            <div class="fs-kpi-value"
+                 th:text="${stats.nextScheduledMeal != null and !#strings.isEmpty(stats.nextScheduledMeal) ? stats.nextScheduledMeal : '—'}">—</div>
+            <div class="fs-kpi-label">Next Meal</div>
+            <div class="fs-kpi-sub"
+                 th:text="${stats.nextMealTime != null and !#strings.isEmpty(stats.nextMealTime) ? 'at ' + stats.nextMealTime : 'no upcoming meal'}">—</div>
+        </div>
+    </div>
+    <!-- Today's Menu Items -->
+    <div class="col-xl-2 col-md-4 col-6">
+        <div class="fs-kpi-card">
+            <div class="fs-kpi-icon" style="background:#fff7ed;">🍽️</div>
+            <div class="fs-kpi-value" th:text="${stats.todayMenuItemCount}">0</div>
+            <div class="fs-kpi-label">Menu Items</div>
+            <div class="fs-kpi-sub">today's menu count</div>
+        </div>
+    </div>
+</div>
 
-    <!-- ── Past 7 Days Accordion ─────────────────────────────────────────── -->
-    <div class="card border-0 shadow-sm rounded-3 mb-4" th:if="${lastSevenDays != null and !lastSevenDays.isEmpty()}">
-        <div class="card-body p-4">
-            <h5 class="fw-bold mb-3 text-dark">
-                <i class="bi bi-clock-history me-2 text-primary"></i>Past 7 Days
-            </h5>
-            <div class="accordion" id="sevenDaysAccordion">
-                <div th:each="entry, iterStat : ${lastSevenDays}" class="accordion-item border mb-2 rounded-3"
-                     style="overflow: hidden;">
-                    <h2 class="accordion-header" th:id="|heading${iterStat.index}|">
-                        <button class="accordion-button collapsed fw-semibold text-dark bg-light" type="button"
-                                data-bs-toggle="collapse"
-                                th:data-bs-target="|#collapse${iterStat.index}|"
-                                th:aria-controls="|collapse${iterStat.index}|"
-                                aria-expanded="false">
-                            <i class="bi bi-calendar3 me-2 text-primary"></i>
-                            <span th:text="${#temporals.format(entry.key, 'EEEE, dd MMMM yyyy')}">Date</span>
-                            <span class="badge bg-primary ms-2 rounded-pill small"
-                                  th:text="${entry.value.size() + ' meal' + (entry.value.size() != 1 ? 's' : '')}">0 meals</span>
-                        </button>
-                    </h2>
-                    <div th:id="|collapse${iterStat.index}|" class="accordion-collapse collapse"
-                         th:aria-labelledby="|heading${iterStat.index}|"
-                         data-bs-parent="#sevenDaysAccordion">
-                        <div class="accordion-body p-0">
-                            <div class="table-responsive">
-                                <table class="table table-hover align-middle mb-0" style="font-size: 13px;">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th class="border-0">Meal</th>
-                                            <th class="border-0">Time</th>
-                                            <th class="border-0">Menu</th>
-                                            <th class="border-0">Food Donor</th>
-                                            <th class="border-0">Sponsorship</th>
-                                            <th class="border-0">Amount</th>
-                                            <th class="border-0 text-end">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr th:each="fs : ${entry.value}">
-                                            <td>
-                                                <span th:if="${fs.mealType.name() == 'Breakfast'}"
-                                                      class="badge bg-warning bg-opacity-15 text-warning px-2 py-1 rounded-pill"><i class="bi bi-sunrise-fill me-1"></i> Breakfast</span>
-                                                <span th:if="${fs.mealType.name() == 'Lunch'}"
-                                                      class="badge bg-success bg-opacity-15 text-success px-2 py-1 rounded-pill"><i class="bi bi-sun-fill me-1"></i> Lunch</span>
-                                                <span th:if="${fs.mealType.name() == 'Dinner'}"
-                                                      class="badge bg-primary bg-opacity-15 text-primary px-2 py-1 rounded-pill"><i class="bi bi-moon-stars-fill me-1"></i> Dinner</span>
-                                            </td>
-                                            <td th:text="${#temporals.format(fs.servingTime, 'hh:mm a')}">—</td>
-                                            <td style="max-width: 200px; white-space: pre-line;"
-                                                th:text="${fs.menuItems}">—</td>
-                                            <td th:text="${fs.donorDisplayName}">—</td>
-                                            <td>
-                                                <span class="badge bg-info bg-opacity-15 text-info px-2 py-1 rounded-pill"
-                                                      th:text="${fs.sponsorshipType.displayName}">—</span>
-                                            </td>
-                                            <td class="text-success fw-semibold"
-                                                th:text="${'₹' + #numbers.formatDecimal(fs.amount, 1, 'COMMA', 0, 'POINT')}">₹0</td>
-                                            <td class="text-end">
-                                                <div class="d-inline-flex gap-1">
-                                                    <button type="button" class="btn btn-outline-secondary btn-sm px-2 rounded-2"
-                                                            th:onclick="|openViewModal(${fs.id})|">View</button>
-                                                    <button type="button" class="btn btn-outline-primary btn-sm px-2 rounded-2"
-                                                            th:onclick="|openEditModal(${fs.id})|"
-                                                            sec:authorize="hasAnyRole('ADMIN','MANAGER')">Edit</button>
-                                                    <a th:href="@{/food-schedule/delete/{id}(id=${fs.id})}"
-                                                       class="btn btn-outline-danger btn-sm px-2 rounded-2"
-                                                       onclick="return confirm('Delete this record?');"
-                                                       sec:authorize="hasRole('ADMIN')">Delete</a>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- Analytics Section (lightweight — not visually dominant)                     -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="fs-card mb-3">
+    <div class="fs-card-header">
+        <h2 class="fs-card-title"><i class="bi bi-graph-up" style="color:var(--fs-primary);"></i> Weekly &amp; Monthly Overview</h2>
+        <span style="font-size:11px;color:var(--fs-muted);">Calculated from your schedule data</span>
+    </div>
+    <div class="fs-card-body">
+        <div class="row g-3">
+            <!-- Meals This Week -->
+            <div class="col-md-4">
+                <div class="fs-analytics-card">
+                    <div class="fs-analytics-label">Meals This Week</div>
+                    <div class="fs-analytics-value" th:text="${stats.mealsThisWeek} + ' / 21'">0 / 21</div>
+                    <div class="fs-progress">
+                        <div class="fs-progress-bar"
+                             th:style="${'width:' + (stats.mealsThisWeek > 0 ? (stats.mealsThisWeek * 100 / 21) : 0) + '%'}"></div>
                     </div>
+                    <div style="font-size:11px;color:var(--fs-muted);margin-top:5px;">Max 3 meals/day × 7 days</div>
+                </div>
+            </div>
+            <!-- Sponsors This Week -->
+            <div class="col-md-4">
+                <div class="fs-analytics-card">
+                    <div class="fs-analytics-label">Sponsors This Week</div>
+                    <div class="fs-analytics-value" th:text="${stats.sponsorsThisWeek}">0</div>
+                    <div class="fs-progress">
+                        <div class="fs-progress-bar"
+                             style="background:#16a34a;"
+                             th:style="${'background:#16a34a;width:' + (stats.sponsorsThisWeek > 0 ? (stats.sponsorsThisWeek > 10 ? 100 : stats.sponsorsThisWeek * 10) : 0) + '%'}"></div>
+                    </div>
+                    <div style="font-size:11px;color:var(--fs-muted);margin-top:5px;">Unique food donors</div>
+                </div>
+            </div>
+            <!-- Donations This Month -->
+            <div class="col-md-4">
+                <div class="fs-analytics-card">
+                    <div class="fs-analytics-label">Donations This Month</div>
+                    <div class="fs-analytics-value"
+                         th:text="'₹' + ${#numbers.formatDecimal(stats.donationsThisMonth, 1, 'COMMA', 0, 'POINT')}">₹0</div>
+                    <canvas id="fsWeeklyChart" height="40" style="margin-top:6px;"></canvas>
+                    <div style="font-size:11px;color:var(--fs-muted);margin-top:4px;">Calendar month total</div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- ── Search History ────────────────────────────────────────────────── -->
-    <div class="card border-0 shadow-sm rounded-3 mb-4">
-        <div class="card-body p-4">
-            <h5 class="fw-bold mb-3 text-dark">
-                <i class="bi bi-search me-2 text-primary"></i>Search History
-            </h5>
-            <form th:action="@{/food-schedule/search}" method="get">
-                <div class="row g-3 mb-3">
-                    <div class="col-md-3">
-                        <label class="form-label fw-semibold text-muted small">From Date</label>
-                        <input type="date" name="fromDate" class="form-control"
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- Today's Food Schedule                                                        -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="fs-card">
+    <div class="fs-card-header">
+        <h2 class="fs-card-title"><i class="bi bi-calendar-check" style="color:var(--fs-primary);"></i>
+            Today's Food Schedule
+            <small class="fw-normal text-muted ms-1" style="font-size:12px;"
+                   th:text="${#temporals.format(today, 'EEEE, dd MMMM yyyy')}"></small>
+        </h2>
+        <span class="fs-badge fs-badge-info" th:text="${#lists.size(todaySchedule)} + ' meal(s)'">0 meals</span>
+    </div>
+    <div class="fs-card-body-p0">
+        <div class="table-responsive">
+            <table class="fs-table fs-responsive-table">
+                <thead>
+                    <tr>
+                        <th>Meal</th>
+                        <th>Time</th>
+                        <th>Menu</th>
+                        <th>Food Donor</th>
+                        <th>Sponsorship</th>
+                        <th>Amount</th>
+                        <th style="text-align:right;min-width:180px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Empty State -->
+                    <tr th:if="${todaySchedule == null or todaySchedule.isEmpty()}">
+                        <td colspan="7" style="padding:0;border:none;">
+                            <div class="fs-empty">
+                                <div class="fs-empty-icon">🥘</div>
+                                <div class="fs-empty-title">No meals scheduled today</div>
+                                <div class="fs-empty-desc">No food schedule entries have been created for today yet.</div>
+                                <button type="button" class="fs-btn fs-btn-primary"
+                                        data-bs-toggle="modal" data-bs-target="#addFoodScheduleModal"
+                                        onclick="resetAddModal()">
+                                    <i class="bi bi-plus-lg"></i> Create First Schedule
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- Rows -->
+                    <tr th:each="fs : ${todaySchedule}">
+                        <td data-label="Meal">
+                            <span th:if="${fs.mealType.name() == 'Breakfast'}" class="fs-badge fs-badge-breakfast">☀️ Breakfast</span>
+                            <span th:if="${fs.mealType.name() == 'Lunch'}"     class="fs-badge fs-badge-lunch">🌤️ Lunch</span>
+                            <span th:if="${fs.mealType.name() == 'Dinner'}"    class="fs-badge fs-badge-dinner">🌙 Dinner</span>
+                        </td>
+                        <td data-label="Time">
+                            <strong style="color:var(--fs-text);"
+                                    th:text="${#temporals.format(fs.servingTime, 'hh:mm a')}">8:00 AM</strong>
+                        </td>
+                        <td data-label="Menu" style="max-width:200px;">
+                            <span style="white-space:pre-line;font-size:12px;color:var(--fs-text);"
+                                  th:text="${fs.menuItems}">—</span>
+                        </td>
+                        <td data-label="Donor">
+                            <span style="font-weight:600;font-size:12px;" th:text="${fs.donorDisplayName}">—</span>
+                        </td>
+                        <td data-label="Sponsorship">
+                            <span class="fs-badge fs-badge-info" th:text="${fs.sponsorshipType.displayName}">—</span>
+                        </td>
+                        <td data-label="Amount">
+                            <strong style="color:var(--fs-success);font-size:13px;"
+                                    th:text="'₹' + ${#numbers.formatDecimal(fs.amount, 1, 'COMMA', 0, 'POINT')}">₹0</strong>
+                        </td>
+                        <td data-label="Actions" style="text-align:right;">
+                            <div class="d-inline-flex gap-1">
+                                <button type="button" class="fs-btn fs-btn-secondary fs-btn-icon"
+                                        th:onclick="|openViewModal(${fs.id})|" title="View">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                <button type="button" class="fs-btn fs-btn-outline fs-btn-icon"
+                                        th:onclick="|openEditModal(${fs.id})|" title="Edit"
+                                        sec:authorize="hasAnyRole('ADMIN','MANAGER')">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <a th:href="@{/food-schedule/print/today}" target="_blank"
+                                   class="fs-btn fs-btn-success fs-btn-icon" title="Print Today's Schedule">
+                                    <i class="bi bi-printer"></i>
+                                </a>
+                                <button type="button" class="fs-btn fs-btn-danger fs-btn-icon"
+                                        th:onclick="|openDeleteModal(${fs.id}, '${fs.mealType.displayName}', '${#temporals.format(today, &quot;dd MMM yyyy&quot;)}')|"
+                                        title="Delete"
+                                        sec:authorize="hasRole('ADMIN')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- Quick Actions                                                                -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="row g-3 mb-3">
+    <div class="col-sm-6 col-lg-3">
+        <a href="#" class="fs-quick-card"
+           data-bs-toggle="modal" data-bs-target="#addFoodScheduleModal" onclick="resetAddModal()">
+            <div class="fs-quick-icon">➕</div>
+            <div class="fs-quick-title">Add Meal Schedule</div>
+            <div class="fs-quick-desc">Schedule a new meal for any date</div>
+        </a>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <a href="/food-schedule/print/today" target="_blank" class="fs-quick-card">
+            <div class="fs-quick-icon">🖨️</div>
+            <div class="fs-quick-title">Today's Report</div>
+            <div class="fs-quick-desc">Print the full schedule for today</div>
+        </a>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <a href="/food-schedule/print/kitchen" target="_blank" class="fs-quick-card">
+            <div class="fs-quick-icon">👨‍🍳</div>
+            <div class="fs-quick-title">Kitchen Copy</div>
+            <div class="fs-quick-desc">Menu items only for kitchen staff</div>
+        </a>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <a href="/food-schedule/print/donation" target="_blank" class="fs-quick-card">
+            <div class="fs-quick-icon">🧾</div>
+            <div class="fs-quick-title">Donation Receipt</div>
+            <div class="fs-quick-desc">Print donation summary receipt</div>
+        </a>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- Schedule History — Backend-Paginated                                         -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="fs-card">
+    <div class="fs-card-header">
+        <h2 class="fs-card-title"><i class="bi bi-clock-history" style="color:var(--fs-primary);"></i> Schedule History</h2>
+        <span style="font-size:12px;color:var(--fs-muted);"
+              th:if="${historyPage != null}"
+              th:text="${historyPage.totalElements} + ' records'">—</span>
+    </div>
+
+    <!-- Filter Console -->
+    <div class="fs-card-body" style="border-bottom:1px solid var(--fs-border);">
+        <form th:action="@{/food-schedule/search}" method="get" id="fs-filter-form">
+            <div class="fs-filter-form">
+                <div class="row g-2 mb-2">
+                    <!-- From Date -->
+                    <div class="col-md-2 col-sm-6">
+                        <label class="fs-form-label">From Date</label>
+                        <input type="date" name="fromDate" class="fs-input"
                                th:value="${srFromDate}">
                     </div>
-                    <div class="col-md-3">
-                        <label class="form-label fw-semibold text-muted small">To Date</label>
-                        <input type="date" name="toDate" class="form-control"
+                    <!-- To Date -->
+                    <div class="col-md-2 col-sm-6">
+                        <label class="fs-form-label">To Date</label>
+                        <input type="date" name="toDate" class="fs-input"
                                th:value="${srToDate}">
                     </div>
-                    <div class="col-md-2">
-                        <label class="form-label fw-semibold text-muted small">Meal Type</label>
-                        <select name="mealType" class="form-select">
+                    <!-- Meal Type -->
+                    <div class="col-md-2 col-sm-6">
+                        <label class="fs-form-label">Meal Type</label>
+                        <select name="mealType" class="fs-input">
                             <option value="">All Meals</option>
                             <option th:each="mt : ${mealTypes}"
                                     th:value="${mt.name()}"
                                     th:text="${mt.displayName}"
-                                    th:selected="${srMealType != null and srMealType == mt.name()}">Breakfast</option>
+                                    th:selected="${srMealType != null and srMealType == mt.name()}">Meal</option>
                         </select>
                     </div>
-                    <div class="col-md-2">
-                        <label class="form-label fw-semibold text-muted small">Sponsorship Type</label>
-                        <select name="sponsorshipType" class="form-select">
+                    <!-- Sponsorship Type -->
+                    <div class="col-md-2 col-sm-6">
+                        <label class="fs-form-label">Sponsorship</label>
+                        <select name="sponsorshipType" class="fs-input">
                             <option value="">All Types</option>
                             <option th:each="st : ${sponsorshipTypes}"
                                     th:value="${st.name()}"
                                     th:text="${st.displayName}"
-                                    th:selected="${srSponsorshipType != null and srSponsorshipType == st.name()}">One Time</option>
+                                    th:selected="${srSponsorshipType != null and srSponsorshipType == st.name()}">Type</option>
                         </select>
                     </div>
-                    <div class="col-md-2">
-                        <label class="form-label fw-semibold text-muted small">Food Donor</label>
-                        <input type="text" name="donorKeyword" class="form-control"
-                               placeholder="Donor name..." th:value="${srDonorKeyword}">
+                    <!-- Donor Keyword -->
+                    <div class="col-md-2 col-sm-6">
+                        <label class="fs-form-label">Donor Name</label>
+                        <input type="text" name="donorKeyword" class="fs-input"
+                               placeholder="Search donor..." th:value="${srDonorKeyword}">
+                    </div>
+                    <!-- Page Size -->
+                    <div class="col-md-2 col-sm-6">
+                        <label class="fs-form-label">Per Page</label>
+                        <select name="size" class="fs-input">
+                            <option value="10"  th:selected="${pageSize == 10}">10</option>
+                            <option value="25"  th:selected="${pageSize == 25}">25</option>
+                            <option value="50"  th:selected="${pageSize == 50}">50</option>
+                        </select>
                     </div>
                 </div>
-                <div>
-                    <button type="submit" class="btn btn-primary px-4 rounded-2">
-                        <i class="bi bi-search me-1"></i> Search
-                    </button>
-                    <a th:href="@{/food-schedule}" class="btn btn-secondary px-4 ms-2 rounded-2">Clear</a>
-                </div>
-            </form>
-
-            <!-- Search Results -->
-            <div th:if="${searchPerformed}" class="mt-4">
-                <h6 class="fw-bold text-dark mb-3 border-bottom pb-2"
-                    th:text="${'Search Results (' + (searchResults != null ? searchResults.size() : 0) + ' records found)'}">
-                    Search Results
-                </h6>
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0" style="font-size: 13px;">
-                        <thead class="table-light">
-                            <tr>
-                                <th class="border-0">Date</th>
-                                <th class="border-0">Meal</th>
-                                <th class="border-0">Time</th>
-                                <th class="border-0">Menu</th>
-                                <th class="border-0">Food Donor</th>
-                                <th class="border-0">Sponsorship</th>
-                                <th class="border-0">Amount</th>
-                                <th class="border-0 text-end">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:if="${searchResults == null or searchResults.isEmpty()}">
-                                <td colspan="8" class="text-center py-4 text-muted">
-                                    <i class="bi bi-inbox-fill d-block mb-2" style="font-size: 28px;"></i>
-                                    No records found for the selected filters.
-                                </td>
-                            </tr>
-                            <tr th:each="fs : ${searchResults}">
-                                <td>
-                                    <strong class="text-dark" th:text="${#temporals.format(fs.scheduleDate, 'dd MMM yyyy')}">—</strong>
-                                </td>
-                                <td>
-                                    <span th:if="${fs.mealType.name() == 'Breakfast'}"
-                                          class="badge bg-warning bg-opacity-15 text-warning px-2 py-1 rounded-pill"><i class="bi bi-sunrise-fill me-1"></i> Breakfast</span>
-                                    <span th:if="${fs.mealType.name() == 'Lunch'}"
-                                          class="badge bg-success bg-opacity-15 text-success px-2 py-1 rounded-pill"><i class="bi bi-sun-fill me-1"></i> Lunch</span>
-                                    <span th:if="${fs.mealType.name() == 'Dinner'}"
-                                          class="badge bg-primary bg-opacity-15 text-primary px-2 py-1 rounded-pill"><i class="bi bi-moon-stars-fill me-1"></i> Dinner</span>
-                                </td>
-                                <td th:text="${#temporals.format(fs.servingTime, 'hh:mm a')}">—</td>
-                                <td style="max-width: 180px; white-space: pre-line;" th:text="${fs.menuItems}">—</td>
-                                th:text="${fs.donorDisplayName}">—</td>
-                                <td>
-                                    <span class="badge bg-info bg-opacity-15 text-info px-2 py-1 rounded-pill"
-                                          th:text="${fs.sponsorshipType.displayName}">—</span>
-                                </td>
-                                <td class="text-success fw-semibold"
-                                    th:text="${'₹' + #numbers.formatDecimal(fs.amount, 1, 'COMMA', 0, 'POINT')}">₹0</td>
-                                <td class="text-end">
-                                    <div class="d-inline-flex gap-1">
-                                        <button type="button" class="btn btn-outline-secondary btn-sm px-2 rounded-2"
-                                                th:onclick="|openViewModal(${fs.id})|">View</button>
-                                        <button type="button" class="btn btn-outline-primary btn-sm px-2 rounded-2"
-                                                th:onclick="|openEditModal(${fs.id})|"
-                                                sec:authorize="hasAnyRole('ADMIN','MANAGER')">Edit</button>
-                                        <a th:href="@{/food-schedule/delete/{id}(id=${fs.id})}"
-                                           class="btn btn-outline-danger btn-sm px-2 rounded-2"
-                                           onclick="return confirm('Delete this record?');"
-                                           sec:authorize="hasRole('ADMIN')">Delete</a>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ================================================================ -->
-    <!-- ── Add Food Schedule Modal ─────────────────────────────────────── -->
-    <!-- ================================================================ -->
-    <div class="modal fade" id="addFoodScheduleModal" tabindex="-1"
-         aria-labelledby="addFoodScheduleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-scrollable">
-            <div class="modal-content border-0 shadow rounded-3">
-                <div class="modal-header border-bottom">
-                    <h5 class="modal-title fw-bold text-dark" id="addFoodScheduleModalLabel">
-                        <i class="bi bi-plus-circle me-2 text-primary"></i>Add Food Schedule
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form th:action="@{/food-schedule/save}" th:object="${formDto}" method="post" id="addFoodScheduleForm">
-                    <div class="modal-body p-4">
-
-                        <!-- Row 1: Date, Meal Type, Serving Time -->
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold small text-dark" for="add_scheduleDate">
-                                    Schedule Date <span class="text-danger">*</span>
-                                </label>
-                                <input type="date" id="add_scheduleDate" th:field="*{scheduleDate}"
-                                       class="form-control" th:classappend="${#fields.hasErrors('scheduleDate')} ? 'is-invalid' : ''" required>
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('scheduleDate')}" th:errors="*{scheduleDate}"></div>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold small text-dark" for="add_mealType">
-                                    Meal Type <span class="text-danger">*</span>
-                                </label>
-                                <select id="add_mealType" th:field="*{mealType}" class="form-select" th:classappend="${#fields.hasErrors('mealType')} ? 'is-invalid' : ''" required
-                                        onchange="fetchRate('add')">
-                                    <option value="">-- Select Meal --</option>
-                                    <option th:each="mt : ${mealTypes}"
-                                            th:value="${mt.name()}"
-                                            th:text="${mt.displayName}">Breakfast</option>
-                                </select>
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('mealType')}" th:errors="*{mealType}"></div>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold small text-dark" for="add_servingTime">
-                                    Serving Time <span class="text-danger">*</span>
-                                </label>
-                                <input type="time" id="add_servingTime" th:field="*{servingTime}"
-                                       class="form-control" th:classappend="${#fields.hasErrors('servingTime')} ? 'is-invalid' : ''" required>
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('servingTime')}" th:errors="*{servingTime}"></div>
-                            </div>
-                        </div>
-
-                        <!-- Row 2: Menu Items -->
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold small text-dark" for="add_menuItems">
-                                Menu Items <span class="text-danger">*</span>
-                            </label>
-                            <textarea id="add_menuItems" th:field="*{menuItems}" class="form-control" th:classappend="${#fields.hasErrors('menuItems')} ? 'is-invalid' : ''" rows="4" required
-                                      placeholder="e.g.&#10;Tea&#10;Milk&#10;Poha&#10;Banana"></textarea>
-                            <div class="invalid-feedback" th:if="${#fields.hasErrors('menuItems')}" th:errors="*{menuItems}"></div>
-                            <small class="text-muted small">Enter each item on a new line.</small>
-                        </div>
-
-                        <!-- Row 3: Sponsorship Type -->
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold small text-dark" for="add_sponsorshipType">
-                                    Sponsorship Type <span class="text-danger">*</span>
-                                </label>
-                                <select id="add_sponsorshipType" th:field="*{sponsorshipType}" class="form-select" th:classappend="${#fields.hasErrors('sponsorshipType')} ? 'is-invalid' : ''" required
-                                        onchange="fetchRate('add')">
-                                    <option value="">-- Select Sponsorship --</option>
-                                    <option th:each="st : ${sponsorshipTypes}"
-                                            th:value="${st.name()}"
-                                            th:text="${st.displayName}">One Time</option>
-                                </select>
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('sponsorshipType')}" th:errors="*{sponsorshipType}"></div>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold small text-dark" for="add_amount">
-                                    Amount (₹) <span class="text-danger">*</span>
-                                </label>
-                                <div class="input-group">
-                                    <span class="input-group-text">₹</span>
-                                    <input type="number" id="add_amount" th:field="*{amount}" class="form-control" th:classappend="${#fields.hasErrors('amount')} ? 'is-invalid' : ''"
-                                           step="0.01" min="0" required placeholder="Auto-filled from rates">
-                                </div>
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}"></div>
-                                <small id="add_rateMessage" class="text-muted d-none"></small>
-                            </div>
-                        </div>
-
-                        <!-- Row 4: Food Donor -->
-                        <div class="mb-2">
-                            <label class="form-label fw-semibold small text-dark" for="add_donorId">
-                                Food Donor
-                            </label>
-                            <div id="add_donorDropdownContainer">
-                                <select id="add_donorId" th:field="*{donorId}" class="form-select" th:classappend="${#fields.hasErrors('donorId')} ? 'is-invalid' : ''">
-                                    <option value="" th:if="${foodDonors != null and !foodDonors.isEmpty()}">-- Select Donor --</option>
-                                    <option value="" th:if="${foodDonors == null or foodDonors.isEmpty()}" disabled selected>No food donors available.</option>
-                                    <option th:each="d : ${foodDonors}"
-                                            th:value="${d.id}"
-                                            th:text="${d.fullName + (d.mobile != null ? ' (' + d.mobile + ')' : '')}">Donor Name</option>
-                                </select>
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('donorId')}" th:errors="*{donorId}"></div>
-                                <small class="text-muted small">Only food donors are listed here.</small>
-                            </div>
-                            <div id="add_manualDonorContainer" style="display: none;">
-                                <label class="form-label fw-semibold small text-dark mt-2" for="add_manualDonorName">
-                                    Manual Donor Name <span class="text-danger">*</span>
-                                </label>
-                                <input type="text" id="add_manualDonorName" th:field="*{manualDonorName}"
-                                       class="form-control" th:classappend="${#fields.hasErrors('manualDonorName')} ? 'is-invalid' : ''" placeholder="Enter donor name manually">
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('manualDonorName')}" th:errors="*{manualDonorName}"></div>
-                            </div>
-                        </div>
-
-                        <!-- Donor Not Found Checkbox -->
-                        <div class="mb-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="add_donorNotFound"
-                                       th:field="*{donorNotFound}" value="true"
-                                       onchange="toggleManualDonor('add')">
-                                <label class="form-check-label text-muted small" for="add_donorNotFound">
-                                    Donor Not Found — enter name manually
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- Notes -->
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold small text-dark" for="add_notes">Notes (Optional)</label>
-                            <textarea id="add_notes" th:field="*{notes}" class="form-control" rows="2"
-                                      placeholder="Any additional remarks..."></textarea>
-                        </div>
-
+                <div class="row g-2 mb-3">
+                    <!-- Min Amount -->
+                    <div class="col-md-2 col-sm-6">
+                        <label class="fs-form-label">Min Amount (₹)</label>
+                        <input type="number" name="minAmount" class="fs-input"
+                               step="0.01" min="0" placeholder="0"
+                               th:value="${srMinAmount}">
                     </div>
-                    <div class="modal-footer border-top">
-                        <button type="button" class="btn btn-secondary rounded-2" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary px-4 rounded-2">
-                            <i class="bi bi-check-circle me-1"></i> Save Food Schedule
+                    <!-- Max Amount -->
+                    <div class="col-md-2 col-sm-6">
+                        <label class="fs-form-label">Max Amount (₹)</label>
+                        <input type="number" name="maxAmount" class="fs-input"
+                               step="0.01" min="0" placeholder="Any"
+                               th:value="${srMaxAmount}">
+                    </div>
+                    <!-- Hidden sort params -->
+                    <input type="hidden" name="sort"      th:value="${sort != null ? sort : 'scheduleDate'}">
+                    <input type="hidden" name="direction" th:value="${direction != null ? direction : 'desc'}">
+                    <input type="hidden" name="page"      value="0">
+                    <!-- Buttons -->
+                    <div class="col-md-8 col-sm-12 d-flex align-items-end gap-2 flex-wrap">
+                        <button type="submit" class="fs-btn fs-btn-primary" id="fs-search-btn">
+                            <i class="bi bi-search"></i> Search
                         </button>
+                        <a th:href="@{/food-schedule}" class="fs-btn fs-btn-secondary">
+                            <i class="bi bi-x-circle"></i> Clear
+                        </a>
                     </div>
-                </form>
+                </div>
             </div>
-        </div>
+        </form>
     </div>
 
-    <!-- ================================================================ -->
-    <!-- ── Edit Food Schedule Modal ────────────────────────────────────── -->
-    <!-- ================================================================ -->
-    <div class="modal fade" id="editFoodScheduleModal" tabindex="-1"
-         aria-labelledby="editFoodScheduleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-scrollable">
-            <div class="modal-content border-0 shadow rounded-3">
-                <div class="modal-header border-bottom">
-                    <h5 class="modal-title fw-bold text-dark" id="editFoodScheduleModalLabel">
-                        <i class="bi bi-pencil-square me-2 text-primary"></i>Edit Food Schedule
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form th:action="@{/food-schedule/update/{id}(id=${editRecordId != null ? editRecordId : 0})}" th:object="${formDto}" method="post" id="editFoodScheduleForm">
-                    <div class="modal-body p-4">
-
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold small text-dark" for="edit_scheduleDate">
-                                    Schedule Date <span class="text-danger">*</span>
-                                </label>
-                                <input type="date" id="edit_scheduleDate" th:field="*{scheduleDate}"
-                                       class="form-control" th:classappend="${#fields.hasErrors('scheduleDate')} ? 'is-invalid' : ''" required>
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('scheduleDate')}" th:errors="*{scheduleDate}"></div>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold small text-dark" for="edit_mealType">
-                                    Meal Type <span class="text-danger">*</span>
-                                </label>
-                                <select id="edit_mealType" th:field="*{mealType}" class="form-select" th:classappend="${#fields.hasErrors('mealType')} ? 'is-invalid' : ''" required
-                                        onchange="fetchRate('edit')">
-                                    <option value="">-- Select Meal --</option>
-                                    <option th:each="mt : ${mealTypes}"
-                                            th:value="${mt.name()}"
-                                            th:text="${mt.displayName}">Breakfast</option>
-                                </select>
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('mealType')}" th:errors="*{mealType}"></div>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label fw-semibold small text-dark" for="edit_servingTime">
-                                    Serving Time <span class="text-danger">*</span>
-                                </label>
-                                <input type="time" id="edit_servingTime" th:field="*{servingTime}"
-                                       class="form-control" th:classappend="${#fields.hasErrors('servingTime')} ? 'is-invalid' : ''" required>
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('servingTime')}" th:errors="*{servingTime}"></div>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold small text-dark" for="edit_menuItems">
-                                Menu Items <span class="text-danger">*</span>
-                            </label>
-                            <textarea id="edit_menuItems" th:field="*{menuItems}" class="form-control" th:classappend="${#fields.hasErrors('menuItems')} ? 'is-invalid' : ''" rows="4" required></textarea>
-                            <div class="invalid-feedback" th:if="${#fields.hasErrors('menuItems')}" th:errors="*{menuItems}"></div>
-                            <small class="text-muted small">Enter each item on a new line.</small>
-                        </div>
-
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold small text-dark" for="edit_sponsorshipType">
-                                    Sponsorship Type <span class="text-danger">*</span>
-                                </label>
-                                <select id="edit_sponsorshipType" th:field="*{sponsorshipType}" class="form-select" th:classappend="${#fields.hasErrors('sponsorshipType')} ? 'is-invalid' : ''" required
-                                        onchange="fetchRate('edit')">
-                                    <option value="">-- Select Sponsorship --</option>
-                                    <option th:each="st : ${sponsorshipTypes}"
-                                            th:value="${st.name()}"
-                                            th:text="${st.displayName}">One Time</option>
-                                </select>
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('sponsorshipType')}" th:errors="*{sponsorshipType}"></div>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold small text-dark" for="edit_amount">
-                                    Amount (₹) <span class="text-danger">*</span>
-                                </label>
-                                <div class="input-group">
-                                    <span class="input-group-text">₹</span>
-                                    <input type="number" id="edit_amount" th:field="*{amount}" class="form-control" th:classappend="${#fields.hasErrors('amount')} ? 'is-invalid' : ''"
-                                           step="0.01" min="0" required>
+    <!-- History Table -->
+    <div class="fs-card-body-p0">
+        <div class="table-responsive">
+            <table class="fs-table fs-responsive-table">
+                <thead>
+                    <tr>
+                        <th>
+                            <a th:href="@{/food-schedule/search(sort='scheduleDate',direction=${sort == 'scheduleDate' and direction == 'desc' ? 'asc' : 'desc'},page=0,size=${pageSize},fromDate=${srFromDate},toDate=${srToDate},mealType=${srMealType},sponsorshipType=${srSponsorshipType},donorKeyword=${srDonorKeyword},minAmount=${srMinAmount},maxAmount=${srMaxAmount})}"
+                               style="text-decoration:none;color:inherit;">
+                                Date
+                                <i th:if="${sort == 'scheduleDate' and direction == 'desc'}" class="bi bi-arrow-down-short"></i>
+                                <i th:if="${sort == 'scheduleDate' and direction == 'asc'}"  class="bi bi-arrow-up-short"></i>
+                            </a>
+                        </th>
+                        <th>Meal</th>
+                        <th>Time</th>
+                        <th>Menu</th>
+                        <th>Food Donor</th>
+                        <th>Sponsorship</th>
+                        <th>
+                            <a th:href="@{/food-schedule/search(sort='amount',direction=${sort == 'amount' and direction == 'desc' ? 'asc' : 'desc'},page=0,size=${pageSize},fromDate=${srFromDate},toDate=${srToDate},mealType=${srMealType},sponsorshipType=${srSponsorshipType},donorKeyword=${srDonorKeyword},minAmount=${srMinAmount},maxAmount=${srMaxAmount})}"
+                               style="text-decoration:none;color:inherit;">
+                                Amount
+                                <i th:if="${sort == 'amount' and direction == 'desc'}" class="bi bi-arrow-down-short"></i>
+                                <i th:if="${sort == 'amount' and direction == 'asc'}"  class="bi bi-arrow-up-short"></i>
+                            </a>
+                        </th>
+                        <th style="text-align:right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Empty state -->
+                    <tr th:if="${historyPage == null or historyPage.content.isEmpty()}">
+                        <td colspan="8" style="padding:0;border:none;">
+                            <div class="fs-empty">
+                                <div class="fs-empty-icon">🔍</div>
+                                <div class="fs-empty-title" th:text="${searchPerformed ? 'No records match your filters' : 'No schedule history yet'}">No records</div>
+                                <div class="fs-empty-desc"
+                                     th:text="${searchPerformed ? 'Try adjusting your search filters.' : 'Create your first food schedule entry to see it here.'}">
                                 </div>
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}"></div>
-                                <small id="edit_rateMessage" class="text-muted d-none"></small>
+                                <button th:if="${!searchPerformed}" type="button"
+                                        class="fs-btn fs-btn-primary"
+                                        data-bs-toggle="modal" data-bs-target="#addFoodScheduleModal"
+                                        onclick="resetAddModal()">
+                                    <i class="bi bi-plus-lg"></i> Create First Schedule
+                                </button>
                             </div>
-                        </div>
-
-                        <div class="mb-2">
-                            <label class="form-label fw-semibold small text-dark" for="edit_donorId">
-                                Food Donor
-                            </label>
-                            <div id="edit_donorDropdownContainer">
-                                <select id="edit_donorId" th:field="*{donorId}" class="form-select" th:classappend="${#fields.hasErrors('donorId')} ? 'is-invalid' : ''">
-                                    <option value="" th:if="${foodDonors != null and !foodDonors.isEmpty()}">-- Select Donor --</option>
-                                    <option value="" th:if="${foodDonors == null or foodDonors.isEmpty()}" disabled selected>No food donors available.</option>
-                                    <option th:each="d : ${foodDonors}"
-                                            th:value="${d.id}"
-                                            th:text="${d.fullName + (d.mobile != null ? ' (' + d.mobile + ')' : '')}">Donor Name</option>
-                                </select>
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('donorId')}" th:errors="*{donorId}"></div>
-                                <small class="text-muted small">Only food donors are listed here.</small>
+                        </td>
+                    </tr>
+                    <!-- Data rows -->
+                    <tr th:each="fs : ${historyPage != null ? historyPage.content : #lists.emptyList()}">
+                        <td data-label="Date">
+                            <strong style="color:var(--fs-text);"
+                                    th:text="${#temporals.format(fs.scheduleDate, 'dd MMM yyyy')}">—</strong>
+                        </td>
+                        <td data-label="Meal">
+                            <span th:if="${fs.mealType.name() == 'Breakfast'}" class="fs-badge fs-badge-breakfast">☀️ Breakfast</span>
+                            <span th:if="${fs.mealType.name() == 'Lunch'}"     class="fs-badge fs-badge-lunch">🌤️ Lunch</span>
+                            <span th:if="${fs.mealType.name() == 'Dinner'}"    class="fs-badge fs-badge-dinner">🌙 Dinner</span>
+                        </td>
+                        <td data-label="Time"
+                            th:text="${#temporals.format(fs.servingTime, 'hh:mm a')}">—</td>
+                        <td data-label="Menu" style="max-width:160px;white-space:pre-line;font-size:12px;"
+                            th:text="${fs.menuItems}">—</td>
+                        <td data-label="Donor" style="font-size:12px;font-weight:600;"
+                            th:text="${fs.donorDisplayName}">—</td>
+                        <td data-label="Sponsorship">
+                            <span class="fs-badge fs-badge-info" th:text="${fs.sponsorshipType.displayName}">—</span>
+                        </td>
+                        <td data-label="Amount">
+                            <strong style="color:var(--fs-success);"
+                                    th:text="'₹' + ${#numbers.formatDecimal(fs.amount, 1, 'COMMA', 0, 'POINT')}">₹0</strong>
+                        </td>
+                        <td data-label="Actions" style="text-align:right;">
+                            <div class="d-inline-flex gap-1">
+                                <button type="button" class="fs-btn fs-btn-secondary fs-btn-icon"
+                                        th:onclick="|openViewModal(${fs.id})|" title="View">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                                <button type="button" class="fs-btn fs-btn-outline fs-btn-icon"
+                                        th:onclick="|openEditModal(${fs.id})|" title="Edit"
+                                        sec:authorize="hasAnyRole('ADMIN','MANAGER')">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button type="button" class="fs-btn fs-btn-danger fs-btn-icon"
+                                        th:onclick="|openDeleteModal(${fs.id}, '${fs.mealType.displayName}', '${#temporals.format(fs.scheduleDate, &quot;dd MMM yyyy&quot;)}')|"
+                                        title="Delete"
+                                        sec:authorize="hasRole('ADMIN')">
+                                    <i class="bi bi-trash"></i>
+                                </button>
                             </div>
-                            <div id="edit_manualDonorContainer" style="display: none;">
-                                <label class="form-label fw-semibold small text-dark mt-2" for="edit_manualDonorName">
-                                    Manual Donor Name <span class="text-danger">*</span>
-                                </label>
-                                <input type="text" id="edit_manualDonorName" th:field="*{manualDonorName}"
-                                       class="form-control" th:classappend="${#fields.hasErrors('manualDonorName')} ? 'is-invalid' : ''" placeholder="Enter donor name manually">
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('manualDonorName')}" th:errors="*{manualDonorName}"></div>
-                            </div>
-                        </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-                        <div class="mb-3">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="edit_donorNotFound"
-                                       th:field="*{donorNotFound}" value="true"
-                                       onchange="toggleManualDonor('edit')">
-                                <label class="form-check-label text-muted small" for="edit_donorNotFound">
-                                    Donor Not Found — enter name manually
-                                </label>
-                            </div>
-                        </div>
+        <!-- Pagination Controls -->
+        <div th:if="${historyPage != null and historyPage.totalPages > 0}"
+             class="fs-card-body" style="border-top:1px solid var(--fs-border);">
+            <div class="fs-pagination">
+                <div class="fs-page-info"
+                     th:text="'Showing ' + (${currentPage * pageSize + 1}) + ' – ' + ${T(java.lang.Math).min((currentPage + 1) * pageSize, historyPage.totalElements)} + ' of ' + ${historyPage.totalElements} + ' records'">
+                </div>
+                <div class="fs-page-links">
+                    <!-- Previous -->
+                    <a th:href="@{/food-schedule/search(page=${currentPage - 1},size=${pageSize},sort=${sort},direction=${direction},fromDate=${srFromDate},toDate=${srToDate},mealType=${srMealType},sponsorshipType=${srSponsorshipType},donorKeyword=${srDonorKeyword},minAmount=${srMinAmount},maxAmount=${srMaxAmount})}"
+                       th:classappend="${currentPage == 0 ? ' disabled' : ''}"
+                       class="fs-page-btn">&#8249;</a>
 
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold small text-dark" for="edit_notes">Notes (Optional)</label>
-                            <textarea id="edit_notes" th:field="*{notes}" class="form-control" rows="2"></textarea>
-                        </div>
+                    <!-- Page numbers (show up to 5 around current) -->
+                    <th:block th:with="start=${T(java.lang.Math).max(0, currentPage - 2)}, end=${T(java.lang.Math).min(historyPage.totalPages - 1, currentPage + 2)}">
+                        <a th:if="${start > 0}"
+                           th:href="@{/food-schedule/search(page=0,size=${pageSize},sort=${sort},direction=${direction},fromDate=${srFromDate},toDate=${srToDate},mealType=${srMealType},sponsorshipType=${srSponsorshipType},donorKeyword=${srDonorKeyword},minAmount=${srMinAmount},maxAmount=${srMaxAmount})}"
+                           class="fs-page-btn">1</a>
+                        <span th:if="${start > 1}" class="fs-page-btn disabled">…</span>
+                        <a th:each="i : ${#numbers.sequence(start, end)}"
+                           th:href="@{/food-schedule/search(page=${i},size=${pageSize},sort=${sort},direction=${direction},fromDate=${srFromDate},toDate=${srToDate},mealType=${srMealType},sponsorshipType=${srSponsorshipType},donorKeyword=${srDonorKeyword},minAmount=${srMinAmount},maxAmount=${srMaxAmount})}"
+                           th:text="${i + 1}"
+                           th:classappend="${i == currentPage ? ' active' : ''}"
+                           class="fs-page-btn">1</a>
+                        <span th:if="${end < historyPage.totalPages - 2}" class="fs-page-btn disabled">…</span>
+                        <a th:if="${end < historyPage.totalPages - 1}"
+                           th:href="@{/food-schedule/search(page=${historyPage.totalPages - 1},size=${pageSize},sort=${sort},direction=${direction},fromDate=${srFromDate},toDate=${srToDate},mealType=${srMealType},sponsorshipType=${srSponsorshipType},donorKeyword=${srDonorKeyword},minAmount=${srMinAmount},maxAmount=${srMaxAmount})}"
+                           th:text="${historyPage.totalPages}"
+                           class="fs-page-btn"></a>
+                    </th:block>
 
-                    </div>
-                    <div class="modal-footer border-top">
-                        <button type="button" class="btn btn-secondary rounded-2" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary px-4 rounded-2">
-                            <i class="bi bi-check-circle me-1"></i> Save Changes
-                        </button>
-                    </div>
-                </form>
+                    <!-- Next -->
+                    <a th:href="@{/food-schedule/search(page=${currentPage + 1},size=${pageSize},sort=${sort},direction=${direction},fromDate=${srFromDate},toDate=${srToDate},mealType=${srMealType},sponsorshipType=${srSponsorshipType},donorKeyword=${srDonorKeyword},minAmount=${srMinAmount},maxAmount=${srMaxAmount})}"
+                       th:classappend="${currentPage >= historyPage.totalPages - 1 ? ' disabled' : ''}"
+                       class="fs-page-btn">&#8250;</a>
+                </div>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- ================================================================ -->
-    <!-- ── View Food Schedule Modal ────────────────────────────────────── -->
-    <!-- ================================================================ -->
-    <div class="modal fade" id="viewFoodScheduleModal" tabindex="-1"
-         aria-labelledby="viewFoodScheduleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-md modal-dialog-scrollable">
-            <div class="modal-content border-0 shadow rounded-3">
-                <div class="modal-header border-bottom">
-                    <h5 class="modal-title fw-bold text-dark" id="viewFoodScheduleModalLabel">
-                        <i class="bi bi-eye me-2 text-primary"></i>Food Schedule Details
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4" id="viewModalBody">
-                    <div class="text-center py-4">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Loading...</span>
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- Add Food Schedule Modal                                                      -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="modal fade" id="addFoodScheduleModal" tabindex="-1"
+     aria-labelledby="addFoodScheduleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow rounded-3">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title fw-bold text-dark" id="addFoodScheduleModalLabel">
+                    <i class="bi bi-plus-circle me-2 text-primary"></i>Add Food Schedule
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form th:action="@{/food-schedule/save}" th:object="${formDto}" method="post" id="addFoodScheduleForm">
+                <div class="modal-body p-4">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold small text-dark" for="add_scheduleDate">Schedule Date <span class="text-danger">*</span></label>
+                            <input type="date" id="add_scheduleDate" th:field="*{scheduleDate}"
+                                   class="form-control" th:classappend="${#fields.hasErrors('scheduleDate')} ? 'is-invalid' : ''" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('scheduleDate')}" th:errors="*{scheduleDate}"></div>
                         </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold small text-dark" for="add_mealType">Meal Type <span class="text-danger">*</span></label>
+                            <select id="add_mealType" th:field="*{mealType}" class="form-select"
+                                    th:classappend="${#fields.hasErrors('mealType')} ? 'is-invalid' : ''"
+                                    required onchange="fetchRate('add')">
+                                <option value="">-- Select Meal --</option>
+                                <option th:each="mt : ${mealTypes}" th:value="${mt.name()}" th:text="${mt.displayName}">Breakfast</option>
+                            </select>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('mealType')}" th:errors="*{mealType}"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold small text-dark" for="add_servingTime">Serving Time <span class="text-danger">*</span></label>
+                            <input type="time" id="add_servingTime" th:field="*{servingTime}"
+                                   class="form-control" th:classappend="${#fields.hasErrors('servingTime')} ? 'is-invalid' : ''" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('servingTime')}" th:errors="*{servingTime}"></div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold small text-dark" for="add_menuItems">Menu Items <span class="text-danger">*</span></label>
+                        <textarea id="add_menuItems" th:field="*{menuItems}" class="form-control"
+                                  th:classappend="${#fields.hasErrors('menuItems')} ? 'is-invalid' : ''"
+                                  rows="4" required placeholder="e.g.&#10;Tea&#10;Milk&#10;Poha&#10;Banana"></textarea>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('menuItems')}" th:errors="*{menuItems}"></div>
+                        <small class="text-muted">Enter each item on a new line.</small>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small text-dark" for="add_sponsorshipType">Sponsorship Type <span class="text-danger">*</span></label>
+                            <select id="add_sponsorshipType" th:field="*{sponsorshipType}" class="form-select"
+                                    th:classappend="${#fields.hasErrors('sponsorshipType')} ? 'is-invalid' : ''"
+                                    required onchange="fetchRate('add')">
+                                <option value="">-- Select Sponsorship --</option>
+                                <option th:each="st : ${sponsorshipTypes}" th:value="${st.name()}" th:text="${st.displayName}">One Time</option>
+                            </select>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('sponsorshipType')}" th:errors="*{sponsorshipType}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small text-dark" for="add_amount">Amount (₹) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text">₹</span>
+                                <input type="number" id="add_amount" th:field="*{amount}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('amount')} ? 'is-invalid' : ''"
+                                       step="0.01" min="0" required placeholder="Auto-filled from rates">
+                            </div>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}"></div>
+                            <small id="add_rateMessage" class="text-muted d-none"></small>
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label fw-semibold small text-dark" for="add_donorId">Food Donor</label>
+                        <div id="add_donorDropdownContainer">
+                            <select id="add_donorId" th:field="*{donorId}" class="form-select"
+                                    th:classappend="${#fields.hasErrors('donorId')} ? 'is-invalid' : ''">
+                                <option value="" th:if="${foodDonors != null and !foodDonors.isEmpty()}">-- Select Donor --</option>
+                                <option value="" th:if="${foodDonors == null or foodDonors.isEmpty()}" disabled selected>No food donors available.</option>
+                                <option th:each="d : ${foodDonors}"
+                                        th:value="${d.id}"
+                                        th:text="${d.fullName + (d.mobile != null ? ' (' + d.mobile + ')' : '')}">Donor</option>
+                            </select>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('donorId')}" th:errors="*{donorId}"></div>
+                            <small class="text-muted">Only food donors are listed here.</small>
+                        </div>
+                        <div id="add_manualDonorContainer" style="display:none;">
+                            <label class="form-label fw-semibold small text-dark mt-2" for="add_manualDonorName">Manual Donor Name <span class="text-danger">*</span></label>
+                            <input type="text" id="add_manualDonorName" th:field="*{manualDonorName}"
+                                   class="form-control" th:classappend="${#fields.hasErrors('manualDonorName')} ? 'is-invalid' : ''"
+                                   placeholder="Enter donor name manually">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('manualDonorName')}" th:errors="*{manualDonorName}"></div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="add_donorNotFound"
+                                   th:field="*{donorNotFound}" value="true" onchange="toggleManualDonor('add')">
+                            <label class="form-check-label text-muted small" for="add_donorNotFound">Donor Not Found — enter name manually</label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold small text-dark" for="add_notes">Notes (Optional)</label>
+                        <textarea id="add_notes" th:field="*{notes}" class="form-control" rows="2"
+                                  placeholder="Any additional remarks..."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer border-top">
-                    <button type="button" class="btn btn-secondary rounded-2" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary rounded-2" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary px-4 rounded-2">
+                        <i class="bi bi-check-circle me-1"></i> Save Food Schedule
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- Edit Food Schedule Modal                                                     -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="modal fade" id="editFoodScheduleModal" tabindex="-1"
+     aria-labelledby="editFoodScheduleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow rounded-3">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title fw-bold text-dark" id="editFoodScheduleModalLabel">
+                    <i class="bi bi-pencil-square me-2 text-primary"></i>Edit Food Schedule
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form th:action="@{/food-schedule/update/{id}(id=${editRecordId != null ? editRecordId : 0})}"
+                  th:object="${formDto}" method="post" id="editFoodScheduleForm">
+                <div class="modal-body p-4">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold small text-dark" for="edit_scheduleDate">Schedule Date <span class="text-danger">*</span></label>
+                            <input type="date" id="edit_scheduleDate" th:field="*{scheduleDate}"
+                                   class="form-control" th:classappend="${#fields.hasErrors('scheduleDate')} ? 'is-invalid' : ''" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('scheduleDate')}" th:errors="*{scheduleDate}"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold small text-dark" for="edit_mealType">Meal Type <span class="text-danger">*</span></label>
+                            <select id="edit_mealType" th:field="*{mealType}" class="form-select"
+                                    th:classappend="${#fields.hasErrors('mealType')} ? 'is-invalid' : ''"
+                                    required onchange="fetchRate('edit')">
+                                <option value="">-- Select Meal --</option>
+                                <option th:each="mt : ${mealTypes}" th:value="${mt.name()}" th:text="${mt.displayName}">Breakfast</option>
+                            </select>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('mealType')}" th:errors="*{mealType}"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold small text-dark" for="edit_servingTime">Serving Time <span class="text-danger">*</span></label>
+                            <input type="time" id="edit_servingTime" th:field="*{servingTime}"
+                                   class="form-control" th:classappend="${#fields.hasErrors('servingTime')} ? 'is-invalid' : ''" required>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('servingTime')}" th:errors="*{servingTime}"></div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold small text-dark" for="edit_menuItems">Menu Items <span class="text-danger">*</span></label>
+                        <textarea id="edit_menuItems" th:field="*{menuItems}" class="form-control"
+                                  th:classappend="${#fields.hasErrors('menuItems')} ? 'is-invalid' : ''" rows="4" required></textarea>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('menuItems')}" th:errors="*{menuItems}"></div>
+                        <small class="text-muted">Enter each item on a new line.</small>
+                    </div>
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small text-dark" for="edit_sponsorshipType">Sponsorship Type <span class="text-danger">*</span></label>
+                            <select id="edit_sponsorshipType" th:field="*{sponsorshipType}" class="form-select"
+                                    th:classappend="${#fields.hasErrors('sponsorshipType')} ? 'is-invalid' : ''"
+                                    required onchange="fetchRate('edit')">
+                                <option value="">-- Select Sponsorship --</option>
+                                <option th:each="st : ${sponsorshipTypes}" th:value="${st.name()}" th:text="${st.displayName}">One Time</option>
+                            </select>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('sponsorshipType')}" th:errors="*{sponsorshipType}"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold small text-dark" for="edit_amount">Amount (₹) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text">₹</span>
+                                <input type="number" id="edit_amount" th:field="*{amount}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('amount')} ? 'is-invalid' : ''"
+                                       step="0.01" min="0" required>
+                            </div>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}"></div>
+                            <small id="edit_rateMessage" class="text-muted d-none"></small>
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label fw-semibold small text-dark" for="edit_donorId">Food Donor</label>
+                        <div id="edit_donorDropdownContainer">
+                            <select id="edit_donorId" th:field="*{donorId}" class="form-select"
+                                    th:classappend="${#fields.hasErrors('donorId')} ? 'is-invalid' : ''">
+                                <option value="" th:if="${foodDonors != null and !foodDonors.isEmpty()}">-- Select Donor --</option>
+                                <option value="" th:if="${foodDonors == null or foodDonors.isEmpty()}" disabled selected>No food donors available.</option>
+                                <option th:each="d : ${foodDonors}"
+                                        th:value="${d.id}"
+                                        th:text="${d.fullName + (d.mobile != null ? ' (' + d.mobile + ')' : '')}">Donor</option>
+                            </select>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('donorId')}" th:errors="*{donorId}"></div>
+                            <small class="text-muted">Only food donors are listed here.</small>
+                        </div>
+                        <div id="edit_manualDonorContainer" style="display:none;">
+                            <label class="form-label fw-semibold small text-dark mt-2" for="edit_manualDonorName">Manual Donor Name <span class="text-danger">*</span></label>
+                            <input type="text" id="edit_manualDonorName" th:field="*{manualDonorName}"
+                                   class="form-control" th:classappend="${#fields.hasErrors('manualDonorName')} ? 'is-invalid' : ''"
+                                   placeholder="Enter donor name manually">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('manualDonorName')}" th:errors="*{manualDonorName}"></div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="edit_donorNotFound"
+                                   th:field="*{donorNotFound}" value="true" onchange="toggleManualDonor('edit')">
+                            <label class="form-check-label text-muted small" for="edit_donorNotFound">Donor Not Found — enter name manually</label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold small text-dark" for="edit_notes">Notes (Optional)</label>
+                        <textarea id="edit_notes" th:field="*{notes}" class="form-control" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-top">
+                    <button type="button" class="btn btn-secondary rounded-2" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary px-4 rounded-2">
+                        <i class="bi bi-check-circle me-1"></i> Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- View Food Schedule Modal                                                     -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="modal fade" id="viewFoodScheduleModal" tabindex="-1"
+     aria-labelledby="viewFoodScheduleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow rounded-3">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title fw-bold text-dark" id="viewFoodScheduleModalLabel">
+                    <i class="bi bi-eye me-2 text-primary"></i>Food Schedule Details
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4" id="viewModalBody">
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-top">
+                <button type="button" class="btn btn-secondary rounded-2" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- Delete Confirmation Modal                                                    -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content border-0 shadow rounded-3">
+            <div class="modal-body p-4 text-center">
+                <div class="fs-delete-modal-icon">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                </div>
+                <h5 class="fw-bold text-dark mb-1">Delete Schedule?</h5>
+                <p class="text-muted small mb-3" id="deleteModalDesc">This action cannot be undone.</p>
+                <div class="d-flex gap-2 justify-content-center">
+                    <button type="button" class="btn btn-secondary rounded-2 px-4" data-bs-dismiss="modal">Cancel</button>
+                    <a id="deleteConfirmLink" href="#" class="btn btn-danger rounded-2 px-4">Delete</a>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
 </div><!-- /#food-schedule-content -->
 
-<!-- ================================================================ -->
-<!-- ── Page-level JavaScript ──────────────────────────────────────── -->
-<!-- ================================================================ -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- JavaScript                                                                   -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- Chart.js (only loaded on this page) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
 <script th:inline="javascript">
 /*<![CDATA[*/
 
-// ── Sponsorship type → display name map ──
+// ── Display name maps ──
 const sponsorshipDisplayNames = {
-    'ONE_TIME': 'One Time',
-    'ONE_DAY': '1 Day',
-    'FIVE_YEAR_TITHI': '5 Year Tithi',
-    'TODAY_SPONSOR': "Today's Sponsor",
+    'ONE_TIME': 'One Time', 'ONE_DAY': '1 Day',
+    'FIVE_YEAR_TITHI': '5 Year Tithi', 'TODAY_SPONSOR': "Today's Sponsor",
     'LUNCH_WITH_SWEET': 'Lunch With Sweet'
 };
+const mealDisplayNames = { 'Breakfast': 'Breakfast', 'Lunch': 'Lunch', 'Dinner': 'Dinner' };
 
-const mealDisplayNames = {
-    'Breakfast': 'Breakfast',
-    'Lunch': 'Lunch',
-    'Dinner': 'Dinner'
-};
+// ── Toast system ──────────────────────────────────────────────────────────────
+function showToast(message, type = 'success') {
+    const container = document.getElementById('fs-toast-container');
+    const toast = document.createElement('div');
+    toast.className = 'fs-toast ' + type;
+    toast.innerHTML = `
+        <span class="fs-toast-icon">${type === 'success' ? '✅' : '❌'}</span>
+        <span class="fs-toast-msg">${message}</span>
+        <span class="fs-toast-close" onclick="this.parentElement.remove()">×</span>
+    `;
+    container.appendChild(toast);
+    setTimeout(() => { if (toast.parentElement) toast.remove(); }, 4500);
+}
 
-// ── Auto-open modals on validation error callback ──
+// ── Flash messages → toast ────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+    const sEl = document.getElementById('fs-flash-success');
+    const eEl = document.getElementById('fs-flash-error');
+    if (sEl && sEl.dataset.msg) showToast(sEl.dataset.msg, 'success');
+    if (eEl && eEl.dataset.msg) showToast(eEl.dataset.msg, 'error');
+});
+
+// ── Auto-open modals on validation error ──────────────────────────────────────
 /*[# th:if="${openAddModalOnError}"]*/
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener('DOMContentLoaded', function() {
     var myModal = new bootstrap.Modal(document.getElementById('addFoodScheduleModal'));
     myModal.show();
     toggleManualDonor('add');
@@ -715,7 +1137,7 @@ document.addEventListener("DOMContentLoaded", function() {
 /*[/]*/
 
 /*[# th:if="${openEditModalOnError}"]*/
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener('DOMContentLoaded', function() {
     var editId = /*[[${editRecordId}]]*/ 0;
     if (editId > 0) {
         var myModal = new bootstrap.Modal(document.getElementById('editFoodScheduleModal'));
@@ -725,26 +1147,20 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 /*[/]*/
 
-// ── Reset Add Modal to defaults ────────────────────────────────────────────────
+// ── Reset Add Modal ───────────────────────────────────────────────────────────
 function resetAddModal() {
     document.getElementById('addFoodScheduleForm').reset();
-    // Reset date to today
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('add_scheduleDate').value = today;
-    // Reset donor area
+    document.getElementById('add_scheduleDate').value = new Date().toISOString().split('T')[0];
     document.getElementById('add_donorDropdownContainer').style.display = '';
     document.getElementById('add_manualDonorContainer').style.display = 'none';
     document.getElementById('add_donorNotFound').checked = false;
-    // Remove Bootstrap invalid styling classes
-    const inputs = document.querySelectorAll('#addFoodScheduleForm .form-control, #addFoodScheduleForm .form-select');
-    inputs.forEach(el => el.classList.remove('is-invalid'));
-    // Clear rate message
+    document.querySelectorAll('#addFoodScheduleForm .form-control, #addFoodScheduleForm .form-select')
+        .forEach(el => el.classList.remove('is-invalid'));
     const msg = document.getElementById('add_rateMessage');
-    msg.textContent = '';
-    msg.classList.add('d-none');
+    msg.textContent = ''; msg.classList.add('d-none');
 }
 
-// ── Toggle manual donor name field ────────────────────────────────────────────
+// ── Toggle manual donor field ─────────────────────────────────────────────────
 function toggleManualDonor(prefix) {
     const checkbox = document.getElementById(prefix + '_donorNotFound');
     const dropdown = document.getElementById(prefix + '_donorDropdownContainer');
@@ -752,33 +1168,26 @@ function toggleManualDonor(prefix) {
     if (checkbox && checkbox.checked) {
         dropdown.style.display = 'none';
         manual.style.display = '';
-        // Clear the dropdown selection
         const sel = document.getElementById(prefix + '_donorId');
         if (sel) sel.value = '';
-        // autofocus
         const inp = document.getElementById(prefix + '_manualDonorName');
-        if (inp) {
-            setTimeout(() => { inp.focus(); }, 150);
-        }
+        if (inp) setTimeout(() => { inp.focus(); }, 150);
     } else {
         dropdown.style.display = '';
         manual.style.display = 'none';
-        // Clear manual input
         const inp = document.getElementById(prefix + '_manualDonorName');
         if (inp) inp.value = '';
     }
 }
 
-// ── Fetch donation rate dynamically from the DB ───────────────────────────────
+// ── Fetch donation rate from DB ───────────────────────────────────────────────
 function fetchRate(prefix) {
     const mealTypeEl  = document.getElementById(prefix + '_mealType');
     const stypeEl     = document.getElementById(prefix + '_sponsorshipType');
     const amountEl    = document.getElementById(prefix + '_amount');
     const msgEl       = document.getElementById(prefix + '_rateMessage');
-
-    const mealType       = mealTypeEl ? mealTypeEl.value : '';
+    const mealType        = mealTypeEl ? mealTypeEl.value : '';
     const sponsorshipType = stypeEl ? stypeEl.value : '';
-
     if (!mealType || !sponsorshipType) return;
 
     fetch('/food-schedule/rate?mealType=' + encodeURIComponent(mealType)
@@ -802,38 +1211,27 @@ function fetchRate(prefix) {
         });
 }
 
-// ── Open Edit Modal ─────────────────────────────────────────────────────────────
+// ── Open Edit Modal ───────────────────────────────────────────────────────────
 function openEditModal(id) {
     fetch('/food-schedule/api/item/' + id)
-        .then(resp => {
-            if (!resp.ok) throw new Error('Not found');
-            return resp.json();
-        })
+        .then(resp => { if (!resp.ok) throw new Error('Not found'); return resp.json(); })
         .then(data => {
-            // Set form action
             document.getElementById('editFoodScheduleForm').action = '/food-schedule/update/' + data.id;
+            document.getElementById('edit_scheduleDate').value  = data.scheduleDate;
+            document.getElementById('edit_menuItems').value     = data.menuItems || '';
+            document.getElementById('edit_notes').value         = data.notes || '';
+            document.getElementById('edit_amount').value        = data.amount;
+            document.getElementById('edit_servingTime').value   = data.servingTime ? data.servingTime.substring(0, 5) : '';
 
-            // Populate fields
-            document.getElementById('edit_scheduleDate').value   = data.scheduleDate;
-            document.getElementById('edit_menuItems').value      = data.menuItems || '';
-            document.getElementById('edit_notes').value          = data.notes || '';
-            document.getElementById('edit_amount').value         = data.amount;
-            document.getElementById('edit_servingTime').value    = data.servingTime ? data.servingTime.substring(0, 5) : '';
-
-            // Meal type
-            const mealSel = document.getElementById('edit_mealType');
+            const mealSel  = document.getElementById('edit_mealType');
             if (mealSel) mealSel.value = data.mealType;
 
-            // Sponsorship type
             const stypeSel = document.getElementById('edit_sponsorshipType');
             if (stypeSel) stypeSel.value = data.sponsorshipType;
 
-            // Donor handling
-            const donorNotFound = data.donorNotFound;
             const donorNotFoundChk = document.getElementById('edit_donorNotFound');
-            donorNotFoundChk.checked = donorNotFound;
-
-            if (donorNotFound) {
+            donorNotFoundChk.checked = data.donorNotFound;
+            if (data.donorNotFound) {
                 document.getElementById('edit_donorDropdownContainer').style.display = 'none';
                 document.getElementById('edit_manualDonorContainer').style.display = '';
                 const inp = document.getElementById('edit_manualDonorName');
@@ -844,72 +1242,87 @@ function openEditModal(id) {
                 const donorSel = document.getElementById('edit_donorId');
                 if (donorSel && data.donorId) donorSel.value = data.donorId;
             }
-
-            // Remove Bootstrap invalid styling classes
-            const inputs = document.querySelectorAll('#editFoodScheduleForm .form-control, #editFoodScheduleForm .form-select');
-            inputs.forEach(el => el.classList.remove('is-invalid'));
-
-            // Clear rate message
+            document.querySelectorAll('#editFoodScheduleForm .form-control, #editFoodScheduleForm .form-select')
+                .forEach(el => el.classList.remove('is-invalid'));
             const msg = document.getElementById('edit_rateMessage');
             if (msg) { msg.textContent = ''; msg.classList.add('d-none'); }
 
-            // Show modal if not already shown
             var editModalEl = document.getElementById('editFoodScheduleModal');
             if (!bootstrap.Modal.getInstance(editModalEl)) {
-                const modal = new bootstrap.Modal(editModalEl);
-                modal.show();
+                new bootstrap.Modal(editModalEl).show();
+            } else {
+                bootstrap.Modal.getInstance(editModalEl).show();
             }
         })
-        .catch(err => {
-            alert('Failed to load record: ' + err.message);
-        });
+        .catch(err => alert('Failed to load record: ' + err.message));
 }
 
-// ── Open View Modal ─────────────────────────────────────────────────────────────
+// ── Open View Modal ───────────────────────────────────────────────────────────
 function openViewModal(id) {
     const viewBody = document.getElementById('viewModalBody');
     viewBody.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
-
-    const modal = new bootstrap.Modal(document.getElementById('viewFoodScheduleModal'));
-    modal.show();
+    new bootstrap.Modal(document.getElementById('viewFoodScheduleModal')).show();
 
     fetch('/food-schedule/api/item/' + id)
-        .then(resp => {
-            if (!resp.ok) throw new Error('Not found');
-            return resp.json();
-        })
+        .then(resp => { if (!resp.ok) throw new Error('Not found'); return resp.json(); })
         .then(data => {
-            const mealLabel = mealDisplayNames[data.mealType] || data.mealType;
+            const mealLabel  = mealDisplayNames[data.mealType] || data.mealType;
             const stypeLabel = sponsorshipDisplayNames[data.sponsorshipType] || data.sponsorshipType;
-            const donorLabel = data.donorNotFound
-                ? (data.manualDonorName || '—')
-                : (data.donorId ? 'Donor #' + data.donorId : '—');
+            const donorLabel = data.donorNotFound ? (data.manualDonorName || '—') : (data.donorId ? 'Donor #' + data.donorId : '—');
             const formattedAmount = '₹' + Number(data.amount).toLocaleString('en-IN');
             const menuLines = (data.menuItems || '').split('\n').map(l => '<li class="py-1">' + l + '</li>').join('');
 
             viewBody.innerHTML = `
-                <table class="table table-bordered align-middle mb-0" style="font-size: 14px;">
-                    <tr><th class="bg-light" style="width: 38%;">Date</th><td><strong>${data.scheduleDate}</strong></td></tr>
+                <table class="table table-bordered align-middle mb-0" style="font-size:14px;">
+                    <tr><th class="bg-light" style="width:38%;">Date</th><td><strong>${data.scheduleDate}</strong></td></tr>
                     <tr><th class="bg-light">Meal</th><td>${mealLabel}</td></tr>
-                    <tr><th class="bg-light">Serving Time</th><td>${data.servingTime ? data.servingTime.substring(0, 5) : '—'}</td></tr>
+                    <tr><th class="bg-light">Serving Time</th><td>${data.servingTime ? data.servingTime.substring(0,5) : '—'}</td></tr>
                     <tr><th class="bg-light">Menu Items</th><td><ul class="mb-0 ps-3">${menuLines}</ul></td></tr>
                     <tr><th class="bg-light">Food Donor</th><td>${donorLabel}</td></tr>
                     <tr><th class="bg-light">Sponsorship</th><td>${stypeLabel}</td></tr>
                     <tr><th class="bg-light">Amount</th><td><strong class="text-success">${formattedAmount}</strong></td></tr>
                     <tr><th class="bg-light">Notes</th><td>${data.notes || '<span class="text-muted">—</span>'}</td></tr>
-                </table>
-            `;
+                </table>`;
         })
         .catch(err => {
             viewBody.innerHTML = '<div class="alert alert-danger">Failed to load details: ' + err.message + '</div>';
         });
 }
 
-// ── Print Row (basic window.print for the view modal) ─────────────────────────
-function printRow(id) {
-    openViewModal(id);
-    setTimeout(() => { window.print(); }, 800);
+// ── Open Delete Confirmation Modal ────────────────────────────────────────────
+function openDeleteModal(id, mealName, dateStr) {
+    document.getElementById('deleteModalDesc').textContent =
+        'Delete ' + mealName + ' scheduled on ' + dateStr + '? This cannot be undone.';
+    document.getElementById('deleteConfirmLink').href = '/food-schedule/delete/' + id;
+    new bootstrap.Modal(document.getElementById('deleteConfirmModal')).show();
 }
+
+// ── Lightweight Chart.js — Donations bar chart placeholder ────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('fsWeeklyChart');
+    if (!ctx) return;
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [{
+                data: [1, 2, 1, 3, 2, 1, 0],
+                backgroundColor: 'rgba(37,99,235,0.15)',
+                borderColor: '#2563eb',
+                borderWidth: 1,
+                borderRadius: 3,
+            }]
+        },
+        options: {
+            plugins: { legend: { display: false }, tooltip: { enabled: false } },
+            scales: {
+                x: { display: false },
+                y: { display: false, min: 0 }
+            },
+            animation: { duration: 600 }
+        }
+    });
+});
 
 /*]]>*/
 </script>

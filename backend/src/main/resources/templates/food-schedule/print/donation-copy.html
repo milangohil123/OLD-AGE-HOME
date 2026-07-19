@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <title th:text="'Donation Copy – ' + ${#temporals.format(today, 'dd MMM yyyy')}">Donation Copy</title>
+    <style>
+        :root {
+            --primary-maroon: #801824;
+            --primary-light: #fdf2f2;
+            --text-dark: #1f1f1f;
+            --text-muted: #4e4e4e;
+            --border: #d4b896;
+            --gold: #b8860b;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #f7f5f0;
+            color: var(--text-dark);
+            padding: 30px 20px;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        .receipt-container {
+            max-width: 850px; margin: 0 auto;
+            background: #fff;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        /* Decorative top stripe */
+        .top-stripe {
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary-maroon), #c0392b, var(--primary-maroon));
+        }
+        /* Header */
+        .receipt-header {
+            padding: 30px 40px 20px;
+            display: flex; justify-content: space-between; align-items: flex-start;
+            border-bottom: 2px solid var(--primary-maroon);
+        }
+        .header-left { display: flex; align-items: center; gap: 16px; }
+        .org-icon { font-size: 40px; }
+        .org-name-main {
+            font-family: 'Cinzel', serif; font-size: 20px; font-weight: 700;
+            color: var(--primary-maroon); letter-spacing: 0.5px;
+        }
+        .org-tagline { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+        .receipt-label {
+            text-align: right;
+        }
+        .receipt-title-text {
+            font-family: 'Cinzel', serif; font-size: 18px; font-weight: 700;
+            color: var(--primary-maroon); text-transform: uppercase; letter-spacing: 1px;
+        }
+        .receipt-date { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+        /* Amount highlight */
+        .amount-highlight {
+            margin: 0 40px 0;
+            padding: 20px 24px;
+            background: var(--primary-light);
+            border-left: 4px solid var(--primary-maroon);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .amount-label { font-size: 13px; color: var(--text-muted); }
+        .amount-value { font-size: 36px; font-weight: 700; color: var(--primary-maroon); font-family: 'Cinzel', serif; }
+        .amount-meta  { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+        /* Body */
+        .receipt-body { padding: 24px 40px; }
+        .section-head {
+            font-size: 11px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1px; color: var(--primary-maroon);
+            margin-bottom: 12px; padding-bottom: 6px;
+            border-bottom: 1px solid var(--border);
+        }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        thead th {
+            padding: 9px 12px; background: #fdf2f2;
+            text-align: left; font-weight: 600; font-size: 11px;
+            text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+        }
+        tbody td { padding: 11px 12px; border-bottom: 1px solid #f3f4f6; vertical-align: middle; }
+        tbody tr:last-child td { border-bottom: none; }
+        .meal-badge {
+            display: inline-block; padding: 3px 10px; border-radius: 20px;
+            font-size: 11px; font-weight: 600;
+        }
+        .badge-breakfast { background: #fef3c7; color: #92400e; }
+        .badge-lunch     { background: #d1fae5; color: #065f46; }
+        .badge-dinner    { background: #dbeafe; color: #1e40af; }
+        .amount-td { font-weight: 700; color: var(--primary-maroon); }
+        /* Totals row */
+        .totals-row { background: #fdf2f2; }
+        .totals-row td { font-weight: 700; font-size: 14px; padding: 12px; }
+        /* Declaration */
+        .declaration-box {
+            margin-top: 24px; padding: 16px 20px;
+            border: 1px dashed var(--border); border-radius: 4px;
+            font-size: 12px; color: var(--text-muted); line-height: 1.6;
+        }
+        /* Signature row */
+        .signature-row {
+            display: flex; justify-content: space-between; align-items: flex-end;
+            margin-top: 32px; padding-top: 12px;
+        }
+        .signature-block { text-align: center; }
+        .signature-line  { border-top: 1px solid var(--text-dark); padding-top: 8px; font-size: 12px; }
+        /* Footer */
+        .receipt-footer {
+            padding: 14px 40px;
+            border-top: 2px solid var(--primary-maroon);
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 11px; color: var(--text-muted); background: #fdf2f2;
+        }
+        /* Bottom stripe */
+        .bottom-stripe {
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-maroon), #c0392b, var(--primary-maroon));
+        }
+        /* Print actions */
+        .print-actions { text-align: center; margin-bottom: 20px; }
+        .btn-print {
+            background: var(--primary-maroon); color: #fff;
+            border: none; border-radius: 8px;
+            padding: 10px 28px; font-size: 14px; font-weight: 600;
+            cursor: pointer; font-family: 'Roboto', sans-serif;
+        }
+        /* Empty state */
+        .empty-state {
+            text-align: center; padding: 48px 24px; color: var(--text-muted);
+        }
+        @media print {
+            body { background: #fff; padding: 0; }
+            .receipt-container { box-shadow: none; }
+            .print-actions { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="print-actions">
+    <button class="btn-print" onclick="window.print()">🖨️ Print Donation Copy</button>
+</div>
+
+<div class="receipt-container">
+    <div class="top-stripe"></div>
+
+    <!-- Header -->
+    <div class="receipt-header">
+        <div class="header-left">
+            <div class="org-icon">🏠</div>
+            <div>
+                <div class="org-name-main">Smart Old Age Home</div>
+                <div class="org-tagline">Food Donation Summary</div>
+            </div>
+        </div>
+        <div class="receipt-label">
+            <div class="receipt-title-text">Donation Receipt</div>
+            <div class="receipt-date" th:text="${#temporals.format(today, 'dd MMMM yyyy')}">Date</div>
+        </div>
+    </div>
+
+    <!-- Total Amount Highlight -->
+    <div class="amount-highlight">
+        <div>
+            <div class="amount-label">Total Donation Amount — Today</div>
+            <div class="amount-value" th:text="'₹ ' + ${#numbers.formatDecimal(stats.todayDonationAmount, 1, 'COMMA', 2, 'POINT')}">₹ 0.00</div>
+            <div class="amount-meta" th:text="${stats.todayMealsCount} + ' meal(s) sponsored by ' + ${stats.todayFoodDonorsCount} + ' sponsor(s)'">0 meals</div>
+        </div>
+    </div>
+
+    <!-- Body -->
+    <div class="receipt-body">
+
+        <!-- Empty state -->
+        <div th:if="${todaySchedule == null or todaySchedule.isEmpty()}" class="empty-state">
+            <div style="font-size: 48px;">🧾</div>
+            <div style="font-size: 16px; font-weight: 600; margin-top: 12px; color: #374151;">No donations recorded for today</div>
+        </div>
+
+        <div th:if="${todaySchedule != null and !todaySchedule.isEmpty()}">
+
+            <!-- Breakdown table -->
+            <div class="section-head">Donation Breakdown</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Meal</th>
+                        <th>Serving Time</th>
+                        <th>Donor / Sponsor</th>
+                        <th>Sponsorship Type</th>
+                        <th style="text-align: right;">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="fs : ${todaySchedule}">
+                        <td>
+                            <span th:if="${fs.mealType.name() == 'Breakfast'}" class="meal-badge badge-breakfast">☀️ Breakfast</span>
+                            <span th:if="${fs.mealType.name() == 'Lunch'}"     class="meal-badge badge-lunch">🌤️ Lunch</span>
+                            <span th:if="${fs.mealType.name() == 'Dinner'}"    class="meal-badge badge-dinner">🌙 Dinner</span>
+                        </td>
+                        <td th:text="${#temporals.format(fs.servingTime, 'hh:mm a')}">—</td>
+                        <td><strong th:text="${fs.donorDisplayName}">—</strong></td>
+                        <td th:text="${fs.sponsorshipType.displayName}">—</td>
+                        <td style="text-align: right;" class="amount-td"
+                            th:text="'₹ ' + ${#numbers.formatDecimal(fs.amount, 1, 'COMMA', 2, 'POINT')}">₹ 0.00</td>
+                    </tr>
+                    <!-- Total row -->
+                    <tr class="totals-row">
+                        <td colspan="4" style="text-align: right; color: var(--primary-maroon);">Grand Total</td>
+                        <td style="text-align: right; color: var(--primary-maroon);"
+                            th:text="'₹ ' + ${#numbers.formatDecimal(stats.todayDonationAmount, 1, 'COMMA', 2, 'POINT')}">₹ 0.00</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Declaration -->
+            <div class="declaration-box">
+                This is an official donation summary issued by Smart Old Age Home Portal for the food schedule dated
+                <strong th:text="${#temporals.format(today, 'dd MMMM yyyy')}"></strong>.
+                We hereby acknowledge receipt of the above donations and confirm their utilization towards providing
+                nutritious meals for the residents of our home.
+            </div>
+
+            <!-- Signature row -->
+            <div class="signature-row">
+                <div class="signature-block">
+                    <div style="height: 40px;"></div>
+                    <div class="signature-line" style="min-width: 160px;">Authorized Signatory</div>
+                </div>
+                <div class="signature-block">
+                    <div style="height: 40px;"></div>
+                    <div class="signature-line" style="min-width: 160px;">Administrator</div>
+                </div>
+                <div class="signature-block">
+                    <div style="height: 40px;"></div>
+                    <div class="signature-line" style="min-width: 160px;">Sponsor's Signature</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="receipt-footer">
+        <span>Smart Old Age Home Portal · Donation Copy</span>
+        <span th:text="'Generated: ' + ${#temporals.format(#temporals.createNow(), 'dd MMM yyyy, hh:mm a')}">—</span>
+    </div>
+    <div class="bottom-stripe"></div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Kitchen Copy – ' + ${#temporals.format(today, 'dd MMM yyyy')}">Kitchen Copy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #fff;
+            color: #111827;
+            padding: 24px;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        .kitchen-header {
+            text-align: center;
+            padding-bottom: 16px;
+            border-bottom: 3px solid #111827;
+            margin-bottom: 24px;
+        }
+        .kitchen-label {
+            font-size: 11px; font-weight: 700; letter-spacing: 3px;
+            text-transform: uppercase; color: #6b7280; margin-bottom: 4px;
+        }
+        .kitchen-title { font-size: 28px; font-weight: 700; }
+        .kitchen-date  { font-size: 14px; color: #4b5563; margin-top: 4px; }
+        /* Meal cards */
+        .meal-card {
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            page-break-inside: avoid;
+        }
+        .meal-card-header {
+            padding: 14px 20px;
+            display: flex; align-items: center; gap: 12px;
+        }
+        .meal-card-header.breakfast { background: #fef3c7; border-bottom: 2px solid #fcd34d; }
+        .meal-card-header.lunch     { background: #d1fae5; border-bottom: 2px solid #6ee7b7; }
+        .meal-card-header.dinner    { background: #dbeafe; border-bottom: 2px solid #93c5fd; }
+        .meal-emoji  { font-size: 28px; }
+        .meal-name   { font-size: 20px; font-weight: 700; }
+        .meal-time   { font-size: 14px; color: #374151; margin-top: 2px; }
+        .meal-card-body { padding: 16px 20px; }
+        .menu-title  { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #9ca3af; margin-bottom: 10px; }
+        .menu-items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 8px;
+        }
+        .menu-item {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .notes-section {
+            margin-top: 12px;
+            padding: 10px 14px;
+            background: #fffbeb;
+            border: 1px solid #fcd34d;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #78350f;
+        }
+        .notes-label { font-weight: 700; margin-right: 4px; }
+        /* Empty state */
+        .empty-state {
+            text-align: center; padding: 60px 24px;
+            color: #9ca3af; border: 2px dashed #e5e7eb;
+            border-radius: 12px;
+        }
+        .empty-icon  { font-size: 48px; margin-bottom: 12px; }
+        .empty-title { font-size: 16px; font-weight: 600; color: #374151; }
+        /* Footer */
+        .kitchen-footer {
+            margin-top: 32px; padding-top: 12px;
+            border-top: 1px dashed #d1d5db;
+            display: flex; justify-content: space-between;
+            font-size: 11px; color: #9ca3af;
+        }
+        /* Print actions */
+        .print-actions {
+            text-align: center; margin-bottom: 20px;
+        }
+        .btn-print {
+            background: #1d4ed8; color: #fff;
+            border: none; border-radius: 8px;
+            padding: 10px 28px; font-size: 14px; font-weight: 600;
+            cursor: pointer; font-family: 'Inter', sans-serif;
+        }
+        @media print {
+            .print-actions { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="print-actions">
+    <button class="btn-print" onclick="window.print()">🖨️ Print Kitchen Copy</button>
+</div>
+
+<!-- Header -->
+<div class="kitchen-header">
+    <div class="kitchen-label">Kitchen Copy Only — Confidential</div>
+    <div class="kitchen-title">🍽️ Today's Menu</div>
+    <div class="kitchen-date" th:text="${#temporals.format(today, 'EEEE, dd MMMM yyyy')}">Date</div>
+</div>
+
+<!-- Empty state -->
+<div th:if="${todaySchedule == null or todaySchedule.isEmpty()}" class="empty-state">
+    <div class="empty-icon">🥘</div>
+    <div class="empty-title">No meals scheduled for today</div>
+    <div style="font-size: 13px; margin-top: 6px;">Please check with administration.</div>
+</div>
+
+<!-- Meal Cards -->
+<div th:if="${todaySchedule != null and !todaySchedule.isEmpty()}">
+    <div th:each="fs : ${todaySchedule}" class="meal-card">
+
+        <!-- Card header -->
+        <div th:class="${'meal-card-header ' + (fs.mealType.name() == 'Breakfast' ? 'breakfast' : (fs.mealType.name() == 'Lunch' ? 'lunch' : 'dinner'))}">
+            <span class="meal-emoji"
+                  th:text="${fs.mealType.name() == 'Breakfast' ? '☀️' : (fs.mealType.name() == 'Lunch' ? '🌤️' : '🌙')}">🍽️</span>
+            <div>
+                <div class="meal-name" th:text="${fs.mealType.displayName}">Meal</div>
+                <div class="meal-time" th:text="'Serving at ' + ${#temporals.format(fs.servingTime, 'hh:mm a')}">Time</div>
+            </div>
+        </div>
+
+        <!-- Card body — Menu only, no financial data -->
+        <div class="meal-card-body">
+            <div class="menu-title">Menu Items</div>
+            <div class="menu-items-grid">
+                <div th:each="item : ${#strings.arraySplit(#strings.replace(#strings.replace(fs.menuItems, '\r', ''), '\n', ','), ',')}"
+                     th:if="${!#strings.isEmpty(#strings.trim(item))}"
+                     class="menu-item"
+                     th:text="${#strings.trim(item)}">Item</div>
+            </div>
+
+            <!-- Notes section (if any) -->
+            <div th:if="${fs.notes != null and !#strings.isEmpty(fs.notes)}" class="notes-section">
+                <span class="notes-label">📋 Notes:</span>
+                <span th:text="${fs.notes}"></span>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Footer -->
+<div class="kitchen-footer">
+    <span>Kitchen Copy — Smart Old Age Home Portal</span>
+    <span th:text="'Printed: ' + ${#temporals.format(#temporals.createNow(), 'dd MMM yyyy, hh:mm a')}">Printed: —</span>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Sponsor Copy – ' + ${#temporals.format(today, 'dd MMM yyyy')}">Sponsor Copy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --green: #15803d;
+            --green-light: #f0fdf4;
+            --border: #e5e7eb;
+            --text-dark: #111827;
+            --text-muted: #6b7280;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f9fafb;
+            color: var(--text-dark);
+            padding: 30px 20px;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        .sponsor-container {
+            max-width: 820px; margin: 0 auto;
+            background: #fff; border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        /* Header */
+        .sponsor-header {
+            background: linear-gradient(135deg, #14532d 0%, #15803d 100%);
+            color: #fff; padding: 32px 40px;
+        }
+        .header-org { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+        .org-logo { font-size: 28px; background: rgba(255,255,255,0.15); padding: 10px; border-radius: 10px; }
+        .org-name  { font-size: 18px; font-weight: 700; }
+        .org-tagline { font-size: 12px; opacity: 0.8; }
+        .sponsor-title  { font-size: 26px; font-weight: 700; }
+        .sponsor-subtitle { font-size: 14px; opacity: 0.85; margin-top: 4px; }
+        .header-divider { border-top: 1px solid rgba(255,255,255,0.25); margin: 18px 0 0; }
+        /* Body */
+        .sponsor-body { padding: 32px 40px; }
+        .summary-highlight {
+            background: var(--green-light); border: 1px solid #bbf7d0;
+            border-radius: 10px; padding: 20px 24px; margin-bottom: 28px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .summary-big-amount { font-size: 32px; font-weight: 700; color: var(--green); }
+        .summary-big-label  { font-size: 13px; color: var(--text-muted); }
+        .summary-stats { display: flex; gap: 24px; text-align: right; }
+        .summary-stat-value { font-size: 20px; font-weight: 700; color: var(--green); }
+        .summary-stat-label { font-size: 11px; color: var(--text-muted); }
+        /* Section */
+        .section-title {
+            font-size: 11px; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 1px; color: var(--text-muted); margin-bottom: 12px;
+            padding-bottom: 8px; border-bottom: 2px solid var(--border);
+        }
+        /* Sponsor cards */
+        .sponsor-card {
+            border: 1px solid var(--border); border-radius: 8px;
+            padding: 18px 20px; margin-bottom: 14px;
+            display: flex; justify-content: space-between; align-items: flex-start;
+            page-break-inside: avoid;
+        }
+        .sponsor-card-left { flex: 1; }
+        .sponsor-meal-badge {
+            display: inline-block; padding: 3px 10px; border-radius: 20px;
+            font-size: 11px; font-weight: 600; margin-bottom: 8px;
+        }
+        .badge-breakfast { background: #fef3c7; color: #92400e; }
+        .badge-lunch     { background: #d1fae5; color: #065f46; }
+        .badge-dinner    { background: #dbeafe; color: #1e40af; }
+        .sponsor-donor-name { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+        .sponsor-type { font-size: 12px; color: var(--text-muted); }
+        .sponsor-type-badge {
+            display: inline-block; padding: 2px 8px; border-radius: 12px;
+            background: #f0fdf4; color: var(--green); font-size: 11px; font-weight: 600;
+        }
+        .sponsor-serving-time { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+        .sponsor-amount {
+            font-size: 22px; font-weight: 700; color: var(--green);
+            text-align: right;
+        }
+        .sponsor-amount-label { font-size: 11px; color: var(--text-muted); }
+        /* Thank-you section */
+        .thankyou-box {
+            margin-top: 28px; padding: 20px 24px;
+            background: #fffbeb; border: 1px solid #fcd34d; border-radius: 10px;
+            text-align: center;
+        }
+        .thankyou-text { font-size: 14px; color: #78350f; line-height: 1.6; }
+        .thankyou-sign { font-size: 22px; margin-bottom: 8px; }
+        /* Empty state */
+        .empty-state {
+            text-align: center; padding: 60px 24px; color: var(--text-muted);
+        }
+        /* Footer */
+        .sponsor-footer {
+            padding: 18px 40px; border-top: 1px solid var(--border);
+            display: flex; justify-content: space-between;
+            font-size: 11px; color: var(--text-muted); background: #f9fafb;
+        }
+        /* Print actions */
+        .print-actions { text-align: center; margin-bottom: 20px; }
+        .btn-print {
+            background: var(--green); color: #fff;
+            border: none; border-radius: 8px;
+            padding: 10px 28px; font-size: 14px; font-weight: 600;
+            cursor: pointer; font-family: 'Inter', sans-serif;
+        }
+        @media print {
+            body { background: #fff; padding: 0; }
+            .sponsor-container { box-shadow: none; border-radius: 0; }
+            .print-actions { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="print-actions">
+    <button class="btn-print" onclick="window.print()">🖨️ Print Sponsor Copy</button>
+</div>
+
+<div class="sponsor-container">
+
+    <!-- Header -->
+    <div class="sponsor-header">
+        <div class="header-org">
+            <div class="org-logo">🏠</div>
+            <div>
+                <div class="org-name">Smart Old Age Home Portal</div>
+                <div class="org-tagline">With gratitude to our food sponsors</div>
+            </div>
+        </div>
+        <div class="sponsor-title">Sponsor Acknowledgement</div>
+        <div class="sponsor-subtitle" th:text="${#temporals.format(today, 'EEEE, dd MMMM yyyy')}">Date</div>
+        <div class="header-divider"></div>
+    </div>
+
+    <!-- Body -->
+    <div class="sponsor-body">
+
+        <!-- Empty state -->
+        <div th:if="${todaySchedule == null or todaySchedule.isEmpty()}" class="empty-state">
+            <div style="font-size: 48px; margin-bottom: 12px;">🤝</div>
+            <div style="font-size: 16px; font-weight: 600; color: #374151;">No sponsorships for today</div>
+        </div>
+
+        <!-- Content -->
+        <div th:if="${todaySchedule != null and !todaySchedule.isEmpty()}">
+
+            <!-- Summary highlight -->
+            <div class="summary-highlight">
+                <div>
+                    <div class="summary-big-amount" th:text="'₹' + ${#numbers.formatDecimal(stats.todayDonationAmount, 1, 'COMMA', 0, 'POINT')}">₹0</div>
+                    <div class="summary-big-label">Total donations received today</div>
+                </div>
+                <div class="summary-stats">
+                    <div>
+                        <div class="summary-stat-value" th:text="${stats.todayMealsCount}">0</div>
+                        <div class="summary-stat-label">Meals Sponsored</div>
+                    </div>
+                    <div>
+                        <div class="summary-stat-value" th:text="${stats.todayFoodDonorsCount}">0</div>
+                        <div class="summary-stat-label">Unique Sponsors</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sponsor list -->
+            <div class="section-title">Sponsor Details</div>
+            <div th:each="fs : ${todaySchedule}" class="sponsor-card">
+                <div class="sponsor-card-left">
+                    <span th:if="${fs.mealType.name() == 'Breakfast'}" class="sponsor-meal-badge badge-breakfast">☀️ Breakfast</span>
+                    <span th:if="${fs.mealType.name() == 'Lunch'}"     class="sponsor-meal-badge badge-lunch">🌤️ Lunch</span>
+                    <span th:if="${fs.mealType.name() == 'Dinner'}"    class="sponsor-meal-badge badge-dinner">🌙 Dinner</span>
+                    <div class="sponsor-donor-name" th:text="${fs.donorDisplayName}">—</div>
+                    <div class="sponsor-type">
+                        Sponsorship Type: <span class="sponsor-type-badge" th:text="${fs.sponsorshipType.displayName}">—</span>
+                    </div>
+                    <div class="sponsor-serving-time" th:text="'Serving at ' + ${#temporals.format(fs.servingTime, 'hh:mm a')}">—</div>
+                </div>
+                <div>
+                    <div class="sponsor-amount" th:text="'₹' + ${#numbers.formatDecimal(fs.amount, 1, 'COMMA', 0, 'POINT')}">₹0</div>
+                    <div class="sponsor-amount-label">Donation Amount</div>
+                </div>
+            </div>
+
+            <!-- Thank-you note -->
+            <div class="thankyou-box">
+                <div class="thankyou-sign">🙏</div>
+                <div class="thankyou-text">
+                    We extend our deepest gratitude to all our food sponsors for their generous contributions.<br>
+                    Your kindness nourishes the lives of our elderly residents and brings warmth to our home.
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="sponsor-footer">
+        <span>Smart Old Age Home Portal · Sponsor Copy</span>
+        <span th:text="'Printed on ' + ${#temporals.format(#temporals.createNow(), 'dd MMM yyyy, hh:mm a')}">—</span>
+    </div>
+
+</div>
+
+</body>
+</html>
