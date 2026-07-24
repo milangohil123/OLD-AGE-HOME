@@ -117,14 +117,18 @@ public interface FoodScheduleRepository extends JpaRepository<FoodSchedule, Long
             AND (:mealType IS NULL OR fs.mealType = :mealType)
             AND (:sponsorshipType IS NULL OR fs.sponsorshipType = :sponsorshipType)
             AND (
-                    :donorKeyword IS NULL
-                 OR (
-                        d IS NOT NULL
-                    AND LOWER(COALESCE(d.fullName, ''))
+                :donorKeyword IS NULL
+                OR (
+                    d IS NOT NULL
+                    AND d.fullName IS NOT NULL
+                    AND LOWER(d.fullName)
                         LIKE LOWER(CONCAT('%', :donorKeyword, '%'))
-                    )
-                 OR LOWER(COALESCE(fs.manualDonorName, ''))
+                )
+                OR (
+                    fs.manualDonorName IS NOT NULL
+                    AND LOWER(fs.manualDonorName)
                         LIKE LOWER(CONCAT('%', :donorKeyword, '%'))
+                )
             )
             ORDER BY fs.scheduleDate DESC,
                      fs.servingTime ASC
@@ -151,17 +155,21 @@ public interface FoodScheduleRepository extends JpaRepository<FoodSchedule, Long
             AND (:mealType IS NULL OR fs.mealType = :mealType)
             AND (:sponsorshipType IS NULL OR fs.sponsorshipType = :sponsorshipType)
             AND (
-                    :donorKeyword IS NULL
-                 OR (
-                        d IS NOT NULL
-                    AND LOWER(COALESCE(d.fullName, ''))
+                :donorKeyword IS NULL
+                OR (
+                    d IS NOT NULL
+                    AND LOWER(d.fullName)
                         LIKE LOWER(CONCAT('%', :donorKeyword, '%'))
-                    )
-                 OR LOWER(COALESCE(fs.manualDonorName, ''))
+                )
+                OR (
+                    LOWER(fs.manualDonorName)
                         LIKE LOWER(CONCAT('%', :donorKeyword, '%'))
+                )
             )
             AND (:minAmount IS NULL OR fs.amount >= :minAmount)
             AND (:maxAmount IS NULL OR fs.amount <= :maxAmount)
+            ORDER BY fs.scheduleDate DESC,
+                     fs.servingTime ASC
             """)
     Page<FoodSchedule> searchSchedulePaged(
             @Param("fromDate") LocalDate fromDate,
