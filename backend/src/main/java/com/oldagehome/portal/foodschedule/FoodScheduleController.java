@@ -27,20 +27,20 @@ import java.util.*;
 /**
  * Handles all Food Schedule routes.
  *
- * GET  /food-schedule              — Main list page
- * POST /food-schedule/save         — Save new record
- * POST /food-schedule/update/{id}  — Update existing record
- * GET  /food-schedule/delete/{id}  — Delete record
- * GET  /food-schedule/rate         — JSON: fetch donation rate
- * GET  /food-schedule/search       — Paginated + filtered history search
- * GET  /food-schedule/api/item/{id}— JSON: get single item for edit modal
- * GET  /food-schedule/api/donors   — JSON: list food donors
+ * GET /food-schedule — Main list page
+ * POST /food-schedule/save — Save new record
+ * POST /food-schedule/update/{id} — Update existing record
+ * GET /food-schedule/delete/{id} — Delete record
+ * GET /food-schedule/rate — JSON: fetch donation rate
+ * GET /food-schedule/search — Paginated + filtered history search
+ * GET /food-schedule/api/item/{id}— JSON: get single item for edit modal
+ * GET /food-schedule/api/donors — JSON: list food donors
  *
  * Print endpoints (new — open in new tab, print-ready Thymeleaf templates):
- * GET  /food-schedule/print/today    — Today's full schedule
- * GET  /food-schedule/print/kitchen  — Kitchen copy (menu items only)
- * GET  /food-schedule/print/sponsor  — Sponsor acknowledgement copy
- * GET  /food-schedule/print/donation — Donation summary copy
+ * GET /food-schedule/print/today — Today's full schedule
+ * GET /food-schedule/print/kitchen — Kitchen copy (menu items only)
+ * GET /food-schedule/print/sponsor — Sponsor acknowledgement copy
+ * GET /food-schedule/print/donation — Donation summary copy
  */
 @Controller
 @RequestMapping("/food-schedule")
@@ -80,7 +80,8 @@ public class FoodScheduleController {
         model.addAttribute("sponsorshipTypes", SponsorshipType.values());
         model.addAttribute("today", LocalDate.now());
 
-        // Always initialise filter state so the Thymeleaf template never hits missing-variable errors
+        // Always initialise filter state so the Thymeleaf template never hits
+        // missing-variable errors
         model.addAttribute("searchPerformed", false);
         model.addAttribute("srFromDate", null);
         model.addAttribute("srToDate", null);
@@ -107,7 +108,7 @@ public class FoodScheduleController {
      * Adds paginated history table attributes to the model.
      */
     private void addHistoryPageAttributes(Model model, Page<FoodSchedule> historyPage,
-                                           int page, int size, String sort, String direction) {
+            int page, int size, String sort, String direction) {
         model.addAttribute("historyPage", historyPage);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", historyPage.getTotalPages());
@@ -223,16 +224,19 @@ public class FoodScheduleController {
 
             auditService.logActivity(
                     AuditModule.FOOD_SCHEDULE,
-                    AuditAction.CREATE,
-                    "Failed to save food schedule: " + e.getMessage(),
+                    AuditAction.UPDATE,
+                    "Failed to update food schedule: " + e.getMessage(),
                     "FoodSchedule",
-                    null,
+                    id,
                     false,
                     e.getMessage());
 
-            throw e;
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Failed to update food schedule: " + e.getMessage());
         }
         return "redirect:/food-schedule";
+
     }
 
     // ── Delete ────────────────────────────────────────────────────────────────
@@ -307,7 +311,8 @@ public class FoodScheduleController {
         // History table pagination attributes
         addHistoryPageAttributes(model, historyPage, page, size, sort, direction);
 
-        // Build query string for pagination links (preserves filter params across pages)
+        // Build query string for pagination links (preserves filter params across
+        // pages)
         LinkedHashMap<String, Object> paginationParams = new LinkedHashMap<>();
         paginationParams.put("fromDate", fromDate);
         paginationParams.put("toDate", toDate);

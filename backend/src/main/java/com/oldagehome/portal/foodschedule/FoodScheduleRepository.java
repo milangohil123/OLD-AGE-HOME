@@ -17,146 +17,167 @@ import java.util.Optional;
 @Repository
 public interface FoodScheduleRepository extends JpaRepository<FoodSchedule, Long> {
 
-  // Today's Schedule
-  @EntityGraph(attributePaths = { "donor" })
-  List<FoodSchedule> findByScheduleDateOrderByServingTimeAsc(LocalDate date);
+    // ===============================
+    // Today's Schedule
+    // ===============================
 
-  // Date Range
-  @EntityGraph(attributePaths = { "donor" })
-  List<FoodSchedule> findByScheduleDateBetweenOrderByScheduleDateDescServingTimeAsc(
-      LocalDate from,
-      LocalDate to);
+    @EntityGraph(attributePaths = { "donor" })
+    List<FoodSchedule> findByScheduleDateOrderByServingTimeAsc(LocalDate date);
 
-  // Dashboard Stats
+    // ===============================
+    // Date Range
+    // ===============================
 
-  long countByScheduleDate(LocalDate date);
+    @EntityGraph(attributePaths = { "donor" })
+    List<FoodSchedule> findByScheduleDateBetweenOrderByScheduleDateDescServingTimeAsc(
+            LocalDate from,
+            LocalDate to);
 
-  @Query("""
-      SELECT COUNT(DISTINCT fs.donor.id)
-      FROM FoodSchedule fs
-      WHERE fs.scheduleDate = :date
-        AND fs.donor IS NOT NULL
-      """)
-  long countDistinctDonorsByDate(@Param("date") LocalDate date);
+    // ===============================
+    // Dashboard Stats
+    // ===============================
 
-  @Query("""
-      SELECT COALESCE(SUM(fs.amount),0)
-      FROM FoodSchedule fs
-      WHERE fs.scheduleDate=:date
-      """)
-  BigDecimal sumAmountByDate(@Param("date") LocalDate date);
+    long countByScheduleDate(LocalDate date);
 
-  @Query("""
-      SELECT COUNT(fs)
-      FROM FoodSchedule fs
-      WHERE fs.scheduleDate>:today
-      """)
-  long countUpcomingMeals(@Param("today") LocalDate today);
+    @Query("""
+            SELECT COUNT(DISTINCT fs.donor.id)
+            FROM FoodSchedule fs
+            WHERE fs.scheduleDate = :date
+              AND fs.donor IS NOT NULL
+            """)
+    long countDistinctDonorsByDate(@Param("date") LocalDate date);
 
-  @Query("""
-      SELECT fs
-      FROM FoodSchedule fs
-      WHERE
-          (fs.scheduleDate=:today AND fs.servingTime>:now)
-          OR fs.scheduleDate>:today
-      ORDER BY fs.scheduleDate ASC,
-               fs.servingTime ASC
-      """)
-  List<FoodSchedule> findNextUpcomingMeals(
-      @Param("today") LocalDate today,
-      @Param("now") LocalTime now,
-      Pageable pageable);
+    @Query("""
+            SELECT COALESCE(SUM(fs.amount), 0)
+            FROM FoodSchedule fs
+            WHERE fs.scheduleDate = :date
+            """)
+    BigDecimal sumAmountByDate(@Param("date") LocalDate date);
 
-  @Query("""
-      SELECT COUNT(fs)
-      FROM FoodSchedule fs
-      WHERE fs.scheduleDate BETWEEN :from AND :to
-      """)
-  long countByScheduleDateBetween(
-      @Param("from") LocalDate from,
-      @Param("to") LocalDate to);
+    @Query("""
+            SELECT COUNT(fs)
+            FROM FoodSchedule fs
+            WHERE fs.scheduleDate > :today
+            """)
+    long countUpcomingMeals(@Param("today") LocalDate today);
 
-  @Query("""
-      SELECT COUNT(DISTINCT fs.donor.id)
-      FROM FoodSchedule fs
-      WHERE fs.scheduleDate BETWEEN :from AND :to
-        AND fs.donor IS NOT NULL
-      """)
-  long countDistinctDonorsBetween(
-      @Param("from") LocalDate from,
-      @Param("to") LocalDate to);
+    @Query("""
+            SELECT fs
+            FROM FoodSchedule fs
+            WHERE
+                (fs.scheduleDate = :today AND fs.servingTime > :now)
+                OR fs.scheduleDate > :today
+            ORDER BY fs.scheduleDate ASC, fs.servingTime ASC
+            """)
+    List<FoodSchedule> findNextUpcomingMeals(
+            @Param("today") LocalDate today,
+            @Param("now") LocalTime now,
+            Pageable pageable);
 
-  @Query("""
-      SELECT COALESCE(SUM(fs.amount),0)
-      FROM FoodSchedule fs
-      WHERE fs.scheduleDate BETWEEN :from AND :to
-      """)
-  BigDecimal sumAmountBetween(
-      @Param("from") LocalDate from,
-      @Param("to") LocalDate to);
+    @Query("""
+            SELECT COUNT(fs)
+            FROM FoodSchedule fs
+            WHERE fs.scheduleDate BETWEEN :from AND :to
+            """)
+    long countByScheduleDateBetween(
+            @Param("from") LocalDate from,
+            @Param("to") LocalDate to);
 
-  // History Search
+    @Query("""
+            SELECT COUNT(DISTINCT fs.donor.id)
+            FROM FoodSchedule fs
+            WHERE fs.scheduleDate BETWEEN :from AND :to
+              AND fs.donor IS NOT NULL
+            """)
+    long countDistinctDonorsBetween(
+            @Param("from") LocalDate from,
+            @Param("to") LocalDate to);
 
-  @EntityGraph(attributePaths = { "donor" })
-  @Query("""
-      SELECT fs
-      FROM FoodSchedule fs
-      WHERE
-          (:fromDate IS NULL OR fs.scheduleDate >= :fromDate)
-      AND (:toDate IS NULL OR fs.scheduleDate <= :toDate)
-      AND (:mealType IS NULL OR fs.mealType = :mealType)
-      AND (:sponsorshipType IS NULL OR fs.sponsorshipType = :sponsorshipType)
-      AND (
-          :donorKeyword IS NULL
-          OR (
-              fs.donor IS NOT NULL
-              AND LOWER(COALESCE(fs.donor.fullName,'')) LIKE LOWER(CONCAT('%',:donorKeyword,'%'))
-          )
-          OR LOWER(COALESCE(fs.manualDonorName,'')) LIKE LOWER(CONCAT('%',:donorKeyword,'%'))
-      )
-      ORDER BY fs.scheduleDate DESC,
-               fs.servingTime ASC
-      """)
-  List<FoodSchedule> searchSchedule(
-      @Param("fromDate") LocalDate fromDate,
-      @Param("toDate") LocalDate toDate,
-      @Param("mealType") MealType mealType,
-      @Param("sponsorshipType") SponsorshipType sponsorshipType,
-      @Param("donorKeyword") String donorKeyword);
+    @Query("""
+            SELECT COALESCE(SUM(fs.amount), 0)
+            FROM FoodSchedule fs
+            WHERE fs.scheduleDate BETWEEN :from AND :to
+            """)
+    BigDecimal sumAmountBetween(
+            @Param("from") LocalDate from,
+            @Param("to") LocalDate to);
 
-  // Paginated History Search
+    // ===============================
+    // History Search
+    // ===============================
 
-  @EntityGraph(attributePaths = { "donor" })
-  @Query("""
-      SELECT fs
-      FROM FoodSchedule fs
-      WHERE
-          (:fromDate IS NULL OR fs.scheduleDate >= :fromDate)
-      AND (:toDate IS NULL OR fs.scheduleDate <= :toDate)
-      AND (:mealType IS NULL OR fs.mealType = :mealType)
-      AND (:sponsorshipType IS NULL OR fs.sponsorshipType = :sponsorshipType)
-      AND (
-          :donorKeyword IS NULL
-          OR (
-              fs.donor IS NOT NULL
-              AND LOWER(COALESCE(fs.donor.fullName,'')) LIKE LOWER(CONCAT('%',:donorKeyword,'%'))
-          )
-          OR LOWER(COALESCE(fs.manualDonorName,'')) LIKE LOWER(CONCAT('%',:donorKeyword,'%'))
-      )
-      AND (:minAmount IS NULL OR fs.amount >= :minAmount)
-      AND (:maxAmount IS NULL OR fs.amount <= :maxAmount)
-      """)
-  Page<FoodSchedule> searchSchedulePaged(
-      @Param("fromDate") LocalDate fromDate,
-      @Param("toDate") LocalDate toDate,
-      @Param("mealType") MealType mealType,
-      @Param("sponsorshipType") SponsorshipType sponsorshipType,
-      @Param("donorKeyword") String donorKeyword,
-      @Param("minAmount") BigDecimal minAmount,
-      @Param("maxAmount") BigDecimal maxAmount,
-      Pageable pageable);
+    @EntityGraph(attributePaths = { "donor" })
+    @Query("""
+            SELECT fs
+            FROM FoodSchedule fs
+            LEFT JOIN fs.donor d
+            WHERE
+                (:fromDate IS NULL OR fs.scheduleDate >= :fromDate)
+            AND (:toDate IS NULL OR fs.scheduleDate <= :toDate)
+            AND (:mealType IS NULL OR fs.mealType = :mealType)
+            AND (:sponsorshipType IS NULL OR fs.sponsorshipType = :sponsorshipType)
+            AND (
+                    :donorKeyword IS NULL
+                 OR (
+                        d IS NOT NULL
+                    AND LOWER(COALESCE(d.fullName, ''))
+                        LIKE LOWER(CONCAT('%', :donorKeyword, '%'))
+                    )
+                 OR LOWER(COALESCE(fs.manualDonorName, ''))
+                        LIKE LOWER(CONCAT('%', :donorKeyword, '%'))
+            )
+            ORDER BY fs.scheduleDate DESC,
+                     fs.servingTime ASC
+            """)
+    List<FoodSchedule> searchSchedule(
+            @Param("fromDate") LocalDate fromDate,
+            @Param("toDate") LocalDate toDate,
+            @Param("mealType") MealType mealType,
+            @Param("sponsorshipType") SponsorshipType sponsorshipType,
+            @Param("donorKeyword") String donorKeyword);
 
-  @Override
-  @EntityGraph(attributePaths = { "donor" })
-  Optional<FoodSchedule> findById(Long id);
+    // ===============================
+    // Paginated History Search
+    // ===============================
+
+    @EntityGraph(attributePaths = { "donor" })
+    @Query("""
+            SELECT fs
+            FROM FoodSchedule fs
+            LEFT JOIN fs.donor d
+            WHERE
+                (:fromDate IS NULL OR fs.scheduleDate >= :fromDate)
+            AND (:toDate IS NULL OR fs.scheduleDate <= :toDate)
+            AND (:mealType IS NULL OR fs.mealType = :mealType)
+            AND (:sponsorshipType IS NULL OR fs.sponsorshipType = :sponsorshipType)
+            AND (
+                    :donorKeyword IS NULL
+                 OR (
+                        d IS NOT NULL
+                    AND LOWER(COALESCE(d.fullName, ''))
+                        LIKE LOWER(CONCAT('%', :donorKeyword, '%'))
+                    )
+                 OR LOWER(COALESCE(fs.manualDonorName, ''))
+                        LIKE LOWER(CONCAT('%', :donorKeyword, '%'))
+            )
+            AND (:minAmount IS NULL OR fs.amount >= :minAmount)
+            AND (:maxAmount IS NULL OR fs.amount <= :maxAmount)
+            """)
+    Page<FoodSchedule> searchSchedulePaged(
+            @Param("fromDate") LocalDate fromDate,
+            @Param("toDate") LocalDate toDate,
+            @Param("mealType") MealType mealType,
+            @Param("sponsorshipType") SponsorshipType sponsorshipType,
+            @Param("donorKeyword") String donorKeyword,
+            @Param("minAmount") BigDecimal minAmount,
+            @Param("maxAmount") BigDecimal maxAmount,
+            Pageable pageable);
+
+    // ===============================
+    // Find By ID
+    // ===============================
+
+    @Override
+    @EntityGraph(attributePaths = { "donor" })
+    Optional<FoodSchedule> findById(Long id);
 }
