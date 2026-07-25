@@ -6,6 +6,7 @@ public enum AuditModule {
     DONOR,
     DONATION,
     INVENTORY,
+    FOOD_SCHEDULE,
     REPORT,
     SETTINGS,
     SYSTEM
