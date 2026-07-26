@@ -35,11 +35,11 @@
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label fw-bold small text-muted">Food Sponsor (Optional)</label>
-                                    <select class="form-select" id="donorId" name="donorId">
+                                    <select class="form-select" id="modalDonorId" name="donorId">
                                         <option value="">No Sponsor</option>
                                         <option th:each="sponsor : ${sponsors}"
                                                 th:value="${sponsor.donorId}" 
-                                                th:text="${sponsor.donorName + ' - ₹' + sponsor.donationAmount + ' (' + #temporals.format(sponsor.donationDate, 'dd MMM yyyy') + ')'}"></option>
+                                                th:text="${sponsor.donorName + ' - ₹' + sponsor.donationAmount + ' (' + sponsor.paymentMethod + ' - ' + #temporals.format(sponsor.donationDate, 'dd MMM yyyy') + ')'}"></option>
                                     </select>
                                     <div class="form-text">Only active Cash Food Donations with Amount > 0 are shown.</div>
                                 </div>
@@ -120,7 +120,13 @@
                         document.getElementById('mealDate').value = data.mealDate;
                         document.getElementById('mealType').value = data.mealType;
                         document.getElementById('menuItems').value = data.menuItems;
-                        document.getElementById('donorId').value = data.donorId || '';
+                        
+                        if (window.modalDonorSelect) {
+                            window.modalDonorSelect.setValue(data.donorId || '');
+                        } else {
+                            document.getElementById('modalDonorId').value = data.donorId || '';
+                        }
+                        
                         document.getElementById('status').value = data.status || 'ACTIVE';
                         document.getElementById('remarks').value = data.remarks || '';
                         
@@ -162,8 +168,23 @@
             // Reset form when Add modal is closed
             document.getElementById('addScheduleModal').addEventListener('hidden.bs.modal', function () {
                 document.getElementById('scheduleForm').reset();
+                if (window.modalDonorSelect) {
+                    window.modalDonorSelect.clear();
+                }
                 document.getElementById('scheduleId').value = '';
                 document.getElementById('modalTitleText').textContent = 'Add Food Schedule';
+            });
+            
+            document.addEventListener('DOMContentLoaded', function() {
+                if (typeof TomSelect !== 'undefined') {
+                    window.modalDonorSelect = new TomSelect('#modalDonorId', {
+                        create: false,
+                        sortField: {
+                            field: "text",
+                            direction: "asc"
+                        }
+                    });
+                }
             });
         </script>
     </div>

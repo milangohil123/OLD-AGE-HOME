@@ -146,7 +146,7 @@
                                 <select class="form-select" th:field="*{donationCategory}"
                                     th:classappend="${#fields.hasErrors('donationCategory')} ? 'is-invalid' : ''" required>
                                     <option value="">-- Select Category --</option>
-                                    <option value="Food Donation">Food Donation</option>
+                                    <option value="Food Meal Donation (Scheme)">Food Meal Donation (Scheme)</option>
                                     <option value="Cash Donation">Cash Donation</option>
                                     <option value="Medicine Donation">Medicine Donation</option>
                                     <option value="Clothes Donation">Clothes Donation</option>
@@ -368,12 +368,14 @@
                 function toggleFields() {
                     const type = donationTypeSelect.value;
                     
+                    const foodTypes = ["FOOD", "MILK", "RICE", "WHEAT", "VEGETABLES", "OIL", "SUGAR", "DAL", "FRUITS", "BREAKFAST_KIT", "LUNCH_KIT", "DINNER_KIT", "SNACKS", "OTHER_FOOD_ITEM"];
+                    
                     if (type === "MEDICINE") {
                         donationAmountContainer.style.display = "none";
                         donationAmountInput.removeAttribute("required");
                         medicineTableContainer.style.display = "block";
                         foodTableContainer.style.display = "none";
-                    } else if (type === "FOOD") {
+                    } else if (foodTypes.includes(type)) {
                         donationAmountContainer.style.display = "none";
                         donationAmountInput.removeAttribute("required");
                         medicineTableContainer.style.display = "none";

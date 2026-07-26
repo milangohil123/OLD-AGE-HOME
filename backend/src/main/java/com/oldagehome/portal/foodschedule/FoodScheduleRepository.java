@@ -51,13 +51,12 @@ public interface FoodScheduleRepository extends JpaRepository<FoodSchedule, Long
     long countActiveFoodSponsors();
 
     // Fetch eligible food sponsors: donors who have a Cash Food Donation with amount > 0 and are ACTIVE
-    @Query("SELECT new com.oldagehome.portal.foodschedule.dto.FoodSponsorDTO(d.id, d.fullName, don.donationAmount, don.donationDate) " +
-           "FROM Donation don " +
-           "JOIN don.donor d " +
-           "WHERE d.donationCategory = 'Food Donation' " +
-           "AND don.donationType = com.oldagehome.portal.donor.DonationType.CASH " +
-           "AND don.donationAmount > 0 " +
-           "AND d.status = com.oldagehome.portal.donor.DonorStatus.ACTIVE " +
-           "ORDER BY don.donationDate DESC")
+    @Query("SELECT new com.oldagehome.portal.foodschedule.dto.FoodSponsorDTO(d.id, d.fullName, d.donationAmount, d.paymentMethod, d.donationDate) " +
+           "FROM Donor d " +
+           "WHERE LOWER(TRIM(d.donationCategory)) = 'food meal donation (scheme)' " +
+           "AND LOWER(TRIM(CAST(d.donationType AS string))) IN ('cash', 'upi', 'cheque') " +
+           "AND UPPER(TRIM(CAST(d.status AS string))) = 'ACTIVE' " +
+           "AND d.donationAmount > 0 " +
+           "ORDER BY d.fullName")
     List<FoodSponsorDTO> findEligibleFoodSponsors();
 }

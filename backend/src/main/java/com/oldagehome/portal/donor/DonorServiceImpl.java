@@ -94,7 +94,7 @@ public class DonorServiceImpl implements DonorService {
             dto.setMedicineItems(medDtos);
         }
 
-        if (donor.getDonationType() == DonationType.FOOD && donor.getFoodItems() != null) {
+        if (donor.getDonationType() != null && donor.getDonationType().isFoodType() && donor.getFoodItems() != null) {
             List<DonorFormDTO.FoodItemDTO> foodDtos = new ArrayList<>();
             for (FoodDonationItem item : donor.getFoodItems()) {
                 foodDtos.add(new DonorFormDTO.FoodItemDTO(item.getId(), item.getFoodName(), item.getQuantity()));
@@ -160,7 +160,7 @@ public class DonorServiceImpl implements DonorService {
                 .remarks(dto.getRemarks())
                 .build();
                 
-        if (dto.getDonationType() == DonationType.MEDICINE || dto.getDonationType() == DonationType.FOOD) {
+        if (dto.getDonationType() == DonationType.MEDICINE || (dto.getDonationType() != null && dto.getDonationType().isFoodType())) {
             donation.setDonationAmount(BigDecimal.ZERO);
         } else {
             donation.setDonationAmount(dto.getDonationAmount());
@@ -180,7 +180,7 @@ public class DonorServiceImpl implements DonorService {
                         .build();
                 donation.getMedicineItems().add(item);
             }
-        } else if (dto.getDonationType() == DonationType.FOOD && dto.getFoodItems() != null) {
+        } else if (dto.getDonationType() != null && dto.getDonationType().isFoodType() && dto.getFoodItems() != null) {
             int displayOrder = 1;
             for (DonorFormDTO.FoodItemDTO itemDto : dto.getFoodItems()) {
                 if (itemDto.getFoodName() == null || itemDto.getFoodName().isBlank()) continue;
@@ -216,14 +216,24 @@ public class DonorServiceImpl implements DonorService {
         donor.setDonationCategory(dto.getDonationCategory());
         
         // Handle specific type requirements
-        if (dto.getDonationType() == DonationType.MEDICINE || dto.getDonationType() == DonationType.FOOD) {
+        if (dto.getDonationType() == DonationType.MEDICINE || (dto.getDonationType() != null && dto.getDonationType().isFoodType())) {
             donor.setDonationAmount(BigDecimal.ZERO);
         } else {
             donor.setDonationAmount(dto.getDonationAmount());
         }
         
         donor.setDonationDate(dto.getDonationDate());
-        donor.setPaymentMethod(dto.getPaymentMethod());
+        
+        if (dto.getPaymentMethod() != null && !dto.getPaymentMethod().isBlank()) {
+            String pm = dto.getPaymentMethod().trim();
+            if (pm.equalsIgnoreCase("CASH")) donor.setPaymentMethod("Cash");
+            else if (pm.equalsIgnoreCase("UPI")) donor.setPaymentMethod("UPI");
+            else if (pm.equalsIgnoreCase("CHEQUE")) donor.setPaymentMethod("Cheque");
+            else donor.setPaymentMethod(pm.substring(0, 1).toUpperCase() + pm.substring(1).toLowerCase());
+        } else {
+            donor.setPaymentMethod(dto.getPaymentMethod());
+        }
+        
         donor.setTransactionId(dto.getTransactionId());
         donor.setRemarks(dto.getRemarks());
         donor.setStatus(dto.getStatus());
@@ -250,7 +260,7 @@ public class DonorServiceImpl implements DonorService {
                     donor.getMedicineItems().add(item);
                 }
             }
-        } else if (dto.getDonationType() == DonationType.FOOD) {
+        } else if (dto.getDonationType() != null && dto.getDonationType().isFoodType()) {
             donor.getMedicineItems().clear();
             donor.getFoodItems().clear();
             if (dto.getFoodItems() != null) {
@@ -313,7 +323,7 @@ public class DonorServiceImpl implements DonorService {
 
                 if (donor == null) {
                     String category = "Other";
-                    if (dto.getDonationType() == DonationType.FOOD) {
+                    if (dto.getDonationType() != null && dto.getDonationType().isFoodType()) {
                         category = "Food Donation";
                     } else if (dto.getDonationType() == DonationType.MEDICINE) {
                         category = "Medicine Donation";
@@ -355,7 +365,7 @@ public class DonorServiceImpl implements DonorService {
                             .displayOrder(nextOrder)
                             .build();
                     donor.getMedicineItems().add(item);
-                } else if (dto.getDonationType() == DonationType.FOOD && dto.getFoodName() != null && !dto.getFoodName().isEmpty()) {
+                } else if (dto.getDonationType() != null && dto.getDonationType().isFoodType() && dto.getFoodName() != null && !dto.getFoodName().isEmpty()) {
                     int nextOrder = donor.getFoodItems().size() + 1;
                     FoodDonationItem item = FoodDonationItem.builder()
                             .donor(donor)

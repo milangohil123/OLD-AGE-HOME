@@ -16,5 +16,6 @@ public class FoodSponsorDTO {
     private Long donorId;
     private String donorName;
     private BigDecimal donationAmount;
+    private String paymentMethod;
     private LocalDate donationDate;
 }

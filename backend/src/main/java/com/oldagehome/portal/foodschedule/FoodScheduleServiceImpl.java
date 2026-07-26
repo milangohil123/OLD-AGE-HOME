@@ -152,6 +152,7 @@ public class FoodScheduleServiceImpl implements FoodScheduleService {
         if (entity.getDonor() != null) {
             dto.setDonorId(entity.getDonor().getId());
             dto.setDonorName(entity.getDonor().getFullName());
+            dto.setDonorMobile(entity.getDonor().getMobile());
         }
 
         return dto;

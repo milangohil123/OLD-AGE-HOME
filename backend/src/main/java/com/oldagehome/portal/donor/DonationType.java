@@ -9,7 +9,20 @@ public enum DonationType {
     UPI("UPI"),
     CHEQUE("Cheque"),
     FOOD("Food"),
-    MEDICINE("Medicine");
+    MEDICINE("Medicine"),
+    MILK("Milk"),
+    RICE("Rice"),
+    WHEAT("Wheat"),
+    VEGETABLES("Vegetables"),
+    OIL("Oil"),
+    SUGAR("Sugar"),
+    DAL("Dal"),
+    FRUITS("Fruits"),
+    BREAKFAST_KIT("Breakfast Kit"),
+    LUNCH_KIT("Lunch Kit"),
+    DINNER_KIT("Dinner Kit"),
+    SNACKS("Snacks"),
+    OTHER_FOOD_ITEM("Other Food Item");
 
     private final String displayName;
 
@@ -19,5 +32,9 @@ public enum DonationType {
 
     public String getDisplayName() {
         return displayName;
+    }
+
+    public boolean isFoodType() {
+        return this != CASH && this != UPI && this != CHEQUE && this != MEDICINE;
     }
 }

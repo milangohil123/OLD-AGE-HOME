@@ -35,6 +35,7 @@ public class FoodScheduleDTO {
     
     // For displaying donor name in list/view
     private String donorName;
+    private String donorMobile;
     
     // Additional fields for display/read-only logic
     private BigDecimal donationAmount;
