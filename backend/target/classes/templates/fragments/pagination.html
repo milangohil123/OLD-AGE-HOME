@@ -27,18 +27,29 @@
                 <!-- Rows Per Page Selector -->
                 <form method="get" th:attr="action=${baseUrl}" class="d-flex align-items-center gap-2">
                     <label for="pageSize" class="form-label mb-0 small fw-semibold">Per Page:</label>
-                    <select id="pageSize" name="size" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
+                    <select id="pageSize" name="size" class="form-select form-select-sm" style="width: auto;" onchange="submitPageSizeForm(this)">
                         <option value="10" th:selected="${page.size == 10}">10</option>
                         <option value="25" th:selected="${page.size == 25}">25</option>
                         <option value="50" th:selected="${page.size == 50}">50</option>
                         <option value="100" th:selected="${page.size == 100}">100</option>
                     </select>
-                    <!-- Preserve current search/sort parameters -->
-                    <input type="hidden" name="page" value="0">
-                    <input type="hidden" name="keyword" th:if="${param.keyword != null}" th:value="${param.keyword}">
-                    <input type="hidden" name="sort" th:if="${param.sort != null}" th:value="${param.sort}">
-                    <input type="hidden" name="direction" th:if="${param.direction != null}" th:value="${param.direction}">
+                    <!-- Preserve all query parameters passed as string -->
+                    <th:block th:if="${queryParams != null and !queryParams.isEmpty()}">
+                        <!-- Simple JS to append queryParams on form submit -->
+                        <input type="hidden" name="dummy" value="1" disabled>
+                    </th:block>
                 </form>
+                <script>
+                    function submitPageSizeForm(selectElement) {
+                        var form = selectElement.form;
+                        var url = form.getAttribute('action');
+                        var size = selectElement.value;
+                        var queryParams = '[[${queryParams != null ? queryParams : ""}]]';
+                        // replace amp; if present
+                        queryParams = queryParams.replace(/&amp;/g, '&');
+                        window.location.href = url + '?page=0&size=' + size + (queryParams ? '&' + queryParams : '');
+                    }
+                </script>
             </div>
             
             <!-- Right Section: Pagination Controls -->
@@ -49,7 +60,7 @@
                     <li class="page-item" th:classappend="${page.first} ? 'disabled'">
                         <a th:if="${!page.first}" 
                            class="page-link"
-                           th:href="|${baseUrl}?page=${page.number - 1}&size=${page.size}|"
+                           th:href="${baseUrl} + '?page=' + (${page.number} - 1) + '&size=' + ${page.size} + (${queryParams != null and !queryParams.isEmpty()} ? '&' + ${queryParams} : '')"
                            href="#">← Previous</a>
                         <span th:if="${page.first}" class="page-link">← Previous</span>
                     </li>
@@ -61,7 +72,7 @@
                             <li class="page-item" th:classappend="${pageNum == page.number} ? 'active'">
                                 <a th:if="${pageNum != page.number}"
                                    class="page-link"
-                                   th:href="|${baseUrl}?page=${pageNum}&size=${page.size}|"
+                                   th:href="${baseUrl} + '?page=' + ${pageNum} + '&size=' + ${page.size} + (${queryParams != null and !queryParams.isEmpty()} ? '&' + ${queryParams} : '')"
                                    th:text="${pageNum + 1}"
                                    href="#">1</a>
                                 <span th:if="${pageNum == page.number}" class="page-link" th:text="${pageNum + 1}">1</span>
@@ -80,7 +91,7 @@
                     <li class="page-item" th:classappend="${page.last} ? 'disabled'">
                         <a th:if="${!page.last}"
                            class="page-link"
-                           th:href="|${baseUrl}?page=${page.number + 1}&size=${page.size}|"
+                           th:href="${baseUrl} + '?page=' + (${page.number} + 1) + '&size=' + ${page.size} + (${queryParams != null and !queryParams.isEmpty()} ? '&' + ${queryParams} : '')"
                            href="#">Next →</a>
                         <span th:if="${page.last}" class="page-link">Next →</span>
                     </li>

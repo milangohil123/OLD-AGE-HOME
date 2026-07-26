@@ -39,7 +39,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public Page<Resident> getResidentsReport(String status, String keyword, Integer month, Integer year, LocalDate startDate, LocalDate endDate, Pageable pageable) {
+    public Page<Resident> getResidentsReport(String status, String keyword, LocalDate startDate, LocalDate endDate, Pageable pageable) {
         Specification<Resident> specification = Specification.where(null);
 
         if (hasText(status) && !status.equalsIgnoreCase("ALL")) {
@@ -55,14 +55,6 @@ public class ReportServiceImpl implements ReportService {
                     cb.like(cb.lower(root.get("guardianName")), pattern),
                     cb.like(cb.lower(root.get("guardianPhone")), pattern)
             ));
-        }
-
-        if (month != null) {
-            specification = specification.and((root, query, cb) -> cb.equal(cb.function("month", Integer.class, root.get("joiningDate")), month));
-        }
-
-        if (year != null) {
-            specification = specification.and((root, query, cb) -> cb.equal(cb.function("year", Integer.class, root.get("joiningDate")), year));
         }
 
         if (startDate != null) {
@@ -104,7 +96,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public Page<Donor> getDonationsReport(String paymentMethod, Integer month, Integer year, LocalDate startDate, LocalDate endDate, String donationType, Pageable pageable) {
+    public Page<Donor> getDonationsReport(String paymentMethod, LocalDate startDate, LocalDate endDate, String donationType, Pageable pageable) {
         Specification<Donor> specification = Specification.where(null);
 
         if (hasText(paymentMethod) && !paymentMethod.equalsIgnoreCase("ALL")) {
@@ -114,14 +106,6 @@ public class ReportServiceImpl implements ReportService {
         if (hasText(donationType) && !donationType.equalsIgnoreCase("ALL")) {
             DonationType type = DonationType.valueOf(donationType.toUpperCase());
             specification = specification.and((root, query, cb) -> cb.equal(root.get("donationType"), type));
-        }
-
-        if (month != null) {
-            specification = specification.and((root, query, cb) -> cb.equal(cb.function("month", Integer.class, root.get("donationDate")), month));
-        }
-
-        if (year != null) {
-            specification = specification.and((root, query, cb) -> cb.equal(cb.function("year", Integer.class, root.get("donationDate")), year));
         }
 
         if (startDate != null) {

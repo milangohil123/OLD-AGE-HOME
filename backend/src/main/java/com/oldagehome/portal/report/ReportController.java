@@ -127,13 +127,11 @@ public class ReportController {
     public ResponseEntity<byte[]> residentsPdf(
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) Integer month,
-            @RequestParam(required = false) Integer year,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             Principal principal) {
         
-        List<Resident> data = reportService.getResidentsReport(status, keyword, month, year, startDate, endDate, Pageable.unpaged()).getContent();
+        List<Resident> data = reportService.getResidentsReport(status, keyword, startDate, endDate, Pageable.unpaged()).getContent();
         String user = principal != null ? principal.getName() : "Administrator";
         byte[] pdf = ResidentReportGenerator.generatePdf(data, "Resident Management Report", user);
         
@@ -148,12 +146,10 @@ public class ReportController {
     public ResponseEntity<byte[]> residentsExcel(
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) Integer month,
-            @RequestParam(required = false) Integer year,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) throws IOException {
         
-        List<Resident> data = reportService.getResidentsReport(status, keyword, month, year, startDate, endDate, Pageable.unpaged()).getContent();
+        List<Resident> data = reportService.getResidentsReport(status, keyword, startDate, endDate, Pageable.unpaged()).getContent();
         byte[] excel = ResidentReportExporter.exportExcel(data, "Resident Management Report");
         
         return ResponseEntity.ok()
@@ -200,14 +196,12 @@ public class ReportController {
     @GetMapping("/donations/pdf")
     public ResponseEntity<byte[]> donationsPdf(
             @RequestParam(required = false) String paymentMethod,
-            @RequestParam(required = false) Integer month,
-            @RequestParam(required = false) Integer year,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(required = false) String donationType,
             Principal principal) {
         
-        List<Donor> data = reportService.getDonationsReport(paymentMethod, month, year, startDate, endDate, donationType, Pageable.unpaged()).getContent();
+        List<Donor> data = reportService.getDonationsReport(paymentMethod, startDate, endDate, donationType, Pageable.unpaged()).getContent();
         String user = principal != null ? principal.getName() : "Administrator";
         byte[] pdf = DonationReportGenerator.generatePdf(data, "Donation Collection Report", user);
         
@@ -221,13 +215,11 @@ public class ReportController {
     @GetMapping("/donations/excel")
     public ResponseEntity<byte[]> donationsExcel(
             @RequestParam(required = false) String paymentMethod,
-            @RequestParam(required = false) Integer month,
-            @RequestParam(required = false) Integer year,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(required = false) String donationType) throws IOException {
         
-        List<Donor> data = reportService.getDonationsReport(paymentMethod, month, year, startDate, endDate, donationType, Pageable.unpaged()).getContent();
+        List<Donor> data = reportService.getDonationsReport(paymentMethod, startDate, endDate, donationType, Pageable.unpaged()).getContent();
         byte[] excel = DonationReportExporter.exportExcel(data, "Donation Collection Report");
         
         return ResponseEntity.ok()
@@ -280,8 +272,6 @@ public class ReportController {
             @RequestParam String type,
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) Integer month,
-            @RequestParam(required = false) Integer year,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(required = false) String donationType,
@@ -293,33 +283,35 @@ public class ReportController {
             @RequestParam(value = "direction", defaultValue = AppConstants.Pagination.DEFAULT_SORT_DIRECTION) String direction,
             Model model) {
         
-        model.addAttribute("activePage", "reports");
-        model.addAttribute("type", type);
-        model.addAttribute("pageSize", size);
-        model.addAttribute("sort", sort);
-        model.addAttribute("direction", direction);
-        
-        // Pass filter values back to keep download buttons synchronized
-        model.addAttribute("status", status);
-        model.addAttribute("keyword", keyword);
-        model.addAttribute("month", month);
-        model.addAttribute("year", year);
-        model.addAttribute("startDate", startDate);
-        model.addAttribute("endDate", endDate);
-        model.addAttribute("donationType", donationType);
-        model.addAttribute("paymentMethod", paymentMethod);
-        model.addAttribute("category", category);
+        try {
+            if (startDate != null && endDate != null && startDate.isAfter(endDate)) {
+                model.addAttribute("errorMessage", "Validation Error: Start Date cannot be after End Date.");
+                return "reports/preview";
+            }
 
-        Pageable pageable = buildReportPageable(type, page, size, sort, direction);
+            model.addAttribute("activePage", "reports");
+            model.addAttribute("type", type);
+            model.addAttribute("pageSize", size);
+            model.addAttribute("sort", sort);
+            model.addAttribute("direction", direction);
+            
+            // Pass filter values back to keep download buttons synchronized
+            model.addAttribute("status", status);
+            model.addAttribute("keyword", keyword);
+            model.addAttribute("startDate", startDate);
+            model.addAttribute("endDate", endDate);
+            model.addAttribute("donationType", donationType);
+            model.addAttribute("paymentMethod", paymentMethod);
+            model.addAttribute("category", category);
 
-        Map<String, Object> paginationParams = new LinkedHashMap<>();
-        paginationParams.put("type", type);
-        paginationParams.put("status", status);
-        paginationParams.put("keyword", keyword);
-        paginationParams.put("month", month);
-        paginationParams.put("year", year);
-        paginationParams.put("startDate", startDate);
-        paginationParams.put("endDate", endDate);
+            Pageable pageable = buildReportPageable(type, page, size, sort, direction);
+
+            Map<String, Object> paginationParams = new LinkedHashMap<>();
+            paginationParams.put("type", type);
+            paginationParams.put("status", status);
+            paginationParams.put("keyword", keyword);
+            paginationParams.put("startDate", startDate);
+            paginationParams.put("endDate", endDate);
         paginationParams.put("donationType", donationType);
         paginationParams.put("paymentMethod", paymentMethod);
         paginationParams.put("category", category);
@@ -328,7 +320,7 @@ public class ReportController {
         model.addAttribute("paginationQuery", PaginationUtils.buildQueryString(paginationParams));
 
         if (type.equalsIgnoreCase("residents")) {
-            Page<Resident> data = reportService.getResidentsReport(status, keyword, month, year, startDate, endDate, pageable);
+            Page<Resident> data = reportService.getResidentsReport(status, keyword, startDate, endDate, pageable);
             model.addAttribute("reportPage", data);
             model.addAttribute("title", "Resident Management Preview Report");
         } else if (type.equalsIgnoreCase("donors")) {
@@ -336,7 +328,7 @@ public class ReportController {
             model.addAttribute("reportPage", data);
             model.addAttribute("title", "Donor List Preview Report");
         } else if (type.equalsIgnoreCase("donations")) {
-            Page<Donor> data = reportService.getDonationsReport(paymentMethod, month, year, startDate, endDate, donationType, pageable);
+            Page<Donor> data = reportService.getDonationsReport(paymentMethod, startDate, endDate, donationType, pageable);
             model.addAttribute("reportPage", data);
             model.addAttribute("title", "Donation Collection Preview Report");
         } else if (type.equalsIgnoreCase("inventory")) {
@@ -346,6 +338,11 @@ public class ReportController {
         }
 
         return "reports/preview";
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("errorMessage", "An error occurred while generating the report preview. Please check your filter criteria.");
+            return "reports/preview";
+        }
     }
 
     private Pageable buildReportPageable(String type, int page, int size, String sort, String direction) {

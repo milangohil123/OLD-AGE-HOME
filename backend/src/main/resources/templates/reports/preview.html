@@ -14,12 +14,12 @@
                 </div>
                 <div class="d-flex gap-2 flex-wrap">
                     <!-- Dynamic URL Construction with all applied filters -->
-                          <a th:href="@{'/reports/' + ${type} + '/pdf'(status=${status}, keyword=${keyword}, month=${month}, year=${year}, startDate=${startDate}, endDate=${endDate}, donationType=${donationType}, paymentMethod=${paymentMethod}, category=${category})}" 
+                           <a th:href="@{'/reports/' + ${type} + '/pdf'(status=${status}, keyword=${keyword}, startDate=${startDate}, endDate=${endDate}, donationType=${donationType}, paymentMethod=${paymentMethod}, category=${category})}" 
                        class="btn btn-primary px-3">
                         <span>📄</span> Download PDF
                     </a>
                     
-                    <a th:href="@{'/reports/' + ${type} + '/excel'(status=${status}, keyword=${keyword}, month=${month}, year=${year}, startDate=${startDate}, endDate=${endDate}, donationType=${donationType}, paymentMethod=${paymentMethod}, category=${category})}" 
+                    <a th:href="@{'/reports/' + ${type} + '/excel'(status=${status}, keyword=${keyword}, startDate=${startDate}, endDate=${endDate}, donationType=${donationType}, paymentMethod=${paymentMethod}, category=${category})}" 
                        class="btn btn-success text-white px-3">
                         <span>📊</span> Download Excel
                     </a>
@@ -32,6 +32,12 @@
                         Back
                     </a>
                 </div>
+            </div>
+        </div>
+
+        <div th:if="${errorMessage}" class="alert alert-danger d-flex align-items-center mb-4" role="alert">
+            <div>
+                <strong class="me-2">Error!</strong> <span th:text="${errorMessage}"></span>
             </div>
         </div>
 
@@ -160,7 +166,7 @@
                 </table>
             </div>
 
-           <div th:replace="~{fragments/pagination :: pagination(page=${reportsPage}, baseUrl='/reports', queryParams=${paginationQuery})}"></div>
+           <div th:replace="~{fragments/pagination :: pagination(page=${reportPage}, baseUrl='/reports/preview', queryParams=${paginationQuery})}"></div>
         </div>
 
     </div>
