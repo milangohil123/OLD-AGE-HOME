@@ -29,17 +29,32 @@ public class FoodScheduleController {
             @ModelAttribute("searchDTO") SearchDTO searchDTO,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
-            Model model) {
+            Model model,
+            RedirectAttributes redirectAttributes) {
 
-        Pageable pageable = PageRequest.of(page - 1, size);
-        Page<FoodScheduleDTO> schedules = foodScheduleService.searchSchedules(searchDTO, pageable);
+        try {
+            // Handle empty strings from form submission
+            if (searchDTO.getStatus() != null && searchDTO.getStatus().trim().isEmpty()) {
+                searchDTO.setStatus(null);
+            }
+            
+            Pageable pageable = PageRequest.of(page - 1, size);
+            Page<FoodScheduleDTO> schedules = foodScheduleService.searchSchedules(searchDTO, pageable);
 
-        model.addAttribute("schedules", schedules);
-        model.addAttribute("dashboard", foodScheduleService.getDashboardStats());
-        model.addAttribute("sponsors", foodScheduleService.getFoodSponsors());
-        model.addAttribute("activePage", "food-schedule");
+            model.addAttribute("schedules", schedules);
+            model.addAttribute("dashboard", foodScheduleService.getDashboardStats());
+            model.addAttribute("sponsors", foodScheduleService.getFoodSponsors());
+            model.addAttribute("activePage", "food-schedule");
 
-        return "food-schedule/list";
+            return "food-schedule/list";
+        } catch (Exception e) {
+            e.printStackTrace();
+            auditService.logActivity(AuditModule.FOOD_SCHEDULE, AuditAction.VIEW,
+                    "Error searching food schedules: " + e.getMessage(),
+                    "FoodSchedule", null, false, e.getMessage());
+            redirectAttributes.addFlashAttribute("errorMessage", "An error occurred while loading food schedules.");
+            return "redirect:/dashboard"; // Redirect to a safe page
+        }
     }
 
     @PostMapping("/save")

@@ -16,19 +16,19 @@ public interface FoodScheduleRepository extends JpaRepository<FoodSchedule, Long
 
     @Query(value = "SELECT fs FROM FoodSchedule fs " +
            "LEFT JOIN FETCH fs.donor d " +
-           "WHERE (:fromDate IS NULL OR fs.mealDate >= :fromDate) " +
-           "AND (:toDate IS NULL OR fs.mealDate <= :toDate) " +
-           "AND (:mealType IS NULL OR fs.mealType = :mealType) " +
-           "AND (:donorId IS NULL OR (d IS NOT NULL AND d.id = :donorId)) " +
-           "AND (:status IS NULL OR fs.status = :status) " +
+           "WHERE (:#{#fromDate == null} = true OR fs.mealDate >= :fromDate) " +
+           "AND (:#{#toDate == null} = true OR fs.mealDate <= :toDate) " +
+           "AND (:#{#mealType == null} = true OR fs.mealType = :mealType) " +
+           "AND (:#{#donorId == null} = true OR d.id = :donorId) " +
+           "AND (:#{#status == null} = true OR fs.status = :status) " +
            "ORDER BY fs.mealDate DESC, fs.mealType ASC",
            countQuery = "SELECT COUNT(fs) FROM FoodSchedule fs " +
            "LEFT JOIN fs.donor d " +
-           "WHERE (:fromDate IS NULL OR fs.mealDate >= :fromDate) " +
-           "AND (:toDate IS NULL OR fs.mealDate <= :toDate) " +
-           "AND (:mealType IS NULL OR fs.mealType = :mealType) " +
-           "AND (:donorId IS NULL OR (d IS NOT NULL AND d.id = :donorId)) " +
-           "AND (:status IS NULL OR fs.status = :status)")
+           "WHERE (:#{#fromDate == null} = true OR fs.mealDate >= :fromDate) " +
+           "AND (:#{#toDate == null} = true OR fs.mealDate <= :toDate) " +
+           "AND (:#{#mealType == null} = true OR fs.mealType = :mealType) " +
+           "AND (:#{#donorId == null} = true OR d.id = :donorId) " +
+           "AND (:#{#status == null} = true OR fs.status = :status)")
     Page<FoodSchedule> searchSchedules(
             @Param("fromDate") LocalDate fromDate,
             @Param("toDate") LocalDate toDate,
