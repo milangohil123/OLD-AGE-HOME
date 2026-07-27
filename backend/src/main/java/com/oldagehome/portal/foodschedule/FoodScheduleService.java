@@ -1,5 +1,6 @@
 package com.oldagehome.portal.foodschedule;
 
+import com.oldagehome.portal.foodschedule.dto.DailyScheduleGroupDTO;
 import com.oldagehome.portal.foodschedule.dto.FoodDashboardDTO;
 import com.oldagehome.portal.foodschedule.dto.FoodScheduleDTO;
 import com.oldagehome.portal.foodschedule.dto.FoodSponsorDTO;
@@ -26,4 +27,10 @@ public interface FoodScheduleService {
     List<FoodSponsorDTO> getFoodSponsors();
     
     void validateDuplicateMeal(FoodScheduleDTO dto);
+
+    /** All schedules for today, ordered by meal type (BREAKFAST → LUNCH → DINNER). */
+    List<FoodScheduleDTO> getTodaysSchedules();
+
+    /** Schedules from yesterday back 6 more days, grouped by date with totals. */
+    List<DailyScheduleGroupDTO> getPast7DaysGroups();
 }

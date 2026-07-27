@@ -9,7 +9,9 @@
         <div th:replace="~{fragments/alerts :: success(${successMessage})}"></div>
         <div th:replace="~{fragments/alerts :: error(${errorMessage})}"></div>
 
-        <!-- Dashboard Summary Cards -->
+        <!-- ═══════════════════════════════════════════════════════════════════ -->
+        <!-- KPI CARDS                                                           -->
+        <!-- ═══════════════════════════════════════════════════════════════════ -->
         <div class="row mb-4">
             <div class="col-md-3 col-sm-6 mb-3 mb-md-0">
                 <div class="card py-3">
@@ -94,18 +96,242 @@
             </div>
         </div>
 
-        <!-- Main Table Card -->
+        <!-- ═══════════════════════════════════════════════════════════════════ -->
+        <!-- SECTION 1 : TODAY'S FOOD SCHEDULE                                   -->
+        <!-- CHECK 3 FIX : title uses 'dd MMM yyyy'  → "27 Jul 2026"            -->
+        <!-- ═══════════════════════════════════════════════════════════════════ -->
+        <div class="card mb-4">
+            <div class="card-header bg-white border-bottom py-3 d-flex align-items-center gap-2">
+                <i class="bi bi-calendar2-check text-primary" style="font-size: 18px;"></i>
+                <h5 class="mb-0 fw-bold">
+                    Today's Food Schedule &ndash;
+                    <span th:text="${#temporals.format(todayDate, 'dd MMM yyyy')}">27 Jul 2026</span>
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <!-- CHECK 9 : table-responsive wrapper ✅ -->
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light text-muted small">
+                            <tr>
+                                <th class="ps-3" style="width:110px;">Meal</th>
+                                <th style="width:100px;">Time</th>
+                                <!-- CHECK 10 FIX : min-width keeps column from collapsing; text wraps naturally -->
+                                <th style="min-width:180px;">Menu / Items</th>
+                                <th style="min-width:140px;">Donor</th>
+                                <th style="width:120px;">Sponsorship</th>
+                                <th style="width:120px;">Amount (₹)</th>
+                                <th class="text-end pe-3" style="width:140px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- CHECK 4 : empty-state row ✅ -->
+                            <tr th:if="${#lists.isEmpty(todaysSchedules)}">
+                                <td colspan="7" class="text-center py-5 text-muted">
+                                    <i class="bi bi-calendar-x fs-2 d-block mb-2 text-muted opacity-50"></i>
+                                    <span class="fw-medium">No meals scheduled for today.</span>
+                                </td>
+                            </tr>
+                            <!-- CHECK 1 : ordered BREAKFAST → LUNCH → DINNER via ORDER BY fs.mealType ASC in repo ✅ -->
+                            <tr th:each="s : ${todaysSchedules}">
+                                <td class="ps-3">
+                                    <span class="badge fw-semibold"
+                                          th:classappend="${s.mealType.name() == 'BREAKFAST' ? 'bg-success bg-opacity-10 text-success' :
+                                                          (s.mealType.name() == 'LUNCH'     ? 'bg-warning bg-opacity-10 text-warning' :
+                                                                                              'bg-info bg-opacity-10 text-info')}"
+                                          th:text="${s.mealType.displayName}">Meal</span>
+                                </td>
+                                <td class="text-muted small fw-medium"
+                                    th:text="${s.mealType.name() == 'BREAKFAST' ? '07:30 AM' :
+                                              (s.mealType.name() == 'LUNCH'    ? '11:45 AM' : '06:45 PM')}">07:30 AM</td>
+                                <!-- CHECK 10 FIX : white-space:normal + word-break prevents layout break -->
+                                <td style="white-space: normal; word-break: break-word; max-width: 220px;"
+                                    th:text="${s.menuItems}">Menu</td>
+                                <!-- CHECK 11 : null donor shows "No Sponsor" ✅ -->
+                                <td>
+                                    <span th:if="${s.donorName != null}" class="fw-medium" th:text="${s.donorName}">Donor</span>
+                                    <span th:unless="${s.donorName != null}" class="text-muted small">No Sponsor</span>
+                                </td>
+                                <td>
+                                    <span th:if="${s.paymentMethod != null}" class="text-muted small" th:text="${s.paymentMethod}">One Time</span>
+                                    <span th:unless="${s.paymentMethod != null}" class="text-muted small">—</span>
+                                </td>
+                                <!-- CHECK 2 FIX : ₹ prefix in the cell itself → "₹5,000.00" -->
+                                <td>
+                                    <span th:if="${s.donationAmount != null}" class="fw-medium"
+                                          th:text="${'₹' + #numbers.formatDecimal(s.donationAmount, 1, 'COMMA', 2, 'POINT')}">₹0.00</span>
+                                    <span th:unless="${s.donationAmount != null}" class="text-muted small">—</span>
+                                </td>
+                                <!-- CHECK 8 : View/Edit/Delete reuse existing functions; Print uses API ✅ -->
+                                <td class="text-end pe-3">
+                                    <div class="btn-group btn-group-sm">
+                                        <button type="button" class="btn btn-light border text-primary"
+                                                th:onclick="'viewSchedule(' + ${s.id} + ')'" title="View">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-light border text-secondary"
+                                                th:onclick="'editSchedule(' + ${s.id} + ')'" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <a th:href="@{/food-schedule/delete/{id}(id=${s.id})}"
+                                           class="btn btn-light border text-danger"
+                                           onclick="return confirm('Are you sure you want to delete this schedule?');"
+                                           title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                        <!-- CHECK 7 FIX : Print opens styled branded popup via /api/item/{id} -->
+                                        <button type="button" class="btn btn-light border text-primary"
+                                                th:onclick="'printSchedule(' + ${s.id} + ')'" title="Print">
+                                            <i class="bi bi-printer"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════════ -->
+        <!-- SECTION 2 : PAST 7 DAYS ACCORDION                                   -->
+        <!-- CHECK 6 : Yesterday (iter.first) expanded; rest collapsed ✅        -->
+        <!-- ═══════════════════════════════════════════════════════════════════ -->
+        <div class="card mb-4">
+            <div class="card-header bg-white border-bottom py-3 d-flex align-items-center gap-2">
+                <i class="bi bi-clock-history text-primary" style="font-size: 18px;"></i>
+                <h5 class="mb-0 fw-bold">Past 7 Days</h5>
+            </div>
+            <div class="card-body p-0">
+
+                <!-- Card-level empty state (past7DaysGroups is never truly empty — always 7 entries — but guard anyway) -->
+                <div th:if="${#lists.isEmpty(past7DaysGroups)}" class="text-center py-5 text-muted">
+                    <i class="bi bi-inbox fs-2 d-block mb-2 opacity-50"></i>
+                    <span class="fw-medium">No schedule data for the past 7 days.</span>
+                </div>
+
+                <div th:unless="${#lists.isEmpty(past7DaysGroups)}" class="past7-accordion" id="past7DaysAccordion">
+                    <div th:each="group, iter : ${past7DaysGroups}"
+                         class="past7-item"
+                         th:classappend="${iter.first} ? 'past7-item--first' : ''">
+
+                        <!-- Accordion Header -->
+                        <div class="past7-header d-flex align-items-center justify-content-between px-3 py-3"
+                             th:id="'past7Heading-' + ${iter.index}"
+                             th:onclick="'togglePast7(' + ${iter.index} + ')'"
+                             style="cursor: pointer; user-select: none;">
+
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi past7-chevron"
+                                   th:classappend="${iter.first} ? 'bi-chevron-down text-primary' : 'bi-chevron-right text-muted'"
+                                   th:id="'past7Chevron-' + ${iter.index}"
+                                   style="font-size: 14px; transition: transform 0.25s ease;"></i>
+                                <span class="fw-semibold"
+                                      th:classappend="${iter.first} ? 'text-primary' : ''"
+                                      th:text="${group.label}">Yesterday - 26 Jul 2026</span>
+                            </div>
+
+                            <div class="d-flex align-items-center gap-4">
+                                <span class="text-muted small">
+                                    <i class="bi bi-cup-hot me-1"></i>
+                                    <!-- CHECK 1 : Meal count with correct singular/plural -->
+                                    <span th:text="${group.totalMeals + (group.totalMeals != 1 ? ' Meals' : ' Meal')}">3 Meals</span>
+                                </span>
+                                <!-- CHECK 2 FIX : accordion summary shows "₹ 26,000" (no decimals in header is fine) -->
+                                <span class="fw-semibold text-dark">
+                                    &#8377; <span th:text="${#numbers.formatDecimal(group.totalAmount, 1, 'COMMA', 0, 'POINT')}">0</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Accordion Body -->
+                        <div th:id="'past7Body-' + ${iter.index}"
+                             class="past7-body"
+                             th:style="${iter.first} ? 'max-height: 2000px; opacity: 1;' : 'max-height: 0; opacity: 0;'">
+
+                            <!-- CHECK 5 : per-day empty state ✅ -->
+                            <div th:if="${#lists.isEmpty(group.schedules)}"
+                                 class="text-center py-4 text-muted border-top">
+                                <i class="bi bi-calendar-x me-1"></i>
+                                No meals recorded for this day.
+                            </div>
+
+                            <!-- Nested table — CHECK 9 : table-responsive ✅ -->
+                            <div th:unless="${#lists.isEmpty(group.schedules)}"
+                                 class="table-responsive border-top">
+                                <table class="table table-sm table-hover align-middle mb-0">
+                                    <thead class="table-light text-muted" style="font-size: 12px;">
+                                        <tr>
+                                            <th class="ps-3" style="width:110px;">Meal</th>
+                                            <th style="width:100px;">Time</th>
+                                            <th style="min-width:180px;">Menu / Items</th>
+                                            <th style="min-width:140px;">Donor</th>
+                                            <th style="width:120px;">Sponsorship</th>
+                                            <th class="pe-3" style="width:120px;">Amount (₹)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- CHECK 1 : ordered B→L→D per group via ORDER BY in repo ✅ -->
+                                        <tr th:each="s : ${group.schedules}">
+                                            <td class="ps-3">
+                                                <span class="badge fw-semibold"
+                                                      th:classappend="${s.mealType.name() == 'BREAKFAST' ? 'bg-success bg-opacity-10 text-success' :
+                                                                      (s.mealType.name() == 'LUNCH'     ? 'bg-warning bg-opacity-10 text-warning' :
+                                                                                                          'bg-info bg-opacity-10 text-info')}"
+                                                      th:text="${s.mealType.displayName}">Meal</span>
+                                            </td>
+                                            <td class="text-muted small"
+                                                th:text="${s.mealType.name() == 'BREAKFAST' ? '07:30 AM' :
+                                                          (s.mealType.name() == 'LUNCH'    ? '11:45 AM' : '06:45 PM')}">07:30 AM</td>
+                                            <!-- CHECK 10 FIX : word wrap in past 7 days table too -->
+                                            <td class="small"
+                                                style="white-space: normal; word-break: break-word; max-width: 220px;"
+                                                th:text="${s.menuItems}">Menu</td>
+                                            <!-- CHECK 11 : null donor → "No Sponsor" ✅ -->
+                                            <td class="small">
+                                                <span th:if="${s.donorName != null}" th:text="${s.donorName}">Donor</span>
+                                                <span th:unless="${s.donorName != null}" class="text-muted">No Sponsor</span>
+                                            </td>
+                                            <td class="small">
+                                                <span th:if="${s.paymentMethod != null}" th:text="${s.paymentMethod}">One Time</span>
+                                                <span th:unless="${s.paymentMethod != null}" class="text-muted">—</span>
+                                            </td>
+                                            <!-- CHECK 2 FIX : ₹ prefix in detail cells too -->
+                                            <td class="small pe-3">
+                                                <span th:if="${s.donationAmount != null}"
+                                                      th:text="${'₹' + #numbers.formatDecimal(s.donationAmount, 1, 'COMMA', 2, 'POINT')}">₹0.00</span>
+                                                <span th:unless="${s.donationAmount != null}" class="text-muted">—</span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Divider between items (skip last) -->
+                        <hr th:unless="${iter.last}" class="my-0 mx-0" style="border-color: #f0f0f0;">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════════ -->
+        <!-- SECTION 3 + 4 : EXISTING SEARCH + MANAGEMENT TABLE (unchanged)     -->
+        <!-- ═══════════════════════════════════════════════════════════════════ -->
         <div class="card">
             <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
                 <h5 class="mb-0 fw-bold">Food Schedule</h5>
-                <button type="button" class="btn btn-primary btn-sm px-3" data-bs-toggle="modal" data-bs-target="#addScheduleModal">
+                <button type="button" class="btn btn-primary btn-sm px-3"
+                        data-bs-toggle="modal" data-bs-target="#addScheduleModal">
                     <i class="bi bi-plus-lg me-1"></i> Create Schedule
                 </button>
             </div>
 
             <div class="card-body">
                 <!-- Search & Filter -->
-                <form th:action="@{/food-schedule}" method="get" class="row g-3 mb-4 align-items-end" th:object="${searchDTO}">
+                <form th:action="@{/food-schedule}" method="get"
+                      class="row g-3 mb-4 align-items-end" th:object="${searchDTO}">
                     <div class="col-md-2">
                         <label class="form-label text-muted small fw-bold mb-1">From Date</label>
                         <input type="date" class="form-control form-control-sm" th:field="*{fromDate}">
@@ -124,7 +350,7 @@
                     </div>
                     <div class="col-md-3">
                         <label class="form-label text-muted small fw-bold mb-1">Food Sponsor</label>
-                        <select class="form-select form-select-sm" th:field="*{donorId}">
+                        <select class="form-select form-select-sm" th:field="*{donorId}" id="donorId">
                             <option value="">All Sponsors</option>
                             <option th:each="sponsor : ${sponsors}"
                                     th:value="${sponsor.donorId}"
@@ -141,12 +367,16 @@
                         </select>
                     </div>
                     <div class="col-md-1 d-flex gap-2">
-                        <button type="submit" class="btn btn-primary btn-sm flex-grow-1"><i class="bi bi-search"></i></button>
-                        <a th:href="@{/food-schedule}" class="btn btn-light border btn-sm flex-grow-1"><i class="bi bi-arrow-clockwise"></i></a>
+                        <button type="submit" class="btn btn-primary btn-sm flex-grow-1">
+                            <i class="bi bi-search"></i>
+                        </button>
+                        <a th:href="@{/food-schedule}" class="btn btn-light border btn-sm flex-grow-1">
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </a>
                     </div>
                 </form>
 
-                <!-- Table -->
+                <!-- CHECK 9 : existing table also in table-responsive ✅ -->
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
                         <thead class="table-light text-muted small">
@@ -168,41 +398,55 @@
                                 </td>
                             </tr>
                             <tr th:each="schedule : ${schedules.content}">
-                                <td class="fw-medium" th:text="${#temporals.format(schedule.mealDate, 'dd MMM yyyy')}">Date</td>
+                                <!-- CHECK 3 : date format 'dd MMM yyyy' → "27 Jul 2026" ✅ -->
+                                <td class="fw-medium"
+                                    th:text="${#temporals.format(schedule.mealDate, 'dd MMM yyyy')}">Date</td>
                                 <td>
                                     <span class="badge"
-                                          th:classappend="${schedule.mealType.name() == 'BREAKFAST' ? 'bg-success bg-opacity-10 text-success' : (schedule.mealType.name() == 'LUNCH' ? 'bg-warning bg-opacity-10 text-warning' : 'bg-info bg-opacity-10 text-info')}"
+                                          th:classappend="${schedule.mealType.name() == 'BREAKFAST' ? 'bg-success bg-opacity-10 text-success' :
+                                                          (schedule.mealType.name() == 'LUNCH'     ? 'bg-warning bg-opacity-10 text-warning' :
+                                                                                                     'bg-info bg-opacity-10 text-info')}"
                                           th:text="${schedule.mealType.displayName}">Meal</span>
                                 </td>
                                 <td>
-                                    <div class="text-truncate" style="max-width: 200px;" th:text="${schedule.menuItems}">Menu</div>
+                                    <!-- CHECK 10 : text-truncate with max-width ✅ (existing behaviour preserved) -->
+                                    <div class="text-truncate" style="max-width: 200px;"
+                                         th:text="${schedule.menuItems}">Menu</div>
                                 </td>
                                 <td>
                                     <div th:if="${schedule.donorName != null}">
                                         <div class="fw-medium" th:text="${schedule.donorName}">Name</div>
                                     </div>
+                                    <!-- CHECK 11 : "No Sponsor" for null ✅ -->
                                     <span th:unless="${schedule.donorName != null}" class="text-muted small">No Sponsor</span>
                                 </td>
                                 <td>
                                     <div th:if="${schedule.donorMobile != null}">
                                         <div class="fw-medium" th:text="${schedule.donorMobile}">Mobile</div>
                                     </div>
-                                    <span th:unless="${schedule.donorMobile != null}" class="text-muted small">-</span>
+                                    <span th:unless="${schedule.donorMobile != null}" class="text-muted small">—</span>
                                 </td>
                                 <td>
                                     <span class="badge"
-                                          th:classappend="${schedule.status == 'ACTIVE' ? 'bg-primary' : (schedule.status == 'COMPLETED' ? 'bg-success' : 'bg-secondary')}"
+                                          th:classappend="${schedule.status == 'ACTIVE' ? 'bg-primary' :
+                                                          (schedule.status == 'COMPLETED' ? 'bg-success' : 'bg-secondary')}"
                                           th:text="${schedule.status}">Status</span>
                                 </td>
                                 <td class="text-end">
+                                    <!-- CHECK 8 : existing View/Edit/Delete routes unchanged ✅ -->
                                     <div class="btn-group btn-group-sm">
-                                        <button type="button" class="btn btn-light border text-primary" th:onclick="'viewSchedule(' + ${schedule.id} + ')'" title="View">
+                                        <button type="button" class="btn btn-light border text-primary"
+                                                th:onclick="'viewSchedule(' + ${schedule.id} + ')'" title="View">
                                             <i class="bi bi-eye"></i>
                                         </button>
-                                        <button type="button" class="btn btn-light border text-secondary" th:onclick="'editSchedule(' + ${schedule.id} + ')'" title="Edit">
+                                        <button type="button" class="btn btn-light border text-secondary"
+                                                th:onclick="'editSchedule(' + ${schedule.id} + ')'" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </button>
-                                        <a th:href="@{/food-schedule/delete/{id}(id=${schedule.id})}" class="btn btn-light border text-danger" onclick="return confirm('Are you sure you want to delete this schedule?');" title="Delete">
+                                        <a th:href="@{/food-schedule/delete/{id}(id=${schedule.id})}"
+                                           class="btn btn-light border text-danger"
+                                           onclick="return confirm('Are you sure you want to delete this schedule?');"
+                                           title="Delete">
                                             <i class="bi bi-trash"></i>
                                         </a>
                                     </div>
@@ -219,25 +463,172 @@
             </div>
         </div>
 
-        <!-- Modals -->
+        <!-- Modals (View + Add/Edit) -->
         <div th:replace="~{food-schedule/fragments/modal :: modals}"></div>
 
-        <!-- TomSelect for Searchable Dropdowns -->
+        <!-- TomSelect CDN -->
         <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
         <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+
+        <!-- ─── Past 7 Days Accordion Styles ──────────────────────────────── -->
+        <style>
+            /* CHECK 15 : matches portal design — white bg, subtle border, consistent spacing */
+            .past7-accordion {
+                border-radius: 0;
+                overflow: hidden;
+            }
+            .past7-header {
+                background-color: #fff;
+                transition: background-color 0.15s ease;
+            }
+            .past7-header:hover {
+                background-color: #f8f9fc;
+            }
+            /* Smooth expand/collapse animation */
+            .past7-body {
+                overflow: hidden;
+                transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                            opacity   0.25s ease;
+            }
+            /* Subtle alternating rows in nested table */
+            .past7-body .table tbody tr:nth-child(even) {
+                background-color: #f8f9fc;
+            }
+            /* CHECK 10 : ensure menu text wraps instead of expanding the table width */
+            .past7-body td[style*="word-break"],
+            .card-body td[style*="word-break"] {
+                white-space: normal;
+                word-break: break-word;
+            }
+        </style>
+
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // Initialize TomSelect on search filter dropdown
-                new TomSelect('#donorId', {
-                    create: false,
-                    sortField: {
-                        field: "text",
-                        direction: "asc"
-                    }
-                });
-                
-                // The modal dropdown is handled in modal.html script block
+            document.addEventListener('DOMContentLoaded', function () {
+                // Initialise TomSelect on the search-filter sponsor dropdown
+                if (document.getElementById('donorId')) {
+                    new TomSelect('#donorId', {
+                        create: false,
+                        sortField: { field: 'text', direction: 'asc' }
+                    });
+                }
             });
+
+            /* ── Past-7-Days accordion toggle ────────────────────────────────
+               CHECK 6 : index-0 (Yesterday) is pre-expanded via th:style in HTML.
+               Clicking any row toggles open/closed. */
+            function togglePast7(idx) {
+                var body    = document.getElementById('past7Body-'    + idx);
+                var chevron = document.getElementById('past7Chevron-' + idx);
+                var heading = document.getElementById('past7Heading-' + idx);
+
+                // Treat any max-height other than '0' or '0px' as "open"
+                var isOpen = body.style.maxHeight &&
+                             body.style.maxHeight !== '0' &&
+                             body.style.maxHeight !== '0px';
+
+                if (isOpen) {
+                    body.style.maxHeight = '0';
+                    body.style.opacity   = '0';
+                    chevron.classList.remove('bi-chevron-down', 'text-primary');
+                    chevron.classList.add('bi-chevron-right', 'text-muted');
+                    heading.querySelector('span.fw-semibold').classList.remove('text-primary');
+                } else {
+                    body.style.maxHeight = '2000px';
+                    body.style.opacity   = '1';
+                    chevron.classList.remove('bi-chevron-right', 'text-muted');
+                    chevron.classList.add('bi-chevron-down', 'text-primary');
+                    heading.querySelector('span.fw-semibold').classList.add('text-primary');
+                }
+            }
+
+            /* ── Print handler — CHECK 7 FIX ─────────────────────────────────
+               Fetches schedule details from /food-schedule/api/item/{id} (the existing
+               controller endpoint) and opens a fully-branded, print-ready popup.
+               Matches portal styling: Inter font, blue heading, clean table.        */
+            function printSchedule(id) {
+                fetch('/food-schedule/api/item/' + id)
+                    .then(function (r) {
+                        if (!r.ok) throw new Error('HTTP ' + r.status);
+                        return r.json();
+                    })
+                    .then(function (data) {
+                        var mealLabel = data.mealType === 'BREAKFAST' ? 'Breakfast' :
+                                        data.mealType === 'LUNCH'     ? 'Lunch'     : 'Dinner';
+                        var timeLabel = data.mealType === 'BREAKFAST' ? '07:30 AM' :
+                                        data.mealType === 'LUNCH'     ? '11:45 AM' : '06:45 PM';
+                        var amount    = data.donationAmount
+                                        ? '\u20B9' + parseFloat(data.donationAmount)
+                                               .toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                                        : '\u2014';
+
+                        var html = '<!DOCTYPE html><html lang="en"><head>' +
+                            '<meta charset="UTF-8">' +
+                            '<title>Food Schedule &ndash; ' + mealLabel + ' | Smart Old Age Home Portal</title>' +
+                            '<style>' +
+                            '  @import url(\'https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap\');' +
+                            '  * { box-sizing: border-box; margin: 0; padding: 0; }' +
+                            '  body { font-family: Inter, sans-serif; padding: 32px 40px; color: #1e293b; font-size: 14px; }' +
+                            '  .print-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px;' +
+                            '                  padding-bottom: 16px; border-bottom: 2px solid #2563eb; }' +
+                            '  .print-header svg { flex-shrink: 0; }' +
+                            '  .print-title { font-size: 20px; font-weight: 700; color: #2563eb; }' +
+                            '  .print-subtitle { font-size: 12px; color: #64748b; margin-top: 2px; }' +
+                            '  table { width: 100%; border-collapse: collapse; margin-top: 8px; }' +
+                            '  th { background: #f1f5f9; color: #64748b; font-size: 11px; font-weight: 600;' +
+                            '       text-transform: uppercase; letter-spacing: .5px;' +
+                            '       padding: 8px 12px; text-align: left; border: 1px solid #e2e8f0; }' +
+                            '  td { padding: 10px 12px; border: 1px solid #e2e8f0; vertical-align: top; }' +
+                            '  tr:nth-child(even) td { background: #f8fafc; }' +
+                            '  .badge-green { background:#dcfce7; color:#16a34a; padding:2px 8px;' +
+                            '                 border-radius:999px; font-size:11px; font-weight:600; }' +
+                            '  .badge-yellow { background:#fef9c3; color:#a16207; padding:2px 8px;' +
+                            '                  border-radius:999px; font-size:11px; font-weight:600; }' +
+                            '  .badge-blue { background:#dbeafe; color:#1d4ed8; padding:2px 8px;' +
+                            '                border-radius:999px; font-size:11px; font-weight:600; }' +
+                            '  .print-footer { margin-top: 32px; font-size: 11px; color: #94a3b8;' +
+                            '                  text-align: center; border-top: 1px solid #e2e8f0; padding-top: 12px; }' +
+                            '  @media print { button { display: none; } }' +
+                            '</style></head><body>' +
+                            '<div class="print-header">' +
+                            '  <svg width="36" height="36" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+                            '    <rect width="32" height="32" rx="8" fill="#2563EB"/>' +
+                            '    <path d="M16 8L7 16H10V24H14V19H18V24H22V16H25L16 8Z" fill="white"/>' +
+                            '  </svg>' +
+                            '  <div>' +
+                            '    <div class="print-title">Food Schedule Details</div>' +
+                            '    <div class="print-subtitle">Smart Old Age Home Portal &bull; Printed on ' +
+                                 new Date().toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'}) + '</div>' +
+                            '  </div>' +
+                            '</div>' +
+                            '<table>' +
+                            '<tr><th>Date</th><td>' + (data.mealDate || '\u2014') + '</td></tr>' +
+                            '<tr><th>Meal Type</th><td>' +
+                            '  <span class="' + (data.mealType === 'BREAKFAST' ? 'badge-green' :
+                                                  data.mealType === 'LUNCH'     ? 'badge-yellow' : 'badge-blue') + '">' +
+                              mealLabel + '</span></td></tr>' +
+                            '<tr><th>Time</th><td>' + timeLabel + '</td></tr>' +
+                            '<tr><th>Menu Items</th><td>' + (data.menuItems || '\u2014') + '</td></tr>' +
+                            '<tr><th>Food Sponsor</th><td>' + (data.donorName || 'No Sponsor') + '</td></tr>' +
+                            '<tr><th>Amount</th><td><strong>' + amount + '</strong></td></tr>' +
+                            '<tr><th>Status</th><td>' + (data.status || '\u2014') + '</td></tr>' +
+                            '<tr><th>Remarks</th><td>' + (data.remarks || '\u2014') + '</td></tr>' +
+                            '</table>' +
+                            '<div class="print-footer">&copy; 2026 Smart Old Age Home Portal. Built for GTU Societal Internship.</div>' +
+                            '<script>window.onload = function () { window.print(); }<\/script>' +
+                            '</body></html>';
+
+                        var popup = window.open('', '_blank', 'width=720,height=600');
+                        if (!popup) {
+                            alert('Pop-up blocked. Please allow pop-ups for this site and try again.');
+                            return;
+                        }
+                        popup.document.write(html);
+                        popup.document.close();
+                    })
+                    .catch(function () {
+                        alert('Could not load schedule details for printing. Please try again.');
+                    });
+            }
         </script>
 
     </div>

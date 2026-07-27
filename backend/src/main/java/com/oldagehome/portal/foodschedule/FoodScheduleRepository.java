@@ -59,4 +59,16 @@ public interface FoodScheduleRepository extends JpaRepository<FoodSchedule, Long
            "AND d.donationAmount > 0 " +
            "ORDER BY d.fullName")
     List<FoodSponsorDTO> findEligibleFoodSponsors();
+
+    // For Today's Food Schedule card
+    @Query("SELECT fs FROM FoodSchedule fs LEFT JOIN FETCH fs.donor WHERE fs.mealDate = :date ORDER BY fs.mealType ASC")
+    List<FoodSchedule> findByMealDateOrderByMealTypeAsc(@Param("date") LocalDate date);
+
+    // For Past 7 Days accordion
+    @Query("SELECT fs FROM FoodSchedule fs LEFT JOIN FETCH fs.donor " +
+           "WHERE fs.mealDate >= :fromDate AND fs.mealDate <= :toDate " +
+           "ORDER BY fs.mealDate DESC, fs.mealType ASC")
+    List<FoodSchedule> findByDateRangeOrderByDateDescMealTypeAsc(
+            @Param("fromDate") LocalDate fromDate,
+            @Param("toDate") LocalDate toDate);
 }

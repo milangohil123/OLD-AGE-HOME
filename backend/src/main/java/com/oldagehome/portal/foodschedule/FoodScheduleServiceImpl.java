@@ -2,6 +2,7 @@ package com.oldagehome.portal.foodschedule;
 
 import com.oldagehome.portal.donor.Donor;
 import com.oldagehome.portal.donor.DonorRepository;
+import com.oldagehome.portal.foodschedule.dto.DailyScheduleGroupDTO;
 import com.oldagehome.portal.foodschedule.dto.FoodDashboardDTO;
 import com.oldagehome.portal.foodschedule.dto.FoodScheduleDTO;
 import com.oldagehome.portal.foodschedule.dto.FoodSponsorDTO;
@@ -12,8 +13,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -153,8 +159,74 @@ public class FoodScheduleServiceImpl implements FoodScheduleService {
             dto.setDonorId(entity.getDonor().getId());
             dto.setDonorName(entity.getDonor().getFullName());
             dto.setDonorMobile(entity.getDonor().getMobile());
+            dto.setDonationAmount(entity.getDonor().getDonationAmount());
+            dto.setDonationDate(entity.getDonor().getDonationDate());
+            dto.setPaymentMethod(entity.getDonor().getPaymentMethod());
         }
 
         return dto;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<FoodScheduleDTO> getTodaysSchedules() {
+        LocalDate today = LocalDate.now();
+        return foodScheduleRepository.findByMealDateOrderByMealTypeAsc(today)
+                .stream()
+                .map(this::mapToDTO)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<DailyScheduleGroupDTO> getPast7DaysGroups() {
+        LocalDate today = LocalDate.now();
+        LocalDate yesterday = today.minusDays(1);
+        LocalDate sevenDaysAgo = today.minusDays(7);
+
+        List<FoodSchedule> raw = foodScheduleRepository
+                .findByDateRangeOrderByDateDescMealTypeAsc(sevenDaysAgo, yesterday);
+
+        // Group by date preserving DESC order
+        Map<LocalDate, List<FoodSchedule>> byDate = new LinkedHashMap<>();
+        for (FoodSchedule fs : raw) {
+            byDate.computeIfAbsent(fs.getMealDate(), d -> new ArrayList<>()).add(fs);
+        }
+
+        // Ensure all 7 days are represented even if empty
+        for (int i = 1; i <= 7; i++) {
+            byDate.putIfAbsent(today.minusDays(i), new ArrayList<>());
+        }
+
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd MMM yyyy");
+        List<DailyScheduleGroupDTO> groups = new ArrayList<>();
+
+        // Iterate in DESC order (yesterday first)
+        byDate.entrySet().stream()
+                .sorted(Map.Entry.<LocalDate, List<FoodSchedule>>comparingByKey().reversed())
+                .forEach(entry -> {
+                    LocalDate date = entry.getKey();
+                    List<FoodScheduleDTO> dtos = entry.getValue().stream()
+                            .map(this::mapToDTO)
+                            .toList();
+
+                    BigDecimal total = dtos.stream()
+                            .map(d -> d.getDonationAmount() != null ? d.getDonationAmount() : BigDecimal.ZERO)
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                    String label = date.equals(yesterday)
+                            ? "Yesterday - " + date.format(fmt)
+                            : date.format(fmt);
+
+                    groups.add(DailyScheduleGroupDTO.builder()
+                            .date(date)
+                            .label(label)
+                            .totalMeals(dtos.size())
+                            .totalAmount(total)
+                            .schedules(dtos)
+                            .build());
+                });
+
+        return groups;
     }
 }

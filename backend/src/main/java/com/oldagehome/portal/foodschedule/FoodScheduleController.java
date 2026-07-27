@@ -44,6 +44,9 @@ public class FoodScheduleController {
             model.addAttribute("schedules", schedules);
             model.addAttribute("dashboard", foodScheduleService.getDashboardStats());
             model.addAttribute("sponsors", foodScheduleService.getFoodSponsors());
+            model.addAttribute("todaysSchedules", foodScheduleService.getTodaysSchedules());
+            model.addAttribute("past7DaysGroups", foodScheduleService.getPast7DaysGroups());
+            model.addAttribute("todayDate", java.time.LocalDate.now());
             model.addAttribute("activePage", "food-schedule");
 
             return "food-schedule/list";

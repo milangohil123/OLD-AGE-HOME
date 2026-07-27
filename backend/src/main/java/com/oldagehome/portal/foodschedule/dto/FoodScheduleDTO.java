@@ -39,6 +39,7 @@ public class FoodScheduleDTO {
     
     // Additional fields for display/read-only logic
     private BigDecimal donationAmount;
+    private String paymentMethod;
     
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate donationDate;
