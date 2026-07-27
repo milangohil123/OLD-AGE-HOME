@@ -97,6 +97,153 @@
         </div>
 
         <!-- ═══════════════════════════════════════════════════════════════════ -->
+        <!-- SECTION 3 + 4 : EXISTING SEARCH + MANAGEMENT TABLE                 -->
+        <!-- ═══════════════════════════════════════════════════════════════════ -->
+        <div class="card mb-4">
+            <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold">Food Schedule</h5>
+                <button type="button" class="btn btn-primary btn-sm px-3"
+                        data-bs-toggle="modal" data-bs-target="#addScheduleModal">
+                    <i class="bi bi-plus-lg me-1"></i> Create Schedule
+                </button>
+            </div>
+
+            <div class="card-body">
+                <!-- Search & Filter -->
+                <form th:action="@{/food-schedule}" method="get"
+                      class="row g-3 mb-4 align-items-end" th:object="${searchDTO}">
+                    <div class="col-md-2">
+                        <label class="form-label text-muted small fw-bold mb-1">From Date</label>
+                        <input type="date" class="form-control form-control-sm" th:field="*{fromDate}">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label text-muted small fw-bold mb-1">To Date</label>
+                        <input type="date" class="form-control form-control-sm" th:field="*{toDate}">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label text-muted small fw-bold mb-1">Meal Type</label>
+                        <select class="form-select form-select-sm" th:field="*{mealType}">
+                            <option value="">All Meals</option>
+                            <option th:each="type : ${T(com.oldagehome.portal.foodschedule.MealType).values()}"
+                                    th:value="${type}" th:text="${type.displayName}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label text-muted small fw-bold mb-1">Food Sponsor</label>
+                        <select class="form-select form-select-sm" th:field="*{donorId}" id="donorId">
+                            <option value="">All Sponsors</option>
+                            <option th:each="sponsor : ${sponsors}"
+                                    th:value="${sponsor.donorId}"
+                                    th:text="${sponsor.donorName}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label text-muted small fw-bold mb-1">Status</label>
+                        <select class="form-select form-select-sm" th:field="*{status}">
+                            <option value="">All Statuses</option>
+                            <option value="ACTIVE">Active</option>
+                            <option value="COMPLETED">Completed</option>
+                            <option value="CANCELLED">Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="col-md-1 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary btn-sm flex-grow-1">
+                            <i class="bi bi-search"></i>
+                        </button>
+                        <a th:href="@{/food-schedule}" class="btn btn-light border btn-sm flex-grow-1">
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </a>
+                    </div>
+                </form>
+
+                <!-- CHECK 9 : existing table also in table-responsive ✅ -->
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light text-muted small">
+                            <tr>
+                                <th>Date</th>
+                                <th>Meal</th>
+                                <th>Menu</th>
+                                <th>Food Sponsor</th>
+                                <th>Mobile</th>
+                                <th>Status</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${schedules.empty}">
+                                <td colspan="7" class="text-center py-4 text-muted">
+                                    <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                                    No food schedules found.
+                                </td>
+                            </tr>
+                            <tr th:each="schedule : ${schedules.content}">
+                                <!-- CHECK 3 : date format 'dd MMM yyyy' → "27 Jul 2026" ✅ -->
+                                <td class="fw-medium"
+                                    th:text="${#temporals.format(schedule.mealDate, 'dd MMM yyyy')}">Date</td>
+                                <td>
+                                    <span class="badge"
+                                          th:classappend="${schedule.mealType.name() == 'BREAKFAST' ? 'bg-success bg-opacity-10 text-success' :
+                                                          (schedule.mealType.name() == 'LUNCH'     ? 'bg-warning bg-opacity-10 text-warning' :
+                                                                                                     'bg-info bg-opacity-10 text-info')}"
+                                          th:text="${schedule.mealType.displayName}">Meal</span>
+                                </td>
+                                <td>
+                                    <!-- CHECK 10 : text-truncate with max-width ✅ (existing behaviour preserved) -->
+                                    <div class="text-truncate" style="max-width: 200px;"
+                                         th:text="${schedule.menuItems}">Menu</div>
+                                </td>
+                                <td>
+                                    <div th:if="${schedule.donorName != null}">
+                                        <div class="fw-medium" th:text="${schedule.donorName}">Name</div>
+                                    </div>
+                                    <!-- CHECK 11 : "No Sponsor" for null ✅ -->
+                                    <span th:unless="${schedule.donorName != null}" class="text-muted small">No Sponsor</span>
+                                </td>
+                                <td>
+                                    <div th:if="${schedule.donorMobile != null}">
+                                        <div class="fw-medium" th:text="${schedule.donorMobile}">Mobile</div>
+                                    </div>
+                                    <span th:unless="${schedule.donorMobile != null}" class="text-muted small">—</span>
+                                </td>
+                                <td>
+                                    <span class="badge"
+                                          th:classappend="${schedule.status == 'ACTIVE' ? 'bg-primary' :
+                                                          (schedule.status == 'COMPLETED' ? 'bg-success' : 'bg-secondary')}"
+                                          th:text="${schedule.status}">Status</span>
+                                </td>
+                                <td class="text-end">
+                                    <!-- CHECK 8 : existing View/Edit/Delete routes unchanged ✅ -->
+                                    <div class="btn-group btn-group-sm">
+                                        <button type="button" class="btn btn-light border text-primary"
+                                                th:onclick="'viewSchedule(' + ${schedule.id} + ')'" title="View">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-light border text-secondary"
+                                                th:onclick="'editSchedule(' + ${schedule.id} + ')'" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <a th:href="@{/food-schedule/delete/{id}(id=${schedule.id})}"
+                                           class="btn btn-light border text-danger"
+                                           onclick="return confirm('Are you sure you want to delete this schedule?');"
+                                           title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div th:if="${schedules.totalPages > 1}" class="card-footer bg-white border-top py-3">
+                <div th:replace="~{fragments/pagination :: pagination(page=${schedules}, baseUrl='/food-schedule', queryParams='')}"></div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════════ -->
         <!-- SECTION 1 : TODAY'S FOOD SCHEDULE                                   -->
         <!-- CHECK 3 FIX : title uses 'dd MMM yyyy'  → "27 Jul 2026"            -->
         <!-- ═══════════════════════════════════════════════════════════════════ -->
@@ -138,7 +285,7 @@
                                     <span class="badge fw-semibold"
                                           th:classappend="${s.mealType.name() == 'BREAKFAST' ? 'bg-success bg-opacity-10 text-success' :
                                                           (s.mealType.name() == 'LUNCH'     ? 'bg-warning bg-opacity-10 text-warning' :
-                                                                                              'bg-info bg-opacity-10 text-info')}"
+                                                                                               'bg-info bg-opacity-10 text-info')}"
                                           th:text="${s.mealType.displayName}">Meal</span>
                                 </td>
                                 <td class="text-muted small fw-medium"
@@ -313,153 +460,6 @@
                     </div>
                 </div>
 
-            </div>
-        </div>
-
-        <!-- ═══════════════════════════════════════════════════════════════════ -->
-        <!-- SECTION 3 + 4 : EXISTING SEARCH + MANAGEMENT TABLE (unchanged)     -->
-        <!-- ═══════════════════════════════════════════════════════════════════ -->
-        <div class="card">
-            <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 fw-bold">Food Schedule</h5>
-                <button type="button" class="btn btn-primary btn-sm px-3"
-                        data-bs-toggle="modal" data-bs-target="#addScheduleModal">
-                    <i class="bi bi-plus-lg me-1"></i> Create Schedule
-                </button>
-            </div>
-
-            <div class="card-body">
-                <!-- Search & Filter -->
-                <form th:action="@{/food-schedule}" method="get"
-                      class="row g-3 mb-4 align-items-end" th:object="${searchDTO}">
-                    <div class="col-md-2">
-                        <label class="form-label text-muted small fw-bold mb-1">From Date</label>
-                        <input type="date" class="form-control form-control-sm" th:field="*{fromDate}">
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label text-muted small fw-bold mb-1">To Date</label>
-                        <input type="date" class="form-control form-control-sm" th:field="*{toDate}">
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label text-muted small fw-bold mb-1">Meal Type</label>
-                        <select class="form-select form-select-sm" th:field="*{mealType}">
-                            <option value="">All Meals</option>
-                            <option th:each="type : ${T(com.oldagehome.portal.foodschedule.MealType).values()}"
-                                    th:value="${type}" th:text="${type.displayName}"></option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label text-muted small fw-bold mb-1">Food Sponsor</label>
-                        <select class="form-select form-select-sm" th:field="*{donorId}" id="donorId">
-                            <option value="">All Sponsors</option>
-                            <option th:each="sponsor : ${sponsors}"
-                                    th:value="${sponsor.donorId}"
-                                    th:text="${sponsor.donorName}"></option>
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label text-muted small fw-bold mb-1">Status</label>
-                        <select class="form-select form-select-sm" th:field="*{status}">
-                            <option value="">All Statuses</option>
-                            <option value="ACTIVE">Active</option>
-                            <option value="COMPLETED">Completed</option>
-                            <option value="CANCELLED">Cancelled</option>
-                        </select>
-                    </div>
-                    <div class="col-md-1 d-flex gap-2">
-                        <button type="submit" class="btn btn-primary btn-sm flex-grow-1">
-                            <i class="bi bi-search"></i>
-                        </button>
-                        <a th:href="@{/food-schedule}" class="btn btn-light border btn-sm flex-grow-1">
-                            <i class="bi bi-arrow-clockwise"></i>
-                        </a>
-                    </div>
-                </form>
-
-                <!-- CHECK 9 : existing table also in table-responsive ✅ -->
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light text-muted small">
-                            <tr>
-                                <th>Date</th>
-                                <th>Meal</th>
-                                <th>Menu</th>
-                                <th>Food Sponsor</th>
-                                <th>Mobile</th>
-                                <th>Status</th>
-                                <th class="text-end">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:if="${schedules.empty}">
-                                <td colspan="7" class="text-center py-4 text-muted">
-                                    <i class="bi bi-inbox fs-2 d-block mb-2"></i>
-                                    No food schedules found.
-                                </td>
-                            </tr>
-                            <tr th:each="schedule : ${schedules.content}">
-                                <!-- CHECK 3 : date format 'dd MMM yyyy' → "27 Jul 2026" ✅ -->
-                                <td class="fw-medium"
-                                    th:text="${#temporals.format(schedule.mealDate, 'dd MMM yyyy')}">Date</td>
-                                <td>
-                                    <span class="badge"
-                                          th:classappend="${schedule.mealType.name() == 'BREAKFAST' ? 'bg-success bg-opacity-10 text-success' :
-                                                          (schedule.mealType.name() == 'LUNCH'     ? 'bg-warning bg-opacity-10 text-warning' :
-                                                                                                     'bg-info bg-opacity-10 text-info')}"
-                                          th:text="${schedule.mealType.displayName}">Meal</span>
-                                </td>
-                                <td>
-                                    <!-- CHECK 10 : text-truncate with max-width ✅ (existing behaviour preserved) -->
-                                    <div class="text-truncate" style="max-width: 200px;"
-                                         th:text="${schedule.menuItems}">Menu</div>
-                                </td>
-                                <td>
-                                    <div th:if="${schedule.donorName != null}">
-                                        <div class="fw-medium" th:text="${schedule.donorName}">Name</div>
-                                    </div>
-                                    <!-- CHECK 11 : "No Sponsor" for null ✅ -->
-                                    <span th:unless="${schedule.donorName != null}" class="text-muted small">No Sponsor</span>
-                                </td>
-                                <td>
-                                    <div th:if="${schedule.donorMobile != null}">
-                                        <div class="fw-medium" th:text="${schedule.donorMobile}">Mobile</div>
-                                    </div>
-                                    <span th:unless="${schedule.donorMobile != null}" class="text-muted small">—</span>
-                                </td>
-                                <td>
-                                    <span class="badge"
-                                          th:classappend="${schedule.status == 'ACTIVE' ? 'bg-primary' :
-                                                          (schedule.status == 'COMPLETED' ? 'bg-success' : 'bg-secondary')}"
-                                          th:text="${schedule.status}">Status</span>
-                                </td>
-                                <td class="text-end">
-                                    <!-- CHECK 8 : existing View/Edit/Delete routes unchanged ✅ -->
-                                    <div class="btn-group btn-group-sm">
-                                        <button type="button" class="btn btn-light border text-primary"
-                                                th:onclick="'viewSchedule(' + ${schedule.id} + ')'" title="View">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-light border text-secondary"
-                                                th:onclick="'editSchedule(' + ${schedule.id} + ')'" title="Edit">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <a th:href="@{/food-schedule/delete/{id}(id=${schedule.id})}"
-                                           class="btn btn-light border text-danger"
-                                           onclick="return confirm('Are you sure you want to delete this schedule?');"
-                                           title="Delete">
-                                            <i class="bi bi-trash"></i>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Pagination -->
-            <div th:if="${schedules.totalPages > 1}" class="card-footer bg-white border-top py-3">
-                <div th:replace="~{fragments/pagination :: pagination(page=${schedules}, baseUrl='/food-schedule', queryParams='')}"></div>
             </div>
         </div>
 
