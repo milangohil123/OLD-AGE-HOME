@@ -51,6 +51,11 @@ public class DonorServiceImpl implements DonorService {
     }
 
     @Override
+    public List<Donor> getRecentDonors(int limit) {
+        return donorRepository.findAll(org.springframework.data.domain.PageRequest.of(0, limit, org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "createdAt"))).getContent();
+    }
+
+    @Override
     public Donor getDonorById(Long id) {
         return donorRepository.findById(id)
                 .orElseThrow(() -> {

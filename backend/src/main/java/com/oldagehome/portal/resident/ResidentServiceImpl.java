@@ -41,6 +41,16 @@ public class ResidentServiceImpl implements ResidentService {
     }
 
     @Override
+    public long countTotalResidents() {
+        return residentRepository.count();
+    }
+
+    @Override
+    public List<Resident> getRecentResidents(int limit) {
+        return residentRepository.findAll(org.springframework.data.domain.PageRequest.of(0, limit, org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "createdAt"))).getContent();
+    }
+
+    @Override
     public Resident getResidentById(Long id) {
         return residentRepository.findById(id)
                 .orElseThrow(() -> {

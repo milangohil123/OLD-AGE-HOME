@@ -16,6 +16,9 @@ public interface DonorService {
     /** Flat list (for export). */
     List<Donor> getAllDonors();
 
+    /** Recent donors for dashboard */
+    List<Donor> getRecentDonors(int limit);
+
     /** Fetch single donor by primary key. */
     Donor getDonorById(Long id);
 

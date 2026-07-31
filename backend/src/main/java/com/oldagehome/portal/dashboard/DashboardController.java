@@ -22,7 +22,7 @@ public class DashboardController {
     @GetMapping({ "/", "/dashboard" })
     public String dashboard(Model model) {
         // Resident stats
-        model.addAttribute("totalResidents", residentService.getAllResidents().size());
+        model.addAttribute("totalResidents", residentService.countTotalResidents());
 
         // Donor stats
         model.addAttribute("totalDonors", donorService.countTotalDonors());

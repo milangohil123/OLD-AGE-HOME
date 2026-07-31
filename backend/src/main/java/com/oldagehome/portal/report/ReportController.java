@@ -71,8 +71,7 @@ public class ReportController {
         model.addAttribute("activePage", "reports");
         
         // Dashboard Stats
-        List<Resident> residents = residentService.getAllResidents();
-        model.addAttribute("totalResidents", residents.size());
+        model.addAttribute("totalResidents", residentService.countTotalResidents());
         model.addAttribute("totalDonors", donorService.countTotalDonors());
         model.addAttribute("totalDonations", donorService.countTodayDonations() + donorService.countThisMonthDonations()); // approximate or total donation entries count
         model.addAttribute("totalDonationAmount", donorService.sumTotalDonationAmount());
@@ -82,8 +81,8 @@ public class ReportController {
         model.addAttribute("availableMedicines", inventoryService.countAvailable());
 
         // Recents
-        model.addAttribute("recentDonations", donorService.getAllDonors()); // list has latest donors at the end or sorting can be done
-        model.addAttribute("recentResidents", residents);
+        model.addAttribute("recentDonations", donorService.getRecentDonors(5));
+        model.addAttribute("recentResidents", residentService.getRecentResidents(5));
 
         return "reports/dashboard";
     }

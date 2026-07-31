@@ -25,6 +25,6 @@ public class CacheControlConfig implements WebMvcConfigurer {
 
                 return true;
             }
-        });
+        }).excludePathPatterns("/css/**", "/js/**", "/images/**", "/webjars/**", "/favicon.ico");
     }
 }

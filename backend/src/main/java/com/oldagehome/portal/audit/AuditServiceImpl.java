@@ -77,11 +77,8 @@ public class AuditServiceImpl implements AuditService {
 
     @Override
     public void deleteOldLogs(LocalDateTime beforeDate) {
-        // Find logs older than beforeDate and delete them
-        List<AuditLog> oldLogs = auditLogRepository.findAll().stream()
-            .filter(log -> log.getTimestamp().isBefore(beforeDate))
-            .toList();
-        auditLogRepository.deleteAll(oldLogs);
+        // Delete logs older than beforeDate directly using a repository query
+        auditLogRepository.deleteByTimestampBefore(beforeDate);
     }
 
     @Override

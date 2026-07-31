@@ -10,6 +10,8 @@ import java.util.List;
 public interface ResidentService {
     Page<Resident> getResidents(String keyword, Pageable pageable);
     List<Resident> getAllResidents();
+    long countTotalResidents();
+    List<Resident> getRecentResidents(int limit);
     Resident getResidentById(Long id);
     Resident saveResident(Resident resident);
     Resident updateResident(Resident resident);

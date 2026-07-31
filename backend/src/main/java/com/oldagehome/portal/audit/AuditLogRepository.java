@@ -41,4 +41,8 @@ public interface AuditLogRepository extends JpaRepository<AuditLog, Long> {
     long countByTimestampAfterAndSuccess(LocalDateTime startOfDay, boolean success);
 
     Optional<AuditLog> findFirstByActionOrderByTimestampDesc(AuditAction action);
+
+    @org.springframework.data.jpa.repository.Modifying
+    @Query("DELETE FROM AuditLog a WHERE a.timestamp < :beforeDate")
+    void deleteByTimestampBefore(@Param("beforeDate") LocalDateTime beforeDate);
 }
