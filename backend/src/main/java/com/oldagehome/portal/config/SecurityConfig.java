@@ -11,6 +11,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 @Configuration
 @EnableWebSecurity
@@ -88,7 +91,8 @@ public class SecurityConfig {
                                                 .permitAll())
                                 .sessionManagement(session -> session
                                                 .invalidSessionUrl("/login?timeout=true")
-                                                .maximumSessions(1)
+                                                .maximumSessions(3)
+                                                .sessionRegistry(sessionRegistry())
                                                 .expiredUrl("/login?timeout=true"))
                                 .headers(headers -> headers
                                                 .cacheControl(cache -> cache.disable())
@@ -114,5 +118,29 @@ public class SecurityConfig {
                 http.authenticationProvider(authenticationProvider());
 
                 return http.build();
+        }
+
+        /**
+         * SessionRegistry tracks all active sessions in memory.
+         * Required for correct concurrent session enforcement when maximumSessions > 0.
+         * Without an explicit bean, Spring Security creates an internal one that may
+         * not be properly wired when customizing session management.
+         */
+        @Bean
+        public SessionRegistry sessionRegistry() {
+                return new SessionRegistryImpl();
+        }
+
+        /**
+         * HttpSessionEventPublisher notifies Spring Security when an HttpSession
+         * is created or destroyed by the Servlet container.
+         * This is REQUIRED for maximumSessions to correctly release expired session
+         * slots. Without it, logged-out or timed-out sessions are never deregistered
+         * from the SessionRegistry, causing the concurrent session count to creep up
+         * until every new login is incorrectly rejected or the wrong session is evicted.
+         */
+        @Bean
+        public HttpSessionEventPublisher httpSessionEventPublisher() {
+                return new HttpSessionEventPublisher();
         }
 }
