@@ -116,7 +116,7 @@
         <div th:replace="~{fragments/search :: search(baseUrl='/inventory', keyword=${keyword}, size=${inventoryPage.size}, sort=${sort}, direction=${direction}, placeholder='Search by Code, Name, Manufacturer, Supplier, or Batch...')}"></div>
 
         <!-- ── Main Table Card ────────────────────────────────────────────── -->
-        <div class="card">
+        <div class="table-card">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
                     <thead>
@@ -161,26 +161,19 @@
                             </td>
                             <td th:text="${item.expiryDate != null ? #temporals.format(item.expiryDate, 'dd MMM yyyy') : '-'}">01 Jan 2027</td>
                             <td>
-                                <span th:if="${item.status.name() == 'AVAILABLE'}"
-                                      class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">Available</span>
-                                <span th:if="${item.status.name() == 'LOW_STOCK'}"
-                                      class="badge bg-warning bg-opacity-10 text-warning px-3 py-2 rounded-pill">⚠ Low Stock</span>
-                                <span th:if="${item.status.name() == 'OUT_OF_STOCK'}"
-                                      class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-pill">Out of Stock</span>
-                                <span th:if="${item.status.name() == 'EXPIRED'}"
-                                      class="badge bg-danger bg-opacity-25 text-danger px-3 py-2 rounded-pill">☠ Expired</span>
+                                <span th:if="${item.status.name() == 'AVAILABLE'}" class="res-badge res-badge-active">Available</span>
+                                <span th:if="${item.status.name() == 'LOW_STOCK'}" class="badge badge-yellow">Low Stock</span>
+                                <span th:if="${item.status.name() == 'OUT_OF_STOCK'}" class="badge badge-gray">Out of Stock</span>
+                                <span th:if="${item.status.name() == 'EXPIRED'}" class="res-badge res-badge-deceased">Expired</span>
                             </td>
                             <td class="text-end">
                                 <div class="d-inline-flex gap-2">
-                                    <a th:href="@{/inventory/view/{id}(id=${item.id})}"
-                                       class="btn btn-secondary px-3" style="height: 38px; font-size: 16px;">View</a>
-                                    <a th:href="@{/inventory/edit/{id}(id=${item.id})}"
-                                       class="btn btn-secondary px-3" style="height: 38px; font-size: 16px;"
-                                       sec:authorize="hasAnyRole('ADMIN', 'MANAGER')">Edit</a>
-                                    <a th:href="@{/inventory/delete/{id}(id=${item.id})}"
-                                       class="btn btn-danger px-3 text-white" style="height: 38px; font-size: 16px;"
+                                    <a th:href="@{/inventory/view/{id}(id=${item.id})}" class="btn btn-icon btn-icon-view"><i class="bi bi-eye"></i></a>
+                                    <a th:href="@{/inventory/edit/{id}(id=${item.id})}" class="btn btn-icon btn-icon-edit"
+                                       sec:authorize="hasAnyRole('ADMIN', 'MANAGER')"><i class="bi bi-pencil"></i></a>
+                                    <a th:href="@{/inventory/delete/{id}(id=${item.id})}" class="btn btn-icon btn-icon-delete"
                                        onclick="return confirm('Are you sure you want to permanently delete this medicine record?');"
-                                       sec:authorize="hasRole('ADMIN')">Delete</a>
+                                       sec:authorize="hasRole('ADMIN')"><i class="bi bi-trash"></i></a>
                                 </div>
                             </td>
                         </tr>

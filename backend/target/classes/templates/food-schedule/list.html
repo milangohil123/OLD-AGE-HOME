@@ -197,9 +197,9 @@
                                     th:text="${#temporals.format(schedule.mealDate, 'dd MMM yyyy')}">Date</td>
                                 <td>
                                     <span class="badge"
-                                          th:classappend="${schedule.mealType.name() == 'BREAKFAST' ? 'bg-success bg-opacity-10 text-success' :
-                                                          (schedule.mealType.name() == 'LUNCH'     ? 'bg-warning bg-opacity-10 text-warning' :
-                                                                                                     'bg-info bg-opacity-10 text-info')}"
+                                          th:classappend="${schedule.mealType.name() == 'BREAKFAST' ? 'badge-yellow' :
+                                                          (schedule.mealType.name() == 'LUNCH'     ? 'badge-green' :
+                                                                                                     'badge-gray')}"
                                           th:text="${schedule.mealType.displayName}">Meal</span>
                                 </td>
                                 <td>
@@ -221,24 +221,23 @@
                                     <span th:unless="${schedule.donorMobile != null}" class="text-muted small">—</span>
                                 </td>
                                 <td>
-                                    <span class="badge"
-                                          th:classappend="${schedule.status == 'ACTIVE' ? 'bg-primary' :
-                                                          (schedule.status == 'COMPLETED' ? 'bg-success' : 'bg-secondary')}"
-                                          th:text="${schedule.status}">Status</span>
+                                    <span th:if="${schedule.status == 'ACTIVE'}" class="res-badge res-badge-active">Active</span>
+                                    <span th:if="${schedule.status == 'COMPLETED'}" class="badge badge-green">Completed</span>
+                                    <span th:if="${schedule.status == 'CANCELLED'}" class="badge badge-gray">Cancelled</span>
                                 </td>
                                 <td class="text-end">
                                     <!-- CHECK 8 : existing View/Edit/Delete routes unchanged ✅ -->
-                                    <div class="btn-group btn-group-sm">
-                                        <button type="button" class="btn btn-light border text-primary"
+                                    <div class="d-inline-flex gap-2">
+                                        <button type="button" class="btn btn-icon btn-icon-view"
                                                 th:onclick="'viewSchedule(' + ${schedule.id} + ')'" title="View">
                                             <i class="bi bi-eye"></i>
                                         </button>
-                                        <button type="button" class="btn btn-light border text-secondary"
+                                        <button type="button" class="btn btn-icon btn-icon-edit"
                                                 th:onclick="'editSchedule(' + ${schedule.id} + ')'" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </button>
                                         <a th:href="@{/food-schedule/delete/{id}(id=${schedule.id})}"
-                                           class="btn btn-light border text-danger"
+                                           class="btn btn-icon btn-icon-delete"
                                            onclick="return confirm('Are you sure you want to delete this schedule?');"
                                            title="Delete">
                                             <i class="bi bi-trash"></i>
