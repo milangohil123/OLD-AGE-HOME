@@ -5,24 +5,24 @@
 
 /* ── Variables ──────────────────────────────────────────────── */
 :root {
-    --primary: #2563EB;
-    --primary-hover: #1D4ED8;
-    --primary-medium: #3B82F6;
-    --primary-light: #DBEAFE;
-    --primary-xlight: #EFF6FF;
-    --background: #F0F4FF;
+    --primary: #10B981;
+    --primary-hover: #059669;
+    --primary-medium: #34D399;
+    --primary-light: #EBFBF5;
+    --primary-xlight: #ECFDF5;
+    --background: #F8FAFC;
     --card-bg: #FFFFFF;
-    --border: #E2E8F0;
-    --text-primary: #0F172A;
-    --text-muted: #64748B;
+    --border: #E5E7EB;
+    --text-primary: #111827;
+    --text-muted: #6B7280;
     --danger: #EF4444;
     --danger-light: #FEE2E2;
-    --sidebar-bg: #0F172A;
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-    --radius-card: 14px;
-    --radius-btn: 10px;
-    --radius-input: 10px;
+    --sidebar-bg: #FFFFFF;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    --radius-card: 12px;
+    --radius-btn: 8px;
+    --radius-input: 8px;
 }
 
 /* ── Reset ──────────────────────────────────────────────────── */
@@ -74,6 +74,7 @@ a:hover {
 .app-sidebar {
     width: 260px;
     background-color: var(--sidebar-bg);
+    border-right: 1px solid var(--border);
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
@@ -88,14 +89,14 @@ a:hover {
     display: flex;
     align-items: center;
     gap: 12px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: 1px solid var(--border);
     margin-bottom: 8px;
 }
 
 .sidebar-brand-text {
     font-size: 15px;
     font-weight: 700;
-    color: #FFFFFF;
+    color: var(--text-primary);
     letter-spacing: -0.01em;
     line-height: 1.2;
     display: block;
@@ -115,7 +116,7 @@ a:hover {
     font-size: 10px;
     font-weight: 700;
     text-transform: uppercase;
-    color: #475569;
+    color: #9CA3AF;
     padding: 14px 8px 6px;
     letter-spacing: 0.08em;
 }
@@ -126,7 +127,7 @@ a:hover {
     gap: 10px;
     padding: 10px 12px;
     border-radius: 8px;
-    color: #94A3B8;
+    color: #4B5563;
     font-weight: 500;
     font-size: 13.5px;
     transition: background 0.15s, color 0.15s;
@@ -135,23 +136,33 @@ a:hover {
 .sidebar-menu-item a i {
     font-size: 15px;
     flex-shrink: 0;
+    color: #6B7280;
 }
 
 .sidebar-menu-item a:hover {
-    background: rgba(255, 255, 255, 0.07);
-    color: #FFFFFF;
+    background: #F3F4F6;
+    color: #111827;
+}
+
+.sidebar-menu-item a:hover i {
+    color: #111827;
 }
 
 .sidebar-menu-item.active a {
-    background: var(--primary) !important;
-    color: #FFFFFF !important;
-    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
+    background: var(--primary-light) !important;
+    color: var(--primary) !important;
+    font-weight: 600;
+    box-shadow: none;
+}
+
+.sidebar-menu-item.active a i {
+    color: var(--primary) !important;
 }
 
 .sidebar-menu-item.mt-auto {
     margin-top: auto;
     padding-top: 12px;
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-top: 1px solid var(--border);
 }
 
 /* ── App Main ───────────────────────────────────────────────── */
@@ -185,20 +196,21 @@ a:hover {
 }
 
 .navbar-search-input {
-    border-radius: 20px !important;
-    background-color: var(--background) !important;
-    border: 1px solid var(--border) !important;
+    border-radius: 8px !important;
+    background-color: #F3F4F6 !important;
+    border: 1px solid transparent !important;
     padding-left: 38px !important;
-    font-size: 13px !important;
+    font-size: 13.5px !important;
     width: 240px;
     height: 38px !important;
     color: var(--text-primary) !important;
-    transition: border-color 0.15s, box-shadow 0.15s;
+    transition: background-color 0.15s, border-color 0.15s, box-shadow 0.15s;
 }
 
 .navbar-search-input:focus {
+    background-color: #FFFFFF !important;
     border-color: var(--primary) !important;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10) !important;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.10) !important;
     outline: none !important;
 }
 
@@ -431,8 +443,8 @@ a:hover {
 }
 
 .alert-success {
-    background: #EFF6FF;
-    color: #1D4ED8;
+    background: var(--primary-light);
+    color: var(--primary-hover);
 }
 
 .alert-danger {
@@ -635,4 +647,60 @@ a:hover {
 .input-group-text {
     border: 1.5px solid var(--border);
     background: #FAFAFA;
+}
+
+/* ── Redesign Custom Utility Classes ─────────────────────────── */
+.hover-lift {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.05) !important;
+}
+.quick-action-row:hover {
+    border-color: var(--primary) !important;
+    background-color: var(--primary-xlight) !important;
+    transform: translateY(-1px);
+}
+.quick-action-row:hover .quick-action-icon {
+    background-color: var(--primary) !important;
+    color: #FFFFFF !important;
+    transition: all 0.2s ease;
+}
+.bg-success-light {
+    background-color: #EBFBF5 !important;
+}
+.text-success {
+    color: #10B981 !important;
+}
+.border-light {
+    border-color: #F1F5F9 !important;
+}
+.text-primary {
+    color: var(--primary) !important;
+}
+.btn-primary {
+    background-color: var(--primary) !important;
+    border-color: var(--primary) !important;
+    color: #FFFFFF !important;
+}
+.btn-primary:hover, .btn-primary:focus {
+    background-color: var(--primary-hover) !important;
+    border-color: var(--primary-hover) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2) !important;
+}
+.btn-outline-primary {
+    color: var(--primary) !important;
+    border-color: var(--border) !important;
+    background-color: #FFFFFF !important;
+}
+.btn-outline-primary:hover, .btn-outline-primary:focus {
+    background-color: var(--primary-xlight) !important;
+    border-color: var(--primary-light) !important;
+    color: var(--primary-hover) !important;
+}
+.welcome-icon-circle, .stat-icon-circle {
+    background: var(--primary-light) !important;
+    color: var(--primary) !important;
 }
