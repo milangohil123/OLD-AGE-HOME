@@ -1,34 +1,47 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
-
-    <!-- Reusable Search and Filter Component -->
-    <!-- Expects baseUrl, keyword, size, sort, direction, and optional placeholder -->
+    <!-- Reusable Search Component — matches reference design -->
     <div th:fragment="search(baseUrl, keyword, size, sort, direction, placeholder)" class="mb-4">
-        <form th:attr="action=${baseUrl}" method="get" class="row g-3 align-items-center">
-            <div class="col-md-8 col-sm-12">
-                <div class="input-group" style="height: 48px;">
-                    <span class="input-group-text bg-white border-end-0 text-muted" style="border-radius: 8px 0 0 8px; font-size: 14px; display: flex; align-items: center; justify-content: center;">
-                        <i class="bi bi-search"></i>
-                    </span>
-                    <input type="text" name="keyword" class="form-control border-start-0 ps-0" 
-                           th:value="${keyword}" th:placeholder="${placeholder != null ? placeholder : 'Search records...'}" 
-                           style="border-radius: 0 8px 8px 0;" aria-label="Search">
-                </div>
-                <input type="hidden" name="size" th:value="${size}">
-                <input type="hidden" name="sort" th:value="${sort}">
-                <input type="hidden" name="direction" th:value="${direction}">
-            </div>
-            <div class="col-md-4 col-sm-12 d-flex gap-2">
-                <button type="submit" class="btn btn-primary px-4 flex-grow-1" style="height: 48px;">Search</button>
-                <a th:if="${keyword != null and !keyword.isEmpty()}"
-   th:href="|${baseUrl}?size=${size}&sort=${sort}&direction=${direction}|"
-   class="btn btn-secondary">
-                    Clear
-                </a>
-            </div>
-        </form>
-    </div>
+        <div class="search-bar-wrap">
+            <form th:attr="action=${baseUrl}" method="get">
+                <div class="d-flex align-items-center gap-3 flex-wrap">
 
+                    <!-- Search Input -->
+                    <div class="search-input-group flex-grow-1" style="min-width: 220px;">
+                        <i class="bi bi-search search-icon"></i>
+                        <input type="text"
+                               name="keyword"
+                               class="form-control"
+                               th:value="${keyword}"
+                               th:placeholder="${placeholder != null ? placeholder : 'Search records...'}"
+                               aria-label="Search">
+                        <input type="hidden" name="size"      th:value="${size}">
+                        <input type="hidden" name="sort"      th:value="${sort}">
+                        <input type="hidden" name="direction" th:value="${direction}">
+                    </div>
+
+                    <!-- Filters (visual only) + Search + Clear -->
+                    <div class="d-flex gap-2 align-items-center flex-shrink-0">
+                        <button type="button" class="btn btn-secondary"
+                                style="height:42px; border:1.5px solid #E5E7EB; font-size:13px;">
+                            <i class="bi bi-funnel me-1"></i>Filters
+                        </button>
+                        <button type="submit" class="btn btn-primary"
+                                style="height:42px; min-width:100px; font-size:13px;">
+                            <i class="bi bi-search me-1"></i>Search
+                        </button>
+                        <a th:if="${keyword != null and !keyword.isEmpty()}"
+                           th:href="|${baseUrl}?size=${size}&sort=${sort}&direction=${direction}|"
+                           class="btn btn-secondary"
+                           style="height:42px; font-size:13px;">
+                            <i class="bi bi-x-lg me-1"></i>Clear
+                        </a>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
 </body>
 </html>

@@ -5,18 +5,12 @@
 
     <div id="reports-dashboard">
 
-        <!-- Welcome Banner -->
-        <div class="card mb-4 welcome-banner-card">
-            <div class="d-flex align-items-center gap-3">
-                <div class="welcome-icon-circle">
-                    <i class="bi bi-bar-chart" style="font-size: 20px;"></i>
-                </div>
-                <div>
-                    <h2 class="mb-1 fw-bold" style="color: var(--primary);">Reports &amp; Analytics</h2>
-                    <p class="text-muted mb-0" style="font-size: 13px;">
-                        Generate comprehensive PDF, Excel spreadsheets, and preview reports for all system modules.
-                    </p>
-                </div>
+        <!-- Page Header -->
+        <div class="page-header-card mb-4">
+            <div class="page-header-icon"><i class="bi bi-bar-chart"></i></div>
+            <div class="page-header-info">
+                <h1 class="page-header-title">Reports &amp; Analytics</h1>
+                <p class="page-header-desc">Generate comprehensive PDF, Excel spreadsheets, and preview reports for all system modules.</p>
             </div>
         </div>
 
@@ -148,7 +142,7 @@
         <div class="row">
             <div class="col-lg-6 mb-4">
                 <div class="card h-100">
-                    <h5 class="fw-bold mb-4 text-primary">
+                    <h5 class="fw-bold mb-4" style="font-size:14px; color:#111827;">
                         <i class="bi bi-people me-2"></i>Recent Residents
                     </h5>
                     <div class="table-responsive">
@@ -164,7 +158,9 @@
                                     <td class="fw-bold" th:text="${r.fullName}">Name</td>
                                     <td th:text="${#temporals.format(r.joiningDate, 'dd-MM-yyyy')}">Date</td>
                                     <td>
-                                        <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-2 py-1" th:text="${r.status}">ACTIVE</span>
+                                        <span class="res-badge res-badge-active" th:if="${r.status.name() == 'ACTIVE'}">Active</span>
+                                        <span class="res-badge res-badge-discharged" th:if="${r.status.name() == 'DISCHARGED'}">Discharged</span>
+                                        <span class="res-badge res-badge-deceased" th:if="${r.status.name() == 'DECEASED'}">Deceased</span>
                                     </td>
                                 </tr>
                                 <tr th:if="${#lists.isEmpty(recentResidents)}">
@@ -180,7 +176,7 @@
 
             <div class="col-lg-6 mb-4">
                 <div class="card h-100">
-                    <h5 class="fw-bold mb-4 text-primary">
+                    <h5 class="fw-bold mb-4" style="font-size:14px; color:#111827;">
                         <i class="bi bi-receipt me-2"></i>Recent Donations
                     </h5>
                     <div class="table-responsive">

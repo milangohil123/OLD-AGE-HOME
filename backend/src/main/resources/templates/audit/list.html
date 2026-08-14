@@ -87,27 +87,20 @@
             </div>
         </div>
 
-        <!-- ── Action Ribbon & Export ── -->
-        <div class="card mb-4">
-            <div class="row align-items-center py-2">
-                <div class="col-md-5">
-                    <h3 class="mb-0 fw-bold">System Audit Logs</h3>
-                    <p class="text-muted mb-0" style="font-size: 13px;">Monitor system activity, user logins, and database alterations.</p>
-                </div>
-                <div class="col-md-7 text-md-end text-start mt-3 mt-md-0 d-flex justify-content-md-end gap-2 flex-wrap">
-                    <a th:href="@{/admin/audit/export(username=${username}, module=${module}, action=${action}, success=${success}, startDate=${startDate}, endDate=${endDate}, format='PDF')}"
-                       class="btn btn-primary px-3">
-                        <i class="bi bi-file-earmark-pdf me-1"></i> Export PDF
-                    </a>
-                    <a th:href="@{/admin/audit/export(username=${username}, module=${module}, action=${action}, success=${success}, startDate=${startDate}, endDate=${endDate}, format='EXCEL')}"
-                       class="btn btn-outline-primary px-3">
-                        <i class="bi bi-file-earmark-spreadsheet me-1"></i> Export Excel
-                    </a>
-                    <a th:href="@{/admin/audit/export(username=${username}, module=${module}, action=${action}, success=${success}, startDate=${startDate}, endDate=${endDate}, format='CSV')}"
-                       class="btn btn-outline-primary px-3">
-                        <i class="bi bi-filetype-csv me-1"></i> Export CSV
-                    </a>
-                </div>
+        <!-- ── Page Header ── -->
+        <div class="page-header-card mb-3">
+            <div class="page-header-icon"><i class="bi bi-clipboard-data"></i></div>
+            <div class="page-header-info">
+                <h1 class="page-header-title">System Audit Logs</h1>
+                <p class="page-header-desc">Monitor system activity, user logins, and database alterations.</p>
+            </div>
+            <div class="page-header-actions">
+                <a th:href="@{/admin/audit/export(username=${username}, module=${module}, action=${action}, success=${success}, startDate=${startDate}, endDate=${endDate}, format='PDF')}"
+                   class="btn btn-primary"><i class="bi bi-file-earmark-pdf me-1"></i>Export PDF</a>
+                <a th:href="@{/admin/audit/export(username=${username}, module=${module}, action=${action}, success=${success}, startDate=${startDate}, endDate=${endDate}, format='EXCEL')}"
+                   class="btn btn-outline-primary"><i class="bi bi-file-earmark-spreadsheet me-1"></i>Excel</a>
+                <a th:href="@{/admin/audit/export(username=${username}, module=${module}, action=${action}, success=${success}, startDate=${startDate}, endDate=${endDate}, format='CSV')}"
+                   class="btn btn-outline-primary"><i class="bi bi-filetype-csv me-1"></i>CSV</a>
             </div>
         </div>
 
@@ -158,9 +151,8 @@
             </form>
         </div>
 
-        <!-- ── Main Table ── -->
-        <div class="card">
-            <div class="table-responsive">
+                        <div class="table-card">
+                            <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0" style="font-size: 13px;">
                     <thead>
                         <tr>
@@ -196,16 +188,16 @@
                             <td th:text="${log.action}">Action</td>
                             <td th:text="${log.description}">Description</td>
                             <td>
-                                <span th:if="${log.success}" class="badge bg-primary bg-opacity-10 text-primary px-3 py-1 rounded-pill">
+                                <span th:if="${log.success}" class="badge badge-green">
                                     <i class="bi bi-check-lg me-1"></i>Success
                                 </span>
-                                <span th:if="${!log.success}" class="badge bg-danger bg-opacity-10 text-danger px-3 py-1 rounded-pill">
+                                <span th:if="${!log.success}" class="badge badge-red">
                                     <i class="bi bi-x-lg me-1"></i>Failed
                                 </span>
                             </td>
                             <td th:text="${log.ipAddress}">IP</td>
                             <td class="text-end">
-                                <a th:href="@{/admin/audit/view/{id}(id=${log.id})}" class="btn btn-outline-primary btn-sm px-3">
+                                <a th:href="@{/admin/audit/view/{id}(id=${log.id})}" class="btn btn-icon btn-icon-view">
                                     <i class="bi bi-eye"></i>
                                 </a>
                             </td>
@@ -214,8 +206,8 @@
                 </table>
             </div>
 
-            <!-- Pagination -->
-           <div th:replace="~{fragments/pagination :: pagination(page=${auditPage}, baseUrl='/audit', queryParams=${paginationQuery})}"></div>
+            </div>
+            <div th:replace="~{fragments/pagination :: pagination(page=${auditPage}, baseUrl='/admin/audit', queryParams=${paginationQuery})}"></div>
         </div>
 
     </div>

@@ -6,194 +6,222 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${title} + ' - ' + #{app.title}">Smart Old Age Home Portal</title>
-    <!-- Bootstrap 5 CSS CDN -->
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons CDN -->
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!-- Google Fonts (Inter) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Custom CSS Stylesheet -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom Design System -->
     <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
 
 <body>
 
-    <div class="app-container">
-        <!-- Sidebar Fragment -->
-        <aside class="app-sidebar">
-            <div class="sidebar-brand">
-                <!-- SVG Logo -->
-                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="32" height="32" rx="8" fill="#10B981" />
-                    <path d="M16 8L7 16H10V24H14V19H18V24H22V16H25L16 8Z" fill="white" />
-                </svg>
-                <div>
-                    <span class="sidebar-brand-text" style="display: block; line-height: 1.1;"
-                        th:text="#{app.subtitle}">Old Age Home Portal</span>
-                </div>
-            </div>
-            <ul class="sidebar-menu">
-                <li class="sidebar-menu-header" th:text="#{nav.menu}">Menu</li>
-                <li class="sidebar-menu-item" th:classappend="${activePage == 'dashboard'} ? 'active'">
-                    <a th:href="@{/dashboard}">
-                        <i class="bi bi-house-door" style="font-size: 16px;"></i> <span
-                            th:text="#{nav.dashboard}">Dashboard</span>
-                    </a>
-                </li>
-                <li class="sidebar-menu-item" th:classappend="${activePage == 'residents'} ? 'active'">
-                    <a th:href="@{/residents}">
-                        <i class="bi bi-people" style="font-size: 16px;"></i> <span
-                            th:text="#{nav.residents}">Residents</span>
-                    </a>
-                </li>
-                <li class="sidebar-menu-item" th:classappend="${activePage == 'donors'} ? 'active'">
-                    <a th:href="@{/donors}">
-                        <i class="bi bi-gift" style="font-size: 16px;"></i> <span th:text="#{nav.donors}">Donors</span>
-                    </a>
-                </li>
-                <li class="sidebar-menu-item" th:classappend="${activePage == 'reports'} ? 'active'">
-                    <a th:href="@{/reports}">
-                        <i class="bi bi-bar-chart" style="font-size: 16px;"></i> <span
-                            th:text="#{nav.reports}">Reports</span>
-                    </a>
-                </li>
-                <li class="sidebar-menu-item" th:classappend="${activePage == 'food-schedule'} ? 'active'">
-                    <a th:href="@{/food-schedule}">
-                        <i class="bi bi-calendar3" style="font-size: 16px;"></i> <span
-                            th:text="#{nav.food_schedule}">Food Schedule</span>
-                    </a>
-                </li>
-                <!-- Conditional Audit Logs link for Admin only -->
-                <li sec:authorize="hasRole('ADMIN')" class="sidebar-menu-item"
-                    th:classappend="${activePage == 'audit'} ? 'active'">
-                    <a th:href="@{/admin/audit}">
-                        <i class="bi bi-clipboard-data" style="font-size: 16px;"></i> <span
-                            th:text="#{nav.audit_logs}">Audit Logs</span>
-                    </a>
-                </li>
-                <!-- Conditional Settings link for Admin only -->
-                <li sec:authorize="hasRole('ADMIN')" class="sidebar-menu-item"
-                    th:classappend="${activePage == 'settings'} ? 'active'">
-                    <a th:href="@{/settings}">
-                        <i class="bi bi-gear" style="font-size: 16px;"></i> <span
-                            th:text="#{nav.settings}">Settings</span>
-                    </a>
-                </li>
-                <!-- Logout link using POST -->
-                <li class="sidebar-menu-item mt-auto">
-                    <form th:action="@{/logout}" method="post" id="layoutSidebarLogoutForm" style="display:none;">
-                    </form>
-                    <a href="#" onclick="document.getElementById('layoutSidebarLogoutForm').submit(); return false;"
-                        class="text-danger">
-                        <i class="bi bi-box-arrow-right" style="font-size: 16px;"></i> <span
-                            th:text="#{nav.logout}">Logout</span>
-                    </a>
-                </li>
-            </ul>
-        </aside>
+<div class="app-container">
 
-        <!-- Main Wrapper -->
-        <div class="app-main">
-            <!-- Navbar -->
-            <nav class="app-navbar">
-                <div class="navbar-title d-flex align-items-center gap-3">
-                    <i class="bi bi-list fs-4 text-dark" style="cursor: pointer;"></i>
-                    <span class="fs-5 fw-bold text-dark" th:text="${title}">Dashboard</span>
-                </div>
+    <!-- ═══════════════════════════════ SIDEBAR ═══════════════════════════════ -->
+    <aside class="app-sidebar" id="appSidebar">
 
-                <!-- Center Search Input & Bell matching reference -->
-                <div class="d-flex align-items-center gap-3">
-                    <div style="position: relative;">
-                        <i class="bi bi-search"
-                            style="position: absolute; left: 14px; top: 10px; color: var(--text-muted); font-size: 12px;"></i>
-                        <input type="text" class="form-control navbar-search-input"
-                            th:placeholder="#{search.placeholder}">
-                    </div>
-                </div>
-
-                <div class="navbar-user">
-                    <div class="d-flex align-items-center gap-3">
-                        <!-- Language Selector -->
-                        <div class="dropdown">
-                            <button class="btn btn-sm p-0 text-dark border-0" type="button"
-                                id="langDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="background: none; box-shadow: none;">
-                                <i class="bi bi-globe" style="font-size: 18px; color: var(--text-muted);"></i>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0"
-                                aria-labelledby="langDropdown">
-                                <li><a class="dropdown-item" href="?lang=gu" th:text="#{lang.gujarati}">ગુજરાતી</a></li>
-                                <li><a class="dropdown-item" href="?lang=en" th:text="#{lang.english}">English</a></li>
-                                <li><a class="dropdown-item" href="?lang=hi" th:text="#{lang.hindi}">हिन्दी</a></li>
-                            </ul>
-                        </div>
-                        
-                        <!-- Notifications Button with red dot badge -->
-                        <button class="btn btn-link p-0 text-dark border-0" style="line-height: 1; text-decoration: none; position: relative; background: none; box-shadow: none;">
-                            <i class="bi bi-bell" style="font-size: 18px; color: var(--text-muted);"></i>
-                            <span class="position-absolute translate-middle p-1 bg-danger border border-light rounded-circle" style="top: 4px; right: -4px;"></span>
-                        </button>
-
-                        <!-- Profile Group -->
-                        <div class="d-flex align-items-center gap-2">
-                            <!-- Profile Photo or Initial -->
-                            <div th:if="${currentUserInfo != null and currentUserInfo.profilePicture != null}"
-                                class="p-0 border border-2 border-light overflow-hidden"
-                                style="width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                <img th:src="@{'/uploads/' + ${currentUserInfo.profilePicture}}" alt="Profile"
-                                    style="width: 100%; height: 100%; object-fit: cover;">
-                            </div>
-                            <div th:if="${currentUserInfo == null or currentUserInfo.profilePicture == null}"
-                                class="welcome-icon-circle"
-                                style="width: 32px; height: 32px; font-size: 14px; font-weight: 600; background-color: var(--primary-light); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                <span sec:authorize="isAuthenticated()"
-                                    th:text="${#strings.substring(#authentication.name, 0, 1).toUpperCase()}">A</span>
-                                <span sec:authorize="!isAuthenticated()">A</span>
-                            </div>
-
-                            <div class="d-flex align-items-center gap-2">
-                                <div>
-                                    <span class="navbar-user-name fw-bold text-dark" style="font-size: 13px; line-height: 1.2; display: block;"
-                                        th:text="${currentUserInfo != null ? currentUserInfo.fullName : #authentication.name}">User</span>
-                                    <span class="navbar-user-role text-muted" style="font-size: 11px; display: block; line-height: 1;" sec:authorize="hasRole('ADMIN')"
-                                        th:text="#{nav.profile.admin}">Administrator</span>
-                                    <span class="navbar-user-role text-muted" style="font-size: 11px; display: block; line-height: 1;" sec:authorize="hasRole('MANAGER')"
-                                        th:text="#{nav.profile.manager}">Manager</span>
-                                    <span class="navbar-user-role text-muted" style="font-size: 11px; display: block; line-height: 1;" sec:authorize="hasRole('STAFF')"
-                                        th:text="#{nav.profile.staff}">Staff</span>
-                                </div>
-                                <i class="bi bi-chevron-down text-muted" style="font-size: 12px; margin-left: 2px;"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <form th:action="@{/logout}" method="post" id="layoutNavbarLogoutForm" style="display:none;"></form>
-                    <a href="#" onclick="document.getElementById('layoutNavbarLogoutForm').submit(); return false;"
-                        class="text-danger small ms-3" style="font-weight: 600;" th:text="#{nav.logout}">
-                        Logout
-                    </a>
-                </div>
-            </nav>
-
-            <!-- Main Content Area (Passed dynamically) -->
-            <main class="app-content">
-                <div th:replace="${content}"></div>
-            </main>
-
-            <!-- Footer -->
-            <footer class="app-footer">
-                <div>
-                    <span th:text="#{app.footer}">&copy; 2026 Smart Old Age Home Portal. Built for GTU Societal
-                        Internship.</span>
-                </div>
-            </footer>
+        <!-- Brand -->
+        <div class="sidebar-brand">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+                <rect width="32" height="32" rx="8" fill="#10B981"/>
+                <path d="M16 7L6 15.5H9.5V25H14V19.5H18V25H22.5V15.5H26L16 7Z" fill="white"/>
+            </svg>
+            <span class="sidebar-brand-text" th:text="#{app.subtitle}">Old Age Home Portal</span>
         </div>
-    </div>
 
-    <!-- Bootstrap 5 Bundle with Popper CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Custom JS -->
-    <script th:src="@{/js/main.js}"></script>
+        <!-- Navigation Menu -->
+        <ul class="sidebar-menu">
+            <li class="sidebar-menu-header" th:text="#{nav.menu}">MENU</li>
+
+            <li class="sidebar-menu-item" th:classappend="${activePage == 'dashboard'} ? 'active'">
+                <a th:href="@{/dashboard}">
+                    <i class="bi bi-house-door"></i>
+                    <span th:text="#{nav.dashboard}">Dashboard</span>
+                </a>
+            </li>
+
+            <li class="sidebar-menu-item" th:classappend="${activePage == 'residents'} ? 'active'">
+                <a th:href="@{/residents}">
+                    <i class="bi bi-people"></i>
+                    <span th:text="#{nav.residents}">Residents</span>
+                </a>
+            </li>
+
+            <li class="sidebar-menu-item" th:classappend="${activePage == 'donors'} ? 'active'">
+                <a th:href="@{/donors}">
+                    <i class="bi bi-gift"></i>
+                    <span th:text="#{nav.donors}">Donors</span>
+                </a>
+            </li>
+
+            <li class="sidebar-menu-item" th:classappend="${activePage == 'reports'} ? 'active'">
+                <a th:href="@{/reports}">
+                    <i class="bi bi-bar-chart"></i>
+                    <span th:text="#{nav.reports}">Reports</span>
+                </a>
+            </li>
+
+            <li class="sidebar-menu-item" th:classappend="${activePage == 'food-schedule'} ? 'active'">
+                <a th:href="@{/food-schedule}">
+                    <i class="bi bi-calendar3"></i>
+                    <span th:text="#{nav.food_schedule}">Food Schedule</span>
+                </a>
+            </li>
+
+            <li sec:authorize="hasRole('ADMIN')" class="sidebar-menu-item"
+                th:classappend="${activePage == 'audit'} ? 'active'">
+                <a th:href="@{/admin/audit}">
+                    <i class="bi bi-clipboard-data"></i>
+                    <span th:text="#{nav.audit_logs}">Audit Logs</span>
+                </a>
+            </li>
+
+            <li sec:authorize="hasRole('ADMIN')" class="sidebar-menu-item"
+                th:classappend="${activePage == 'settings'} ? 'active'">
+                <a th:href="@{/settings}">
+                    <i class="bi bi-gear"></i>
+                    <span th:text="#{nav.settings}">Settings</span>
+                </a>
+            </li>
+
+            <!-- Logout -->
+            <li class="sidebar-menu-item mt-auto">
+                <form th:action="@{/logout}" method="post" id="sidebarLogoutForm" style="display:none;"></form>
+                <a href="#" onclick="document.getElementById('sidebarLogoutForm').submit(); return false;">
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span th:text="#{nav.logout}">Logout</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- ═══════════════════════════════ MAIN AREA ═══════════════════════════════ -->
+    <div class="app-main">
+
+        <!-- ─── Top Navbar ─── -->
+        <nav class="app-navbar">
+
+            <!-- Left: Hamburger + Page Title -->
+            <div class="navbar-title">
+                <button class="navbar-hamburger border-0 bg-transparent" id="sidebarToggle" aria-label="Toggle sidebar">
+                    <i class="bi bi-list"></i>
+                </button>
+                <span th:text="${title}">Dashboard</span>
+            </div>
+
+            <!-- Center: Search -->
+            <div class="navbar-search-wrap">
+                <i class="bi bi-search navbar-search-icon"></i>
+                <input type="text" class="form-control navbar-search-input"
+                       th:placeholder="#{search.placeholder}"
+                       id="globalSearch">
+            </div>
+
+            <!-- Right: Actions + Profile -->
+            <div class="navbar-actions">
+
+                <!-- Language Selector -->
+                <div class="dropdown">
+                    <button class="navbar-icon-btn" id="langBtn" data-bs-toggle="dropdown" aria-label="Language">
+                        <i class="bi bi-globe" style="font-size:16px;"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="langBtn"
+                        style="border:1px solid #E5E7EB; border-radius:10px; min-width:140px; padding:6px;">
+                        <li>
+                            <a class="dropdown-item" href="?lang=gu" style="border-radius:6px; font-size:13px;"
+                               th:text="#{lang.gujarati}">ગુજરાતી</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="?lang=en" style="border-radius:6px; font-size:13px;"
+                               th:text="#{lang.english}">English</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="?lang=hi" style="border-radius:6px; font-size:13px;"
+                               th:text="#{lang.hindi}">हिन्दी</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Notifications Bell -->
+                <button class="navbar-icon-btn" aria-label="Notifications">
+                    <i class="bi bi-bell" style="font-size:16px;"></i>
+                    <span class="notif-dot"></span>
+                </button>
+
+                <!-- Profile -->
+                <div class="navbar-profile">
+                    <!-- Avatar with photo -->
+                    <div class="navbar-avatar"
+                         th:if="${currentUserInfo != null and currentUserInfo.profilePicture != null}">
+                        <img th:src="@{'/uploads/' + ${currentUserInfo.profilePicture}}" alt="Profile">
+                    </div>
+                    <!-- Avatar with initial -->
+                    <div class="navbar-avatar"
+                         th:if="${currentUserInfo == null or currentUserInfo.profilePicture == null}">
+                        <span sec:authorize="isAuthenticated()"
+                              th:text="${#strings.substring(#authentication.name, 0, 1).toUpperCase()}">A</span>
+                        <span sec:authorize="!isAuthenticated()">A</span>
+                    </div>
+                    <!-- Name + Role -->
+                    <div>
+                        <span class="navbar-user-name"
+                              th:text="${currentUserInfo != null ? currentUserInfo.fullName : #authentication.name}">
+                            System Administrator
+                        </span>
+                        <span class="navbar-user-role" sec:authorize="hasRole('ADMIN')"
+                              th:text="#{nav.profile.admin}">Administrator</span>
+                        <span class="navbar-user-role" sec:authorize="hasRole('MANAGER')"
+                              th:text="#{nav.profile.manager}">Manager</span>
+                        <span class="navbar-user-role" sec:authorize="hasRole('STAFF')"
+                              th:text="#{nav.profile.staff}">Staff</span>
+                    </div>
+                    <i class="bi bi-chevron-down" style="font-size:11px; color:#9CA3AF; margin-left:2px;"></i>
+                </div>
+
+            </div>
+        </nav>
+
+        <!-- ─── Page Content ─── -->
+        <main class="app-content">
+            <div th:replace="${content}"></div>
+        </main>
+
+        <!-- ─── Footer ─── -->
+        <footer class="app-footer">
+            <span th:text="#{app.footer}">© 2026 Smart Old Age Home Portal. Built for GTU Societal Internship.</span>
+        </footer>
+
+    </div><!-- end app-main -->
+</div><!-- end app-container -->
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Custom JS -->
+<script th:src="@{/js/main.js}"></script>
+
+<script>
+    // Mobile sidebar toggle
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const appSidebar    = document.getElementById('appSidebar');
+    if (sidebarToggle && appSidebar) {
+        sidebarToggle.addEventListener('click', function () {
+            appSidebar.classList.toggle('open');
+        });
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function (e) {
+            if (window.innerWidth <= 768
+                && !appSidebar.contains(e.target)
+                && !sidebarToggle.contains(e.target)) {
+                appSidebar.classList.remove('open');
+            }
+        });
+    }
+</script>
+
 </body>
-
 </html>

@@ -1,340 +1,283 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
     th:replace="~{fragments/layout :: main(~{::#dashboard-content}, 'dashboard', #{dashboard.title})}">
-
 <body>
+<div id="dashboard-content">
 
-    <div id="dashboard-content">
+    <!-- ── Page Header ── -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h4 class="mb-1 fw-bold" style="font-size:20px; letter-spacing:-0.02em;"
+                th:text="#{dashboard.welcome(${#authentication.name})}">Welcome, Admin!</h4>
+            <p class="mb-0" style="font-size:13px; color:#6B7280;"
+               th:text="#{dashboard.welcome.desc}">Smart Old Age Home administration portal.</p>
+        </div>
+        <!-- Toolbar filters (matching reference) -->
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <button class="btn btn-secondary" style="height:36px; font-size:12.5px; border:1px solid #E5E7EB;">
+                <i class="bi bi-calendar3 me-1" style="color:#9CA3AF;"></i>Last 30 days
+                <i class="bi bi-chevron-down ms-1" style="font-size:9px; color:#9CA3AF;"></i>
+            </button>
+            <button class="btn btn-secondary" style="height:36px; font-size:12.5px; border:1px solid #E5E7EB;">
+                <i class="bi bi-arrow-repeat me-1" style="color:#9CA3AF;"></i>1 month earlier
+                <i class="bi bi-chevron-down ms-1" style="font-size:9px; color:#9CA3AF;"></i>
+            </button>
+            <button class="btn btn-secondary" style="height:36px; font-size:12.5px; border:1px solid #E5E7EB;">
+                <i class="bi bi-funnel me-1" style="color:#9CA3AF;"></i>Filters
+            </button>
+            <a th:href="@{/reports}" class="btn btn-secondary" style="height:36px; font-size:12.5px; border:1px solid #E5E7EB;">
+                <i class="bi bi-download me-1" style="color:#9CA3AF;"></i>Export
+            </a>
+        </div>
+    </div>
 
-        <!-- ── Dashboard Header Toolbar ──────────────────────────────────── -->
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 dashboard-header-toolbar">
-            <div>
-                <h4 class="mb-1 fw-bold text-dark" th:text="#{dashboard.welcome(${#authentication.name})}">Welcome, Admin!</h4>
-                <p class="text-muted mb-0" style="font-size: 13px;" th:text="#{dashboard.welcome.desc}">
-                    Smart Old Age Home administration portal — manage residents, donors, and reports.
-                </p>
-            </div>
-            
-            <!-- Reference-style Toolbar Filters -->
-            <div class="d-flex align-items-center gap-2 flex-wrap">
-                <div class="dropdown">
-                    <button class="btn btn-outline-primary btn-sm bg-white border-muted d-flex align-items-center gap-2" type="button" style="height: 38px; color: var(--text-primary); border-color: #D1D5DB; font-weight: 500;">
-                        <i class="bi bi-calendar3" style="color: var(--text-muted);"></i> Last 30 days <i class="bi bi-chevron-down ms-1" style="font-size: 10px; color: var(--text-muted);"></i>
-                    </button>
+    <!-- ── KPI Stat Cards ── -->
+    <div class="row g-3 mb-4">
+
+        <!-- Residents -->
+        <div class="col-xl-3 col-md-6">
+            <a th:href="@{/residents}" class="stat-card d-block">
+                <span class="stat-label" th:text="#{dashboard.stat.residents}">Residents</span>
+                <div class="d-flex align-items-end justify-content-between gap-2 mb-1">
+                    <span class="stat-value" th:text="${totalResidents}">0</span>
+                    <span class="stat-badge-up mb-1">
+                        <i class="bi bi-arrow-up-short" style="font-size:13px;"></i>+8.33%
+                    </span>
                 </div>
-                <div class="dropdown">
-                    <button class="btn btn-outline-primary btn-sm bg-white border-muted d-flex align-items-center gap-2" type="button" style="height: 38px; color: var(--text-primary); border-color: #D1D5DB; font-weight: 500;">
-                        <i class="bi bi-arrow-repeat" style="color: var(--text-muted);"></i> 1 month earlier <i class="bi bi-chevron-down ms-1" style="font-size: 10px; color: var(--text-muted);"></i>
-                    </button>
+                <span class="stat-prior">vs. 156 prior</span>
+            </a>
+        </div>
+
+        <!-- Donors -->
+        <div class="col-xl-3 col-md-6">
+            <a th:href="@{/donors}" class="stat-card d-block">
+                <span class="stat-label" th:text="#{dashboard.stat.donors}">Donors</span>
+                <div class="d-flex align-items-end justify-content-between gap-2 mb-1">
+                    <span class="stat-value" th:text="${totalDonors}">0</span>
+                    <span class="stat-badge-up mb-1">
+                        <i class="bi bi-arrow-up-short" style="font-size:13px;"></i>+26.45%
+                    </span>
                 </div>
-                <button class="btn btn-outline-primary btn-sm bg-white border-muted d-flex align-items-center gap-2" style="height: 38px; color: var(--text-primary); border-color: #D1D5DB; font-weight: 500;">
-                    <i class="bi bi-filter" style="color: var(--text-muted);"></i> Filters
+                <span class="stat-prior">vs. 120 prior</span>
+            </a>
+        </div>
+
+        <!-- This Month Donations -->
+        <div class="col-xl-3 col-md-6">
+            <a th:href="@{/reports}" class="stat-card d-block">
+                <span class="stat-label" th:text="#{dashboard.stat.donations.month}">This Month</span>
+                <div class="d-flex align-items-end justify-content-between gap-2 mb-1">
+                    <span class="stat-value" th:text="${monthDonations}">0</span>
+                    <span class="stat-badge-up mb-1">
+                        <i class="bi bi-arrow-up-short" style="font-size:13px;"></i>+37.18%
+                    </span>
+                </div>
+                <span class="stat-prior">vs. 18 prior</span>
+            </a>
+        </div>
+
+        <!-- Total Raised -->
+        <div class="col-xl-3 col-md-6">
+            <a th:href="@{/reports}" class="stat-card d-block">
+                <span class="stat-label" th:text="#{dashboard.stat.raised}">Total Donations</span>
+                <div class="d-flex align-items-end justify-content-between gap-2 mb-1">
+                    <span class="stat-value" style="font-size:21px;"
+                          th:text="'₹' + ${#numbers.formatDecimal(totalDonationAmount != null ? totalDonationAmount : 0, 1, 'COMMA', 2, 'POINT')}">₹0.00</span>
+                    <span class="stat-badge-up mb-1">
+                        <i class="bi bi-arrow-up-short" style="font-size:13px;"></i>+21.60%
+                    </span>
+                </div>
+                <span class="stat-prior">vs. ₹7,856,321 prior</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- ── Overview Chart ── -->
+    <div class="overview-card mb-4">
+        <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+            <h5 class="fw-bold mb-0" style="font-size:15px;">Overview</h5>
+            <div class="d-flex gap-2 align-items-center">
+                <button class="btn btn-secondary" style="height:32px; font-size:12px; border:1px solid #E5E7EB;">
+                    Day <i class="bi bi-chevron-down ms-1" style="font-size:9px;"></i>
                 </button>
-                <a th:href="@{/reports}" class="btn btn-outline-primary btn-sm bg-white border-muted d-flex align-items-center gap-2" style="height: 38px; color: var(--text-primary); border-color: #D1D5DB; font-weight: 500;">
-                    <i class="bi bi-download" style="color: var(--text-muted);"></i> Export
-                </a>
+                <button class="btn btn-secondary" style="height:32px; font-size:12px; border:1px solid #E5E7EB;">
+                    <i class="bi bi-box-arrow-up-right me-1" style="font-size:11px;"></i>Open as insights
+                </button>
+            </div>
+        </div>
+        <div style="height:230px; position:relative;">
+            <canvas id="overviewChart"></canvas>
+        </div>
+    </div>
+
+    <!-- ── Quick Actions + Recent Activity ── -->
+    <div class="row g-3">
+
+        <!-- Quick Actions -->
+        <div class="col-md-6">
+            <div class="card h-100" style="padding:24px;">
+                <h5 class="fw-bold mb-3" style="font-size:15px;" th:text="#{dashboard.quick_actions}">Quick Actions</h5>
+                <div class="d-flex flex-column gap-3">
+
+                    <a th:href="@{/residents/new}" class="quick-action-row">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="quick-action-icon">
+                                <i class="bi bi-plus-lg"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold" style="font-size:13.5px;" th:text="#{dashboard.action.add_resident}">Add Resident</div>
+                                <div style="font-size:12px; color:#9CA3AF;" th:text="#{dashboard.action.add_resident.desc}">Register a new resident</div>
+                            </div>
+                        </div>
+                        <i class="bi bi-arrow-right" style="color:#10B981; font-size:15px;"></i>
+                    </a>
+
+                    <a th:href="@{/donors/new}" class="quick-action-row">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="quick-action-icon">
+                                <i class="bi bi-plus-lg"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold" style="font-size:13.5px;" th:text="#{dashboard.action.add_donor}">Add Donor</div>
+                                <div style="font-size:12px; color:#9CA3AF;" th:text="#{dashboard.action.add_donor.desc}">Register a new donor</div>
+                            </div>
+                        </div>
+                        <i class="bi bi-arrow-right" style="color:#10B981; font-size:15px;"></i>
+                    </a>
+
+                    <a th:href="@{/reports}" class="quick-action-row">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="quick-action-icon">
+                                <i class="bi bi-bar-chart"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold" style="font-size:13.5px;" th:text="#{dashboard.action.report}">Generate Report</div>
+                                <div style="font-size:12px; color:#9CA3AF;" th:text="#{dashboard.action.report.desc}">View and export reports</div>
+                            </div>
+                        </div>
+                        <i class="bi bi-arrow-right" style="color:#10B981; font-size:15px;"></i>
+                    </a>
+
+                </div>
             </div>
         </div>
 
-        <!-- ── Stats Overview Cards (KPIs) ────────────────────────────────── -->
-        <div class="row mb-4">
-            <!-- Total Residents -->
-            <div class="col-xl-3 col-md-6 mb-3">
-                <a th:href="@{/residents}" class="text-decoration-none">
-                    <div class="card h-100 p-3 border rounded-3 bg-white shadow-sm hover-lift">
-                        <div class="d-flex align-items-center justify-content-between mb-2">
-                            <span class="text-muted fw-semibold" style="font-size: 13.5px;" th:text="#{dashboard.stat.residents}">Total Residents</span>
-                            <span class="badge bg-success-light text-success fw-bold d-flex align-items-center gap-1" style="font-size: 11px; padding: 4px 8px; border-radius: 6px;">
-                                <i class="bi bi-arrow-up-short" style="font-size: 14px; line-height: 1;"></i> +8.33%
-                            </span>
+        <!-- Recent Activity -->
+        <div class="col-md-6">
+            <div class="card h-100 d-flex flex-column" style="padding:24px;">
+                <h5 class="fw-bold mb-3" style="font-size:15px;" th:text="#{dashboard.recent_activity}">Recent Activity</h5>
+
+                <div class="d-flex flex-column gap-0 flex-grow-1">
+                    <div class="d-flex align-items-center justify-content-between py-3"
+                         style="border-bottom:1px solid #F3F4F6;">
+                        <div class="d-flex align-items-center gap-2">
+                            <span style="color:#10B981; font-size:18px; line-height:1;">•</span>
+                            <span style="font-size:13.5px;" th:text="#{dashboard.activity.resident_added}">New resident registered</span>
                         </div>
-                        <div class="mb-2">
-                            <h2 class="fw-bold mb-0 text-dark" style="font-size: 28px; letter-spacing: -0.03em;" th:text="${totalResidents}">0</h2>
-                        </div>
-                        <div class="d-flex align-items-center justify-content-between">
-                            <span class="text-muted small" style="font-size: 12px;">vs. 156 prior</span>
-                            <span class="text-primary fw-semibold small d-flex align-items-center gap-1" style="font-size: 12px;">
-                                View All <i class="bi bi-chevron-right" style="font-size: 10px;"></i>
-                            </span>
-                        </div>
+                        <span style="font-size:12px; color:#9CA3AF; white-space:nowrap;">2 hours ago</span>
                     </div>
-                </a>
-            </div>
-
-            <!-- Total Donors -->
-            <div class="col-xl-3 col-md-6 mb-3">
-                <a th:href="@{/donors}" class="text-decoration-none">
-                    <div class="card h-100 p-3 border rounded-3 bg-white shadow-sm hover-lift">
-                        <div class="d-flex align-items-center justify-content-between mb-2">
-                            <span class="text-muted fw-semibold" style="font-size: 13.5px;" th:text="#{dashboard.stat.donors}">Total Donors</span>
-                            <span class="badge bg-success-light text-success fw-bold d-flex align-items-center gap-1" style="font-size: 11px; padding: 4px 8px; border-radius: 6px;">
-                                <i class="bi bi-arrow-up-short" style="font-size: 14px; line-height: 1;"></i> +12.4%
-                            </span>
+                    <div class="d-flex align-items-center justify-content-between py-3"
+                         style="border-bottom:1px solid #F3F4F6;">
+                        <div class="d-flex align-items-center gap-2">
+                            <span style="color:#10B981; font-size:18px; line-height:1;">•</span>
+                            <span style="font-size:13.5px;" th:text="#{dashboard.activity.donor_added}">New donor added</span>
                         </div>
-                        <div class="mb-2">
-                            <h2 class="fw-bold mb-0 text-dark" style="font-size: 28px; letter-spacing: -0.03em;" th:text="${totalDonors}">0</h2>
-                        </div>
-                        <div class="d-flex align-items-center justify-content-between">
-                            <span class="text-muted small" style="font-size: 12px;">vs. 120 prior</span>
-                            <span class="text-primary fw-semibold small d-flex align-items-center gap-1" style="font-size: 12px;">
-                                View All <i class="bi bi-chevron-right" style="font-size: 10px;"></i>
-                            </span>
-                        </div>
+                        <span style="font-size:12px; color:#9CA3AF; white-space:nowrap;">1 day ago</span>
                     </div>
-                </a>
-            </div>
-
-            <!-- Donations This Month -->
-            <div class="col-xl-3 col-md-6 mb-3">
-                <a th:href="@{/reports/donations}" class="text-decoration-none">
-                    <div class="card h-100 p-3 border rounded-3 bg-white shadow-sm hover-lift">
-                        <div class="d-flex align-items-center justify-content-between mb-2">
-                            <span class="text-muted fw-semibold" style="font-size: 13.5px;">Donations (This Month)</span>
-                            <span class="badge bg-success-light text-success fw-bold d-flex align-items-center gap-1" style="font-size: 11px; padding: 4px 8px; border-radius: 6px;">
-                                <i class="bi bi-arrow-up-short" style="font-size: 14px; line-height: 1;"></i> +21.6%
-                            </span>
+                    <div class="d-flex align-items-center justify-content-between py-3"
+                         style="border-bottom:1px solid #F3F4F6;">
+                        <div class="d-flex align-items-center gap-2">
+                            <span style="color:#10B981; font-size:18px; line-height:1;">•</span>
+                            <span style="font-size:13.5px;" th:text="#{dashboard.activity.report_generated}">Report generated</span>
                         </div>
-                        <div class="mb-2">
-                            <h2 class="fw-bold mb-0 text-dark" style="font-size: 28px; letter-spacing: -0.03em;" th:text="${monthDonations}">0</h2>
-                        </div>
-                        <div class="d-flex align-items-center justify-content-between">
-                            <span class="text-muted small" style="font-size: 12px;">vs. 18 prior</span>
-                            <span class="text-primary fw-semibold small d-flex align-items-center gap-1" style="font-size: 12px;">
-                                View All <i class="bi bi-chevron-right" style="font-size: 10px;"></i>
-                            </span>
-                        </div>
+                        <span style="font-size:12px; color:#9CA3AF; white-space:nowrap;">2 days ago</span>
                     </div>
-                </a>
-            </div>
-
-            <!-- Total Donation Amount -->
-            <div class="col-xl-3 col-md-6 mb-3">
-                <a th:href="@{/reports/donations}" class="text-decoration-none">
-                    <div class="card h-100 p-3 border rounded-3 bg-white shadow-sm hover-lift">
-                        <div class="d-flex align-items-center justify-content-between mb-2">
-                            <span class="text-muted fw-semibold" style="font-size: 13.5px;">Total Raised</span>
-                            <span class="badge bg-success-light text-success fw-bold d-flex align-items-center gap-1" style="font-size: 11px; padding: 4px 8px; border-radius: 6px;">
-                                <i class="bi bi-arrow-up-short" style="font-size: 14px; line-height: 1;"></i> +15.3%
-                            </span>
+                    <div class="d-flex align-items-center justify-content-between py-3"
+                         style="border-bottom:1px solid #F3F4F6;">
+                        <div class="d-flex align-items-center gap-2">
+                            <span style="color:#10B981; font-size:18px; line-height:1;">•</span>
+                            <span style="font-size:13.5px;" th:text="#{dashboard.activity.admin_login}">Admin logged in</span>
                         </div>
-                        <div class="mb-2">
-                            <h2 class="fw-bold mb-0 text-dark" style="font-size: 24px; letter-spacing: -0.03em; line-height: 1.2;"
-                                th:text="'₹' + ${#numbers.formatDecimal(totalDonationAmount != null ? totalDonationAmount : 0, 1, 'COMMA', 2, 'POINT')}">₹0.00</h2>
-                        </div>
-                        <div class="d-flex align-items-center justify-content-between">
-                            <span class="text-muted small" style="font-size: 12px;">vs. ₹7,856,321 prior</span>
-                            <span class="text-primary fw-semibold small d-flex align-items-center gap-1" style="font-size: 12px;">
-                                View All <i class="bi bi-chevron-right" style="font-size: 10px;"></i>
-                            </span>
-                        </div>
+                        <span style="font-size:12px; color:#9CA3AF; white-space:nowrap;">2 days ago</span>
                     </div>
-                </a>
-            </div>
-        </div>
-
-        <!-- ── Overview / Analytics Graph Section ──────────────────────────── -->
-        <div class="card mb-4 shadow-sm border border-light p-4 bg-white">
-            <div class="d-flex align-items-center justify-content-between mb-4">
-                <div>
-                    <h5 class="fw-bold mb-0 text-dark">Overview</h5>
-                </div>
-                <div class="d-flex align-items-center gap-2">
-                    <div class="dropdown">
-                        <button class="btn btn-outline-primary btn-sm bg-white border-muted d-flex align-items-center gap-2" type="button" style="height: 32px; font-size: 12px; color: var(--text-primary); border-color: #D1D5DB; font-weight: 500;">
-                            Day <i class="bi bi-chevron-down ms-1" style="font-size: 9px; color: var(--text-muted);"></i>
-                        </button>
-                    </div>
-                    <button class="btn btn-outline-primary btn-sm bg-white border-muted d-flex align-items-center gap-2" style="height: 32px; font-size: 12px; color: var(--text-primary); border-color: #D1D5DB; font-weight: 500;">
-                        <i class="bi bi-box-arrow-up-right" style="color: var(--text-muted);"></i> Open as insights
-                    </button>
-                </div>
-            </div>
-            <div style="height: 250px; position: relative;">
-                <canvas id="overviewChart"></canvas>
-            </div>
-        </div>
-
-        <!-- ── Quick Actions and Recent Activity Split Row ────────────────── -->
-        <div class="row">
-            <!-- Left Card: Quick Actions -->
-            <div class="col-md-6 mb-3">
-                <div class="card h-100 shadow-sm border border-light p-4 bg-white">
-                    <h5 class="fw-bold mb-4 text-dark">
-                        <span th:text="#{dashboard.quick_actions}">Quick Actions</span>
-                    </h5>
-
-                    <div class="d-flex flex-column gap-3">
-                        <a th:href="@{/residents/new}"
-                            class="quick-action-row d-flex align-items-center justify-content-between p-3 border rounded-3 text-dark bg-white"
-                            style="border-color: #E5E7EB; text-decoration: none; transition: all 0.2s ease;">
-                            <div class="d-flex align-items-center gap-3">
-                                <div class="quick-action-icon" style="width: 36px; height: 36px; border-radius: 50%; background-color: #EBFBF5; color: #10B981; display: flex; align-items: center; justify-content: center; font-size: 16px;">
-                                    <i class="bi bi-plus-lg"></i>
-                                </div>
-                                <div>
-                                    <span class="fw-bold d-block text-dark" style="font-size: 14px;" th:text="#{dashboard.action.add_resident}">Add Resident</span>
-                                    <small class="text-muted" style="font-size: 12px;" th:text="#{dashboard.action.add_resident.desc}">Register a new resident</small>
-                                </div>
-                            </div>
-                            <i class="bi bi-arrow-right text-success fw-bold" style="font-size: 16px;"></i>
-                        </a>
-
-                        <a th:href="@{/donors/new}"
-                            class="quick-action-row d-flex align-items-center justify-content-between p-3 border rounded-3 text-dark bg-white"
-                            style="border-color: #E5E7EB; text-decoration: none; transition: all 0.2s ease;">
-                            <div class="d-flex align-items-center gap-3">
-                                <div class="quick-action-icon" style="width: 36px; height: 36px; border-radius: 50%; background-color: #EBFBF5; color: #10B981; display: flex; align-items: center; justify-content: center; font-size: 16px;">
-                                    <i class="bi bi-plus-lg"></i>
-                                </div>
-                                <div>
-                                    <span class="fw-bold d-block text-dark" style="font-size: 14px;" th:text="#{dashboard.action.add_donor}">Add Donor</span>
-                                    <small class="text-muted" style="font-size: 12px;" th:text="#{dashboard.action.add_donor.desc}">Register a new donor</small>
-                                </div>
-                            </div>
-                            <i class="bi bi-arrow-right text-success fw-bold" style="font-size: 16px;"></i>
-                        </a>
-
-                        <a th:href="@{/reports}"
-                            class="quick-action-row d-flex align-items-center justify-content-between p-3 border rounded-3 text-dark bg-white"
-                            style="border-color: #E5E7EB; text-decoration: none; transition: all 0.2s ease;">
-                            <div class="d-flex align-items-center gap-3">
-                                <div class="quick-action-icon" style="width: 36px; height: 36px; border-radius: 50%; background-color: #EBFBF5; color: #10B981; display: flex; align-items: center; justify-content: center; font-size: 16px;">
-                                    <i class="bi bi-bar-chart"></i>
-                                </div>
-                                <div>
-                                    <span class="fw-bold d-block text-dark" style="font-size: 14px;" th:text="#{dashboard.action.report}">Generate Report</span>
-                                    <small class="text-muted" style="font-size: 12px;" th:text="#{dashboard.action.report.desc}">View and export reports</small>
-                                </div>
-                            </div>
-                            <i class="bi bi-arrow-right text-success fw-bold" style="font-size: 16px;"></i>
-                        </a>
+                    <div class="d-flex align-items-center justify-content-between py-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <span style="color:#10B981; font-size:18px; line-height:1;">•</span>
+                            <span style="font-size:13.5px;" th:text="#{dashboard.activity.export}">Data export completed</span>
+                        </div>
+                        <span style="font-size:12px; color:#9CA3AF; white-space:nowrap;">3 days ago</span>
                     </div>
                 </div>
-            </div>
 
-            <!-- Right Card: Recent Activity -->
-            <div class="col-md-6 mb-3">
-                <div class="card h-100 shadow-sm border border-light p-4 bg-white d-flex flex-column">
-                    <h5 class="fw-bold mb-4 text-dark">
-                        <span th:text="#{dashboard.recent_activity}">Recent Activity</span>
-                    </h5>
-
-                    <div class="d-flex flex-column gap-3 flex-grow-1">
-                        <div class="d-flex align-items-center justify-content-between py-1 border-bottom-dashed">
-                            <div class="d-flex align-items-center gap-2">
-                                <span class="text-success fw-bold" style="font-size: 20px; line-height: 1;">&bull;</span>
-                                <span class="text-dark" style="font-size: 13.5px;" th:text="#{dashboard.activity.resident_added}">New resident registered</span>
-                            </div>
-                            <small class="text-muted" style="font-size: 12px;">2 hours ago</small>
-                        </div>
-                        <div class="d-flex align-items-center justify-content-between py-1 border-bottom-dashed">
-                            <div class="d-flex align-items-center gap-2">
-                                <span class="text-success fw-bold" style="font-size: 20px; line-height: 1;">&bull;</span>
-                                <span class="text-dark" style="font-size: 13.5px;" th:text="#{dashboard.activity.donor_added}">New donor added</span>
-                            </div>
-                            <small class="text-muted" style="font-size: 12px;">1 day ago</small>
-                        </div>
-                        <div class="d-flex align-items-center justify-content-between py-1 border-bottom-dashed">
-                            <div class="d-flex align-items-center gap-2">
-                                <span class="text-success fw-bold" style="font-size: 20px; line-height: 1;">&bull;</span>
-                                <span class="text-dark" style="font-size: 13.5px;" th:text="#{dashboard.activity.report_generated}">Report generated</span>
-                            </div>
-                            <small class="text-muted" style="font-size: 12px;">2 days ago</small>
-                        </div>
-                        <div class="d-flex align-items-center justify-content-between py-1 border-bottom-dashed">
-                            <div class="d-flex align-items-center gap-2">
-                                <span class="text-success fw-bold" style="font-size: 20px; line-height: 1;">&bull;</span>
-                                <span class="text-dark" style="font-size: 13.5px;" th:text="#{dashboard.activity.admin_login}">Admin logged in</span>
-                            </div>
-                            <small class="text-muted" style="font-size: 12px;">2 days ago</small>
-                        </div>
-                        <div class="d-flex align-items-center justify-content-between py-1 border-bottom-dashed">
-                            <div class="d-flex align-items-center gap-2">
-                                <span class="text-success fw-bold" style="font-size: 20px; line-height: 1;">&bull;</span>
-                                <span class="text-dark" style="font-size: 13.5px;" th:text="#{dashboard.activity.export}">Data export completed</span>
-                            </div>
-                            <small class="text-muted" style="font-size: 12px;">3 days ago</small>
-                        </div>
-                    </div>
-
-                    <div class="mt-4 pt-3 border-top text-center">
-                        <a th:href="@{/admin/audit}" class="btn btn-link text-success fw-bold text-decoration-none w-100 py-1" style="font-size: 13.5px;" th:text="#{dashboard.activity.view_all}">
-                            View All Activity
-                        </a>
-                    </div>
+                <div class="pt-3 mt-2" style="border-top:1px solid #F3F4F6;">
+                    <a th:href="@{/admin/audit}"
+                       class="d-block text-center fw-semibold"
+                       style="font-size:13.5px; color:#10B981;"
+                       th:text="#{dashboard.activity.view_all}">View All Activity</a>
                 </div>
             </div>
         </div>
 
     </div>
+</div>
 
-    <!-- Chart.js CDN and Config script for Overview graph -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const ctx = document.getElementById('overviewChart').getContext('2d');
-            
-            // Setup gradient background for line chart
-            const gradient = ctx.createLinearGradient(0, 0, 0, 240);
-            gradient.addColorStop(0, 'rgba(16, 185, 129, 0.15)');
-            gradient.addColorStop(1, 'rgba(16, 185, 129, 0.01)');
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var ctx = document.getElementById('overviewChart').getContext('2d');
+    var gradient = ctx.createLinearGradient(0, 0, 0, 230);
+    gradient.addColorStop(0, 'rgba(16,185,129,0.12)');
+    gradient.addColorStop(1, 'rgba(16,185,129,0.00)');
 
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['Jul 14', 'Jul 16', 'Jul 18', 'Jul 20', 'Jul 22', 'Jul 24', 'Jul 26', 'Jul 30', 'Aug 1', 'Aug 3', 'Aug 5', 'Aug 7', 'Aug 9', 'Aug 11', 'Aug 13'],
-                    datasets: [{
-                        data: [36, 12, 28, 32, 10, 8, 12, 10, 8, 72, 42, 50, 28, 12, 8, 10, 52, 20, 12, 8, 48, 86, 80, 78, 42, 20, 26],
-                        borderColor: '#10B981',
-                        borderWidth: 2,
-                        fill: true,
-                        backgroundColor: gradient,
-                        tension: 0.4,
-                        pointRadius: 0,
-                        pointHoverRadius: 4,
-                        pointHoverBackgroundColor: '#10B981',
-                        pointHoverBorderColor: '#FFFFFF',
-                        pointHoverBorderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            mode: 'index',
-                            intersect: false,
-                            backgroundColor: '#1F2937',
-                            titleColor: '#F9FAFB',
-                            bodyColor: '#F9FAFB',
-                            padding: 10,
-                            borderRadius: 6
-                        }
-                    },
-                    scales: {
-                        x: {
-                            grid: { display: false },
-                            ticks: { 
-                                color: '#9CA3AF', 
-                                font: { size: 11, family: 'Inter' } 
-                            }
-                        },
-                        y: {
-                            min: 0,
-                            max: 100,
-                            grid: { color: '#F3F4F6' },
-                            ticks: { 
-                                stepSize: 20, 
-                                color: '#9CA3AF', 
-                                font: { size: 11, family: 'Inter' } 
-                            }
-                        }
-                    }
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Jul 14','Jul 16','Jul 18','Jul 20','Jul 22','Jul 24','Jul 26','Jul 28','Jul 30','Aug 1','Aug 3','Aug 5','Aug 7','Aug 9','Aug 11','Aug 13'],
+            datasets: [{
+                data: [22,18,32,28,15,12,20,18,14,65,38,56,72,80,62,20],
+                borderColor: '#10B981',
+                borderWidth: 2,
+                fill: true,
+                backgroundColor: gradient,
+                tension: 0.45,
+                pointRadius: 0,
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: '#10B981',
+                pointHoverBorderColor: '#FFFFFF',
+                pointHoverBorderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                    backgroundColor: '#1F2937',
+                    titleColor: '#F9FAFB',
+                    bodyColor: '#F9FAFB',
+                    padding: 10,
+                    borderRadius: 8
                 }
-            });
-        });
-    </script>
+            },
+            scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: { color: '#9CA3AF', font: { size: 11, family: 'Inter' } }
+                },
+                y: {
+                    min: 0,
+                    max: 100,
+                    grid: { color: '#F3F4F6', drawBorder: false },
+                    ticks: { stepSize: 20, color: '#9CA3AF', font: { size: 11, family: 'Inter' } }
+                }
+            }
+        }
+    });
+});
+</script>
 </body>
-
 </html>

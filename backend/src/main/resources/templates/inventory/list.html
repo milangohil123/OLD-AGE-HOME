@@ -65,41 +65,51 @@
             </div>
         </div>
 
-        <!-- ── Action Ribbon ──────────────────────────────────────────────── -->
-        <div class="card mb-4">
-            <div class="row align-items-center py-2">
-                <div class="col-md-6">
-                    <h3 class="mb-0 fw-bold">Medicine Inventory</h3>
-                    <p class="text-muted mb-0">Browse, manage, and export medicine stock records.</p>
-                </div>
-                <div class="col-md-6 text-md-end text-start mt-3 mt-md-0 d-flex justify-content-md-end gap-3 flex-wrap">
-                    <a th:href="@{/inventory/new}" class="btn btn-primary px-4">
-                        <span>➕</span> Add Medicine
-                    </a>
-                    <a th:href="@{/inventory/export}" class="btn btn-secondary px-3">
-                        <span>📥</span> Export to Excel
-                    </a>
-                </div>
+        <!-- Page Header -->
+        <div class="page-header-card mb-3">
+            <div class="page-header-icon"><i class="bi bi-capsule"></i></div>
+            <div class="page-header-info">
+                <h1 class="page-header-title">Medicine Inventory</h1>
+                <p class="page-header-desc">Browse, manage, and export medicine stock records.</p>
+            </div>
+            <div class="page-header-actions">
+                <a th:href="@{/inventory/new}" class="btn btn-primary">
+                    <i class="bi bi-plus-lg me-1"></i> Add Medicine
+                </a>
+                <a th:href="@{/inventory/export}" class="btn btn-outline-primary">
+                    <i class="bi bi-download me-1"></i> Export Excel
+                </a>
             </div>
         </div>
 
-        <!-- ── Excel Bulk Import Panel ────────────────────────────────────── -->
-        <div class="card mb-4" sec:authorize="hasAnyRole('ADMIN', 'MANAGER')">
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                <div>
-                    <h4 class="mb-1 fw-bold">Bulk Import Medicines</h4>
-                    <p class="text-muted mb-0 small">
-                        Import multiple medicine records from a spreadsheet.
-                        Column order: Code | Name | Category | Manufacturer | Supplier | Batch | Purchase Date | Expiry Date | Qty | Min Stock | Price | Rack | Notes
-                    </p>
-                </div>
-                <div>
-                    <form th:action="@{/inventory/import}" method="post" enctype="multipart/form-data" class="d-flex gap-2">
-                        <input type="file" name="file" class="form-control" accept=".xlsx,.xls" required style="max-width: 250px;">
-                        <button type="submit" class="btn btn-primary" style="height: 48px;">Upload Excel</button>
-                    </form>
-                </div>
+        <!-- Bulk Import Panel -->
+        <div class="import-panel mb-3" sec:authorize="hasAnyRole('ADMIN', 'MANAGER')">
+            <div class="import-panel-icon">
+                <i class="bi bi-cloud-arrow-up"></i>
             </div>
+            <div class="import-panel-info">
+                <p class="import-panel-title">Bulk Import Medicines</p>
+                <p class="import-panel-desc">
+                    Import multiple medicine records from a spreadsheet. Column order: Code | Name | Category | Manufacturer | Supplier | Batch | Purchase Date | Expiry Date | Qty | Min Stock | Price | Rack | Notes
+                </p>
+            </div>
+            <form th:action="@{/inventory/import}" method="post" enctype="multipart/form-data"
+                  class="d-flex align-items-center gap-2 flex-shrink-0 flex-wrap">
+                <input type="file" name="file" class="form-control" accept=".xlsx,.xls" required
+                       id="medImportFile"
+                       style="display:none;"
+                       onchange="document.getElementById('medFileNameSpan').textContent = this.files[0]?.name || 'No file chosen'">
+                <button type="button"
+                        onclick="document.getElementById('medImportFile').click()"
+                        class="btn btn-secondary"
+                        style="height:38px; font-size:13px; border:1px solid #E5E7EB;">
+                    Choose File
+                </button>
+                <span id="medFileNameSpan" style="font-size:13px; color:#6B7280; white-space:nowrap;">No file chosen</span>
+                <button type="submit" class="btn btn-outline-primary" style="height:38px; font-size:13px;">
+                    <i class="bi bi-upload me-1"></i> Upload Excel
+                </button>
+            </form>
         </div>
 
         <!-- ── Search Component ───────────────────────────────────────────── -->

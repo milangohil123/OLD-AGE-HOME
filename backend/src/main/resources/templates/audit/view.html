@@ -5,14 +5,15 @@
 
     <div id="audit-detail-container">
 
-        <!-- Header Actions Ribbon -->
-        <div class="card mb-4">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h3 class="mb-0 fw-bold">Audit Log Entry #<span th:text="${log.id}">1</span></h3>
-                    <p class="text-muted mb-0">Detailed user session context, request attributes, and execution result.</p>
-                </div>
-                <a th:href="@{/admin/audit}" class="btn btn-secondary px-3">Back to Logs</a>
+        <!-- Page Header -->
+        <div class="page-header-card mb-4">
+            <div class="page-header-icon"><i class="bi bi-file-earmark-text"></i></div>
+            <div class="page-header-info">
+                <h1 class="page-header-title">Audit Log Entry #<span th:text="${log.id}">1</span></h1>
+                <p class="page-header-desc">Detailed user session context, request attributes, and execution result.</p>
+            </div>
+            <div class="page-header-actions">
+                <a th:href="@{/admin/audit}" class="btn btn-secondary">Back to Logs</a>
             </div>
         </div>
 
@@ -20,7 +21,7 @@
             <!-- ── Left Column: Summary Card ── -->
             <div class="col-lg-4 col-md-12">
                 <div class="card mb-4">
-                    <h4 class="fw-bold border-bottom pb-2 mb-3 text-primary">Summary Information</h4>
+                    <h4 class="fw-bold mb-3" style="font-size:14px; color:#111827; padding-bottom:12px; border-bottom:1px solid #F3F4F6;">Summary Information</h4>
                     <ul class="list-unstyled mb-0" style="font-size: 16px;">
                         <li class="mb-3 d-flex justify-content-between">
                             <span class="text-muted">Username:</span>
@@ -51,7 +52,7 @@
                 </div>
 
                 <div class="card">
-                    <h4 class="fw-bold border-bottom pb-2 mb-3 text-primary">Target Entity Reference</h4>
+                    <h4 class="fw-bold mb-3" style="font-size:14px; color:#111827; padding-bottom:12px; border-bottom:1px solid #F3F4F6;">Target Entity Reference</h4>
                     <ul class="list-unstyled mb-0" style="font-size: 15px;">
                         <li class="mb-2 d-flex justify-content-between">
                             <span class="text-muted">Entity Name:</span>
@@ -68,7 +69,7 @@
             <!-- ── Right Column: Client Context Details ── -->
             <div class="col-lg-8 col-md-12">
                 <div class="card mb-4">
-                    <h4 class="fw-bold border-bottom pb-2 mb-3 text-primary">Request &amp; Browser Context</h4>
+                    <h4 class="fw-bold mb-3" style="font-size:14px; color:#111827; padding-bottom:12px; border-bottom:1px solid #F3F4F6;">Request &amp; Browser Context</h4>
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <span class="text-muted d-block small">IP Address</span>
@@ -94,7 +95,7 @@
                 </div>
 
                 <div class="card mb-4">
-                    <h4 class="fw-bold border-bottom pb-2 mb-3 text-primary">Activity Log Description</h4>
+                    <h4 class="fw-bold mb-3" style="font-size:14px; color:#111827; padding-bottom:12px; border-bottom:1px solid #F3F4F6;">Activity Log Description</h4>
                     <div class="p-3 bg-light rounded border">
                         <p class="mb-0 fs-6 text-dark" style="white-space: pre-line; font-weight: 500;" th:text="${log.description}">
                             No description provided.

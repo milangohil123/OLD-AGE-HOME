@@ -5,14 +5,15 @@
 
     <div id="inventory-form-container">
 
-        <!-- Action Header -->
-        <div class="card mb-4">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h3 class="mb-0 fw-bold" th:text="${item.id == null ? 'Add New Medicine' : 'Edit Medicine Details'}">Add Medicine</h3>
-                    <p class="text-muted mb-0">Fill in the fields below. Required values are marked with an asterisk (*).</p>
-                </div>
-                <a th:href="@{/inventory}" class="btn btn-secondary px-3">Back to List</a>
+        <!-- Page Header -->
+        <div class="page-header-card mb-4">
+            <div class="page-header-icon"><i class="bi bi-capsule"></i></div>
+            <div class="page-header-info">
+                <h1 class="page-header-title" th:text="${item.id == null ? 'Add New Medicine' : 'Edit Medicine Details'}">Add Medicine</h1>
+                <p class="page-header-desc">Fill in the fields below. Required fields are marked with an asterisk (*).</p>
+            </div>
+            <div class="page-header-actions">
+                <a th:href="@{/inventory}" class="btn btn-secondary">Back to List</a>
             </div>
         </div>
 
@@ -30,7 +31,7 @@
 
                     <!-- Section A: Medicine Identification -->
                     <div class="card mb-4">
-                        <h4 class="mb-4 border-bottom pb-2 text-primary fw-bold">Medicine Information</h4>
+                        <h4 class="mb-4 fw-bold" style="font-size:14px; color:#111827; padding-bottom:12px; border-bottom:1px solid #F3F4F6;">Medicine Information</h4>
 
                         <div class="row">
                             <div class="col-md-6 mb-4">
@@ -88,7 +89,7 @@
 
                     <!-- Section B: Stock & Pricing -->
                     <div class="card mb-4">
-                        <h4 class="mb-4 border-bottom pb-2 text-primary fw-bold">Stock &amp; Pricing</h4>
+                        <h4 class="mb-4 fw-bold" style="font-size:14px; color:#111827; padding-bottom:12px; border-bottom:1px solid #F3F4F6;">Stock &amp; Pricing</h4>
 
                         <div class="row">
                             <div class="col-md-4 mb-4">
@@ -132,7 +133,7 @@
 
                     <!-- Section C: Storage & Remarks -->
                     <div class="card mb-4">
-                        <h4 class="mb-4 border-bottom pb-2 text-primary fw-bold">Storage &amp; Remarks</h4>
+                        <h4 class="mb-4 fw-bold" style="font-size:14px; color:#111827; padding-bottom:12px; border-bottom:1px solid #F3F4F6;">Storage &amp; Remarks</h4>
 
                         <div class="row">
                             <div class="col-md-6 mb-4">
@@ -178,7 +179,7 @@
 
                     <!-- Submit Actions Card -->
                     <div class="card">
-                        <h4 class="mb-4 border-bottom pb-2 text-primary fw-bold">Actions</h4>
+                        <h4 class="mb-4 fw-bold" style="font-size:14px; color:#111827; padding-bottom:12px; border-bottom:1px solid #F3F4F6;">Actions</h4>
                         <button type="submit" class="btn btn-primary w-100 mb-3" style="height: 48px;">
                             Save Medicine Record
                         </button>
