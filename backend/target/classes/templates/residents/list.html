@@ -1,210 +1,183 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{fragments/layout :: main(~{::#residents-list}, 'residents', #{nav.residents})}">
+    th:replace="~{fragments/layout :: main(~{::#residents-list}, 'residents', #{nav.residents})}">
+
 <body>
-<div id="residents-list">
 
-    <!-- Alert Messages -->
-    <div th:replace="~{fragments/alerts :: success(${successMessage})}"></div>
-    <div th:replace="~{fragments/alerts :: error(${errorMessage})}"></div>
+    <div id="residents-list">
 
-    <!-- ── Page Header Card ── -->
-    <div class="page-header-card mb-3">
-        <div class="page-header-icon">
-            <i class="bi bi-people"></i>
+        <!-- Reusable Alert Messages -->
+        <div th:replace="~{fragments/alerts :: success(${successMessage})}"></div>
+        <div th:replace="~{fragments/alerts :: error(${errorMessage})}"></div>
+
+        <!-- Page Header Card -->
+        <div class="page-header-card mb-3">
+            <div class="page-header-icon">
+                <i class="bi bi-people-fill"></i>
+            </div>
+            <div class="page-header-info">
+                <h1 class="page-header-title" th:text="#{resident.list.title}">Elderly Residents</h1>
+                <p class="page-header-desc" th:text="#{resident.list.desc}">Browse directory database, run registers, or make updates.</p>
+            </div>
+            <div class="page-header-actions">
+                <a th:href="@{/residents/new}" class="btn btn-primary">
+                    <i class="bi bi-plus-lg"></i>
+                    <span th:text="#{resident.btn.add}">Add Resident</span>
+                </a>
+                <a th:href="@{/residents/export}" class="btn btn-secondary">
+                    <i class="bi bi-download"></i>
+                    <span th:text="#{resident.btn.export}">Export to Excel</span>
+                </a>
+            </div>
         </div>
-        <div class="page-header-info">
-            <h1 class="page-header-title" th:text="#{resident.list.title}">Elderly Residents</h1>
-            <p class="page-header-desc" th:text="#{resident.list.desc}">Browse directory database, run registers, or make updates.</p>
+
+        <!-- Bulk Import Panel -->
+        <div class="import-panel mb-3" sec:authorize="hasAnyRole('ADMIN', 'MANAGER')">
+            <div class="import-panel-icon">
+                <i class="bi bi-cloud-arrow-up"></i>
+            </div>
+            <div class="import-panel-info">
+                <p class="import-panel-title" th:text="#{resident.import.title}">Bulk Import Residents</p>
+                <p class="import-panel-desc" th:text="#{resident.import.desc}">Column format: Resident ID | Name | Gender | DOB | Mobile | Guardian | Guardian Phone</p>
+            </div>
+            <form th:action="@{/residents/import}" method="post" enctype="multipart/form-data"
+                  class="d-flex align-items-center gap-2 flex-shrink-0 flex-wrap">
+                <input type="file" name="file" accept=".xlsx,.xls" required
+                       id="resImportFile" style="display:none;"
+                       onchange="document.getElementById('resFileNameSpan').textContent = this.files[0]?.name || 'No file chosen'">
+                <button type="button" onclick="document.getElementById('resImportFile').click()"
+                        class="btn btn-secondary">Choose File</button>
+                <span id="resFileNameSpan" style="font-size:13px; color:var(--text-muted); white-space:nowrap;">No file chosen</span>
+                <button type="submit" class="btn btn-outline-primary">
+                    <i class="bi bi-upload me-1"></i>
+                    <span th:text="#{resident.import.btn}">Upload Excel</span>
+                </button>
+            </form>
         </div>
-        <div class="page-header-actions">
-            <a th:href="@{/residents/new}" class="btn btn-primary">
-                <i class="bi bi-plus-lg"></i>
-                <span th:text="#{resident.btn.add}">Add Resident</span>
-            </a>
-            <a th:href="@{/residents/export}" class="btn btn-outline-primary">
-                <i class="bi bi-download"></i>
-                <span th:text="#{resident.btn.export}">Export to Excel</span>
-            </a>
+
+        <!-- Search Component Filter -->
+        <div th:replace="~{fragments/search :: search(baseUrl='/residents', keyword=${keyword}, size=${residentsPage.size}, sort=${sort}, direction=${direction}, placeholder=#{resident.search.placeholder})}">
         </div>
+
+        <!-- Main Roster Directory Table -->
+        <div class="table-card">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th style="width: 70px;" th:text="#{resident.table.photo}">PHOTO</th>
+                            <th style="width: 180px;" th:text="#{resident.table.name}">FULL NAME</th>
+                            <th style="width: 120px;" th:text="#{resident.table.age}">AGE</th>
+                            <th style="width: 90px;">ROOM NO.</th>
+                            <th style="width: 160px;" th:text="#{resident.table.guardian}">GUARDIAN NAME</th>
+                            <th style="width: 140px;" th:text="#{resident.table.guardian_phone}">GUARDIAN PHONE</th>
+                            <th style="width: 110px;" th:text="#{resident.table.status}">STATUS</th>
+                            <th style="width: 160px;" class="text-end" th:text="#{resident.table.actions}">ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Empty State -->
+                        <tr th:if="${residentsPage == null or residentsPage.totalElements == 0}">
+                            <td colspan="8" class="text-center py-5 text-muted">
+                                <i class="bi bi-people d-block mb-3" style="font-size: 40px; color: #BFDBFE;"></i>
+                                <h5 class="fw-bold" th:text="#{resident.table.empty.title}">No Resident Records Found
+                                </h5>
+                                <p class="mb-0 small" th:text="#{resident.table.empty.desc}">Add a new resident or
+                                    adjust your search filter keyword.</p>
+                            </td>
+                        </tr>
+
+                        <!-- Roster Loop -->
+                        <tr th:each="res : ${residentsPage.content}" th:if="${res != null}">
+
+                            <td>
+                                <img th:if="${res.photo != null}" th:src="@{'/uploads/' + ${res.photo}}"
+                                     class="rounded-circle object-fit-cover"
+                                     style="width:42px;height:42px;border:1.5px solid var(--border);">
+                                <div th:if="${res.photo == null}"
+                                     class="rounded-circle d-flex align-items-center justify-content-center"
+                                     style="width:42px;height:42px;background:var(--primary-xlight);color:var(--primary-dark);border:1.5px solid var(--primary-light);">
+                                    <i class="bi bi-person" style="font-size:17px;"></i>
+                                </div>
+                            </td>
+
+                            <!-- Full Name -->
+                            <td>
+                                <span class="fw-bold text-dark" th:text="${res.fullName}">Chman Mehta</span>
+                            </td>
+
+                            <!-- Age -->
+                            <td>
+                                <span class="text-dark" th:text="${res.age != null ? res.age : 'N/A'} + ' yrs'">38
+                                    yrs</span>
+                            </td>
+
+                            <!-- Room Number -->
+                            <td>
+                                <span class="text-dark"
+                                    th:text="${res.roomNumber != null and !res.roomNumber.isEmpty()} ? ${res.roomNumber} : '-'">A
+                                    101</span>
+                            </td>
+
+                            <!-- Guardian Name -->
+                            <td>
+                                <span class="text-dark"
+                                    th:text="${res.guardianName != null and !res.guardianName.isEmpty()} ? ${res.guardianName} : '-'">Milan
+                                    Gohil</span>
+                            </td>
+
+                            <!-- Guardian Phone -->
+                            <td>
+                                <span class="text-dark"
+                                    th:text="${res.guardianPhone != null and !res.guardianPhone.isEmpty()} ? ${res.guardianPhone} : '-'">07894561230</span>
+                            </td>
+
+                            <!-- Status Badge -->
+                            <td>
+                                <span th:if="${res.status != null and res.status.name() == 'ACTIVE'}"
+                                    class="res-badge res-badge-active" th:text="#{resident.status.active}">Active</span>
+                                <span th:if="${res.status != null and res.status.name() == 'DISCHARGED'}"
+                                    class="res-badge res-badge-discharged"
+                                    th:text="#{resident.status.discharged}">Discharged</span>
+                                <span th:if="${res.status != null and res.status.name() == 'DECEASED'}"
+                                    class="res-badge res-badge-deceased"
+                                    th:text="#{resident.status.deceased}">Deceased</span>
+                                <span th:if="${res.status == null}" class="res-badge res-badge-unknown"
+                                    th:text="#{resident.status.unknown}">Unknown</span>
+                            </td>
+
+                            <td class="text-end">
+                                <div class="d-inline-flex gap-2">
+                                    <a th:href="@{/residents/view/{id}(id=${res.id})}"
+                                       class="btn btn-icon btn-icon-view" th:title="#{resident.btn.view}">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a th:href="@{/residents/edit/{id}(id=${res.id})}"
+                                       class="btn btn-icon btn-icon-edit"
+                                       sec:authorize="hasAnyRole('ADMIN', 'MANAGER')" th:title="#{resident.btn.edit}">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a th:href="@{/residents/delete/{id}(id=${res.id})}"
+                                       class="btn btn-icon btn-icon-delete"
+                                       th:data-confirm="#{resident.confirm.delete}"
+                                       onclick="return confirm(this.getAttribute('data-confirm'));"
+                                       sec:authorize="hasRole('ADMIN')" th:title="#{resident.btn.delete}">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Reusable Pagination Component -->
+            <div th:replace="~{fragments/pagination :: pagination(page=${residentsPage}, baseUrl='/residents', queryParams=${paginationQuery})}"></div>
+        </div>
+
     </div>
 
-    <!-- ── Bulk Import Panel ── -->
-    <div class="import-panel mb-3" sec:authorize="hasAnyRole('ADMIN', 'MANAGER')">
-        <div class="import-panel-icon">
-            <i class="bi bi-cloud-arrow-up"></i>
-        </div>
-        <div class="import-panel-info">
-            <p class="import-panel-title" th:text="#{resident.import.title}">Bulk Import Residents</p>
-            <p class="import-panel-desc" th:text="#{resident.import.desc}">
-                Import multiple records from a spreadsheet. Column format: Resident ID | Name | Gender | DOB | Mobile | Guardian | Guardian Phone
-            </p>
-        </div>
-        <form th:action="@{/residents/import}" method="post" enctype="multipart/form-data"
-              class="d-flex align-items-center gap-2 flex-shrink-0 flex-wrap">
-            <input type="file" name="file" class="form-control" accept=".xlsx,.xls" required
-                   id="importFile"
-                   style="max-width:220px; height:38px; font-size:13px; display:none;"
-                   onchange="document.getElementById('fileNameSpan').textContent = this.files[0]?.name || 'No file chosen'">
-            <button type="button"
-                    onclick="document.getElementById('importFile').click()"
-                    class="btn btn-secondary"
-                    style="height:38px; font-size:13px; border:1px solid #E5E7EB;">
-                Choose File
-            </button>
-            <span id="fileNameSpan"
-                  style="font-size:13px; color:#6B7280; white-space:nowrap;">No file chosen</span>
-            <button type="submit" class="btn btn-outline-primary" style="height:38px; font-size:13px;">
-                <i class="bi bi-upload me-1"></i>
-                <span th:text="#{resident.import.btn}">Upload Excel</span>
-            </button>
-        </form>
-    </div>
 
-    <!-- ── Search ── -->
-    <div th:replace="~{fragments/search :: search(baseUrl='/residents', keyword=${keyword}, size=${residentsPage.size}, sort=${sort}, direction=${direction}, placeholder=#{resident.search.placeholder})}"></div>
 
-    <!-- ── Data Table ── -->
-    <div class="table-card">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead>
-                    <tr>
-                        <th style="width:72px;" th:text="#{resident.table.photo}">PHOTO</th>
-                        <th>
-                            <a th:href="@{/residents(keyword=${keyword},size=${residentsPage.size},sort='fullName',direction=${sort == 'fullName' and direction == 'asc' ? 'desc' : 'asc'})}"
-                               style="color:inherit; text-decoration:none; display:flex; align-items:center; gap:4px; white-space:nowrap;">
-                                <span th:text="#{resident.table.name}">FULL NAME</span>
-                                <i class="bi bi-arrow-down-up sort-arrow"></i>
-                            </a>
-                        </th>
-                        <th>
-                            <a th:href="@{/residents(keyword=${keyword},size=${residentsPage.size},sort='age',direction=${sort == 'age' and direction == 'asc' ? 'desc' : 'asc'})}"
-                               style="color:inherit; text-decoration:none; display:flex; align-items:center; gap:4px; white-space:nowrap;">
-                                <span th:text="#{resident.table.age}">AGE</span>
-                                <i class="bi bi-arrow-down-up sort-arrow"></i>
-                            </a>
-                        </th>
-                        <th style="white-space:nowrap;">ROOM NO.</th>
-                        <th>
-                            <a th:href="@{/residents(keyword=${keyword},size=${residentsPage.size},sort='guardianName',direction=${sort == 'guardianName' and direction == 'asc' ? 'desc' : 'asc'})}"
-                               style="color:inherit; text-decoration:none; display:flex; align-items:center; gap:4px; white-space:nowrap;">
-                                <span th:text="#{resident.table.guardian}">GUARDIAN NAME</span>
-                                <i class="bi bi-arrow-down-up sort-arrow"></i>
-                            </a>
-                        </th>
-                        <th>
-                            <a th:href="@{/residents(keyword=${keyword},size=${residentsPage.size},sort='guardianPhone',direction=${sort == 'guardianPhone' and direction == 'asc' ? 'desc' : 'asc'})}"
-                               style="color:inherit; text-decoration:none; display:flex; align-items:center; gap:4px; white-space:nowrap;">
-                                <span th:text="#{resident.table.guardian_phone}">GUARDIAN PHONE</span>
-                                <i class="bi bi-arrow-down-up sort-arrow"></i>
-                            </a>
-                        </th>
-                        <th>
-                            <a th:href="@{/residents(keyword=${keyword},size=${residentsPage.size},sort='status',direction=${sort == 'status' and direction == 'asc' ? 'desc' : 'asc'})}"
-                               style="color:inherit; text-decoration:none; display:flex; align-items:center; gap:4px; white-space:nowrap;">
-                                <span th:text="#{resident.table.status}">STATUS</span>
-                                <i class="bi bi-arrow-down-up sort-arrow"></i>
-                            </a>
-                        </th>
-                        <th class="text-end" th:text="#{resident.table.actions}">ACTIONS</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Empty State -->
-                    <tr th:if="${residentsPage == null or residentsPage.totalElements == 0}">
-                        <td colspan="8" class="text-center py-5">
-                            <div style="color:#D1FAE5; font-size:48px; margin-bottom:12px;">
-                                <i class="bi bi-people"></i>
-                            </div>
-                            <p class="fw-bold mb-1" style="color:#374151;" th:text="#{resident.table.empty.title}">No Resident Records Found</p>
-                            <p class="mb-0 text-muted" style="font-size:13px;" th:text="#{resident.table.empty.desc}">Add a new resident or adjust your search.</p>
-                        </td>
-                    </tr>
-
-                    <!-- Resident Rows -->
-                    <tr th:each="res : ${residentsPage.content}" th:if="${res != null}">
-                        <!-- Photo -->
-                        <td>
-                            <img th:if="${res.photo != null}"
-                                 th:src="@{'/uploads/' + ${res.photo}}"
-                                 class="rounded-circle object-fit-cover"
-                                 style="width:44px;height:44px;border:1.5px solid #E5E7EB;">
-                            <div th:if="${res.photo == null}"
-                                 class="rounded-circle d-flex align-items-center justify-content-center"
-                                 style="width:44px;height:44px;background:#ECFDF5;border:1.5px solid #D1FAE5;color:#10B981;">
-                                <i class="bi bi-person" style="font-size:18px;"></i>
-                            </div>
-                        </td>
-                        <!-- Name -->
-                        <td>
-                            <span class="fw-semibold" style="color:#111827; font-size:13.5px;"
-                                  th:text="${res.fullName}">Name</span>
-                        </td>
-                        <!-- Age -->
-                        <td>
-                            <span style="color:#374151; font-size:13.5px;"
-                                  th:text="${res.age != null ? res.age + ' yrs' : '—'}">72 yrs</span>
-                        </td>
-                        <!-- Room -->
-                        <td>
-                            <span style="color:#374151; font-size:13.5px;"
-                                  th:text="${res.roomNumber != null and !res.roomNumber.isEmpty() ? res.roomNumber : '-'}">-</span>
-                        </td>
-                        <!-- Guardian Name -->
-                        <td>
-                            <span style="color:#374151; font-size:13.5px;"
-                                  th:text="${res.guardianName != null and !res.guardianName.isEmpty() ? res.guardianName : '-'}">-</span>
-                        </td>
-                        <!-- Guardian Phone -->
-                        <td>
-                            <span style="color:#374151; font-size:13.5px;"
-                                  th:text="${res.guardianPhone != null and !res.guardianPhone.isEmpty() ? res.guardianPhone : '-'}">-</span>
-                        </td>
-                        <!-- Status -->
-                        <td>
-                            <span th:if="${res.status != null and res.status.name() == 'ACTIVE'}"
-                                  class="res-badge res-badge-active" th:text="#{resident.status.active}">Active</span>
-                            <span th:if="${res.status != null and res.status.name() == 'DISCHARGED'}"
-                                  class="res-badge res-badge-discharged" th:text="#{resident.status.discharged}">Discharged</span>
-                            <span th:if="${res.status != null and res.status.name() == 'DECEASED'}"
-                                  class="res-badge res-badge-deceased" th:text="#{resident.status.deceased}">Deceased</span>
-                            <span th:if="${res.status == null}"
-                                  class="res-badge res-badge-unknown" th:text="#{resident.status.unknown}">Unknown</span>
-                        </td>
-                        <!-- Actions -->
-                        <td class="text-end">
-                            <div class="d-inline-flex gap-2 align-items-center">
-                                <a th:href="@{/residents/view/{id}(id=${res.id})}"
-                                   class="btn btn-icon btn-icon-view"
-                                   th:title="#{resident.btn.view}">
-                                    <i class="bi bi-eye"></i>
-                                </a>
-                                <a th:href="@{/residents/edit/{id}(id=${res.id})}"
-                                   class="btn btn-icon btn-icon-edit"
-                                   sec:authorize="hasAnyRole('ADMIN','MANAGER')"
-                                   th:title="#{resident.btn.edit}">
-                                    <i class="bi bi-pencil"></i>
-                                </a>
-                                <a th:href="@{/residents/delete/{id}(id=${res.id})}"
-                                   class="btn btn-icon btn-icon-delete"
-                                   th:data-confirm="#{resident.confirm.delete}"
-                                   onclick="return confirm(this.getAttribute('data-confirm'));"
-                                   sec:authorize="hasRole('ADMIN')"
-                                   th:title="#{resident.btn.delete}">
-                                    <i class="bi bi-trash"></i>
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Pagination -->
-        <div th:replace="~{fragments/pagination :: pagination(page=${residentsPage}, baseUrl='/residents', queryParams=${paginationQuery})}"></div>
-    </div>
-
-</div>
 </body>
+
 </html>

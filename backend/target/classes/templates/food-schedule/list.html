@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{fragments/layout :: main(~{::#food-schedule-list}, 'food-schedule', #{nav.food_schedule})}">
+    th:replace="~{fragments/layout :: main(~{::#food-schedule-list}, 'food-schedule', #{nav.food_schedule})}">
+
 <body>
 
     <div id="food-schedule-list">
@@ -12,120 +13,79 @@
         <!-- ═══════════════════════════════════════════════════════════════════ -->
         <!-- KPI CARDS                                                           -->
         <!-- ═══════════════════════════════════════════════════════════════════ -->
-        <div class="row mb-4">
-            <div class="col-md-3 col-sm-6 mb-3 mb-md-0">
-                <div class="card py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon-circle">
-                            <i class="bi bi-calendar-event" style="font-size: 18px;"></i>
-                        </div>
-                        <div>
-                            <h2 class="fw-bold mb-0 text-primary" th:text="${dashboard.todaysMealsCount}">0</h2>
-                            <span class="text-muted fw-semibold" style="font-size: 13px;">Today's Meals</span>
-                        </div>
-                    </div>
+        <div class="row mb-4 g-3">
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <span class="stat-label">Today's Meals</span>
+                    <h2 class="stat-value" th:text="${dashboard.todaysMealsCount}">0</h2>
+                    <span class="stat-badge-up"><i class="bi bi-calendar-event"></i> Total</span>
                 </div>
             </div>
-            <div class="col-md-3 col-sm-6 mb-3 mb-md-0">
-                <div class="card py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon-circle">
-                            <i class="bi bi-sunrise" style="font-size: 18px;"></i>
-                        </div>
-                        <div>
-                            <h2 class="fw-bold mb-0 text-primary" th:text="${dashboard.todayBreakfastCount}">0</h2>
-                            <span class="text-muted fw-semibold" style="font-size: 13px;">Breakfast</span>
-                        </div>
-                    </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <span class="stat-label">Breakfast</span>
+                    <h2 class="stat-value" th:text="${dashboard.todayBreakfastCount}">0</h2>
+                    <span class="stat-badge-up"><i class="bi bi-sunrise"></i> Morning</span>
                 </div>
             </div>
-            <div class="col-md-3 col-sm-6 mb-3 mb-md-0">
-                <div class="card py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon-circle">
-                            <i class="bi bi-sun" style="font-size: 18px;"></i>
-                        </div>
-                        <div>
-                            <h2 class="fw-bold mb-0 text-primary" th:text="${dashboard.todayLunchCount}">0</h2>
-                            <span class="text-muted fw-semibold" style="font-size: 13px;">Lunch</span>
-                        </div>
-                    </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <span class="stat-label">Lunch</span>
+                    <h2 class="stat-value" th:text="${dashboard.todayLunchCount}">0</h2>
+                    <span class="stat-badge-up"><i class="bi bi-sun"></i> Afternoon</span>
                 </div>
             </div>
-            <div class="col-md-3 col-sm-6 mb-3 mb-md-0">
-                <div class="card py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon-circle">
-                            <i class="bi bi-moon-stars" style="font-size: 18px;"></i>
-                        </div>
-                        <div>
-                            <h2 class="fw-bold mb-0 text-primary" th:text="${dashboard.todayDinnerCount}">0</h2>
-                            <span class="text-muted fw-semibold" style="font-size: 13px;">Dinner</span>
-                        </div>
-                    </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stat-card">
+                    <span class="stat-label">Dinner</span>
+                    <h2 class="stat-value" th:text="${dashboard.todayDinnerCount}">0</h2>
+                    <span class="stat-badge-up"><i class="bi bi-moon-stars"></i> Evening</span>
                 </div>
             </div>
         </div>
 
-        <div class="row mb-4">
-            <div class="col-md-6 col-sm-6 mb-3 mb-md-0">
-                <div class="card py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon-circle">
-                            <i class="bi bi-people" style="font-size: 18px;"></i>
-                        </div>
-                        <div>
-                            <h2 class="fw-bold mb-0 text-primary" th:text="${dashboard.activeFoodSponsorsCount}">0</h2>
-                            <span class="text-muted fw-semibold" style="font-size: 13px;">Active Food Sponsors</span>
-                        </div>
-                    </div>
+        <div class="row mb-4 g-3">
+            <div class="col-md-6 col-sm-6">
+                <div class="stat-card">
+                    <span class="stat-label">Active Food Sponsors</span>
+                    <h2 class="stat-value" th:text="${dashboard.activeFoodSponsorsCount}">0</h2>
+                    <span class="stat-badge-up"><i class="bi bi-people"></i> Sponsors</span>
                 </div>
             </div>
-            <div class="col-md-6 col-sm-6 mb-3 mb-md-0">
-                <div class="card py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon-circle">
-                            <i class="bi bi-clock-history" style="font-size: 18px;"></i>
-                        </div>
-                        <div>
-                            <h2 class="fw-bold mb-0 text-primary" th:text="${dashboard.upcomingSchedulesCount}">0</h2>
-                            <span class="text-muted fw-semibold" style="font-size: 13px;">Upcoming Schedules</span>
-                        </div>
-                    </div>
+            <div class="col-md-6 col-sm-6">
+                <div class="stat-card">
+                    <span class="stat-label">Upcoming Schedules</span>
+                    <h2 class="stat-value" th:text="${dashboard.upcomingSchedulesCount}">0</h2>
+                    <span class="stat-badge-up"><i class="bi bi-clock-history"></i> Planned</span>
                 </div>
-            </div>
-        </div>
-
-        <!-- Page Header -->
-        <div class="page-header-card mb-3">
-            <div class="page-header-icon"><i class="bi bi-calendar3"></i></div>
-            <div class="page-header-info">
-                <h1 class="page-header-title" th:text="#{nav.food_schedule}">Food Schedule</h1>
-                <p class="page-header-desc">Manage daily meal schedules for all residents.</p>
-            </div>
-            <div class="page-header-actions">
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addScheduleModal">
-                    <i class="bi bi-plus-lg"></i> Create Schedule
-                </button>
             </div>
         </div>
 
         <!-- ═══════════════════════════════════════════════════════════════════ -->
         <!-- SECTION 3 + 4 : EXISTING SEARCH + MANAGEMENT TABLE                 -->
         <!-- ═══════════════════════════════════════════════════════════════════ -->
-        <div class="card mb-4">
-            <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 fw-bold">Food Schedule</h5>
-                <button type="button" class="btn btn-primary btn-sm px-3"
-                        data-bs-toggle="modal" data-bs-target="#addScheduleModal">
+        
+        <!-- Page Header Card -->
+        <div class="page-header-card mb-3">
+            <div class="page-header-icon">
+                <i class="bi bi-calendar2-heart"></i>
+            </div>
+            <div class="page-header-info">
+                <h1 class="page-header-title">Food Schedule</h1>
+                <p class="page-header-desc">Manage daily meals, schedules, and food sponsors.</p>
+            </div>
+            <div class="page-header-actions">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                    data-bs-target="#addScheduleModal">
                     <i class="bi bi-plus-lg me-1"></i> Create Schedule
                 </button>
             </div>
+        </div>
 
             <div class="card-body">
                 <!-- Search & Filter -->
-                <form th:action="@{/food-schedule}" method="get"
-                      class="row g-3 mb-4 align-items-end" th:object="${searchDTO}">
+                <form th:action="@{/food-schedule}" method="get" class="row g-3 mb-4 align-items-end"
+                    th:object="${searchDTO}">
                     <div class="col-md-2">
                         <label class="form-label text-muted small fw-bold mb-1">From Date</label>
                         <input type="date" class="form-control form-control-sm" th:field="*{fromDate}">
@@ -139,16 +99,15 @@
                         <select class="form-select form-select-sm" th:field="*{mealType}">
                             <option value="">All Meals</option>
                             <option th:each="type : ${T(com.oldagehome.portal.foodschedule.MealType).values()}"
-                                    th:value="${type}" th:text="${type.displayName}"></option>
+                                th:value="${type}" th:text="${type.displayName}"></option>
                         </select>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label text-muted small fw-bold mb-1">Food Sponsor</label>
                         <select class="form-select form-select-sm" th:field="*{donorId}" id="donorId">
                             <option value="">All Sponsors</option>
-                            <option th:each="sponsor : ${sponsors}"
-                                    th:value="${sponsor.donorId}"
-                                    th:text="${sponsor.donorName}"></option>
+                            <option th:each="sponsor : ${sponsors}" th:value="${sponsor.donorId}"
+                                th:text="${sponsor.donorName}"></option>
                         </select>
                     </div>
                     <div class="col-md-2">
@@ -193,26 +152,27 @@
                             </tr>
                             <tr th:each="schedule : ${schedules.content}">
                                 <!-- CHECK 3 : date format 'dd MMM yyyy' → "27 Jul 2026" ✅ -->
-                                <td class="fw-medium"
-                                    th:text="${#temporals.format(schedule.mealDate, 'dd MMM yyyy')}">Date</td>
+                                <td class="fw-medium" th:text="${#temporals.format(schedule.mealDate, 'dd MMM yyyy')}">
+                                    Date</td>
                                 <td>
                                     <span class="badge"
-                                          th:classappend="${schedule.mealType.name() == 'BREAKFAST' ? 'badge-yellow' :
-                                                          (schedule.mealType.name() == 'LUNCH'     ? 'badge-green' :
-                                                                                                     'badge-gray')}"
-                                          th:text="${schedule.mealType.displayName}">Meal</span>
+                                        th:classappend="${schedule.mealType.name() == 'BREAKFAST' ? 'bg-success bg-opacity-10 text-success' :
+                                                          (schedule.mealType.name() == 'LUNCH'     ? 'bg-warning bg-opacity-10 text-warning' :
+                                                                                                     'bg-info bg-opacity-10 text-info')}"
+                                        th:text="${schedule.mealType.displayName}">Meal</span>
                                 </td>
                                 <td>
                                     <!-- CHECK 10 : text-truncate with max-width ✅ (existing behaviour preserved) -->
                                     <div class="text-truncate" style="max-width: 200px;"
-                                         th:text="${schedule.menuItems}">Menu</div>
+                                        th:text="${schedule.menuItems}">Menu</div>
                                 </td>
                                 <td>
                                     <div th:if="${schedule.donorName != null}">
                                         <div class="fw-medium" th:text="${schedule.donorName}">Name</div>
                                     </div>
                                     <!-- CHECK 11 : "No Sponsor" for null ✅ -->
-                                    <span th:unless="${schedule.donorName != null}" class="text-muted small">No Sponsor</span>
+                                    <span th:unless="${schedule.donorName != null}" class="text-muted small">No
+                                        Sponsor</span>
                                 </td>
                                 <td>
                                     <div th:if="${schedule.donorMobile != null}">
@@ -221,25 +181,26 @@
                                     <span th:unless="${schedule.donorMobile != null}" class="text-muted small">—</span>
                                 </td>
                                 <td>
-                                    <span th:if="${schedule.status == 'ACTIVE'}" class="res-badge res-badge-active">Active</span>
-                                    <span th:if="${schedule.status == 'COMPLETED'}" class="badge badge-green">Completed</span>
-                                    <span th:if="${schedule.status == 'CANCELLED'}" class="badge badge-gray">Cancelled</span>
+                                    <span class="res-badge"
+                                        th:classappend="${schedule.status == 'ACTIVE' ? 'res-badge-active' :
+                                                          (schedule.status == 'COMPLETED' ? 'res-badge-active' : 'res-badge-unknown')}"
+                                        th:text="${schedule.status}">Status</span>
                                 </td>
                                 <td class="text-end">
                                     <!-- CHECK 8 : existing View/Edit/Delete routes unchanged ✅ -->
                                     <div class="d-inline-flex gap-2">
                                         <button type="button" class="btn btn-icon btn-icon-view"
-                                                th:onclick="'viewSchedule(' + ${schedule.id} + ')'" title="View">
+                                            th:onclick="'viewSchedule(' + ${schedule.id} + ')'" title="View">
                                             <i class="bi bi-eye"></i>
                                         </button>
                                         <button type="button" class="btn btn-icon btn-icon-edit"
-                                                th:onclick="'editSchedule(' + ${schedule.id} + ')'" title="Edit">
+                                            th:onclick="'editSchedule(' + ${schedule.id} + ')'" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </button>
                                         <a th:href="@{/food-schedule/delete/{id}(id=${schedule.id})}"
-                                           class="btn btn-icon btn-icon-delete"
-                                           onclick="return confirm('Are you sure you want to delete this schedule?');"
-                                           title="Delete">
+                                            class="btn btn-icon btn-icon-delete"
+                                            onclick="return confirm('Are you sure you want to delete this schedule?');"
+                                            title="Delete">
                                             <i class="bi bi-trash"></i>
                                         </a>
                                     </div>
@@ -252,7 +213,9 @@
 
             <!-- Pagination -->
             <div th:if="${schedules.totalPages > 1}" class="card-footer bg-white border-top py-3">
-                <div th:replace="~{fragments/pagination :: pagination(page=${schedules}, baseUrl='/food-schedule', queryParams='')}"></div>
+                <div
+                    th:replace="~{fragments/pagination :: pagination(page=${schedules}, baseUrl='/food-schedule', queryParams='')}">
+                </div>
             </div>
         </div>
 
@@ -260,7 +223,7 @@
         <!-- SECTION 1 : TODAY'S FOOD SCHEDULE                                   -->
         <!-- CHECK 3 FIX : title uses 'dd MMM yyyy'  → "27 Jul 2026"            -->
         <!-- ═══════════════════════════════════════════════════════════════════ -->
-        <div class="card mb-4">
+        <div class="table-card mb-4">
             <div class="card-header bg-white border-bottom py-3 d-flex align-items-center gap-2">
                 <i class="bi bi-calendar2-check text-primary" style="font-size: 18px;"></i>
                 <h5 class="mb-0 fw-bold">
@@ -296,52 +259,54 @@
                             <tr th:each="s : ${todaysSchedules}">
                                 <td class="ps-3">
                                     <span class="badge fw-semibold"
-                                          th:classappend="${s.mealType.name() == 'BREAKFAST' ? 'bg-success bg-opacity-10 text-success' :
+                                        th:classappend="${s.mealType.name() == 'BREAKFAST' ? 'bg-success bg-opacity-10 text-success' :
                                                           (s.mealType.name() == 'LUNCH'     ? 'bg-warning bg-opacity-10 text-warning' :
                                                                                                'bg-info bg-opacity-10 text-info')}"
-                                          th:text="${s.mealType.displayName}">Meal</span>
+                                        th:text="${s.mealType.displayName}">Meal</span>
                                 </td>
-                                <td class="text-muted small fw-medium"
-                                    th:text="${s.mealType.name() == 'BREAKFAST' ? '07:30 AM' :
-                                              (s.mealType.name() == 'LUNCH'    ? '11:45 AM' : '06:45 PM')}">07:30 AM</td>
+                                <td class="text-muted small fw-medium" th:text="${s.mealType.name() == 'BREAKFAST' ? '07:30 AM' :
+                                              (s.mealType.name() == 'LUNCH'    ? '11:45 AM' : '06:45 PM')}">07:30 AM
+                                </td>
                                 <!-- CHECK 10 FIX : white-space:normal + word-break prevents layout break -->
                                 <td style="white-space: normal; word-break: break-word; max-width: 220px;"
                                     th:text="${s.menuItems}">Menu</td>
                                 <!-- CHECK 11 : null donor shows "No Sponsor" ✅ -->
                                 <td>
-                                    <span th:if="${s.donorName != null}" class="fw-medium" th:text="${s.donorName}">Donor</span>
+                                    <span th:if="${s.donorName != null}" class="fw-medium"
+                                        th:text="${s.donorName}">Donor</span>
                                     <span th:unless="${s.donorName != null}" class="text-muted small">No Sponsor</span>
                                 </td>
                                 <td>
-                                    <span th:if="${s.paymentMethod != null}" class="text-muted small" th:text="${s.paymentMethod}">One Time</span>
+                                    <span th:if="${s.paymentMethod != null}" class="text-muted small"
+                                        th:text="${s.paymentMethod}">One Time</span>
                                     <span th:unless="${s.paymentMethod != null}" class="text-muted small">—</span>
                                 </td>
                                 <!-- CHECK 2 FIX : ₹ prefix in the cell itself → "₹5,000.00" -->
                                 <td>
                                     <span th:if="${s.donationAmount != null}" class="fw-medium"
-                                          th:text="${'₹' + #numbers.formatDecimal(s.donationAmount, 1, 'COMMA', 2, 'POINT')}">₹0.00</span>
+                                        th:text="${'₹' + #numbers.formatDecimal(s.donationAmount, 1, 'COMMA', 2, 'POINT')}">₹0.00</span>
                                     <span th:unless="${s.donationAmount != null}" class="text-muted small">—</span>
                                 </td>
                                 <!-- CHECK 8 : View/Edit/Delete reuse existing functions; Print uses API ✅ -->
                                 <td class="text-end pe-3">
-                                    <div class="btn-group btn-group-sm">
-                                        <button type="button" class="btn btn-light border text-primary"
-                                                th:onclick="'viewSchedule(' + ${s.id} + ')'" title="View">
+                                    <div class="d-inline-flex gap-2">
+                                        <button type="button" class="btn btn-icon btn-icon-view"
+                                            th:onclick="'viewSchedule(' + ${s.id} + ')'" title="View">
                                             <i class="bi bi-eye"></i>
                                         </button>
-                                        <button type="button" class="btn btn-light border text-secondary"
-                                                th:onclick="'editSchedule(' + ${s.id} + ')'" title="Edit">
+                                        <button type="button" class="btn btn-icon btn-icon-edit"
+                                            th:onclick="'editSchedule(' + ${s.id} + ')'" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </button>
                                         <a th:href="@{/food-schedule/delete/{id}(id=${s.id})}"
-                                           class="btn btn-light border text-danger"
-                                           onclick="return confirm('Are you sure you want to delete this schedule?');"
-                                           title="Delete">
+                                            class="btn btn-icon btn-icon-delete"
+                                            onclick="return confirm('Are you sure you want to delete this schedule?');"
+                                            title="Delete">
                                             <i class="bi bi-trash"></i>
                                         </a>
                                         <!-- CHECK 7 FIX : Print opens styled branded popup via /api/item/{id} -->
-                                        <button type="button" class="btn btn-light border text-primary"
-                                                th:onclick="'printSchedule(' + ${s.id} + ')'" title="Print">
+                                        <button type="button" class="btn btn-icon btn-sm"
+                                            th:onclick="'printSchedule(' + ${s.id} + ')'" title="Print">
                                             <i class="bi bi-printer"></i>
                                         </button>
                                     </div>
@@ -357,7 +322,7 @@
         <!-- SECTION 2 : PAST 7 DAYS ACCORDION                                   -->
         <!-- CHECK 6 : Yesterday (iter.first) expanded; rest collapsed ✅        -->
         <!-- ═══════════════════════════════════════════════════════════════════ -->
-        <div class="card mb-4">
+        <div class="table-card mb-4">
             <div class="card-header bg-white border-bottom py-3 d-flex align-items-center gap-2">
                 <i class="bi bi-clock-history text-primary" style="font-size: 18px;"></i>
                 <h5 class="mb-0 fw-bold">Past 7 Days</h5>
@@ -371,54 +336,51 @@
                 </div>
 
                 <div th:unless="${#lists.isEmpty(past7DaysGroups)}" class="past7-accordion" id="past7DaysAccordion">
-                    <div th:each="group, iter : ${past7DaysGroups}"
-                         class="past7-item"
-                         th:classappend="${iter.first} ? 'past7-item--first' : ''">
+                    <div th:each="group, iter : ${past7DaysGroups}" class="past7-item"
+                        th:classappend="${iter.first} ? 'past7-item--first' : ''">
 
                         <!-- Accordion Header -->
                         <div class="past7-header d-flex align-items-center justify-content-between px-3 py-3"
-                             th:id="'past7Heading-' + ${iter.index}"
-                             th:onclick="'togglePast7(' + ${iter.index} + ')'"
-                             style="cursor: pointer; user-select: none;">
+                            th:id="'past7Heading-' + ${iter.index}" th:onclick="'togglePast7(' + ${iter.index} + ')'"
+                            style="cursor: pointer; user-select: none;">
 
                             <div class="d-flex align-items-center gap-2">
                                 <i class="bi past7-chevron"
-                                   th:classappend="${iter.first} ? 'bi-chevron-down text-primary' : 'bi-chevron-right text-muted'"
-                                   th:id="'past7Chevron-' + ${iter.index}"
-                                   style="font-size: 14px; transition: transform 0.25s ease;"></i>
-                                <span class="fw-semibold"
-                                      th:classappend="${iter.first} ? 'text-primary' : ''"
-                                      th:text="${group.label}">Yesterday - 26 Jul 2026</span>
+                                    th:classappend="${iter.first} ? 'bi-chevron-down text-primary' : 'bi-chevron-right text-muted'"
+                                    th:id="'past7Chevron-' + ${iter.index}"
+                                    style="font-size: 14px; transition: transform 0.25s ease;"></i>
+                                <span class="fw-semibold" th:classappend="${iter.first} ? 'text-primary' : ''"
+                                    th:text="${group.label}">Yesterday - 26 Jul 2026</span>
                             </div>
 
                             <div class="d-flex align-items-center gap-4">
                                 <span class="text-muted small">
                                     <i class="bi bi-cup-hot me-1"></i>
                                     <!-- CHECK 1 : Meal count with correct singular/plural -->
-                                    <span th:text="${group.totalMeals + (group.totalMeals != 1 ? ' Meals' : ' Meal')}">3 Meals</span>
+                                    <span th:text="${group.totalMeals + (group.totalMeals != 1 ? ' Meals' : ' Meal')}">3
+                                        Meals</span>
                                 </span>
                                 <!-- CHECK 2 FIX : accordion summary shows "₹ 26,000" (no decimals in header is fine) -->
                                 <span class="fw-semibold text-dark">
-                                    &#8377; <span th:text="${#numbers.formatDecimal(group.totalAmount, 1, 'COMMA', 0, 'POINT')}">0</span>
+                                    &#8377; <span
+                                        th:text="${#numbers.formatDecimal(group.totalAmount, 1, 'COMMA', 0, 'POINT')}">0</span>
                                 </span>
                             </div>
                         </div>
 
                         <!-- Accordion Body -->
-                        <div th:id="'past7Body-' + ${iter.index}"
-                             class="past7-body"
-                             th:style="${iter.first} ? 'max-height: 2000px; opacity: 1;' : 'max-height: 0; opacity: 0;'">
+                        <div th:id="'past7Body-' + ${iter.index}" class="past7-body"
+                            th:style="${iter.first} ? 'max-height: 2000px; opacity: 1;' : 'max-height: 0; opacity: 0;'">
 
                             <!-- CHECK 5 : per-day empty state ✅ -->
                             <div th:if="${#lists.isEmpty(group.schedules)}"
-                                 class="text-center py-4 text-muted border-top">
+                                class="text-center py-4 text-muted border-top">
                                 <i class="bi bi-calendar-x me-1"></i>
                                 No meals recorded for this day.
                             </div>
 
                             <!-- Nested table — CHECK 9 : table-responsive ✅ -->
-                            <div th:unless="${#lists.isEmpty(group.schedules)}"
-                                 class="table-responsive border-top">
+                            <div th:unless="${#lists.isEmpty(group.schedules)}" class="table-responsive border-top">
                                 <table class="table table-sm table-hover align-middle mb-0">
                                     <thead class="table-light text-muted" style="font-size: 12px;">
                                         <tr>
@@ -435,10 +397,10 @@
                                         <tr th:each="s : ${group.schedules}">
                                             <td class="ps-3">
                                                 <span class="badge fw-semibold"
-                                                      th:classappend="${s.mealType.name() == 'BREAKFAST' ? 'bg-success bg-opacity-10 text-success' :
+                                                    th:classappend="${s.mealType.name() == 'BREAKFAST' ? 'bg-success bg-opacity-10 text-success' :
                                                                       (s.mealType.name() == 'LUNCH'     ? 'bg-warning bg-opacity-10 text-warning' :
                                                                                                           'bg-info bg-opacity-10 text-info')}"
-                                                      th:text="${s.mealType.displayName}">Meal</span>
+                                                    th:text="${s.mealType.displayName}">Meal</span>
                                             </td>
                                             <td class="text-muted small"
                                                 th:text="${s.mealType.name() == 'BREAKFAST' ? '07:30 AM' :
@@ -449,18 +411,22 @@
                                                 th:text="${s.menuItems}">Menu</td>
                                             <!-- CHECK 11 : null donor → "No Sponsor" ✅ -->
                                             <td class="small">
-                                                <span th:if="${s.donorName != null}" th:text="${s.donorName}">Donor</span>
-                                                <span th:unless="${s.donorName != null}" class="text-muted">No Sponsor</span>
+                                                <span th:if="${s.donorName != null}"
+                                                    th:text="${s.donorName}">Donor</span>
+                                                <span th:unless="${s.donorName != null}" class="text-muted">No
+                                                    Sponsor</span>
                                             </td>
                                             <td class="small">
-                                                <span th:if="${s.paymentMethod != null}" th:text="${s.paymentMethod}">One Time</span>
+                                                <span th:if="${s.paymentMethod != null}"
+                                                    th:text="${s.paymentMethod}">One Time</span>
                                                 <span th:unless="${s.paymentMethod != null}" class="text-muted">—</span>
                                             </td>
                                             <!-- CHECK 2 FIX : ₹ prefix in detail cells too -->
                                             <td class="small pe-3">
                                                 <span th:if="${s.donationAmount != null}"
-                                                      th:text="${'₹' + #numbers.formatDecimal(s.donationAmount, 1, 'COMMA', 2, 'POINT')}">₹0.00</span>
-                                                <span th:unless="${s.donationAmount != null}" class="text-muted">—</span>
+                                                    th:text="${'₹' + #numbers.formatDecimal(s.donationAmount, 1, 'COMMA', 2, 'POINT')}">₹0.00</span>
+                                                <span th:unless="${s.donationAmount != null}"
+                                                    class="text-muted">—</span>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -480,7 +446,8 @@
         <div th:replace="~{food-schedule/fragments/modal :: modals}"></div>
 
         <!-- TomSelect CDN -->
-        <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.bootstrap5.min.css"
+            rel="stylesheet">
         <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
 
         <!-- ─── Past 7 Days Accordion Styles ──────────────────────────────── -->
@@ -490,23 +457,28 @@
                 border-radius: 0;
                 overflow: hidden;
             }
+
             .past7-header {
                 background-color: #fff;
                 transition: background-color 0.15s ease;
             }
+
             .past7-header:hover {
                 background-color: #f8f9fc;
             }
+
             /* Smooth expand/collapse animation */
             .past7-body {
                 overflow: hidden;
                 transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-                            opacity   0.25s ease;
+                    opacity 0.25s ease;
             }
+
             /* Subtle alternating rows in nested table */
             .past7-body .table tbody tr:nth-child(even) {
                 background-color: #f8f9fc;
             }
+
             /* CHECK 10 : ensure menu text wraps instead of expanding the table width */
             .past7-body td[style*="word-break"],
             .card-body td[style*="word-break"] {
@@ -530,24 +502,24 @@
                CHECK 6 : index-0 (Yesterday) is pre-expanded via th:style in HTML.
                Clicking any row toggles open/closed. */
             function togglePast7(idx) {
-                var body    = document.getElementById('past7Body-'    + idx);
+                var body = document.getElementById('past7Body-' + idx);
                 var chevron = document.getElementById('past7Chevron-' + idx);
                 var heading = document.getElementById('past7Heading-' + idx);
 
                 // Treat any max-height other than '0' or '0px' as "open"
                 var isOpen = body.style.maxHeight &&
-                             body.style.maxHeight !== '0' &&
-                             body.style.maxHeight !== '0px';
+                    body.style.maxHeight !== '0' &&
+                    body.style.maxHeight !== '0px';
 
                 if (isOpen) {
                     body.style.maxHeight = '0';
-                    body.style.opacity   = '0';
+                    body.style.opacity = '0';
                     chevron.classList.remove('bi-chevron-down', 'text-primary');
                     chevron.classList.add('bi-chevron-right', 'text-muted');
                     heading.querySelector('span.fw-semibold').classList.remove('text-primary');
                 } else {
                     body.style.maxHeight = '2000px';
-                    body.style.opacity   = '1';
+                    body.style.opacity = '1';
                     chevron.classList.remove('bi-chevron-right', 'text-muted');
                     chevron.classList.add('bi-chevron-down', 'text-primary');
                     heading.querySelector('span.fw-semibold').classList.add('text-primary');
@@ -566,13 +538,13 @@
                     })
                     .then(function (data) {
                         var mealLabel = data.mealType === 'BREAKFAST' ? 'Breakfast' :
-                                        data.mealType === 'LUNCH'     ? 'Lunch'     : 'Dinner';
+                            data.mealType === 'LUNCH' ? 'Lunch' : 'Dinner';
                         var timeLabel = data.mealType === 'BREAKFAST' ? '07:30 AM' :
-                                        data.mealType === 'LUNCH'     ? '11:45 AM' : '06:45 PM';
-                        var amount    = data.donationAmount
-                                        ? '\u20B9' + parseFloat(data.donationAmount)
-                                               .toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-                                        : '\u2014';
+                            data.mealType === 'LUNCH' ? '11:45 AM' : '06:45 PM';
+                        var amount = data.donationAmount
+                            ? '\u20B9' + parseFloat(data.donationAmount)
+                                .toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                            : '\u2014';
 
                         var html = '<!DOCTYPE html><html lang="en"><head>' +
                             '<meta charset="UTF-8">' +
@@ -603,22 +575,21 @@
                             '  @media print { button { display: none; } }' +
                             '</style></head><body>' +
                             '<div class="print-header">' +
-                            '  <svg width="36" height="36" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">' +
-                            '    <rect width="32" height="32" rx="8" fill="#2563EB"/>' +
-                            '    <path d="M16 8L7 16H10V24H14V19H18V24H22V16H25L16 8Z" fill="white"/>' +
+                            '  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+                            '    <path d="M12 3L4 10V21H9V15H15V21H20V10L12 3Z" fill="#2FA84F"/>' +
                             '  </svg>' +
                             '  <div>' +
                             '    <div class="print-title">Food Schedule Details</div>' +
                             '    <div class="print-subtitle">Smart Old Age Home Portal &bull; Printed on ' +
-                                 new Date().toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'}) + '</div>' +
+                            new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) + '</div>' +
                             '  </div>' +
                             '</div>' +
                             '<table>' +
                             '<tr><th>Date</th><td>' + (data.mealDate || '\u2014') + '</td></tr>' +
                             '<tr><th>Meal Type</th><td>' +
                             '  <span class="' + (data.mealType === 'BREAKFAST' ? 'badge-green' :
-                                                  data.mealType === 'LUNCH'     ? 'badge-yellow' : 'badge-blue') + '">' +
-                              mealLabel + '</span></td></tr>' +
+                                data.mealType === 'LUNCH' ? 'badge-yellow' : 'badge-blue') + '">' +
+                            mealLabel + '</span></td></tr>' +
                             '<tr><th>Time</th><td>' + timeLabel + '</td></tr>' +
                             '<tr><th>Menu Items</th><td>' + (data.menuItems || '\u2014') + '</td></tr>' +
                             '<tr><th>Food Sponsor</th><td>' + (data.donorName || 'No Sponsor') + '</td></tr>' +
@@ -646,4 +617,5 @@
 
     </div>
 </body>
+
 </html>

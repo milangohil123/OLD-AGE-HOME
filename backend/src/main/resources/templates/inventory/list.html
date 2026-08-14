@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{fragments/layout :: main(~{::#inventory-list}, 'inventory', 'Medicine Inventory')}">
+    th:replace="~{fragments/layout :: main(~{::#inventory-list}, 'inventory', 'Medicine Inventory')}">
+
 <body>
 
     <div id="inventory-list">
@@ -10,110 +11,106 @@
         <div th:replace="~{fragments/alerts :: error(${errorMessage})}"></div>
 
         <!-- ── Dashboard Stats Cards ──────────────────────────────────────── -->
-        <div class="row mb-4">
-            <div class="col-xl-3 col-md-6 mb-3">
-                <div class="card text-center py-3">
-                    <span class="fs-1 mb-2">💊</span>
-                    <h2 class="fw-bold mb-1 text-primary" th:text="${totalMedicines}">0</h2>
-                    <span class="text-muted fw-semibold">Total Medicines</span>
+        <div class="row mb-4 g-3">
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card">
+                    <span class="stat-label">Total Medicines</span>
+                    <h2 class="stat-value" th:text="${totalMedicines}">0</h2>
+                    <span class="stat-badge-up"><i class="bi bi-box-seam"></i> In Stock</span>
                 </div>
             </div>
-            <div class="col-xl-3 col-md-6 mb-3">
-                <div class="card text-center py-3">
-                    <span class="fs-1 mb-2">✅</span>
-                    <h2 class="fw-bold mb-1 text-success" th:text="${availableCount}">0</h2>
-                    <span class="text-muted fw-semibold">Available</span>
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card">
+                    <span class="stat-label">Available</span>
+                    <h2 class="stat-value" th:text="${availableCount}">0</h2>
+                    <span class="stat-badge-up"><i class="bi bi-check-circle"></i> Ready</span>
                 </div>
             </div>
-            <div class="col-xl-3 col-md-6 mb-3">
-                <div class="card text-center py-3">
-                    <span class="fs-1 mb-2">⚠️</span>
-                    <h2 class="fw-bold mb-1 text-warning" th:text="${lowStockCount}">0</h2>
-                    <span class="text-muted fw-semibold">Low Stock</span>
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card">
+                    <span class="stat-label">Low Stock</span>
+                    <h2 class="stat-value" th:text="${lowStockCount}">0</h2>
+                    <span class="badge badge-yellow"><i class="bi bi-exclamation-triangle"></i> Warning</span>
                 </div>
             </div>
-            <div class="col-xl-3 col-md-6 mb-3">
-                <div class="card text-center py-3">
-                    <span class="fs-1 mb-2">🚫</span>
-                    <h2 class="fw-bold mb-1 text-danger" th:text="${outOfStockCount}">0</h2>
-                    <span class="text-muted fw-semibold">Out of Stock</span>
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card">
+                    <span class="stat-label">Out of Stock</span>
+                    <h2 class="stat-value" th:text="${outOfStockCount}">0</h2>
+                    <span class="stat-badge-down"><i class="bi bi-x-circle"></i> Empty</span>
                 </div>
             </div>
         </div>
 
-        <div class="row mb-4">
-            <div class="col-xl-4 col-md-6 mb-3 mb-xl-0">
-                <div class="card text-center py-3">
-                    <span class="fs-1 mb-2">☠️</span>
-                    <h2 class="fw-bold mb-1 text-danger" th:text="${expiredCount}">0</h2>
-                    <span class="text-muted fw-semibold">Expired</span>
+        <div class="row mb-4 g-3">
+            <div class="col-xl-4 col-md-6">
+                <div class="stat-card">
+                    <span class="stat-label">Expired</span>
+                    <h2 class="stat-value" th:text="${expiredCount}">0</h2>
+                    <span class="stat-badge-down"><i class="bi bi-shield-x"></i> Danger</span>
                 </div>
             </div>
-            <div class="col-xl-4 col-md-6 mb-3 mb-xl-0">
-                <div class="card text-center py-3">
-                    <span class="fs-1 mb-2">⏰</span>
-                    <h2 class="fw-bold mb-1 text-warning" th:text="${expiringSoonCount}">0</h2>
-                    <span class="text-muted fw-semibold">Expiring Soon</span>
+            <div class="col-xl-4 col-md-6">
+                <div class="stat-card">
+                    <span class="stat-label">Expiring Soon</span>
+                    <h2 class="stat-value" th:text="${expiringSoonCount}">0</h2>
+                    <span class="badge badge-yellow"><i class="bi bi-clock-history"></i> Alert</span>
                 </div>
             </div>
             <div class="col-xl-4 col-md-12">
-                <div class="card text-center py-3">
-                    <span class="fs-1 mb-2">🛒</span>
-                    <h2 class="fw-bold mb-1 text-primary" th:text="${todayPurchases}">0</h2>
-                    <span class="text-muted fw-semibold">Today's Purchases</span>
+                <div class="stat-card">
+                    <span class="stat-label">Today's Purchases</span>
+                    <h2 class="stat-value" th:text="${todayPurchases}">0</h2>
+                    <span class="stat-badge-up"><i class="bi bi-cart-check"></i> Added</span>
                 </div>
             </div>
         </div>
 
-        <!-- Page Header -->
+        <!-- ── Page Header Card ──────────────────────────────────────────────── -->
         <div class="page-header-card mb-3">
-            <div class="page-header-icon"><i class="bi bi-capsule"></i></div>
+            <div class="page-header-icon">
+                <i class="bi bi-box2-heart"></i>
+            </div>
             <div class="page-header-info">
                 <h1 class="page-header-title">Medicine Inventory</h1>
                 <p class="page-header-desc">Browse, manage, and export medicine stock records.</p>
             </div>
             <div class="page-header-actions">
                 <a th:href="@{/inventory/new}" class="btn btn-primary">
-                    <i class="bi bi-plus-lg me-1"></i> Add Medicine
+                    <i class="bi bi-plus-lg"></i> <span>Add Medicine</span>
                 </a>
-                <a th:href="@{/inventory/export}" class="btn btn-outline-primary">
-                    <i class="bi bi-download me-1"></i> Export Excel
+                <a th:href="@{/inventory/export}" class="btn btn-secondary">
+                    <i class="bi bi-download"></i> <span>Export Excel</span>
                 </a>
             </div>
         </div>
 
-        <!-- Bulk Import Panel -->
+        <!-- ── Excel Bulk Import Panel ────────────────────────────────────── -->
         <div class="import-panel mb-3" sec:authorize="hasAnyRole('ADMIN', 'MANAGER')">
-            <div class="import-panel-icon">
-                <i class="bi bi-cloud-arrow-up"></i>
-            </div>
+            <div class="import-panel-icon"><i class="bi bi-cloud-arrow-up"></i></div>
             <div class="import-panel-info">
                 <p class="import-panel-title">Bulk Import Medicines</p>
-                <p class="import-panel-desc">
-                    Import multiple medicine records from a spreadsheet. Column order: Code | Name | Category | Manufacturer | Supplier | Batch | Purchase Date | Expiry Date | Qty | Min Stock | Price | Rack | Notes
-                </p>
+                <p class="import-panel-desc">Column order: Code | Name | Category | Manufacturer | Supplier | Batch | Purchase Date | Expiry Date | Qty | Min Stock | Price | Rack | Notes</p>
             </div>
             <form th:action="@{/inventory/import}" method="post" enctype="multipart/form-data"
                   class="d-flex align-items-center gap-2 flex-shrink-0 flex-wrap">
-                <input type="file" name="file" class="form-control" accept=".xlsx,.xls" required
-                       id="medImportFile"
-                       style="display:none;"
-                       onchange="document.getElementById('medFileNameSpan').textContent = this.files[0]?.name || 'No file chosen'">
-                <button type="button"
-                        onclick="document.getElementById('medImportFile').click()"
-                        class="btn btn-secondary"
-                        style="height:38px; font-size:13px; border:1px solid #E5E7EB;">
-                    Choose File
-                </button>
-                <span id="medFileNameSpan" style="font-size:13px; color:#6B7280; white-space:nowrap;">No file chosen</span>
-                <button type="submit" class="btn btn-outline-primary" style="height:38px; font-size:13px;">
-                    <i class="bi bi-upload me-1"></i> Upload Excel
+                <input type="file" name="file" accept=".xlsx,.xls" required
+                       id="invImportFile" style="display:none;"
+                       onchange="document.getElementById('invFileNameSpan').textContent = this.files[0]?.name || 'No file chosen'">
+                <button type="button" onclick="document.getElementById('invImportFile').click()"
+                        class="btn btn-secondary">Choose File</button>
+                <span id="invFileNameSpan" style="font-size:13px;color:var(--text-muted);white-space:nowrap;">No file chosen</span>
+                <button type="submit" class="btn btn-outline-primary">
+                    <i class="bi bi-upload me-1"></i>
+                    <span>Upload Excel</span>
                 </button>
             </form>
         </div>
 
         <!-- ── Search Component ───────────────────────────────────────────── -->
-        <div th:replace="~{fragments/search :: search(baseUrl='/inventory', keyword=${keyword}, size=${inventoryPage.size}, sort=${sort}, direction=${direction}, placeholder='Search by Code, Name, Manufacturer, Supplier, or Batch...')}"></div>
+        <div
+            th:replace="~{fragments/search :: search(baseUrl='/inventory', keyword=${keyword}, size=${inventoryPage.size}, sort=${sort}, direction=${direction}, placeholder='Search by Code, Name, Manufacturer, Supplier, or Batch...')}">
+        </div>
 
         <!-- ── Main Table Card ────────────────────────────────────────────── -->
         <div class="table-card">
@@ -146,34 +143,42 @@
                             <td><strong th:text="${item.medicineCode}">MED001</strong></td>
                             <td>
                                 <span class="fw-bold text-dark" th:text="${item.medicineName}">Paracetamol</span><br>
-                                <small class="text-muted" th:text="${item.manufacturer != null and !item.manufacturer.isEmpty() ? item.manufacturer : '-'}">-</small>
+                                <small class="text-muted"
+                                    th:text="${item.manufacturer != null and !item.manufacturer.isEmpty() ? item.manufacturer : '-'}">-</small>
                             </td>
                             <td>
-                                <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill"
-                                      th:text="${item.category}">TABLET</span>
+                                <span class="badge badge-gray" th:text="${item.category}">TABLET</span>
                             </td>
                             <td>
                                 <strong class="fs-5" th:text="${item.quantity}">0</strong>
                             </td>
                             <td>
                                 <strong class="text-success"
-                                        th:text="'₹' + ${#numbers.formatDecimal(item.unitPrice, 1, 'COMMA', 2, 'POINT')}">₹0.00</strong>
+                                    th:text="'₹' + ${#numbers.formatDecimal(item.unitPrice, 1, 'COMMA', 2, 'POINT')}">₹0.00</strong>
                             </td>
-                            <td th:text="${item.expiryDate != null ? #temporals.format(item.expiryDate, 'dd MMM yyyy') : '-'}">01 Jan 2027</td>
+                            <td
+                                th:text="${item.expiryDate != null ? #temporals.format(item.expiryDate, 'dd MMM yyyy') : '-'}">
+                                01 Jan 2027</td>
                             <td>
                                 <span th:if="${item.status.name() == 'AVAILABLE'}" class="res-badge res-badge-active">Available</span>
-                                <span th:if="${item.status.name() == 'LOW_STOCK'}" class="badge badge-yellow">Low Stock</span>
-                                <span th:if="${item.status.name() == 'OUT_OF_STOCK'}" class="badge badge-gray">Out of Stock</span>
-                                <span th:if="${item.status.name() == 'EXPIRED'}" class="res-badge res-badge-deceased">Expired</span>
+                                <span th:if="${item.status.name() == 'LOW_STOCK'}" class="res-badge res-badge-unknown">⚠ Low Stock</span>
+                                <span th:if="${item.status.name() == 'OUT_OF_STOCK'}" class="res-badge res-badge-deceased">Out of Stock</span>
+                                <span th:if="${item.status.name() == 'EXPIRED'}" class="res-badge res-badge-discharged">☠ Expired</span>
                             </td>
                             <td class="text-end">
                                 <div class="d-inline-flex gap-2">
-                                    <a th:href="@{/inventory/view/{id}(id=${item.id})}" class="btn btn-icon btn-icon-view"><i class="bi bi-eye"></i></a>
+                                    <a th:href="@{/inventory/view/{id}(id=${item.id})}" class="btn btn-icon btn-icon-view" title="View">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
                                     <a th:href="@{/inventory/edit/{id}(id=${item.id})}" class="btn btn-icon btn-icon-edit"
-                                       sec:authorize="hasAnyRole('ADMIN', 'MANAGER')"><i class="bi bi-pencil"></i></a>
+                                       sec:authorize="hasAnyRole('ADMIN', 'MANAGER')" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
                                     <a th:href="@{/inventory/delete/{id}(id=${item.id})}" class="btn btn-icon btn-icon-delete"
                                        onclick="return confirm('Are you sure you want to permanently delete this medicine record?');"
-                                       sec:authorize="hasRole('ADMIN')"><i class="bi bi-trash"></i></a>
+                                       sec:authorize="hasRole('ADMIN')" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
                                 </div>
                             </td>
                         </tr>
@@ -182,10 +187,13 @@
             </div>
 
             <!-- Pagination Component -->
-            <div th:replace="~{fragments/pagination :: pagination(page=${inventoryPage}, baseUrl='/inventory', queryParams=${paginationQuery})}"></div>
+            <div
+                th:replace="~{fragments/pagination :: pagination(page=${inventoryPage}, baseUrl='/inventory', queryParams=${paginationQuery})}">
+            </div>
         </div>
 
     </div>
 
 </body>
+
 </html>

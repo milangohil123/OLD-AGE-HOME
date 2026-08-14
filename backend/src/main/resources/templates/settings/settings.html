@@ -1,16 +1,21 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{fragments/layout :: main(~{::#settings-dashboard}, 'settings', 'Settings Dashboard')}">
+    th:replace="~{fragments/layout :: main(~{::#settings-dashboard}, 'settings', 'Settings Dashboard')}">
+
 <body>
 
     <div id="settings-dashboard">
 
-        <!-- Page Header -->
-        <div class="page-header-card mb-4">
-            <div class="page-header-icon"><i class="bi bi-gear"></i></div>
+        <!-- Page Header Card -->
+        <div class="page-header-card mb-3">
+            <div class="page-header-icon">
+                <i class="bi bi-gear"></i>
+            </div>
             <div class="page-header-info">
-                <h1 class="page-header-title">System Settings</h1>
-                <p class="page-header-desc">Manage administrative profiles, credentials, UI preferences and system properties.</p>
+                <h1 class="page-header-title">System Settings Dashboard</h1>
+                <p class="page-header-desc">Manage administrative profiles, credentials, office credentials, databases, UI preferences and system properties.</p>
+            </div>
+            <div class="page-header-actions">
             </div>
         </div>
 
@@ -35,7 +40,8 @@
                         <i class="bi bi-person-circle" style="font-size: 22px;"></i>
                     </div>
                     <h5 class="fw-bold mb-2">Profile Settings</h5>
-                    <p class="text-muted small mb-4">Update your profile name, email, phone number, username and change your avatar picture.</p>
+                    <p class="text-muted small mb-4">Update your profile name, email, phone number, username and change
+                        your avatar picture.</p>
                     <div class="mt-auto">
                         <a th:href="@{/settings/profile}" class="btn btn-primary w-100">
                             <i class="bi bi-pencil me-1"></i> Edit Profile
@@ -51,7 +57,8 @@
                         <i class="bi bi-shield-lock" style="font-size: 22px;"></i>
                     </div>
                     <h5 class="fw-bold mb-2">Security &amp; Password</h5>
-                    <p class="text-muted small mb-4">Change your password and ensure your admin credentials are secure. Session will logout after password change.</p>
+                    <p class="text-muted small mb-4">Change your password and ensure your admin credentials are secure.
+                        Session will logout after password change.</p>
                     <div class="mt-auto">
                         <a th:href="@{/settings/password}" class="btn btn-primary w-100">
                             <i class="bi bi-key me-1"></i> Change Password
@@ -67,7 +74,8 @@
                         <i class="bi bi-building" style="font-size: 22px;"></i>
                     </div>
                     <h5 class="fw-bold mb-2">Office Information</h5>
-                    <p class="text-muted small mb-4">Configure old age home details, trust name, website, phone, email, registration and working hours.</p>
+                    <p class="text-muted small mb-4">Configure old age home details, trust name, website, phone, email,
+                        registration and working hours.</p>
                     <div class="mt-auto">
                         <a th:href="@{/settings/system}" class="btn btn-primary w-100">
                             <i class="bi bi-info-circle me-1"></i> Configure Office
@@ -83,7 +91,8 @@
                         <i class="bi bi-palette" style="font-size: 22px;"></i>
                     </div>
                     <h5 class="fw-bold mb-2">User Preferences</h5>
-                    <p class="text-muted small mb-4">Set color themes, sidebar status, notification preferences, table rows count, and font sizing.</p>
+                    <p class="text-muted small mb-4">Set color themes, sidebar status, notification preferences, table
+                        rows count, and font sizing.</p>
                     <div class="mt-auto">
                         <a th:href="@{/settings/preferences}" class="btn btn-primary w-100">
                             <i class="bi bi-sliders me-1"></i> Preferences
@@ -99,7 +108,8 @@
                         <i class="bi bi-database-down" style="font-size: 22px;"></i>
                     </div>
                     <h5 class="fw-bold mb-2">Backup &amp; Export</h5>
-                    <p class="text-muted small mb-4">Manual SQL dump download, database restore and Excel file exports for residents, donors, and inventory.</p>
+                    <p class="text-muted small mb-4">Manual SQL dump download, database restore and Excel file exports
+                        for residents, donors, and inventory.</p>
                     <div class="mt-auto">
                         <a th:href="@{/settings/backup}" class="btn btn-primary w-100">
                             <i class="bi bi-cloud-download me-1"></i> Backup &amp; Restore
@@ -115,7 +125,8 @@
                         <i class="bi bi-info-square" style="font-size: 22px;"></i>
                     </div>
                     <h5 class="fw-bold mb-2">About Application</h5>
-                    <p class="text-muted small mb-4">View application version, license terms, developer metadata, and current technology stack.</p>
+                    <p class="text-muted small mb-4">View application version, license terms, developer metadata, and
+                        current technology stack.</p>
                     <div class="mt-auto">
                         <a th:href="@{/settings/about}" class="btn btn-primary w-100">
                             <i class="bi bi-patch-question me-1"></i> View Details
@@ -128,4 +139,5 @@
     </div>
 
 </body>
+
 </html>

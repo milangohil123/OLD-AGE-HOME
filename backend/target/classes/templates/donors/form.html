@@ -7,15 +7,15 @@
 
     <div id="donor-form-container">
 
-        <!-- Page Header -->
-        <div class="page-header-card mb-4">
-            <div class="page-header-icon"><i class="bi bi-person-plus"></i></div>
-            <div class="page-header-info">
-                <h1 class="page-header-title" th:text="${pageTitle}">Register Donor</h1>
-                <p class="page-header-desc" th:text="#{donor.form.subtitle}">Fill in the fields below. Required fields are marked with an asterisk (*).</p>
-            </div>
-            <div class="page-header-actions">
-                <a th:href="@{/donors}" class="btn btn-secondary" th:text="#{donor.form.btn.back}">Back to List</a>
+        <!-- Action Header -->
+        <div class="card mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="mb-0 fw-bold" th:text="${pageTitle}">Register Donor</h3>
+                    <p class="text-muted mb-0" th:text="#{donor.form.subtitle}">Fill in the fields below. Required
+                        values are marked with an asterisk (*).</p>
+                </div>
+                <a th:href="@{/donors}" class="btn btn-secondary px-3" th:text="#{donor.form.btn.back}">Back to List</a>
             </div>
         </div>
 
@@ -34,7 +34,7 @@
 
                     <!-- Section A: Personal Information -->
                     <div class="card mb-4">
-                        <h4 class="mb-4 fw-bold" style="font-size:14px; color:#111827; padding-bottom:12px; border-bottom:1px solid #F3F4F6;"
+                        <h4 class="mb-4 border-bottom pb-2 text-primary fw-bold"
                             th:text="#{donor.form.section.personal}">Personal Information</h4>
 
                         <div class="row">
@@ -116,7 +116,7 @@
 
                     <!-- Section B: Donation Information -->
                     <div class="card mb-4">
-                        <h4 class="mb-4 fw-bold" style="font-size:14px; color:#111827; padding-bottom:12px; border-bottom:1px solid #F3F4F6;"
+                        <h4 class="mb-4 border-bottom pb-2 text-primary fw-bold"
                             th:text="#{donor.form.section.donation}">Donation Information</h4>
 
                         <div class="row">
@@ -124,9 +124,11 @@
                                 <label
                                     th:replace="~{fragments/forms :: label('donationFrequency', 'Donation Frequency', true)}"></label>
                                 <select class="form-select" th:field="*{donationFrequency}"
-                                    th:classappend="${#fields.hasErrors('donationFrequency')} ? 'is-invalid' : ''" required>
+                                    th:classappend="${#fields.hasErrors('donationFrequency')} ? 'is-invalid' : ''"
+                                    required>
                                     <option value="">-- Select Frequency --</option>
-                                    <option th:each="df : ${donationFrequencies}" th:value="${df}" th:text="${df.displayName}"></option>
+                                    <option th:each="df : ${donationFrequencies}" th:value="${df}"
+                                        th:text="${df.displayName}"></option>
                                 </select>
                                 <div th:replace="~{fragments/forms :: field-error('donationFrequency')}"></div>
                             </div>
@@ -136,7 +138,8 @@
                                 <select class="form-select" th:field="*{donationType}" id="donationTypeSelect"
                                     th:classappend="${#fields.hasErrors('donationType')} ? 'is-invalid' : ''" required>
                                     <option value="">-- Select Type --</option>
-                                    <option th:each="dt : ${donationTypes}" th:value="${dt}" th:text="${dt.displayName}"></option>
+                                    <option th:each="dt : ${donationTypes}" th:value="${dt}"
+                                        th:text="${dt.displayName}"></option>
                                 </select>
                                 <div th:replace="~{fragments/forms :: field-error('donationType')}"></div>
                             </div>
@@ -144,7 +147,8 @@
                                 <label
                                     th:replace="~{fragments/forms :: label('donationCategory', 'Donation Category', true)}"></label>
                                 <select class="form-select" th:field="*{donationCategory}"
-                                    th:classappend="${#fields.hasErrors('donationCategory')} ? 'is-invalid' : ''" required>
+                                    th:classappend="${#fields.hasErrors('donationCategory')} ? 'is-invalid' : ''"
+                                    required>
                                     <option value="">-- Select Category --</option>
                                     <option value="Food Meal Donation (Scheme)">Food Meal Donation (Scheme)</option>
                                     <option value="Cash Donation">Cash Donation</option>
@@ -178,44 +182,54 @@
                                         <tr>
                                             <th>Medicine Name <span class="text-danger">*</span></th>
                                             <th style="width: 150px;">Price (₹) <span class="text-danger">*</span></th>
-                                            <th style="width: 200px;">Expiry Date <span class="text-danger">*</span></th>
+                                            <th style="width: 200px;">Expiry Date <span class="text-danger">*</span>
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr th:each="item, stat : *{medicineItems}">
                                             <td>
-                                                <input type="text" class="form-control med-name" 
-                                                       th:field="*{medicineItems[__${stat.index}__].medicineName}"
-                                                       th:classappend="${#fields.hasErrors('medicineItems[__${stat.index}__].medicineName')} ? 'is-invalid' : ''"
-                                                       placeholder="e.g. Paracetamol 500mg">
-                                                <div th:replace="~{fragments/forms :: field-error('medicineItems[__${stat.index}__].medicineName')}"></div>
+                                                <input type="text" class="form-control med-name"
+                                                    th:field="*{medicineItems[__${stat.index}__].medicineName}"
+                                                    th:classappend="${#fields.hasErrors('medicineItems[__${stat.index}__].medicineName')} ? 'is-invalid' : ''"
+                                                    placeholder="e.g. Paracetamol 500mg">
+                                                <div
+                                                    th:replace="~{fragments/forms :: field-error('medicineItems[__${stat.index}__].medicineName')}">
+                                                </div>
                                             </td>
                                             <td>
-                                                <input type="number" step="0.01" min="0" class="form-control med-price" 
-                                                       th:field="*{medicineItems[__${stat.index}__].price}"
-                                                       th:classappend="${#fields.hasErrors('medicineItems[__${stat.index}__].price')} ? 'is-invalid' : ''"
-                                                       placeholder="0.00">
-                                                <div th:replace="~{fragments/forms :: field-error('medicineItems[__${stat.index}__].price')}"></div>
+                                                <input type="number" step="0.01" min="0" class="form-control med-price"
+                                                    th:field="*{medicineItems[__${stat.index}__].price}"
+                                                    th:classappend="${#fields.hasErrors('medicineItems[__${stat.index}__].price')} ? 'is-invalid' : ''"
+                                                    placeholder="0.00">
+                                                <div
+                                                    th:replace="~{fragments/forms :: field-error('medicineItems[__${stat.index}__].price')}">
+                                                </div>
                                             </td>
                                             <td>
-                                                <input type="date" class="form-control med-expiry" 
-                                                       th:field="*{medicineItems[__${stat.index}__].expiryDate}"
-                                                       th:classappend="${#fields.hasErrors('medicineItems[__${stat.index}__].expiryDate')} ? 'is-invalid' : ''">
-                                                <div th:replace="~{fragments/forms :: field-error('medicineItems[__${stat.index}__].expiryDate')}"></div>
+                                                <input type="date" class="form-control med-expiry"
+                                                    th:field="*{medicineItems[__${stat.index}__].expiryDate}"
+                                                    th:classappend="${#fields.hasErrors('medicineItems[__${stat.index}__].expiryDate')} ? 'is-invalid' : ''">
+                                                <div
+                                                    th:replace="~{fragments/forms :: field-error('medicineItems[__${stat.index}__].expiryDate')}">
+                                                </div>
                                             </td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
                             <div class="d-flex gap-2">
-                                <button type="button" class="btn btn-outline-primary btn-sm px-3" onclick="addMedicineRow()">
+                                <button type="button" class="btn btn-outline-primary btn-sm px-3"
+                                    onclick="addMedicineRow()">
                                     <i class="bi bi-plus-circle"></i> Add Row
                                 </button>
-                                <button type="button" class="btn btn-outline-danger btn-sm px-3" onclick="removeMedicineRow()">
+                                <button type="button" class="btn btn-outline-danger btn-sm px-3"
+                                    onclick="removeMedicineRow()">
                                     <i class="bi bi-dash-circle"></i> Remove Row
                                 </button>
                             </div>
-                            <div th:if="${#fields.hasErrors('medicineItems')}" class="text-danger small mt-2" th:errors="*{medicineItems}"></div>
+                            <div th:if="${#fields.hasErrors('medicineItems')}" class="text-danger small mt-2"
+                                th:errors="*{medicineItems}"></div>
                         </div>
 
                         <!-- Food Table Container -->
@@ -232,18 +246,22 @@
                                     <tbody>
                                         <tr th:each="item, stat : *{foodItems}">
                                             <td>
-                                                <input type="text" class="form-control food-name" 
-                                                       th:field="*{foodItems[__${stat.index}__].foodName}"
-                                                       th:classappend="${#fields.hasErrors('foodItems[__${stat.index}__].foodName')} ? 'is-invalid' : ''"
-                                                       placeholder="e.g. Basmati Rice">
-                                                <div th:replace="~{fragments/forms :: field-error('foodItems[__${stat.index}__].foodName')}"></div>
+                                                <input type="text" class="form-control food-name"
+                                                    th:field="*{foodItems[__${stat.index}__].foodName}"
+                                                    th:classappend="${#fields.hasErrors('foodItems[__${stat.index}__].foodName')} ? 'is-invalid' : ''"
+                                                    placeholder="e.g. Basmati Rice">
+                                                <div
+                                                    th:replace="~{fragments/forms :: field-error('foodItems[__${stat.index}__].foodName')}">
+                                                </div>
                                             </td>
                                             <td>
-                                                <input type="text" class="form-control food-qty" 
-                                                       th:field="*{foodItems[__${stat.index}__].quantity}"
-                                                       th:classappend="${#fields.hasErrors('foodItems[__${stat.index}__].quantity')} ? 'is-invalid' : ''"
-                                                       placeholder="e.g. 50 kg" oninput="calculateTotalFoodQuantity()">
-                                                <div th:replace="~{fragments/forms :: field-error('foodItems[__${stat.index}__].quantity')}"></div>
+                                                <input type="text" class="form-control food-qty"
+                                                    th:field="*{foodItems[__${stat.index}__].quantity}"
+                                                    th:classappend="${#fields.hasErrors('foodItems[__${stat.index}__].quantity')} ? 'is-invalid' : ''"
+                                                    placeholder="e.g. 50 kg" oninput="calculateTotalFoodQuantity()">
+                                                <div
+                                                    th:replace="~{fragments/forms :: field-error('foodItems[__${stat.index}__].quantity')}">
+                                                </div>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -251,10 +269,12 @@
                             </div>
                             <div class="d-flex justify-content-between align-items-center mt-2">
                                 <div class="d-flex gap-2">
-                                    <button type="button" class="btn btn-outline-primary btn-sm px-3" onclick="addFoodRow()">
+                                    <button type="button" class="btn btn-outline-primary btn-sm px-3"
+                                        onclick="addFoodRow()">
                                         <i class="bi bi-plus-circle"></i> Add Row
                                     </button>
-                                    <button type="button" class="btn btn-outline-danger btn-sm px-3" onclick="removeFoodRow()">
+                                    <button type="button" class="btn btn-outline-danger btn-sm px-3"
+                                        onclick="removeFoodRow()">
                                         <i class="bi bi-dash-circle"></i> Remove Row
                                     </button>
                                 </div>
@@ -262,7 +282,8 @@
                                     Total Quantity: <span id="total-food-quantity">0</span>
                                 </div>
                             </div>
-                            <div th:if="${#fields.hasErrors('foodItems')}" class="text-danger small mt-2" th:errors="*{foodItems}"></div>
+                            <div th:if="${#fields.hasErrors('foodItems')}" class="text-danger small mt-2"
+                                th:errors="*{foodItems}"></div>
                         </div>
 
                         <div class="row">
@@ -294,7 +315,7 @@
 
                     <!-- Section C: Additional Information -->
                     <div class="card mb-4">
-                        <h4 class="mb-4 fw-bold" style="font-size:14px; color:#111827; padding-bottom:12px; border-bottom:1px solid #F3F4F6;"
+                        <h4 class="mb-4 border-bottom pb-2 text-primary fw-bold"
                             th:text="#{donor.form.section.additional}">Additional Information</h4>
 
                         <div class="row">
@@ -322,7 +343,7 @@
 
                     <!-- Profile Photo Card -->
                     <div class="card mb-4 text-center">
-                        <h4 class="mb-4 fw-bold" style="font-size:14px; color:#111827; padding-bottom:12px; border-bottom:1px solid #F3F4F6;" th:text="#{donor.form.section.photo}">
+                        <h4 class="mb-4 border-bottom pb-2 text-primary fw-bold" th:text="#{donor.form.section.photo}">
                             Donor Photo</h4>
                         <div class="mb-3 d-flex justify-content-center">
                             <img th:if="*{photo != null}" th:src="@{'/uploads/' + *{photo}}"
@@ -341,7 +362,7 @@
 
                     <!-- Submit Actions Card -->
                     <div class="card">
-                        <h4 class="mb-4 fw-bold" style="font-size:14px; color:#111827; padding-bottom:12px; border-bottom:1px solid #F3F4F6;"
+                        <h4 class="mb-4 border-bottom pb-2 text-primary fw-bold"
                             th:text="#{donor.form.section.actions}">Actions</h4>
                         <button type="submit" class="btn btn-primary w-100 mb-3" style="height: 48px;"
                             th:text="#{donor.form.btn.save}">
@@ -358,7 +379,7 @@
         </form>
 
         <script>
-            document.addEventListener("DOMContentLoaded", function() {
+            document.addEventListener("DOMContentLoaded", function () {
                 const donationTypeSelect = document.getElementById("donationTypeSelect");
                 const donationAmountContainer = document.getElementById("donationAmountContainer");
                 const donationAmountInput = document.getElementById("donationAmountInput");
@@ -367,9 +388,9 @@
 
                 function toggleFields() {
                     const type = donationTypeSelect.value;
-                    
+
                     const foodTypes = ["FOOD", "MILK", "RICE", "WHEAT", "VEGETABLES", "OIL", "SUGAR", "DAL", "FRUITS", "BREAKFAST_KIT", "LUNCH_KIT", "DINNER_KIT", "SNACKS", "OTHER_FOOD_ITEM"];
-                    
+
                     if (type === "MEDICINE") {
                         donationAmountContainer.style.display = "none";
                         donationAmountInput.removeAttribute("required");

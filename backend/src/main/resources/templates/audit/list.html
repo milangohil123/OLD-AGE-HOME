@@ -1,106 +1,79 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{fragments/layout :: main(~{::#audit-list}, 'audit', 'System Audit Logs')}">
+    th:replace="~{fragments/layout :: main(~{::#audit-list}, 'audit', 'System Audit Logs')}">
+
 <body>
 
     <div id="audit-list">
 
         <!-- ── Stats Cards ── -->
-        <div class="row mb-4">
-            <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-                <div class="card py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon-circle" style="width: 40px; height: 40px; font-size: 16px;">
-                            <i class="bi bi-clipboard-data"></i>
-                        </div>
-                        <div>
-                            <h3 class="fw-bold mb-0 text-primary" th:text="${totalRecords}">0</h3>
-                            <span class="text-muted fw-semibold" style="font-size: 12px;">Total Logs</span>
-                        </div>
-                    </div>
+        <div class="row mb-4 g-3">
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="stat-card">
+                    <span class="stat-label">Total Logs</span>
+                    <h3 class="stat-value" th:text="${totalRecords}">0</h3>
+                    <span class="stat-badge-up"><i class="bi bi-clipboard-data"></i> Records</span>
                 </div>
             </div>
-            <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-                <div class="card py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon-circle" style="width: 40px; height: 40px; font-size: 16px;">
-                            <i class="bi bi-calendar-day"></i>
-                        </div>
-                        <div>
-                            <h3 class="fw-bold mb-0 text-primary" th:text="${todayActivities}">0</h3>
-                            <span class="text-muted fw-semibold" style="font-size: 12px;">Today's Logs</span>
-                        </div>
-                    </div>
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="stat-card">
+                    <span class="stat-label">Today's Logs</span>
+                    <h3 class="stat-value" th:text="${todayActivities}">0</h3>
+                    <span class="stat-badge-up"><i class="bi bi-calendar-day"></i> Today</span>
                 </div>
             </div>
-            <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-                <div class="card py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon-circle" style="width: 40px; height: 40px; font-size: 16px;">
-                            <i class="bi bi-check-circle"></i>
-                        </div>
-                        <div>
-                            <h3 class="fw-bold mb-0 text-primary" th:text="${successfulActivities}">0</h3>
-                            <span class="text-muted fw-semibold" style="font-size: 12px;">Success Actions</span>
-                        </div>
-                    </div>
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="stat-card">
+                    <span class="stat-label">Success Actions</span>
+                    <h3 class="stat-value" th:text="${successfulActivities}">0</h3>
+                    <span class="stat-badge-up"><i class="bi bi-check-circle"></i> Success</span>
                 </div>
             </div>
-            <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-                <div class="card py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon-circle" style="width: 40px; height: 40px; font-size: 16px;">
-                            <i class="bi bi-x-circle"></i>
-                        </div>
-                        <div>
-                            <h3 class="fw-bold mb-0 text-danger" th:text="${failedActivities}">0</h3>
-                            <span class="text-muted fw-semibold" style="font-size: 12px;">Failed Actions</span>
-                        </div>
-                    </div>
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="stat-card">
+                    <span class="stat-label">Failed Actions</span>
+                    <h3 class="stat-value" th:text="${failedActivities}">0</h3>
+                    <span class="stat-badge-down"><i class="bi bi-x-circle"></i> Failed</span>
                 </div>
             </div>
-            <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-                <div class="card py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon-circle" style="width: 40px; height: 40px; font-size: 16px;">
-                            <i class="bi bi-door-open"></i>
-                        </div>
-                        <div>
-                            <h5 class="fw-bold mb-0 text-primary" th:text="${latestLogin}">Never</h5>
-                            <span class="text-muted fw-semibold" style="font-size: 12px;">Latest Login</span>
-                        </div>
-                    </div>
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="stat-card">
+                    <span class="stat-label">Latest Login</span>
+                    <h5 class="stat-value text-truncate" th:text="${latestLogin}">Never</h5>
+                    <span class="stat-badge-up"><i class="bi bi-door-open"></i> Login</span>
                 </div>
             </div>
-            <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-                <div class="card py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon-circle" style="width: 40px; height: 40px; font-size: 16px;">
-                            <i class="bi bi-arrow-clockwise"></i>
-                        </div>
-                        <div>
-                            <h5 class="fw-bold mb-0 text-primary" th:text="${latestUpdate}">Never</h5>
-                            <span class="text-muted fw-semibold" style="font-size: 12px;">Latest Update</span>
-                        </div>
-                    </div>
+            <div class="col-xl-2 col-md-4 col-sm-6">
+                <div class="stat-card">
+                    <span class="stat-label">Latest Update</span>
+                    <h5 class="stat-value text-truncate" th:text="${latestUpdate}">Never</h5>
+                    <span class="stat-badge-up"><i class="bi bi-arrow-clockwise"></i> System</span>
                 </div>
             </div>
         </div>
 
-        <!-- ── Page Header ── -->
+        <!-- Page Header Card -->
         <div class="page-header-card mb-3">
-            <div class="page-header-icon"><i class="bi bi-clipboard-data"></i></div>
+            <div class="page-header-icon">
+                <i class="bi bi-shield-lock"></i>
+            </div>
             <div class="page-header-info">
                 <h1 class="page-header-title">System Audit Logs</h1>
                 <p class="page-header-desc">Monitor system activity, user logins, and database alterations.</p>
             </div>
-            <div class="page-header-actions">
+            <div class="page-header-actions d-flex flex-wrap gap-2">
                 <a th:href="@{/admin/audit/export(username=${username}, module=${module}, action=${action}, success=${success}, startDate=${startDate}, endDate=${endDate}, format='PDF')}"
-                   class="btn btn-primary"><i class="bi bi-file-earmark-pdf me-1"></i>Export PDF</a>
+                    class="btn btn-primary">
+                    <i class="bi bi-file-earmark-pdf me-1"></i> Export PDF
+                </a>
                 <a th:href="@{/admin/audit/export(username=${username}, module=${module}, action=${action}, success=${success}, startDate=${startDate}, endDate=${endDate}, format='EXCEL')}"
-                   class="btn btn-outline-primary"><i class="bi bi-file-earmark-spreadsheet me-1"></i>Excel</a>
+                    class="btn btn-secondary">
+                    <i class="bi bi-file-earmark-spreadsheet me-1"></i> Export Excel
+                </a>
                 <a th:href="@{/admin/audit/export(username=${username}, module=${module}, action=${action}, success=${success}, startDate=${startDate}, endDate=${endDate}, format='CSV')}"
-                   class="btn btn-outline-primary"><i class="bi bi-filetype-csv me-1"></i>CSV</a>
+                    class="btn btn-outline-primary">
+                    <i class="bi bi-filetype-csv me-1"></i> Export CSV
+                </a>
             </div>
         </div>
 
@@ -112,20 +85,23 @@
             <form th:action="@{/admin/audit/filter}" method="get" class="row g-3">
                 <div class="col-md-3">
                     <label class="form-label fw-semibold">Username</label>
-                    <input type="text" name="username" class="form-control" th:value="${username}" placeholder="Search username...">
+                    <input type="text" name="username" class="form-control" th:value="${username}"
+                        placeholder="Search username...">
                 </div>
                 <div class="col-md-3">
                     <label class="form-label fw-semibold">Module</label>
                     <select name="module" class="form-select">
                         <option value="ALL">All Modules</option>
-                        <option th:each="m : ${modules}" th:value="${m}" th:text="${m}" th:selected="${m.name() == module}"></option>
+                        <option th:each="m : ${modules}" th:value="${m}" th:text="${m}"
+                            th:selected="${m.name() == module}"></option>
                     </select>
                 </div>
                 <div class="col-md-2">
                     <label class="form-label fw-semibold">Action</label>
                     <select name="action" class="form-select">
                         <option value="ALL">All Actions</option>
-                        <option th:each="a : ${actions}" th:value="${a}" th:text="${a}" th:selected="${a.name() == action}"></option>
+                        <option th:each="a : ${actions}" th:value="${a}" th:text="${a}"
+                            th:selected="${a.name() == action}"></option>
                     </select>
                 </div>
                 <div class="col-md-2">
@@ -140,7 +116,9 @@
                     <button type="submit" class="btn btn-primary w-100" style="height: 48px;">
                         <i class="bi bi-search me-1"></i> Apply
                     </button>
-                    <a th:href="@{/admin/audit}" class="btn btn-outline-primary px-3 d-flex align-items-center justify-content-center" style="height: 48px;">
+                    <a th:href="@{/admin/audit}"
+                        class="btn btn-outline-primary px-3 d-flex align-items-center justify-content-center"
+                        style="height: 48px;">
                         <i class="bi bi-x-lg"></i>
                     </a>
                 </div>
@@ -151,8 +129,9 @@
             </form>
         </div>
 
-                        <div class="table-card">
-                            <div class="table-responsive">
+        <!-- ── Main Table ── -->
+        <div class="table-card">
+            <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0" style="font-size: 13px;">
                     <thead>
                         <tr>
@@ -170,7 +149,8 @@
                         <!-- Empty State -->
                         <tr th:if="${auditPage == null or auditPage.totalElements == 0}">
                             <td colspan="8" class="text-center py-5 text-muted">
-                                <i class="bi bi-clipboard-data d-block mb-3" style="font-size: 40px; color: #BFDBFE;"></i>
+                                <i class="bi bi-clipboard-data d-block mb-3"
+                                    style="font-size: 40px; color: #BFDBFE;"></i>
                                 <h5 class="fw-bold">No Audit Records Found</h5>
                                 <p class="mb-0 small">Refine your search keyword or filters.</p>
                             </td>
@@ -183,21 +163,25 @@
                                 <small class="text-muted" th:text="${log.role}">ROLE</small>
                             </td>
                             <td>
-                                <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-1 rounded-pill" th:text="${log.module}">AUTH</span>
+                                <span class="badge badge-gray px-3 py-1 rounded-pill"
+                                    th:text="${log.module}">AUTH</span>
                             </td>
                             <td th:text="${log.action}">Action</td>
                             <td th:text="${log.description}">Description</td>
                             <td>
-                                <span th:if="${log.success}" class="badge badge-green">
+                                <span th:if="${log.success}"
+                                    class="res-badge res-badge-active">
                                     <i class="bi bi-check-lg me-1"></i>Success
                                 </span>
-                                <span th:if="${!log.success}" class="badge badge-red">
+                                <span th:if="${!log.success}"
+                                    class="res-badge res-badge-deceased">
                                     <i class="bi bi-x-lg me-1"></i>Failed
                                 </span>
                             </td>
                             <td th:text="${log.ipAddress}">IP</td>
                             <td class="text-end">
-                                <a th:href="@{/admin/audit/view/{id}(id=${log.id})}" class="btn btn-icon btn-icon-view">
+                                <a th:href="@{/admin/audit/view/{id}(id=${log.id})}"
+                                    class="btn btn-icon btn-icon-view" title="View">
                                     <i class="bi bi-eye"></i>
                                 </a>
                             </td>
@@ -206,11 +190,14 @@
                 </table>
             </div>
 
+            <!-- Pagination -->
+            <div
+                th:replace="~{fragments/pagination :: pagination(page=${auditPage}, baseUrl='/audit', queryParams=${paginationQuery})}">
             </div>
-            <div th:replace="~{fragments/pagination :: pagination(page=${auditPage}, baseUrl='/admin/audit', queryParams=${paginationQuery})}"></div>
         </div>
 
     </div>
 
 </body>
+
 </html>

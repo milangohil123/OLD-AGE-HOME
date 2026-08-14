@@ -1,182 +1,216 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{fragments/layout :: main(~{::#donors-list}, 'donors', #{nav.donors})}">
+    th:replace="~{fragments/layout :: main(~{::#donors-list}, 'donors', #{nav.donors})}">
+
 <body>
-<div id="donors-list">
 
-    <!-- Alert Messages -->
-    <div th:replace="~{fragments/alerts :: success(${successMessage})}"></div>
-    <div th:replace="~{fragments/alerts :: error(${errorMessage})}"></div>
+    <div id="donors-list">
 
-    <!-- ── Stats Row ── -->
-    <div class="row g-3 mb-4">
-        <div class="col-xl-3 col-md-6">
-            <div class="stat-card">
-                <span class="stat-label" th:text="#{dashboard.stat.donors}">Total Donors</span>
-                <span class="stat-value" th:text="${totalDonors}">0</span>
+        <!-- Alert Messages -->
+        <div th:replace="~{fragments/alerts :: success(${successMessage})}"></div>
+        <div th:replace="~{fragments/alerts :: error(${errorMessage})}"></div>
+
+        <!-- ── Stats Cards ── -->
+        <div class="row mb-4">
+            <div class="col-md-3 col-sm-6 mb-3 mb-md-0">
+                <div class="card py-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="stat-icon-circle">
+                            <i class="bi bi-people" style="font-size: 18px;"></i>
+                        </div>
+                        <div>
+                            <h2 class="fw-bold mb-0 text-primary" th:text="${totalDonors}">0</h2>
+                            <span class="text-muted fw-semibold" style="font-size: 13px;"
+                                th:text="#{dashboard.stat.donors}">Total Donors</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3 mb-md-0">
+                <div class="card py-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="stat-icon-circle">
+                            <i class="bi bi-calendar-check" style="font-size: 18px;"></i>
+                        </div>
+                        <div>
+                            <h2 class="fw-bold mb-0 text-primary" th:text="${todayDonations}">0</h2>
+                            <span class="text-muted fw-semibold" style="font-size: 13px;"
+                                th:text="#{dashboard.stat.donations.today}">Today's Donations</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3 mb-md-0">
+                <div class="card py-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="stat-icon-circle">
+                            <i class="bi bi-calendar3" style="font-size: 18px;"></i>
+                        </div>
+                        <div>
+                            <h2 class="fw-bold mb-0 text-primary" th:text="${monthDonations}">0</h2>
+                            <span class="text-muted fw-semibold" style="font-size: 13px;"
+                                th:text="#{dashboard.stat.donations.month}">This Month</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="card py-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="stat-icon-circle">
+                            <i class="bi bi-currency-rupee" style="font-size: 18px;"></i>
+                        </div>
+                        <div>
+                            <h2 class="fw-bold mb-0 text-primary"
+                                th:text="'₹' + ${#numbers.formatDecimal(totalAmount != null ? totalAmount : 0, 1, 'COMMA', 2, 'POINT')}">
+                                ₹0.00</h2>
+                            <span class="text-muted fw-semibold" style="font-size: 13px;"
+                                th:text="#{dashboard.stat.raised}">Total Raised</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="stat-card">
-                <span class="stat-label" th:text="#{dashboard.stat.donations.today}">Today's Donations</span>
-                <span class="stat-value" th:text="${todayDonations}">0</span>
+
+        <!-- Page Header Card -->
+        <div class="page-header-card mb-3">
+            <div class="page-header-icon">
+                <i class="bi bi-gift"></i>
+            </div>
+            <div class="page-header-info">
+                <h1 class="page-header-title" th:text="#{donor.list.title}">Donors Directory</h1>
+                <p class="page-header-desc" th:text="#{donor.list.desc}">Browse, manage, and export donor contribution records.</p>
+            </div>
+            <div class="page-header-actions">
+                <a th:href="@{/donors/new}" class="btn btn-primary">
+                    <i class="bi bi-plus-lg"></i> <span th:text="#{donor.btn.add}">Add Donor</span>
+                </a>
+                <a th:href="@{/donors/export}" class="btn btn-secondary">
+                    <i class="bi bi-download"></i> <span th:text="#{donor.btn.export}">Export Excel</span>
+                </a>
             </div>
         </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="stat-card">
-                <span class="stat-label" th:text="#{dashboard.stat.donations.month}">This Month</span>
-                <span class="stat-value" th:text="${monthDonations}">0</span>
+
+        <!-- Bulk Import Panel -->
+        <div class="import-panel mb-3" sec:authorize="hasAnyRole('ADMIN', 'MANAGER')">
+            <div class="import-panel-icon"><i class="bi bi-cloud-arrow-up"></i></div>
+            <div class="import-panel-info">
+                <p class="import-panel-title" th:text="#{donor.import.title}">Bulk Import Donors</p>
+                <p class="import-panel-desc">Column order: Donor Name | Mobile | Email | Address | Donation Frequency | Donation Type | Payment Method | Amount</p>
+            </div>
+            <form th:action="@{/donors/import}" method="post" enctype="multipart/form-data"
+                  class="d-flex align-items-center gap-2 flex-shrink-0 flex-wrap">
+                <input type="file" name="file" accept=".xlsx,.xls" required
+                       id="donorImportFile" style="display:none;"
+                       onchange="document.getElementById('donorFileSpan').textContent = this.files[0]?.name || 'No file chosen'">
+                <button type="button" onclick="document.getElementById('donorImportFile').click()"
+                        class="btn btn-secondary">Choose File</button>
+                <span id="donorFileSpan" style="font-size:13px;color:var(--text-muted);white-space:nowrap;">No file chosen</span>
+                <button type="submit" class="btn btn-outline-primary">
+                    <i class="bi bi-upload me-1"></i>
+                    <span th:text="#{donor.import.btn}">Upload</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- ── Search ── -->
+        <div
+            th:replace="~{fragments/search :: search(baseUrl='/donors', keyword=${keyword}, size=${donorsPage.size}, sort=${sort}, direction=${direction}, placeholder=#{donor.search.placeholder})}">
+        </div>
+
+        <!-- ── Main Table Card ── -->
+        <div class="table-card">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th style="width: 72px;" th:text="#{donor.table.photo}">Photo</th>
+                            <th th:text="#{donor.table.name}">Full Name</th>
+                            <th>Frequency</th>
+                            <th th:text="#{donor.table.type}">Donation Type</th>
+                            <th th:text="#{donor.table.amount}">Amount</th>
+                            <th th:text="#{donor.table.date}">Donation Date</th>
+                            <th th:text="#{donor.table.status}">Status</th>
+                            <th class="text-end" style="width: 220px;" th:text="#{donor.table.actions}">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Empty State -->
+                        <tr th:if="${donorsPage == null or donorsPage.totalElements == 0}">
+                            <td colspan="8" class="text-center py-5 text-muted">
+                                <i class="bi bi-gift d-block mb-3" style="font-size: 40px; color: #BFDBFE;"></i>
+                                <h5 class="fw-bold" th:text="#{donor.table.empty.title}">No Donor Records Found</h5>
+                                <p class="mb-0 small" th:text="#{donor.table.empty.desc}">Add a new donor or adjust your
+                                    search filter.</p>
+                            </td>
+                        </tr>
+
+                        <!-- Donor Rows -->
+                        <tr th:each="d : ${donorsPage.content}" th:if="${d != null}">
+                            <td>
+                                <img th:if="${d.photo != null}" th:src="@{'/uploads/' + ${d.photo}}"
+                                     class="rounded-circle object-fit-cover"
+                                     style="width:42px;height:42px;border:1.5px solid var(--border);">
+                                <div th:if="${d.photo == null}"
+                                     class="rounded-circle d-flex align-items-center justify-content-center"
+                                     style="width:42px;height:42px;background:var(--primary-xlight);color:var(--primary-dark);border:1.5px solid var(--primary-light);">
+                                    <i class="bi bi-person" style="font-size:17px;"></i>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="fw-bold text-dark" th:text="${d.fullName}">Jane Doe</span><br>
+                                <small class="text-muted"
+                                    th:text="${d.mobile != null and !d.mobile.isEmpty() ? d.mobile : '-'}">-</small>
+                            </td>
+                            <td>
+                                <span class="badge badge-gray"
+                                      th:text="${d.donationFrequency != null ? d.donationFrequency.displayName : 'Unknown'}">ONE_TIME</span>
+                            </td>
+                            <td>
+                                <span class="badge badge-green"
+                                      th:text="${d.donationType != null ? d.donationType.displayName : 'Unknown'}">CASH</span>
+                            </td>
+                            <td>
+                                <strong style="color:var(--text-primary);"
+                                    th:text="${(d.donationType != null and (d.donationType.name() == 'MEDICINE' or d.donationType.name() == 'FOOD')) ? '&#8212;' : (d.donationAmount != null ? '&#8377;' + #numbers.formatDecimal(d.donationAmount, 1, 'COMMA', 2, 'POINT') : '&#8377;0.00')}">&#8377;0.00</strong>
+                            </td>
+                            <td th:text="${d.donationDate != null ? #temporals.format(d.donationDate, 'dd MMM yyyy') : '-'}">01 Jan 2026</td>
+                            <td>
+                                <span th:if="${d.status != null and d.status.name() == 'ACTIVE'}" class="res-badge res-badge-active">Active</span>
+                                <span th:if="${d.status != null and d.status.name() == 'INACTIVE'}" class="res-badge res-badge-unknown">Inactive</span>
+                                <span th:if="${d.status != null and d.status.name() == 'BLOCKED'}" class="res-badge res-badge-deceased">Blocked</span>
+                                <span th:if="${d.status == null}" class="res-badge res-badge-unknown">Unknown</span>
+                            </td>
+                            <td class="text-end">
+                                <div class="d-inline-flex gap-2">
+                                    <a th:href="@{/donors/view/{id}(id=${d.id})}" class="btn btn-icon btn-sm">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a th:href="@{/donors/edit/{id}(id=${d.id})}" class="btn btn-icon btn-icon-edit"
+                                       sec:authorize="hasAnyRole('ADMIN', 'MANAGER')">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a th:href="@{/donors/delete/{id}(id=${d.id})}" class="btn btn-icon btn-icon-delete"
+                                       th:data-confirm="#{donor.confirm.delete}"
+                                       onclick="return confirm(this.getAttribute('data-confirm'));"
+                                       sec:authorize="hasRole('ADMIN')">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div
+                th:replace="~{fragments/pagination :: pagination(page=${donorsPage}, baseUrl='/donors', queryParams=${paginationQuery})}">
             </div>
         </div>
-        <div class="col-xl-3 col-md-6">
-            <div class="stat-card">
-                <span class="stat-label" th:text="#{dashboard.stat.raised}">Total Raised</span>
-                <span class="stat-value" style="font-size:20px;"
-                      th:text="'₹' + ${#numbers.formatDecimal(totalAmount != null ? totalAmount : 0, 1, 'COMMA', 2, 'POINT')}">₹0.00</span>
-            </div>
-        </div>
+
     </div>
 
-    <!-- ── Page Header Card ── -->
-    <div class="page-header-card mb-3">
-        <div class="page-header-icon">
-            <i class="bi bi-gift"></i>
-        </div>
-        <div class="page-header-info">
-            <h1 class="page-header-title" th:text="#{donor.list.title}">Donors Directory</h1>
-            <p class="page-header-desc" th:text="#{donor.list.desc}">Browse, manage, and export donor contribution records.</p>
-        </div>
-        <div class="page-header-actions">
-            <a th:href="@{/donors/new}" class="btn btn-primary">
-                <i class="bi bi-plus-lg"></i>
-                <span th:text="#{donor.btn.add}">Add Donor</span>
-            </a>
-            <a th:href="@{/donors/export}" class="btn btn-outline-primary">
-                <i class="bi bi-download"></i>
-                <span th:text="#{donor.btn.export}">Export Excel</span>
-            </a>
-        </div>
-    </div>
-
-    <!-- ── Bulk Import Panel ── -->
-    <div class="import-panel mb-3" sec:authorize="hasAnyRole('ADMIN', 'MANAGER')">
-        <div class="import-panel-icon">
-            <i class="bi bi-cloud-arrow-up"></i>
-        </div>
-        <div class="import-panel-info">
-            <p class="import-panel-title" th:text="#{donor.import.title}">Bulk Import Donors</p>
-            <p class="import-panel-desc">
-                Import multiple donor records from a spreadsheet. Column order: Donor Name | Mobile | Email | Address | Donation Frequency | Donation Type | Payment Method | Amount
-            </p>
-        </div>
-        <form th:action="@{/donors/import}" method="post" enctype="multipart/form-data"
-              class="d-flex align-items-center gap-2 flex-shrink-0 flex-wrap">
-            <input type="file" name="file" class="form-control" accept=".xlsx,.xls" required
-                   id="donorImportFile"
-                   style="display:none;"
-                   onchange="document.getElementById('donorFileNameSpan').textContent = this.files[0]?.name || 'No file chosen'">
-            <button type="button"
-                    onclick="document.getElementById('donorImportFile').click()"
-                    class="btn btn-secondary"
-                    style="height:38px; font-size:13px; border:1px solid #E5E7EB;">
-                Choose File
-            </button>
-            <span id="donorFileNameSpan" style="font-size:13px; color:#6B7280; white-space:nowrap;">No file chosen</span>
-            <button type="submit" class="btn btn-outline-primary" style="height:38px; font-size:13px;">
-                <i class="bi bi-upload me-1"></i>
-                <span th:text="#{donor.import.btn}">Upload Excel</span>
-            </button>
-        </form>
-    </div>
-
-    <!-- ── Search ── -->
-    <div th:replace="~{fragments/search :: search(baseUrl='/donors', keyword=${keyword}, size=${donorsPage.size}, sort=${sort}, direction=${direction}, placeholder=#{donor.search.placeholder})}"></div>
-
-    <!-- ── Table ── -->
-    <div class="table-card">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead>
-                    <tr>
-                        <th style="width:72px;" th:text="#{donor.table.photo}">PHOTO</th>
-                        <th th:text="#{donor.table.name}">FULL NAME</th>
-                        <th>FREQUENCY</th>
-                        <th th:text="#{donor.table.type}">DONATION TYPE</th>
-                        <th th:text="#{donor.table.amount}">AMOUNT</th>
-                        <th th:text="#{donor.table.date}">DATE</th>
-                        <th th:text="#{donor.table.status}">STATUS</th>
-                        <th class="text-end" style="width:140px;" th:text="#{donor.table.actions}">ACTIONS</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Empty -->
-                    <tr th:if="${donorsPage == null or donorsPage.totalElements == 0}">
-                        <td colspan="8" class="text-center py-5">
-                            <div style="color:#D1FAE5; font-size:48px; margin-bottom:12px;"><i class="bi bi-gift"></i></div>
-                            <p class="fw-bold mb-1" style="color:#374151;" th:text="#{donor.table.empty.title}">No Donor Records Found</p>
-                            <p class="mb-0 text-muted" style="font-size:13px;" th:text="#{donor.table.empty.desc}">Add a new donor or adjust your search filter.</p>
-                        </td>
-                    </tr>
-
-                    <!-- Rows -->
-                    <tr th:each="d : ${donorsPage.content}" th:if="${d != null}">
-                        <td>
-                            <img th:if="${d.photo != null}" th:src="@{'/uploads/' + ${d.photo}}"
-                                 class="rounded-circle object-fit-cover"
-                                 style="width:44px;height:44px;border:1.5px solid #E5E7EB;">
-                            <div th:if="${d.photo == null}"
-                                 class="rounded-circle d-flex align-items-center justify-content-center"
-                                 style="width:44px;height:44px;background:#ECFDF5;border:1.5px solid #D1FAE5;color:#10B981;">
-                                <i class="bi bi-person" style="font-size:18px;"></i>
-                            </div>
-                        </td>
-                        <td>
-                            <span class="fw-semibold" style="color:#111827;font-size:13.5px;" th:text="${d.fullName}">Name</span><br>
-                            <small class="text-muted" style="font-size:12px;"
-                                   th:text="${d.mobile != null and !d.mobile.isEmpty() ? d.mobile : '—'}">—</small>
-                        </td>
-                        <td>
-                            <span class="badge badge-gray"
-                                  th:text="${d.donationFrequency != null ? d.donationFrequency.displayName : 'Unknown'}">One-time</span>
-                        </td>
-                        <td>
-                            <span class="badge badge-green"
-                                  th:text="${d.donationType != null ? d.donationType.displayName : 'Unknown'}">Cash</span>
-                        </td>
-                        <td>
-                            <strong style="color:#111827; font-size:13.5px;"
-                                    th:text="${(d.donationType != null and (d.donationType.name() == 'MEDICINE' or d.donationType.name() == 'FOOD')) ? '—' : (d.donationAmount != null ? '₹' + #numbers.formatDecimal(d.donationAmount, 1, 'COMMA', 2, 'POINT') : '₹0.00')}">₹0.00</strong>
-                        </td>
-                        <td style="font-size:13.5px; color:#374151;"
-                            th:text="${d.donationDate != null ? #temporals.format(d.donationDate, 'dd MMM yyyy') : '—'}">01 Jan 2026</td>
-                        <td>
-                            <span th:if="${d.status != null and d.status.name() == 'ACTIVE'}"
-                                  class="res-badge res-badge-active">Active</span>
-                            <span th:if="${d.status != null and d.status.name() == 'INACTIVE'}"
-                                  class="res-badge res-badge-unknown">Inactive</span>
-                            <span th:if="${d.status != null and d.status.name() == 'BLOCKED'}"
-                                  class="res-badge res-badge-deceased">Blocked</span>
-                            <span th:if="${d.status == null}"
-                                  class="res-badge res-badge-unknown">Unknown</span>
-                        </td>
-                        <td class="text-end">
-                            <div class="d-inline-flex gap-2">
-                                <a th:href="@{/donors/view/{id}(id=${d.id})}" class="btn btn-icon btn-icon-view"><i class="bi bi-eye"></i></a>
-                                <a th:href="@{/donors/edit/{id}(id=${d.id})}" class="btn btn-icon btn-icon-edit"
-                                   sec:authorize="hasAnyRole('ADMIN','MANAGER')"><i class="bi bi-pencil"></i></a>
-                                <a th:href="@{/donors/delete/{id}(id=${d.id})}" class="btn btn-icon btn-icon-delete"
-                                   th:data-confirm="#{donor.confirm.delete}"
-                                   onclick="return confirm(this.getAttribute('data-confirm'));"
-                                   sec:authorize="hasRole('ADMIN')"><i class="bi bi-trash"></i></a>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div th:replace="~{fragments/pagination :: pagination(page=${donorsPage}, baseUrl='/donors', queryParams=${paginationQuery})}"></div>
-    </div>
-
-</div>
 </body>
+
 </html>

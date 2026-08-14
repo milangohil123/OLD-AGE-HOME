@@ -1,283 +1,249 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
     th:replace="~{fragments/layout :: main(~{::#dashboard-content}, 'dashboard', #{dashboard.title})}">
+
 <body>
-<div id="dashboard-content">
 
-    <!-- ── Page Header ── -->
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
-        <div>
-            <h4 class="mb-1 fw-bold" style="font-size:20px; letter-spacing:-0.02em;"
-                th:text="#{dashboard.welcome(${#authentication.name})}">Welcome, Admin!</h4>
-            <p class="mb-0" style="font-size:13px; color:#6B7280;"
-               th:text="#{dashboard.welcome.desc}">Smart Old Age Home administration portal.</p>
-        </div>
-        <!-- Toolbar filters (matching reference) -->
-        <div class="d-flex align-items-center gap-2 flex-wrap">
-            <button class="btn btn-secondary" style="height:36px; font-size:12.5px; border:1px solid #E5E7EB;">
-                <i class="bi bi-calendar3 me-1" style="color:#9CA3AF;"></i>Last 30 days
-                <i class="bi bi-chevron-down ms-1" style="font-size:9px; color:#9CA3AF;"></i>
-            </button>
-            <button class="btn btn-secondary" style="height:36px; font-size:12.5px; border:1px solid #E5E7EB;">
-                <i class="bi bi-arrow-repeat me-1" style="color:#9CA3AF;"></i>1 month earlier
-                <i class="bi bi-chevron-down ms-1" style="font-size:9px; color:#9CA3AF;"></i>
-            </button>
-            <button class="btn btn-secondary" style="height:36px; font-size:12.5px; border:1px solid #E5E7EB;">
-                <i class="bi bi-funnel me-1" style="color:#9CA3AF;"></i>Filters
-            </button>
-            <a th:href="@{/reports}" class="btn btn-secondary" style="height:36px; font-size:12.5px; border:1px solid #E5E7EB;">
-                <i class="bi bi-download me-1" style="color:#9CA3AF;"></i>Export
-            </a>
-        </div>
-    </div>
+    <div id="dashboard-content">
 
-    <!-- ── KPI Stat Cards ── -->
-    <div class="row g-3 mb-4">
-
-        <!-- Residents -->
-        <div class="col-xl-3 col-md-6">
-            <a th:href="@{/residents}" class="stat-card d-block">
-                <span class="stat-label" th:text="#{dashboard.stat.residents}">Residents</span>
-                <div class="d-flex align-items-end justify-content-between gap-2 mb-1">
-                    <span class="stat-value" th:text="${totalResidents}">0</span>
-                    <span class="stat-badge-up mb-1">
-                        <i class="bi bi-arrow-up-short" style="font-size:13px;"></i>+8.33%
-                    </span>
+        <!-- Welcome Banner -->
+        <div class="card mb-4 welcome-banner-card">
+            <div class="d-flex align-items-center gap-3">
+                <div class="welcome-icon-circle">
+                    <i class="bi bi-house-door" style="font-size: 20px;"></i>
                 </div>
-                <span class="stat-prior">vs. 156 prior</span>
-            </a>
-        </div>
-
-        <!-- Donors -->
-        <div class="col-xl-3 col-md-6">
-            <a th:href="@{/donors}" class="stat-card d-block">
-                <span class="stat-label" th:text="#{dashboard.stat.donors}">Donors</span>
-                <div class="d-flex align-items-end justify-content-between gap-2 mb-1">
-                    <span class="stat-value" th:text="${totalDonors}">0</span>
-                    <span class="stat-badge-up mb-1">
-                        <i class="bi bi-arrow-up-short" style="font-size:13px;"></i>+26.45%
-                    </span>
-                </div>
-                <span class="stat-prior">vs. 120 prior</span>
-            </a>
-        </div>
-
-        <!-- This Month Donations -->
-        <div class="col-xl-3 col-md-6">
-            <a th:href="@{/reports}" class="stat-card d-block">
-                <span class="stat-label" th:text="#{dashboard.stat.donations.month}">This Month</span>
-                <div class="d-flex align-items-end justify-content-between gap-2 mb-1">
-                    <span class="stat-value" th:text="${monthDonations}">0</span>
-                    <span class="stat-badge-up mb-1">
-                        <i class="bi bi-arrow-up-short" style="font-size:13px;"></i>+37.18%
-                    </span>
-                </div>
-                <span class="stat-prior">vs. 18 prior</span>
-            </a>
-        </div>
-
-        <!-- Total Raised -->
-        <div class="col-xl-3 col-md-6">
-            <a th:href="@{/reports}" class="stat-card d-block">
-                <span class="stat-label" th:text="#{dashboard.stat.raised}">Total Donations</span>
-                <div class="d-flex align-items-end justify-content-between gap-2 mb-1">
-                    <span class="stat-value" style="font-size:21px;"
-                          th:text="'₹' + ${#numbers.formatDecimal(totalDonationAmount != null ? totalDonationAmount : 0, 1, 'COMMA', 2, 'POINT')}">₹0.00</span>
-                    <span class="stat-badge-up mb-1">
-                        <i class="bi bi-arrow-up-short" style="font-size:13px;"></i>+21.60%
-                    </span>
-                </div>
-                <span class="stat-prior">vs. ₹7,856,321 prior</span>
-            </a>
-        </div>
-    </div>
-
-    <!-- ── Overview Chart ── -->
-    <div class="overview-card mb-4">
-        <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
-            <h5 class="fw-bold mb-0" style="font-size:15px;">Overview</h5>
-            <div class="d-flex gap-2 align-items-center">
-                <button class="btn btn-secondary" style="height:32px; font-size:12px; border:1px solid #E5E7EB;">
-                    Day <i class="bi bi-chevron-down ms-1" style="font-size:9px;"></i>
-                </button>
-                <button class="btn btn-secondary" style="height:32px; font-size:12px; border:1px solid #E5E7EB;">
-                    <i class="bi bi-box-arrow-up-right me-1" style="font-size:11px;"></i>Open as insights
-                </button>
-            </div>
-        </div>
-        <div style="height:230px; position:relative;">
-            <canvas id="overviewChart"></canvas>
-        </div>
-    </div>
-
-    <!-- ── Quick Actions + Recent Activity ── -->
-    <div class="row g-3">
-
-        <!-- Quick Actions -->
-        <div class="col-md-6">
-            <div class="card h-100" style="padding:24px;">
-                <h5 class="fw-bold mb-3" style="font-size:15px;" th:text="#{dashboard.quick_actions}">Quick Actions</h5>
-                <div class="d-flex flex-column gap-3">
-
-                    <a th:href="@{/residents/new}" class="quick-action-row">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="quick-action-icon">
-                                <i class="bi bi-plus-lg"></i>
-                            </div>
-                            <div>
-                                <div class="fw-bold" style="font-size:13.5px;" th:text="#{dashboard.action.add_resident}">Add Resident</div>
-                                <div style="font-size:12px; color:#9CA3AF;" th:text="#{dashboard.action.add_resident.desc}">Register a new resident</div>
-                            </div>
-                        </div>
-                        <i class="bi bi-arrow-right" style="color:#10B981; font-size:15px;"></i>
-                    </a>
-
-                    <a th:href="@{/donors/new}" class="quick-action-row">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="quick-action-icon">
-                                <i class="bi bi-plus-lg"></i>
-                            </div>
-                            <div>
-                                <div class="fw-bold" style="font-size:13.5px;" th:text="#{dashboard.action.add_donor}">Add Donor</div>
-                                <div style="font-size:12px; color:#9CA3AF;" th:text="#{dashboard.action.add_donor.desc}">Register a new donor</div>
-                            </div>
-                        </div>
-                        <i class="bi bi-arrow-right" style="color:#10B981; font-size:15px;"></i>
-                    </a>
-
-                    <a th:href="@{/reports}" class="quick-action-row">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="quick-action-icon">
-                                <i class="bi bi-bar-chart"></i>
-                            </div>
-                            <div>
-                                <div class="fw-bold" style="font-size:13.5px;" th:text="#{dashboard.action.report}">Generate Report</div>
-                                <div style="font-size:12px; color:#9CA3AF;" th:text="#{dashboard.action.report.desc}">View and export reports</div>
-                            </div>
-                        </div>
-                        <i class="bi bi-arrow-right" style="color:#10B981; font-size:15px;"></i>
-                    </a>
-
+                <div>
+                    <h2 class="mb-1 fw-bold" style="color: var(--primary);"
+                        th:text="#{dashboard.welcome(${#authentication.name})}">Welcome, <span
+                            sec:authentication="name">Admin</span>!</h2>
+                    <p class="text-muted mb-0" style="font-size: 13px;" th:text="#{dashboard.welcome.desc}">
+                        Smart Old Age Home administration portal — manage residents, donors, and reports.
+                    </p>
                 </div>
             </div>
         </div>
 
-        <!-- Recent Activity -->
-        <div class="col-md-6">
-            <div class="card h-100 d-flex flex-column" style="padding:24px;">
-                <h5 class="fw-bold mb-3" style="font-size:15px;" th:text="#{dashboard.recent_activity}">Recent Activity</h5>
-
-                <div class="d-flex flex-column gap-0 flex-grow-1">
-                    <div class="d-flex align-items-center justify-content-between py-3"
-                         style="border-bottom:1px solid #F3F4F6;">
-                        <div class="d-flex align-items-center gap-2">
-                            <span style="color:#10B981; font-size:18px; line-height:1;">•</span>
-                            <span style="font-size:13.5px;" th:text="#{dashboard.activity.resident_added}">New resident registered</span>
+        <!-- ── Stats Overview Cards ──────────────────────────────────────── -->
+        <div class="row mb-4">
+            <!-- Total Residents -->
+            <div class="col-xl-3 col-md-6 mb-3">
+                <div class="card py-3">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="stat-icon-circle">
+                                <i class="bi bi-people" style="font-size: 20px;"></i>
+                            </div>
+                            <div>
+                                <h1 class="fw-bold mb-0 text-primary" style="font-size: 32px;"
+                                    th:text="${totalResidents}">0</h1>
+                                <span class="text-muted fw-semibold" style="font-size: 13px;"
+                                    th:text="#{dashboard.stat.residents}">Total Residents</span>
+                            </div>
                         </div>
-                        <span style="font-size:12px; color:#9CA3AF; white-space:nowrap;">2 hours ago</span>
-                    </div>
-                    <div class="d-flex align-items-center justify-content-between py-3"
-                         style="border-bottom:1px solid #F3F4F6;">
-                        <div class="d-flex align-items-center gap-2">
-                            <span style="color:#10B981; font-size:18px; line-height:1;">•</span>
-                            <span style="font-size:13.5px;" th:text="#{dashboard.activity.donor_added}">New donor added</span>
+                        <div>
+                            <a th:href="@{/residents}" class="btn btn-outline-primary btn-sm"
+                                th:text="#{dashboard.btn.view_all}">View All</a>
                         </div>
-                        <span style="font-size:12px; color:#9CA3AF; white-space:nowrap;">1 day ago</span>
-                    </div>
-                    <div class="d-flex align-items-center justify-content-between py-3"
-                         style="border-bottom:1px solid #F3F4F6;">
-                        <div class="d-flex align-items-center gap-2">
-                            <span style="color:#10B981; font-size:18px; line-height:1;">•</span>
-                            <span style="font-size:13.5px;" th:text="#{dashboard.activity.report_generated}">Report generated</span>
-                        </div>
-                        <span style="font-size:12px; color:#9CA3AF; white-space:nowrap;">2 days ago</span>
-                    </div>
-                    <div class="d-flex align-items-center justify-content-between py-3"
-                         style="border-bottom:1px solid #F3F4F6;">
-                        <div class="d-flex align-items-center gap-2">
-                            <span style="color:#10B981; font-size:18px; line-height:1;">•</span>
-                            <span style="font-size:13.5px;" th:text="#{dashboard.activity.admin_login}">Admin logged in</span>
-                        </div>
-                        <span style="font-size:12px; color:#9CA3AF; white-space:nowrap;">2 days ago</span>
-                    </div>
-                    <div class="d-flex align-items-center justify-content-between py-3">
-                        <div class="d-flex align-items-center gap-2">
-                            <span style="color:#10B981; font-size:18px; line-height:1;">•</span>
-                            <span style="font-size:13.5px;" th:text="#{dashboard.activity.export}">Data export completed</span>
-                        </div>
-                        <span style="font-size:12px; color:#9CA3AF; white-space:nowrap;">3 days ago</span>
                     </div>
                 </div>
+            </div>
 
-                <div class="pt-3 mt-2" style="border-top:1px solid #F3F4F6;">
-                    <a th:href="@{/admin/audit}"
-                       class="d-block text-center fw-semibold"
-                       style="font-size:13.5px; color:#10B981;"
-                       th:text="#{dashboard.activity.view_all}">View All Activity</a>
+            <!-- Total Donors -->
+            <div class="col-xl-3 col-md-6 mb-3">
+                <div class="card py-3">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="stat-icon-circle">
+                                <i class="bi bi-person" style="font-size: 20px;"></i>
+                            </div>
+                            <div>
+                                <h1 class="fw-bold mb-0 text-primary" style="font-size: 32px;" th:text="${totalDonors}">
+                                    0</h1>
+                                <span class="text-muted fw-semibold" style="font-size: 13px;"
+                                    th:text="#{dashboard.stat.donors}">Total Donors</span>
+                            </div>
+                        </div>
+                        <div>
+                            <a th:href="@{/donors}" class="btn btn-outline-primary btn-sm"
+                                th:text="#{dashboard.btn.view_all}">View All</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Donations This Month -->
+            <div class="col-xl-3 col-md-6 mb-3">
+                <div class="card py-3">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="stat-icon-circle">
+                                <i class="bi bi-gift" style="font-size: 20px;"></i>
+                            </div>
+                            <div>
+                                <h1 class="fw-bold mb-0 text-primary" style="font-size: 32px;"
+                                    th:text="${monthDonations}">0</h1>
+                                <span class="text-muted fw-semibold" style="font-size: 13px;">Donations (This
+                                    Month)</span>
+                            </div>
+                        </div>
+                        <div>
+                            <a th:href="@{/reports/donations}" class="btn btn-outline-primary btn-sm"
+                                th:text="#{dashboard.btn.view_all}">View All</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Donation Amount -->
+            <div class="col-xl-3 col-md-6 mb-3">
+                <div class="card py-3">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="stat-icon-circle">
+                                <i class="bi bi-currency-rupee" style="font-size: 20px;"></i>
+                            </div>
+                            <div>
+                                <h1 class="fw-bold mb-0 text-primary" style="font-size: 24px;"
+                                    th:text="'₹' + ${#numbers.formatDecimal(totalDonationAmount != null ? totalDonationAmount : 0, 1, 'COMMA', 2, 'POINT')}">
+                                    ₹0.00</h1>
+                                <span class="text-muted fw-semibold" style="font-size: 13px;">Total Raised</span>
+                            </div>
+                        </div>
+                        <div>
+                            <a th:href="@{/reports/donations}" class="btn btn-outline-primary btn-sm"
+                                th:text="#{dashboard.btn.view_all}">View All</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Quick Actions and Recent Activity Row ─────────────────────── -->
+        <div class="row">
+            <!-- Left Card: Quick Actions -->
+            <div class="col-md-6 mb-3">
+                <div class="card h-100">
+                    <h5 class="fw-bold mb-4 text-primary">
+                        <i class="bi bi-lightning-charge me-2" style="font-size: 16px;"></i><span
+                            th:text="#{dashboard.quick_actions}">Quick Actions</span>
+                    </h5>
+
+                    <div class="d-flex flex-column gap-3">
+                        <a th:href="@{/residents/new}"
+                            class="d-flex align-items-center justify-content-between p-3 border rounded-3 text-dark bg-hover-light"
+                            style="border-color: #E2E8F0; text-decoration: none;">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="welcome-icon-circle" style="width:36px; height:36px; font-size:14px;">
+                                    <i class="bi bi-plus-lg"></i>
+                                </div>
+                                <div>
+                                    <span class="fw-bold d-block" style="font-size: 14px;"
+                                        th:text="#{dashboard.action.add_resident}">Add Resident</span>
+                                    <small class="text-muted" th:text="#{dashboard.action.add_resident.desc}">Register a
+                                        new resident</small>
+                                </div>
+                            </div>
+                            <span class="text-primary fw-bold">&rarr;</span>
+                        </a>
+
+                        <a th:href="@{/donors/new}"
+                            class="d-flex align-items-center justify-content-between p-3 border rounded-3 text-dark bg-hover-light"
+                            style="border-color: #E2E8F0; text-decoration: none;">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="welcome-icon-circle" style="width:36px; height:36px; font-size:14px;">
+                                    <i class="bi bi-plus-lg"></i>
+                                </div>
+                                <div>
+                                    <span class="fw-bold d-block" style="font-size: 14px;"
+                                        th:text="#{dashboard.action.add_donor}">Add Donor</span>
+                                    <small class="text-muted" th:text="#{dashboard.action.add_donor.desc}">Register a
+                                        new donor</small>
+                                </div>
+                            </div>
+                            <span class="text-primary fw-bold">&rarr;</span>
+                        </a>
+
+                        <a th:href="@{/reports}"
+                            class="d-flex align-items-center justify-content-between p-3 border rounded-3 text-dark bg-hover-light"
+                            style="border-color: #E2E8F0; text-decoration: none;">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="welcome-icon-circle" style="width:36px; height:36px; font-size:14px;">
+                                    <i class="bi bi-bar-chart"></i>
+                                </div>
+                                <div>
+                                    <span class="fw-bold d-block" style="font-size: 14px;"
+                                        th:text="#{dashboard.action.report}">Generate Report</span>
+                                    <small class="text-muted" th:text="#{dashboard.action.report.desc}">View and export
+                                        reports</small>
+                                </div>
+                            </div>
+                            <span class="text-primary fw-bold">&rarr;</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Card: Recent Activity -->
+            <div class="col-md-6 mb-3">
+                <div class="card h-100">
+                    <h5 class="fw-bold mb-4 text-primary">
+                        <i class="bi bi-clock me-2" style="font-size: 16px;"></i><span
+                            th:text="#{dashboard.recent_activity}">Recent Activity</span>
+                    </h5>
+
+                    <div class="d-flex flex-column gap-3 ps-2">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="text-primary">&bull;</span>
+                                <span class="text-dark" th:text="#{dashboard.activity.resident_added}">New resident
+                                    registered</span>
+                            </div>
+                            <small class="text-muted">2 hours ago</small>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="text-primary">&bull;</span>
+                                <span class="text-dark" th:text="#{dashboard.activity.donor_added}">New donor
+                                    added</span>
+                            </div>
+                            <small class="text-muted">1 day ago</small>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="text-primary">&bull;</span>
+                                <span class="text-dark" th:text="#{dashboard.activity.report_generated}">Report
+                                    generated</span>
+                            </div>
+                            <small class="text-muted">2 days ago</small>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="text-primary">&bull;</span>
+                                <span class="text-dark" th:text="#{dashboard.activity.admin_login}">Admin logged
+                                    in</span>
+                            </div>
+                            <small class="text-muted">2 days ago</small>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="text-primary">&bull;</span>
+                                <span class="text-dark" th:text="#{dashboard.activity.export}">Data export
+                                    completed</span>
+                            </div>
+                            <small class="text-muted">3 days ago</small>
+                        </div>
+
+                        <div class="mt-3">
+                            <a th:href="@{/admin/audit}" class="btn btn-outline-primary w-100"
+                                th:text="#{dashboard.activity.view_all}">View All Activity</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
     </div>
-</div>
 
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    var ctx = document.getElementById('overviewChart').getContext('2d');
-    var gradient = ctx.createLinearGradient(0, 0, 0, 230);
-    gradient.addColorStop(0, 'rgba(16,185,129,0.12)');
-    gradient.addColorStop(1, 'rgba(16,185,129,0.00)');
-
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ['Jul 14','Jul 16','Jul 18','Jul 20','Jul 22','Jul 24','Jul 26','Jul 28','Jul 30','Aug 1','Aug 3','Aug 5','Aug 7','Aug 9','Aug 11','Aug 13'],
-            datasets: [{
-                data: [22,18,32,28,15,12,20,18,14,65,38,56,72,80,62,20],
-                borderColor: '#10B981',
-                borderWidth: 2,
-                fill: true,
-                backgroundColor: gradient,
-                tension: 0.45,
-                pointRadius: 0,
-                pointHoverRadius: 5,
-                pointHoverBackgroundColor: '#10B981',
-                pointHoverBorderColor: '#FFFFFF',
-                pointHoverBorderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    mode: 'index',
-                    intersect: false,
-                    backgroundColor: '#1F2937',
-                    titleColor: '#F9FAFB',
-                    bodyColor: '#F9FAFB',
-                    padding: 10,
-                    borderRadius: 8
-                }
-            },
-            scales: {
-                x: {
-                    grid: { display: false },
-                    ticks: { color: '#9CA3AF', font: { size: 11, family: 'Inter' } }
-                },
-                y: {
-                    min: 0,
-                    max: 100,
-                    grid: { color: '#F3F4F6', drawBorder: false },
-                    ticks: { stepSize: 20, color: '#9CA3AF', font: { size: 11, family: 'Inter' } }
-                }
-            }
-        }
-    });
-});
-</script>
 </body>
+
 </html>

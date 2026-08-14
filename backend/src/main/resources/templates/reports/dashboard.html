@@ -1,72 +1,54 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{fragments/layout :: main(~{::#reports-dashboard}, 'reports', 'Reports &amp; Analytics')}">
+    th:replace="~{fragments/layout :: main(~{::#reports-dashboard}, 'reports', 'Reports &amp; Analytics')}">
+
 <body>
 
     <div id="reports-dashboard">
 
-        <!-- Page Header -->
-        <div class="page-header-card mb-4">
-            <div class="page-header-icon"><i class="bi bi-bar-chart"></i></div>
+        <!-- Page Header Card -->
+        <div class="page-header-card mb-3">
+            <div class="page-header-icon">
+                <i class="bi bi-bar-chart"></i>
+            </div>
             <div class="page-header-info">
                 <h1 class="page-header-title">Reports &amp; Analytics</h1>
                 <p class="page-header-desc">Generate comprehensive PDF, Excel spreadsheets, and preview reports for all system modules.</p>
             </div>
+            <div class="page-header-actions">
+            </div>
         </div>
 
         <!-- ── Stats Summary ── -->
-        <div class="row mb-4">
-            <div class="col-xl-3 col-md-6 mb-3">
-                <div class="card py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon-circle">
-                            <i class="bi bi-people" style="font-size: 18px;"></i>
-                        </div>
-                        <div>
-                            <h2 class="fw-bold mb-0 text-primary" th:text="${totalResidents}">0</h2>
-                            <span class="text-muted fw-semibold" style="font-size: 13px;">Total Residents</span>
-                        </div>
-                    </div>
+        <div class="row mb-4 g-3">
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card">
+                    <span class="stat-label">Total Residents</span>
+                    <h2 class="stat-value" th:text="${totalResidents}">0</h2>
+                    <span class="stat-badge-up"><i class="bi bi-people"></i> Enrolled</span>
                 </div>
             </div>
-            <div class="col-xl-3 col-md-6 mb-3">
-                <div class="card py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon-circle">
-                            <i class="bi bi-gift" style="font-size: 18px;"></i>
-                        </div>
-                        <div>
-                            <h2 class="fw-bold mb-0 text-primary" th:text="${totalDonors}">0</h2>
-                            <span class="text-muted fw-semibold" style="font-size: 13px;">Total Donors</span>
-                        </div>
-                    </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card">
+                    <span class="stat-label">Total Donors</span>
+                    <h2 class="stat-value" th:text="${totalDonors}">0</h2>
+                    <span class="stat-badge-up"><i class="bi bi-gift"></i> Active</span>
                 </div>
             </div>
-            <div class="col-xl-3 col-md-6 mb-3">
-                <div class="card py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon-circle">
-                            <i class="bi bi-currency-rupee" style="font-size: 18px;"></i>
-                        </div>
-                        <div>
-                            <h2 class="fw-bold mb-0 text-primary"
-                                th:text="'₹' + ${#numbers.formatDecimal(totalDonationAmount, 1, 'COMMA', 2, 'POINT')}">₹0.00</h2>
-                            <span class="text-muted fw-semibold" style="font-size: 13px;">Total Raised</span>
-                        </div>
-                    </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card">
+                    <span class="stat-label">Total Raised</span>
+                    <h2 class="stat-value"
+                        th:text="'₹' + ${#numbers.formatDecimal(totalDonationAmount, 1, 'COMMA', 2, 'POINT')}">
+                        ₹0.00</h2>
+                    <span class="stat-badge-up"><i class="bi bi-currency-rupee"></i> Funds</span>
                 </div>
             </div>
-            <div class="col-xl-3 col-md-6 mb-3">
-                <div class="card py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon-circle">
-                            <i class="bi bi-capsule" style="font-size: 18px;"></i>
-                        </div>
-                        <div>
-                            <h2 class="fw-bold mb-0 text-primary" th:text="${totalMedicines}">0</h2>
-                            <span class="text-muted fw-semibold" style="font-size: 13px;">Total Medicines</span>
-                        </div>
-                    </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="stat-card">
+                    <span class="stat-label">Total Medicines</span>
+                    <h2 class="stat-value" th:text="${totalMedicines}">0</h2>
+                    <span class="stat-badge-up"><i class="bi bi-capsule"></i> Items</span>
                 </div>
             </div>
         </div>
@@ -80,7 +62,8 @@
                         <i class="bi bi-people" style="font-size: 22px;"></i>
                     </div>
                     <h5 class="fw-bold mb-2">Resident Reports</h5>
-                    <p class="text-muted small mb-4">Active, discharged, deceased, admission details and birthday analytics.</p>
+                    <p class="text-muted small mb-4">Active, discharged, deceased, admission details and birthday
+                        analytics.</p>
                     <div class="mt-auto">
                         <a th:href="@{/reports/residents}" class="btn btn-primary w-100">
                             <i class="bi bi-arrow-right me-1"></i> Configure Report
@@ -96,7 +79,8 @@
                         <i class="bi bi-gift" style="font-size: 22px;"></i>
                     </div>
                     <h5 class="fw-bold mb-2">Donor Reports</h5>
-                    <p class="text-muted small mb-4">Complete donor listing, top contribution analysis, and monthly active donor logs.</p>
+                    <p class="text-muted small mb-4">Complete donor listing, top contribution analysis, and monthly
+                        active donor logs.</p>
                     <div class="mt-auto">
                         <a th:href="@{/reports/donors}" class="btn btn-primary w-100">
                             <i class="bi bi-arrow-right me-1"></i> Configure Report
@@ -112,7 +96,8 @@
                         <i class="bi bi-receipt" style="font-size: 22px;"></i>
                     </div>
                     <h5 class="fw-bold mb-2">Donation Reports</h5>
-                    <p class="text-muted small mb-4">Financial summaries, transaction dates, payment method stats, and receipts log.</p>
+                    <p class="text-muted small mb-4">Financial summaries, transaction dates, payment method stats, and
+                        receipts log.</p>
                     <div class="mt-auto">
                         <a th:href="@{/reports/donations}" class="btn btn-primary w-100">
                             <i class="bi bi-arrow-right me-1"></i> Configure Report
@@ -128,7 +113,8 @@
                         <i class="bi bi-box-seam" style="font-size: 22px;"></i>
                     </div>
                     <h5 class="fw-bold mb-2">Inventory Reports</h5>
-                    <p class="text-muted small mb-4">Stock items list, out of stock warnings, expired medicines, and purchase histories.</p>
+                    <p class="text-muted small mb-4">Stock items list, out of stock warnings, expired medicines, and
+                        purchase histories.</p>
                     <div class="mt-auto">
                         <a th:href="@{/reports/inventory}" class="btn btn-primary w-100">
                             <i class="bi bi-arrow-right me-1"></i> Configure Report
@@ -142,30 +128,31 @@
         <div class="row">
             <div class="col-lg-6 mb-4">
                 <div class="card h-100">
-                    <h5 class="fw-bold mb-4" style="font-size:14px; color:#111827;">
+                    <h5 class="fw-bold mb-4 text-primary">
                         <i class="bi bi-people me-2"></i>Recent Residents
                     </h5>
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0" style="font-size: 13px;">
                             <thead>
-                                    <th>Name</th>
-                                    <th>Joining Date</th>
-                                    <th>Status</th>
+                                <th>Name</th>
+                                <th>Joining Date</th>
+                                <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="r : ${#lists.size(recentResidents) > 5 ? recentResidents.subList(0, 5) : recentResidents}">
+                                <tr
+                                    th:each="r : ${#lists.size(recentResidents) > 5 ? recentResidents.subList(0, 5) : recentResidents}">
                                     <td class="fw-bold" th:text="${r.fullName}">Name</td>
                                     <td th:text="${#temporals.format(r.joiningDate, 'dd-MM-yyyy')}">Date</td>
                                     <td>
-                                        <span class="res-badge res-badge-active" th:if="${r.status.name() == 'ACTIVE'}">Active</span>
-                                        <span class="res-badge res-badge-discharged" th:if="${r.status.name() == 'DISCHARGED'}">Discharged</span>
-                                        <span class="res-badge res-badge-deceased" th:if="${r.status.name() == 'DECEASED'}">Deceased</span>
+                                        <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-2 py-1"
+                                            th:text="${r.status}">ACTIVE</span>
                                     </td>
                                 </tr>
                                 <tr th:if="${#lists.isEmpty(recentResidents)}">
                                     <td colspan="3" class="text-center text-muted py-3">
-                                        <i class="bi bi-people d-block mb-2" style="font-size: 24px;"></i>No residents found.
+                                        <i class="bi bi-people d-block mb-2" style="font-size: 24px;"></i>No residents
+                                        found.
                                     </td>
                                 </tr>
                             </tbody>
@@ -176,7 +163,7 @@
 
             <div class="col-lg-6 mb-4">
                 <div class="card h-100">
-                    <h5 class="fw-bold mb-4" style="font-size:14px; color:#111827;">
+                    <h5 class="fw-bold mb-4 text-primary">
                         <i class="bi bi-receipt me-2"></i>Recent Donations
                     </h5>
                     <div class="table-responsive">
@@ -190,7 +177,8 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="d : ${#lists.size(recentDonations) > 5 ? recentDonations.subList(0, 5) : recentDonations}">
+                                <tr
+                                    th:each="d : ${#lists.size(recentDonations) > 5 ? recentDonations.subList(0, 5) : recentDonations}">
                                     <td class="fw-bold" th:text="${d.fullName}">Name</td>
                                     <td th:text="${d.donationType}">Type</td>
                                     <td class="text-primary fw-bold" th:text="'₹' + ${d.donationAmount}">Amount</td>
@@ -198,7 +186,8 @@
                                 </tr>
                                 <tr th:if="${#lists.isEmpty(recentDonations)}">
                                     <td colspan="4" class="text-center text-muted py-3">
-                                        <i class="bi bi-receipt d-block mb-2" style="font-size: 24px;"></i>No donations found.
+                                        <i class="bi bi-receipt d-block mb-2" style="font-size: 24px;"></i>No donations
+                                        found.
                                     </td>
                                 </tr>
                             </tbody>
@@ -211,4 +200,5 @@
     </div>
 
 </body>
+
 </html>
