@@ -46,6 +46,11 @@ public class ResidentServiceImpl implements ResidentService {
     }
 
     @Override
+    public long countResidentsJoinedByDate(java.time.LocalDate date) {
+        return residentRepository.countResidentsJoinedByDate(date);
+    }
+
+    @Override
     public List<Resident> getRecentResidents(int limit) {
         return residentRepository.findAll(org.springframework.data.domain.PageRequest.of(0, limit, org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "createdAt"))).getContent();
     }

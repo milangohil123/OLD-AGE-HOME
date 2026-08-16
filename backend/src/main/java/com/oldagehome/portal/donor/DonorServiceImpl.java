@@ -437,6 +437,109 @@ public class DonorServiceImpl implements DonorService {
     }
 
     @Override
+    public long countDonationsByMonth(int year, int month) {
+        return donorRepository.countDonationsByMonth(year, month);
+    }
+
+    @Override
+    public long countDonorsRegisteredByDateTime(java.time.LocalDateTime dateTime) {
+        return donorRepository.countDonorsRegisteredByDateTime(dateTime);
+    }
+
+    @Override
+    public BigDecimal sumDonationAmountByMonth(int year, int month) {
+        BigDecimal result = donorRepository.sumDonationAmountByMonth(year, month);
+        return result != null ? result : BigDecimal.ZERO;
+    }
+
+    @Override
+    public java.util.List<java.util.Map<String, Object>> getDonorGraphWeek() {
+        LocalDate today = LocalDate.now();
+        LocalDate monday = today.with(java.time.DayOfWeek.MONDAY);
+        java.time.LocalDateTime start = java.time.LocalDateTime.of(monday, java.time.LocalTime.MIDNIGHT);
+        java.time.LocalDateTime end = java.time.LocalDateTime.of(monday.plusDays(7), java.time.LocalTime.MIDNIGHT);
+
+        java.util.List<Object[]> dbData = donorRepository.countDonorRegistrationsByDay(start, end);
+
+        Map<LocalDate, Long> countMap = new HashMap<>();
+        for (Object[] row : dbData) {
+            int yr = ((Number) row[0]).intValue();
+            int mo = ((Number) row[1]).intValue();
+            int dy = ((Number) row[2]).intValue();
+            long cnt = ((Number) row[3]).longValue();
+            countMap.put(LocalDate.of(yr, mo, dy), cnt);
+        }
+
+        String[] dayLabels = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+        java.util.List<java.util.Map<String, Object>> result = new ArrayList<>();
+        for (int i = 0; i < 7; i++) {
+            LocalDate date = monday.plusDays(i);
+            java.util.Map<String, Object> point = new java.util.LinkedHashMap<>();
+            point.put("label", dayLabels[i]);
+            point.put("count", countMap.getOrDefault(date, 0L));
+            result.add(point);
+        }
+        return result;
+    }
+
+    @Override
+    public java.util.List<java.util.Map<String, Object>> getDonorGraphMonth() {
+        LocalDate today = LocalDate.now();
+        LocalDate firstDay = today.withDayOfMonth(1);
+        java.time.LocalDateTime start = java.time.LocalDateTime.of(firstDay, java.time.LocalTime.MIDNIGHT);
+        java.time.LocalDateTime end = java.time.LocalDateTime.of(firstDay.plusMonths(1), java.time.LocalTime.MIDNIGHT);
+
+        java.util.List<Object[]> dbData = donorRepository.countDonorRegistrationsByDay(start, end);
+
+        Map<LocalDate, Long> countMap = new HashMap<>();
+        for (Object[] row : dbData) {
+            int yr = ((Number) row[0]).intValue();
+            int mo = ((Number) row[1]).intValue();
+            int dy = ((Number) row[2]).intValue();
+            long cnt = ((Number) row[3]).longValue();
+            countMap.put(LocalDate.of(yr, mo, dy), cnt);
+        }
+
+        String monthAbbr = today.getMonth().getDisplayName(
+                java.time.format.TextStyle.SHORT, java.util.Locale.ENGLISH);
+        int daysInMonth = firstDay.lengthOfMonth();
+        java.util.List<java.util.Map<String, Object>> result = new ArrayList<>();
+        for (int d = 1; d <= daysInMonth; d++) {
+            LocalDate date = firstDay.withDayOfMonth(d);
+            java.util.Map<String, Object> point = new java.util.LinkedHashMap<>();
+            point.put("label", monthAbbr + " " + d);
+            point.put("count", countMap.getOrDefault(date, 0L));
+            result.add(point);
+        }
+        return result;
+    }
+
+    @Override
+    public java.util.List<java.util.Map<String, Object>> getDonorGraphYear() {
+        int year = LocalDate.now().getYear();
+        java.util.List<Object[]> dbData = donorRepository.countDonorRegistrationsByMonth(year);
+
+        Map<Integer, Long> countMap = new HashMap<>();
+        for (Object[] row : dbData) {
+            int mo = ((Number) row[0]).intValue();
+            long cnt = ((Number) row[1]).longValue();
+            countMap.put(mo, cnt);
+        }
+
+        String[] monthLabels = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                                 "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+        java.util.List<java.util.Map<String, Object>> result = new ArrayList<>();
+        for (int m = 1; m <= 12; m++) {
+            java.util.Map<String, Object> point = new java.util.LinkedHashMap<>();
+            point.put("label", monthLabels[m - 1]);
+            point.put("count", countMap.getOrDefault(m, 0L));
+            result.add(point);
+        }
+        return result;
+    }
+
+
+    @Override
     public List<com.oldagehome.portal.dto.DonationTrendDTO> getDonationTrend(LocalDate startDate) {
         List<com.oldagehome.portal.dto.DonationTrendDTO> dbData = donationRepository.getDonationTrend(startDate);
         

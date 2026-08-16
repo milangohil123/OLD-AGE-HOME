@@ -50,8 +50,16 @@ public interface DonorService {
     long countTotalDonors();
     long countTodayDonations();
     long countThisMonthDonations();
+    long countDonationsByMonth(int year, int month);
     BigDecimal sumTotalDonationAmount();
+    long countDonorsRegisteredByDateTime(java.time.LocalDateTime dateTime);
+    BigDecimal sumDonationAmountByMonth(int year, int month);
 
-    // --- Graph Data ---
+    // --- Graph Data (donation trend, legacy) ---
     List<com.oldagehome.portal.dto.DonationTrendDTO> getDonationTrend(java.time.LocalDate startDate);
+
+    // --- Donor registration graph (Week / Month / Year) ---
+    java.util.List<java.util.Map<String, Object>> getDonorGraphWeek();
+    java.util.List<java.util.Map<String, Object>> getDonorGraphMonth();
+    java.util.List<java.util.Map<String, Object>> getDonorGraphYear();
 }

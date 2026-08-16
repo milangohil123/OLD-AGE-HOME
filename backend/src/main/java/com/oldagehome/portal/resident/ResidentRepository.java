@@ -25,4 +25,8 @@ public interface ResidentRepository extends JpaRepository<Resident, Long>, JpaSp
            "LOWER(r.guardianPhone) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
            "LOWER(COALESCE(r.roomNumber, '')) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     Page<Resident> searchResidents(@Param("keyword") String keyword, Pageable pageable);
+
+    /** Count residents whose joining date is on or before the given date (used for trend comparison). */
+    @Query("SELECT COUNT(r) FROM Resident r WHERE r.joiningDate <= :date")
+    long countResidentsJoinedByDate(@Param("date") java.time.LocalDate date);
 }

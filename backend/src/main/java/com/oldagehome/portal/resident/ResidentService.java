@@ -11,6 +11,7 @@ public interface ResidentService {
     Page<Resident> getResidents(String keyword, Pageable pageable);
     List<Resident> getAllResidents();
     long countTotalResidents();
+    long countResidentsJoinedByDate(java.time.LocalDate date);
     List<Resident> getRecentResidents(int limit);
     Resident getResidentById(Long id);
     Resident saveResident(Resident resident);
