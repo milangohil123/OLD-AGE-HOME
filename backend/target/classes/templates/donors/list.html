@@ -72,45 +72,49 @@
             </div>
         </div>
 
-        <!-- Page Header Card -->
-        <div class="page-header-card mb-3">
-            <div class="page-header-icon">
-                <i class="bi bi-gift"></i>
-            </div>
-            <div class="page-header-info">
-                <h1 class="page-header-title" th:text="#{donor.list.title}">Donors Directory</h1>
-                <p class="page-header-desc" th:text="#{donor.list.desc}">Browse, manage, and export donor contribution records.</p>
-            </div>
-            <div class="page-header-actions">
-                <a th:href="@{/donors/new}" class="btn btn-primary">
-                    <i class="bi bi-plus-lg"></i> <span th:text="#{donor.btn.add}">Add Donor</span>
-                </a>
-                <a th:href="@{/donors/export}" class="btn btn-secondary">
-                    <i class="bi bi-download"></i> <span th:text="#{donor.btn.export}">Export Excel</span>
-                </a>
+        <!-- ── Action Ribbon ── -->
+        <div class="card mb-4">
+            <div class="row align-items-center py-2">
+                <div class="col-md-6">
+                    <h3 class="mb-0 fw-bold" th:text="#{donor.list.title}">Donors Directory</h3>
+                    <p class="text-muted mb-0" style="font-size: 13px;" th:text="#{donor.list.desc}">Browse, manage, and
+                        export donor contribution records.</p>
+                </div>
+                <div class="col-md-6 text-md-end text-start mt-3 mt-md-0 d-flex justify-content-md-end gap-2 flex-wrap">
+                    <a th:href="@{/donors/new}" class="btn btn-primary px-4">
+                        <i class="bi bi-plus-lg me-1"></i> <span th:text="#{donor.btn.add}">Add Donor</span>
+                    </a>
+                    <a th:href="@{/donors/export}" class="btn btn-outline-primary px-3">
+                        <i class="bi bi-download me-1"></i> <span th:text="#{donor.btn.export}">Export Excel</span>
+                    </a>
+                </div>
             </div>
         </div>
 
-        <!-- Bulk Import Panel -->
-        <div class="import-panel mb-3" sec:authorize="hasAnyRole('ADMIN', 'MANAGER')">
-            <div class="import-panel-icon"><i class="bi bi-cloud-arrow-up"></i></div>
-            <div class="import-panel-info">
-                <p class="import-panel-title" th:text="#{donor.import.title}">Bulk Import Donors</p>
-                <p class="import-panel-desc">Column order: Donor Name | Mobile | Email | Address | Donation Frequency | Donation Type | Payment Method | Amount</p>
+        <!-- ── Excel Bulk Import Panel ── -->
+        <div class="card mb-4" sec:authorize="hasAnyRole('ADMIN', 'MANAGER')">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                <div>
+                    <h5 class="mb-1 fw-bold">
+                        <i class="bi bi-file-earmark-arrow-up me-2 text-primary"></i><span
+                            th:text="#{donor.import.title}">Bulk Import Donors</span>
+                    </h5>
+                    <p class="text-muted mb-0 small">Import multiple donor records from a spreadsheet.<br>
+                        Column order: Donor Name | Mobile | Email | Address | Donation Frequency | Donation Type |
+                        Payment Method | Transaction ID | Donation Date | Medicine Name | Price | Expiry Date | Food
+                        Name | Quantity | Donation Amount</p>
+                </div>
+                <div>
+                    <form th:action="@{/donors/import}" method="post" enctype="multipart/form-data"
+                        class="d-flex gap-2">
+                        <input type="file" name="file" class="form-control" accept=".xlsx,.xls" required
+                            style="max-width: 240px;">
+                        <button type="submit" class="btn btn-outline-primary" style="height: 48px; white-space: nowrap;">
+                            <i class="bi bi-upload me-1"></i> <span th:text="#{donor.import.btn}">Upload</span>
+                        </button>
+                    </form>
+                </div>
             </div>
-            <form th:action="@{/donors/import}" method="post" enctype="multipart/form-data"
-                  class="d-flex align-items-center gap-2 flex-shrink-0 flex-wrap">
-                <input type="file" name="file" accept=".xlsx,.xls" required
-                       id="donorImportFile" style="display:none;"
-                       onchange="document.getElementById('donorFileSpan').textContent = this.files[0]?.name || 'No file chosen'">
-                <button type="button" onclick="document.getElementById('donorImportFile').click()"
-                        class="btn btn-secondary">Choose File</button>
-                <span id="donorFileSpan" style="font-size:13px;color:var(--text-muted);white-space:nowrap;">No file chosen</span>
-                <button type="submit" class="btn btn-outline-primary">
-                    <i class="bi bi-upload me-1"></i>
-                    <span th:text="#{donor.import.btn}">Upload</span>
-                </button>
-            </form>
         </div>
 
         <!-- ── Search ── -->
@@ -119,7 +123,7 @@
         </div>
 
         <!-- ── Main Table Card ── -->
-        <div class="table-card">
+        <div class="card">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
                     <thead>
@@ -149,12 +153,12 @@
                         <tr th:each="d : ${donorsPage.content}" th:if="${d != null}">
                             <td>
                                 <img th:if="${d.photo != null}" th:src="@{'/uploads/' + ${d.photo}}"
-                                     class="rounded-circle object-fit-cover"
-                                     style="width:42px;height:42px;border:1.5px solid var(--border);">
+                                    class="rounded-circle object-fit-cover"
+                                    style="width: 48px; height: 48px; border: 2px solid #DBEAFE;">
                                 <div th:if="${d.photo == null}"
-                                     class="rounded-circle d-flex align-items-center justify-content-center"
-                                     style="width:42px;height:42px;background:var(--primary-xlight);color:var(--primary-dark);border:1.5px solid var(--primary-light);">
-                                    <i class="bi bi-person" style="font-size:17px;"></i>
+                                    class="rounded-circle bg-light d-flex align-items-center justify-content-center"
+                                    style="width: 48px; height: 48px; border: 2px solid #DBEAFE; color: #2563EB;">
+                                    <i class="bi bi-person" style="font-size: 18px;"></i>
                                 </div>
                             </td>
                             <td>
@@ -163,37 +167,46 @@
                                     th:text="${d.mobile != null and !d.mobile.isEmpty() ? d.mobile : '-'}">-</small>
                             </td>
                             <td>
-                                <span class="badge badge-gray"
-                                      th:text="${d.donationFrequency != null ? d.donationFrequency.displayName : 'Unknown'}">ONE_TIME</span>
+                                <span class="badge bg-secondary bg-opacity-10 text-secondary px-3 py-2 rounded-pill"
+                                    th:text="${d.donationFrequency != null ? d.donationFrequency.displayName : 'Unknown'}">ONE_TIME</span>
                             </td>
                             <td>
-                                <span class="badge badge-green"
-                                      th:text="${d.donationType != null ? d.donationType.displayName : 'Unknown'}">CASH</span>
+                                <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill"
+                                    th:text="${d.donationType != null ? d.donationType.displayName : 'Unknown'}">CASH</span>
                             </td>
                             <td>
-                                <strong style="color:var(--text-primary);"
-                                    th:text="${(d.donationType != null and (d.donationType.name() == 'MEDICINE' or d.donationType.name() == 'FOOD')) ? '&#8212;' : (d.donationAmount != null ? '&#8377;' + #numbers.formatDecimal(d.donationAmount, 1, 'COMMA', 2, 'POINT') : '&#8377;0.00')}">&#8377;0.00</strong>
+                                <strong class="text-primary"
+                                    th:text="${(d.donationType != null and (d.donationType.name() == 'MEDICINE' or d.donationType.name() == 'FOOD')) ? '—' : (d.donationAmount != null ? '₹' + #numbers.formatDecimal(d.donationAmount, 1, 'COMMA', 2, 'POINT') : '₹0.00')}">₹0.00</strong>
                             </td>
-                            <td th:text="${d.donationDate != null ? #temporals.format(d.donationDate, 'dd MMM yyyy') : '-'}">01 Jan 2026</td>
+                            <td
+                                th:text="${d.donationDate != null ? #temporals.format(d.donationDate, 'dd MMM yyyy') : '-'}">
+                                01 Jan 2026</td>
                             <td>
-                                <span th:if="${d.status != null and d.status.name() == 'ACTIVE'}" class="res-badge res-badge-active">Active</span>
-                                <span th:if="${d.status != null and d.status.name() == 'INACTIVE'}" class="res-badge res-badge-unknown">Inactive</span>
-                                <span th:if="${d.status != null and d.status.name() == 'BLOCKED'}" class="res-badge res-badge-deceased">Blocked</span>
-                                <span th:if="${d.status == null}" class="res-badge res-badge-unknown">Unknown</span>
+                                <span th:if="${d.status != null and d.status.name() == 'ACTIVE'}"
+                                    class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill">Active</span>
+                                <span th:if="${d.status != null and d.status.name() == 'INACTIVE'}"
+                                    class="badge bg-secondary bg-opacity-10 text-secondary px-3 py-2 rounded-pill">Inactive</span>
+                                <span th:if="${d.status != null and d.status.name() == 'BLOCKED'}"
+                                    class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-pill">Blocked</span>
+                                <span th:if="${d.status == null}"
+                                    class="badge bg-warning bg-opacity-10 text-warning px-3 py-2 rounded-pill">Unknown</span>
                             </td>
                             <td class="text-end">
                                 <div class="d-inline-flex gap-2">
-                                    <a th:href="@{/donors/view/{id}(id=${d.id})}" class="btn btn-icon btn-sm">
+                                    <a th:href="@{/donors/view/{id}(id=${d.id})}"
+                                        class="btn btn-outline-primary btn-sm px-3">
                                         <i class="bi bi-eye"></i>
                                     </a>
-                                    <a th:href="@{/donors/edit/{id}(id=${d.id})}" class="btn btn-icon btn-icon-edit"
-                                       sec:authorize="hasAnyRole('ADMIN', 'MANAGER')">
+                                    <a th:href="@{/donors/edit/{id}(id=${d.id})}"
+                                        class="btn btn-outline-primary btn-sm px-3"
+                                        sec:authorize="hasAnyRole('ADMIN', 'MANAGER')">
                                         <i class="bi bi-pencil"></i>
                                     </a>
-                                    <a th:href="@{/donors/delete/{id}(id=${d.id})}" class="btn btn-icon btn-icon-delete"
-                                       th:data-confirm="#{donor.confirm.delete}"
-                                       onclick="return confirm(this.getAttribute('data-confirm'));"
-                                       sec:authorize="hasRole('ADMIN')">
+                                    <a th:href="@{/donors/delete/{id}(id=${d.id})}"
+                                        class="btn btn-outline-danger btn-sm px-3"
+                                        th:data-confirm="#{donor.confirm.delete}"
+                                        onclick="return confirm(this.getAttribute('data-confirm'));"
+                                        sec:authorize="hasRole('ADMIN')" th:title="#{donor.btn.delete}">
                                         <i class="bi bi-trash"></i>
                                     </a>
                                 </div>

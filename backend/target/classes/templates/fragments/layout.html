@@ -22,15 +22,17 @@
 
     <div class="app-container">
         <!-- Sidebar Fragment -->
-        <aside class="app-sidebar" id="appSidebar">
+        <aside class="app-sidebar">
             <div class="sidebar-brand">
-                <!-- Green Home Icon -->
-                <div class="sidebar-brand-icon">
-                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 3L4 10V21H9V15H15V21H20V10L12 3Z" fill="white"/>
-                    </svg>
+                <!-- SVG Logo -->
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="32" height="32" rx="8" fill="#16a34a" />
+                    <path d="M16 8L7 16H10V24H14V19H18V24H22V16H25L16 8Z" fill="white" />
+                </svg>
+                <div>
+                    <span class="sidebar-brand-text" style="display: block; line-height: 1.1;"
+                        th:text="#{app.subtitle}">Old Age Home Portal</span>
                 </div>
-                <span class="sidebar-brand-text" th:text="#{app.subtitle}">Old Age Home Portal</span>
             </div>
             <ul class="sidebar-menu">
                 <li class="sidebar-menu-header" th:text="#{nav.menu}">Menu</li>
@@ -96,61 +98,70 @@
         <div class="app-main">
             <!-- Navbar -->
             <nav class="app-navbar">
-                <!-- Left: hamburger + page title -->
                 <div class="navbar-title">
-                    <button class="hamburger-btn" id="sidebarToggle" aria-label="Toggle sidebar">
-                        <i class="bi bi-list" style="font-size: 20px;"></i>
+                    <span class="fs-5 fw-bold text-dark" th:text="${title}">Dashboard</span>
+                </div>
+
+                <!-- Center Search Input & Bell matching reference -->
+                <div class="d-flex align-items-center gap-3">
+                    <div style="position: relative;">
+                        <i class="bi bi-search"
+                            style="position: absolute; left: 14px; top: 10px; color: var(--text-muted); font-size: 12px;"></i>
+                        <input type="text" class="form-control navbar-search-input"
+                            th:placeholder="#{search.placeholder}">
+                    </div>
+                    <button class="btn btn-link p-0 text-dark" style="line-height: 1; text-decoration: none;">
+                        <i class="bi bi-bell" style="font-size: 18px; color: var(--text-muted);"></i>
                     </button>
-                    <h1 class="navbar-page-title" th:text="${title}">Dashboard</h1>
                 </div>
 
-                <!-- Center: Search -->
-                <div class="navbar-search-wrap">
-                    <i class="bi bi-search search-icon"></i>
-                    <input type="text" class="form-control navbar-search-input"
-                           th:placeholder="#{search.placeholder}"
-                           id="navbarSearchInput">
-                </div>
-
-                <!-- Right: notifications + profile -->
                 <div class="navbar-user">
-                    <!-- Language Selector -->
-                    <div class="dropdown">
-                        <button class="navbar-icon-btn dropdown-toggle" type="button"
-                                id="langDropdown" data-bs-toggle="dropdown" aria-expanded="false"
-                                style="font-size:13px; gap:4px;">
-                            <i class="bi bi-globe" style="font-size:16px;"></i>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0"
-                            aria-labelledby="langDropdown">
-                            <li><a class="dropdown-item" href="?lang=gu" th:text="#{lang.gujarati}">ગુજરાતી</a></li>
-                            <li><a class="dropdown-item" href="?lang=en" th:text="#{lang.english}">English</a></li>
-                            <li><a class="dropdown-item" href="?lang=hi" th:text="#{lang.hindi}">हिन्दी</a></li>
-                        </ul>
+                    <div class="d-flex align-items-center gap-2">
+                        <!-- Language Selector -->
+                        <div class="dropdown me-3">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button"
+                                id="langDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-globe"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0"
+                                aria-labelledby="langDropdown">
+                                <li><a class="dropdown-item" href="?lang=gu" th:text="#{lang.gujarati}">ગુજરાતી</a></li>
+                                <li><a class="dropdown-item" href="?lang=en" th:text="#{lang.english}">English</a></li>
+                                <li><a class="dropdown-item" href="?lang=hi" th:text="#{lang.hindi}">हिन्दी</a></li>
+                            </ul>
+                        </div>
+                        <!-- Profile Photo or Initial -->
+                        <div th:if="${currentUserInfo != null and currentUserInfo.profilePicture != null}"
+                            class="welcome-icon-circle p-0 border border-2 border-primary overflow-hidden"
+                            style="width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <img th:src="@{'/uploads/' + ${currentUserInfo.profilePicture}}" alt="Profile"
+                                style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                        <div th:if="${currentUserInfo == null or currentUserInfo.profilePicture == null}"
+                            class="welcome-icon-circle"
+                            style="width: 32px; height: 32px; font-size: 14px; font-weight: bold; background-color: var(--primary); color: #FFFFFF; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <span sec:authorize="isAuthenticated()"
+                                th:text="${#strings.substring(#authentication.name, 0, 1).toUpperCase()}">A</span>
+                            <span sec:authorize="!isAuthenticated()">A</span>
+                        </div>
+
+                        <div>
+                            <span class="navbar-user-name"
+                                th:text="${currentUserInfo != null ? currentUserInfo.fullName : #authentication.name}"
+                                style="display: block;">User</span>
+                            <span class="navbar-user-role" sec:authorize="hasRole('ADMIN')"
+                                th:text="#{nav.profile.admin}">Administrator</span>
+                            <span class="navbar-user-role" sec:authorize="hasRole('MANAGER')"
+                                th:text="#{nav.profile.manager}">Manager</span>
+                            <span class="navbar-user-role" sec:authorize="hasRole('STAFF')"
+                                th:text="#{nav.profile.staff}">Staff</span>
+                        </div>
                     </div>
-                    <!-- Bell notification -->
-                    <a href="#" class="navbar-icon-btn">
-                        <i class="bi bi-bell"></i>
+                    <form th:action="@{/logout}" method="post" id="layoutNavbarLogoutForm" style="display:none;"></form>
+                    <a href="#" onclick="document.getElementById('layoutNavbarLogoutForm').submit(); return false;"
+                        class="text-danger small ms-3" style="font-weight: 600;" th:text="#{nav.logout}">
+                        Logout
                     </a>
-                    <!-- Profile avatar -->
-                    <div class="navbar-avatar">
-                        <img th:if="${currentUserInfo != null and currentUserInfo.profilePicture != null}"
-                             th:src="@{'/uploads/' + ${currentUserInfo.profilePicture}}" alt="Profile">
-                        <span th:if="${currentUserInfo == null or currentUserInfo.profilePicture == null}"
-                              sec:authorize="isAuthenticated()"
-                              th:text="${#strings.substring(#authentication.name, 0, 1).toUpperCase()}">A</span>
-                        <span th:if="${currentUserInfo == null or currentUserInfo.profilePicture == null}"
-                              sec:authorize="!isAuthenticated()">A</span>
-                    </div>
-                    <!-- Name + role -->
-                    <div class="navbar-user-info">
-                        <span class="navbar-user-name"
-                              th:text="${currentUserInfo != null ? currentUserInfo.fullName : #authentication.name}">User</span>
-                        <span class="navbar-user-role" sec:authorize="hasRole('ADMIN')" th:text="#{nav.profile.admin}">Administrator</span>
-                        <span class="navbar-user-role" sec:authorize="hasRole('MANAGER')" th:text="#{nav.profile.manager}">Manager</span>
-                        <span class="navbar-user-role" sec:authorize="hasRole('STAFF')" th:text="#{nav.profile.staff}">Staff</span>
-                    </div>
-                    <i class="bi bi-chevron-down" style="font-size:12px; color:var(--text-muted);"></i>
                 </div>
             </nav>
 

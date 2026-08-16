@@ -11,100 +11,99 @@
         <div th:replace="~{fragments/alerts :: error(${errorMessage})}"></div>
 
         <!-- ── Dashboard Stats Cards ──────────────────────────────────────── -->
-        <div class="row mb-4 g-3">
-            <div class="col-xl-3 col-md-6">
-                <div class="stat-card">
-                    <span class="stat-label">Total Medicines</span>
-                    <h2 class="stat-value" th:text="${totalMedicines}">0</h2>
-                    <span class="stat-badge-up"><i class="bi bi-box-seam"></i> In Stock</span>
+        <div class="row mb-4">
+            <div class="col-xl-3 col-md-6 mb-3">
+                <div class="card text-center py-3">
+                    <span class="fs-1 mb-2">💊</span>
+                    <h2 class="fw-bold mb-1 text-primary" th:text="${totalMedicines}">0</h2>
+                    <span class="text-muted fw-semibold">Total Medicines</span>
                 </div>
             </div>
-            <div class="col-xl-3 col-md-6">
-                <div class="stat-card">
-                    <span class="stat-label">Available</span>
-                    <h2 class="stat-value" th:text="${availableCount}">0</h2>
-                    <span class="stat-badge-up"><i class="bi bi-check-circle"></i> Ready</span>
+            <div class="col-xl-3 col-md-6 mb-3">
+                <div class="card text-center py-3">
+                    <span class="fs-1 mb-2">✅</span>
+                    <h2 class="fw-bold mb-1 text-success" th:text="${availableCount}">0</h2>
+                    <span class="text-muted fw-semibold">Available</span>
                 </div>
             </div>
-            <div class="col-xl-3 col-md-6">
-                <div class="stat-card">
-                    <span class="stat-label">Low Stock</span>
-                    <h2 class="stat-value" th:text="${lowStockCount}">0</h2>
-                    <span class="badge badge-yellow"><i class="bi bi-exclamation-triangle"></i> Warning</span>
+            <div class="col-xl-3 col-md-6 mb-3">
+                <div class="card text-center py-3">
+                    <span class="fs-1 mb-2">⚠️</span>
+                    <h2 class="fw-bold mb-1 text-warning" th:text="${lowStockCount}">0</h2>
+                    <span class="text-muted fw-semibold">Low Stock</span>
                 </div>
             </div>
-            <div class="col-xl-3 col-md-6">
-                <div class="stat-card">
-                    <span class="stat-label">Out of Stock</span>
-                    <h2 class="stat-value" th:text="${outOfStockCount}">0</h2>
-                    <span class="stat-badge-down"><i class="bi bi-x-circle"></i> Empty</span>
+            <div class="col-xl-3 col-md-6 mb-3">
+                <div class="card text-center py-3">
+                    <span class="fs-1 mb-2">🚫</span>
+                    <h2 class="fw-bold mb-1 text-danger" th:text="${outOfStockCount}">0</h2>
+                    <span class="text-muted fw-semibold">Out of Stock</span>
                 </div>
             </div>
         </div>
 
-        <div class="row mb-4 g-3">
-            <div class="col-xl-4 col-md-6">
-                <div class="stat-card">
-                    <span class="stat-label">Expired</span>
-                    <h2 class="stat-value" th:text="${expiredCount}">0</h2>
-                    <span class="stat-badge-down"><i class="bi bi-shield-x"></i> Danger</span>
+        <div class="row mb-4">
+            <div class="col-xl-4 col-md-6 mb-3 mb-xl-0">
+                <div class="card text-center py-3">
+                    <span class="fs-1 mb-2">☠️</span>
+                    <h2 class="fw-bold mb-1 text-danger" th:text="${expiredCount}">0</h2>
+                    <span class="text-muted fw-semibold">Expired</span>
                 </div>
             </div>
-            <div class="col-xl-4 col-md-6">
-                <div class="stat-card">
-                    <span class="stat-label">Expiring Soon</span>
-                    <h2 class="stat-value" th:text="${expiringSoonCount}">0</h2>
-                    <span class="badge badge-yellow"><i class="bi bi-clock-history"></i> Alert</span>
+            <div class="col-xl-4 col-md-6 mb-3 mb-xl-0">
+                <div class="card text-center py-3">
+                    <span class="fs-1 mb-2">⏰</span>
+                    <h2 class="fw-bold mb-1 text-warning" th:text="${expiringSoonCount}">0</h2>
+                    <span class="text-muted fw-semibold">Expiring Soon</span>
                 </div>
             </div>
             <div class="col-xl-4 col-md-12">
-                <div class="stat-card">
-                    <span class="stat-label">Today's Purchases</span>
-                    <h2 class="stat-value" th:text="${todayPurchases}">0</h2>
-                    <span class="stat-badge-up"><i class="bi bi-cart-check"></i> Added</span>
+                <div class="card text-center py-3">
+                    <span class="fs-1 mb-2">🛒</span>
+                    <h2 class="fw-bold mb-1 text-primary" th:text="${todayPurchases}">0</h2>
+                    <span class="text-muted fw-semibold">Today's Purchases</span>
                 </div>
             </div>
         </div>
 
-        <!-- ── Page Header Card ──────────────────────────────────────────────── -->
-        <div class="page-header-card mb-3">
-            <div class="page-header-icon">
-                <i class="bi bi-box2-heart"></i>
-            </div>
-            <div class="page-header-info">
-                <h1 class="page-header-title">Medicine Inventory</h1>
-                <p class="page-header-desc">Browse, manage, and export medicine stock records.</p>
-            </div>
-            <div class="page-header-actions">
-                <a th:href="@{/inventory/new}" class="btn btn-primary">
-                    <i class="bi bi-plus-lg"></i> <span>Add Medicine</span>
-                </a>
-                <a th:href="@{/inventory/export}" class="btn btn-secondary">
-                    <i class="bi bi-download"></i> <span>Export Excel</span>
-                </a>
+        <!-- ── Action Ribbon ──────────────────────────────────────────────── -->
+        <div class="card mb-4">
+            <div class="row align-items-center py-2">
+                <div class="col-md-6">
+                    <h3 class="mb-0 fw-bold">Medicine Inventory</h3>
+                    <p class="text-muted mb-0">Browse, manage, and export medicine stock records.</p>
+                </div>
+                <div class="col-md-6 text-md-end text-start mt-3 mt-md-0 d-flex justify-content-md-end gap-3 flex-wrap">
+                    <a th:href="@{/inventory/new}" class="btn btn-primary px-4">
+                        <span>➕</span> Add Medicine
+                    </a>
+                    <a th:href="@{/inventory/export}" class="btn btn-secondary px-3">
+                        <span>📥</span> Export to Excel
+                    </a>
+                </div>
             </div>
         </div>
 
         <!-- ── Excel Bulk Import Panel ────────────────────────────────────── -->
-        <div class="import-panel mb-3" sec:authorize="hasAnyRole('ADMIN', 'MANAGER')">
-            <div class="import-panel-icon"><i class="bi bi-cloud-arrow-up"></i></div>
-            <div class="import-panel-info">
-                <p class="import-panel-title">Bulk Import Medicines</p>
-                <p class="import-panel-desc">Column order: Code | Name | Category | Manufacturer | Supplier | Batch | Purchase Date | Expiry Date | Qty | Min Stock | Price | Rack | Notes</p>
+        <div class="card mb-4" sec:authorize="hasAnyRole('ADMIN', 'MANAGER')">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                <div>
+                    <h4 class="mb-1 fw-bold">Bulk Import Medicines</h4>
+                    <p class="text-muted mb-0 small">
+                        Import multiple medicine records from a spreadsheet.
+                        Column order: Code | Name | Category | Manufacturer | Supplier | Batch | Purchase Date | Expiry
+                        Date | Qty | Min Stock | Price | Rack | Notes
+                    </p>
+                </div>
+                <div>
+                    <form th:action="@{/inventory/import}" method="post" enctype="multipart/form-data"
+                        class="d-flex gap-2">
+                        <input type="file" name="file" class="form-control" accept=".xlsx,.xls" required
+                            style="max-width: 250px;">
+                        <button type="submit" class="btn btn-primary" style="height: 48px;">Upload Excel</button>
+                    </form>
+                </div>
             </div>
-            <form th:action="@{/inventory/import}" method="post" enctype="multipart/form-data"
-                  class="d-flex align-items-center gap-2 flex-shrink-0 flex-wrap">
-                <input type="file" name="file" accept=".xlsx,.xls" required
-                       id="invImportFile" style="display:none;"
-                       onchange="document.getElementById('invFileNameSpan').textContent = this.files[0]?.name || 'No file chosen'">
-                <button type="button" onclick="document.getElementById('invImportFile').click()"
-                        class="btn btn-secondary">Choose File</button>
-                <span id="invFileNameSpan" style="font-size:13px;color:var(--text-muted);white-space:nowrap;">No file chosen</span>
-                <button type="submit" class="btn btn-outline-primary">
-                    <i class="bi bi-upload me-1"></i>
-                    <span>Upload Excel</span>
-                </button>
-            </form>
         </div>
 
         <!-- ── Search Component ───────────────────────────────────────────── -->
@@ -113,7 +112,7 @@
         </div>
 
         <!-- ── Main Table Card ────────────────────────────────────────────── -->
-        <div class="table-card">
+        <div class="card">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
                     <thead>
@@ -147,7 +146,8 @@
                                     th:text="${item.manufacturer != null and !item.manufacturer.isEmpty() ? item.manufacturer : '-'}">-</small>
                             </td>
                             <td>
-                                <span class="badge badge-gray" th:text="${item.category}">TABLET</span>
+                                <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill"
+                                    th:text="${item.category}">TABLET</span>
                             </td>
                             <td>
                                 <strong class="fs-5" th:text="${item.quantity}">0</strong>
@@ -160,23 +160,30 @@
                                 th:text="${item.expiryDate != null ? #temporals.format(item.expiryDate, 'dd MMM yyyy') : '-'}">
                                 01 Jan 2027</td>
                             <td>
-                                <span th:if="${item.status.name() == 'AVAILABLE'}" class="res-badge res-badge-active">Available</span>
-                                <span th:if="${item.status.name() == 'LOW_STOCK'}" class="res-badge res-badge-unknown">⚠ Low Stock</span>
-                                <span th:if="${item.status.name() == 'OUT_OF_STOCK'}" class="res-badge res-badge-deceased">Out of Stock</span>
-                                <span th:if="${item.status.name() == 'EXPIRED'}" class="res-badge res-badge-discharged">☠ Expired</span>
+                                <span th:if="${item.status.name() == 'AVAILABLE'}"
+                                    class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">Available</span>
+                                <span th:if="${item.status.name() == 'LOW_STOCK'}"
+                                    class="badge bg-warning bg-opacity-10 text-warning px-3 py-2 rounded-pill">⚠ Low
+                                    Stock</span>
+                                <span th:if="${item.status.name() == 'OUT_OF_STOCK'}"
+                                    class="badge bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-pill">Out of
+                                    Stock</span>
+                                <span th:if="${item.status.name() == 'EXPIRED'}"
+                                    class="badge bg-danger bg-opacity-25 text-danger px-3 py-2 rounded-pill">☠
+                                    Expired</span>
                             </td>
                             <td class="text-end">
                                 <div class="d-inline-flex gap-2">
-                                    <a th:href="@{/inventory/view/{id}(id=${item.id})}" class="btn btn-icon btn-icon-view" title="View">
-                                        <i class="bi bi-eye"></i>
-                                    </a>
-                                    <a th:href="@{/inventory/edit/{id}(id=${item.id})}" class="btn btn-icon btn-icon-edit"
-                                       sec:authorize="hasAnyRole('ADMIN', 'MANAGER')" title="Edit">
-                                        <i class="bi bi-pencil"></i>
-                                    </a>
-                                    <a th:href="@{/inventory/delete/{id}(id=${item.id})}" class="btn btn-icon btn-icon-delete"
-                                       onclick="return confirm('Are you sure you want to permanently delete this medicine record?');"
-                                       sec:authorize="hasRole('ADMIN')" title="Delete">
+                                    <a th:href="@{/inventory/view/{id}(id=${item.id})}" class="btn btn-secondary px-3"
+                                        style="height: 38px; font-size: 16px;">View</a>
+                                    <a th:href="@{/inventory/edit/{id}(id=${item.id})}" class="btn btn-secondary px-3"
+                                        style="height: 38px; font-size: 16px;"
+                                        sec:authorize="hasAnyRole('ADMIN', 'MANAGER')">Edit</a>
+                                    <a th:href="@{/inventory/delete/{id}(id=${item.id})}"
+                                        class="btn btn-outline-danger px-3" style="height: 38px; font-size: 16px;"
+                                        th:data-confirm="#{inventory.confirm.delete}"
+                                        onclick="return confirm(this.getAttribute('data-confirm'));"
+                                        sec:authorize="hasRole('ADMIN')" th:title="#{inventory.btn.delete}">
                                         <i class="bi bi-trash"></i>
                                     </a>
                                 </div>

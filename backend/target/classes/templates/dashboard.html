@@ -28,22 +28,12 @@
             <!-- Total Residents -->
             <div class="col-xl-3 col-md-6 mb-3">
                 <div class="card py-3">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="stat-icon-circle">
-                                <i class="bi bi-people" style="font-size: 20px;"></i>
-                            </div>
-                            <div>
-                                <h1 class="fw-bold mb-0 text-primary" style="font-size: 32px;"
-                                    th:text="${totalResidents}">0</h1>
-                                <span class="text-muted fw-semibold" style="font-size: 13px;"
-                                    th:text="#{dashboard.stat.residents}">Total Residents</span>
-                            </div>
+                    <div class="d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-dark fw-bold" style="font-size: 14px;" th:text="#{dashboard.stat.residents}">Total Residents</span>
                         </div>
-                        <div>
-                            <a th:href="@{/residents}" class="btn btn-outline-primary btn-sm"
-                                th:text="#{dashboard.btn.view_all}">View All</a>
-                        </div>
+                        <h2 class="fw-bold text-dark mb-1" th:text="${totalResidents}">0</h2>
+                        <span class="text-muted" style="font-size: 12px;">All active and past records</span>
                     </div>
                 </div>
             </div>
@@ -51,22 +41,12 @@
             <!-- Total Donors -->
             <div class="col-xl-3 col-md-6 mb-3">
                 <div class="card py-3">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="stat-icon-circle">
-                                <i class="bi bi-person" style="font-size: 20px;"></i>
-                            </div>
-                            <div>
-                                <h1 class="fw-bold mb-0 text-primary" style="font-size: 32px;" th:text="${totalDonors}">
-                                    0</h1>
-                                <span class="text-muted fw-semibold" style="font-size: 13px;"
-                                    th:text="#{dashboard.stat.donors}">Total Donors</span>
-                            </div>
+                    <div class="d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-dark fw-bold" style="font-size: 14px;" th:text="#{dashboard.stat.donors}">Total Donors</span>
                         </div>
-                        <div>
-                            <a th:href="@{/donors}" class="btn btn-outline-primary btn-sm"
-                                th:text="#{dashboard.btn.view_all}">View All</a>
-                        </div>
+                        <h2 class="fw-bold text-dark mb-1" th:text="${totalDonors}">0</h2>
+                        <span class="text-muted" style="font-size: 12px;">All registered donors</span>
                     </div>
                 </div>
             </div>
@@ -74,22 +54,12 @@
             <!-- Donations This Month -->
             <div class="col-xl-3 col-md-6 mb-3">
                 <div class="card py-3">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="stat-icon-circle">
-                                <i class="bi bi-gift" style="font-size: 20px;"></i>
-                            </div>
-                            <div>
-                                <h1 class="fw-bold mb-0 text-primary" style="font-size: 32px;"
-                                    th:text="${monthDonations}">0</h1>
-                                <span class="text-muted fw-semibold" style="font-size: 13px;">Donations (This
-                                    Month)</span>
-                            </div>
+                    <div class="d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-dark fw-bold" style="font-size: 14px;">Donations (This Month)</span>
                         </div>
-                        <div>
-                            <a th:href="@{/reports/donations}" class="btn btn-outline-primary btn-sm"
-                                th:text="#{dashboard.btn.view_all}">View All</a>
-                        </div>
+                        <h2 class="fw-bold text-dark mb-1" th:text="${monthDonations}">0</h2>
+                        <span class="text-muted" style="font-size: 12px;">Number of donations</span>
                     </div>
                 </div>
             </div>
@@ -97,22 +67,12 @@
             <!-- Total Donation Amount -->
             <div class="col-xl-3 col-md-6 mb-3">
                 <div class="card py-3">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="stat-icon-circle">
-                                <i class="bi bi-currency-rupee" style="font-size: 20px;"></i>
-                            </div>
-                            <div>
-                                <h1 class="fw-bold mb-0 text-primary" style="font-size: 24px;"
-                                    th:text="'₹' + ${#numbers.formatDecimal(totalDonationAmount != null ? totalDonationAmount : 0, 1, 'COMMA', 2, 'POINT')}">
-                                    ₹0.00</h1>
-                                <span class="text-muted fw-semibold" style="font-size: 13px;">Total Raised</span>
-                            </div>
+                    <div class="d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-dark fw-bold" style="font-size: 14px;">Total Raised</span>
                         </div>
-                        <div>
-                            <a th:href="@{/reports/donations}" class="btn btn-outline-primary btn-sm"
-                                th:text="#{dashboard.btn.view_all}">View All</a>
-                        </div>
+                        <h2 class="fw-bold text-dark mb-1" th:text="'₹' + ${#numbers.formatDecimal(totalDonationAmount != null ? totalDonationAmount : 0, 1, 'COMMA', 2, 'POINT')}">₹0.00</h2>
+                        <span class="text-muted" style="font-size: 12px;">Overall donations</span>
                     </div>
                 </div>
             </div>

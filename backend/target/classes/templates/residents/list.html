@@ -10,57 +10,58 @@
         <div th:replace="~{fragments/alerts :: success(${successMessage})}"></div>
         <div th:replace="~{fragments/alerts :: error(${errorMessage})}"></div>
 
-        <!-- Page Header Card -->
-        <div class="page-header-card mb-3">
-            <div class="page-header-icon">
-                <i class="bi bi-people-fill"></i>
-            </div>
-            <div class="page-header-info">
-                <h1 class="page-header-title" th:text="#{resident.list.title}">Elderly Residents</h1>
-                <p class="page-header-desc" th:text="#{resident.list.desc}">Browse directory database, run registers, or make updates.</p>
-            </div>
-            <div class="page-header-actions">
-                <a th:href="@{/residents/new}" class="btn btn-primary">
-                    <i class="bi bi-plus-lg"></i>
-                    <span th:text="#{resident.btn.add}">Add Resident</span>
-                </a>
-                <a th:href="@{/residents/export}" class="btn btn-secondary">
-                    <i class="bi bi-download"></i>
-                    <span th:text="#{resident.btn.export}">Export to Excel</span>
-                </a>
+        <!-- Action Ribbon -->
+        <div class="card mb-4">
+            <div class="row align-items-center py-2">
+                <div class="col-md-6">
+                    <h3 class="mb-0 fw-bold" th:text="#{resident.list.title}">Elderly Residents</h3>
+                    <p class="text-muted mb-0" style="font-size: 13px;" th:text="#{resident.list.desc}">Browse directory
+                        database, run registers, or make updates.</p>
+                </div>
+                <div class="col-md-6 text-md-end text-start mt-3 mt-md-0 d-flex justify-content-md-end gap-2 flex-wrap">
+                    <a th:href="@{/residents/new}" class="btn btn-primary px-4">
+                        <i class="bi bi-plus-lg me-1"></i> <span th:text="#{resident.btn.add}">Add Resident</span>
+                    </a>
+                    <a th:href="@{/residents/export}" class="btn btn-outline-primary px-3">
+                        <i class="bi bi-download me-1"></i> <span th:text="#{resident.btn.export}">Export to
+                            Excel</span>
+                    </a>
+                </div>
             </div>
         </div>
 
-        <!-- Bulk Import Panel -->
-        <div class="import-panel mb-3" sec:authorize="hasAnyRole('ADMIN', 'MANAGER')">
-            <div class="import-panel-icon">
-                <i class="bi bi-cloud-arrow-up"></i>
+        <!-- Excel Bulk Import Panel -->
+        <div class="card mb-4" sec:authorize="hasAnyRole('ADMIN', 'MANAGER')">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                <div>
+                    <h5 class="mb-1 fw-bold">
+                        <i class="bi bi-file-earmark-arrow-up me-2 text-primary"></i><span
+                            th:text="#{resident.import.title}">Bulk Import Residents</span>
+                    </h5>
+                    <p class="text-muted mb-0 small" th:text="#{resident.import.desc}">Column format: Resident ID | Name
+                        | Gender | DOB | Mobile | Guardian Name | Guardian Phone | Guardian Email | Guardian Address |
+                        Room Number | Medical Prescription | Occupation | Disability | Aadhaar</p>
+                </div>
+                <div>
+                    <form th:action="@{/residents/import}" method="post" enctype="multipart/form-data"
+                        class="d-flex gap-2">
+                        <input type="file" name="file" class="form-control" accept=".xlsx, .xls" required
+                            style="max-width: 250px;">
+                        <button type="submit" class="btn btn-outline-primary" style="height: 48px; white-space: nowrap;">
+                            <i class="bi bi-upload me-1"></i> <span th:text="#{resident.import.btn}?:'Upload Excel'">Upload Excel</span>
+                        </button>
+                    </form>
+                </div>
             </div>
-            <div class="import-panel-info">
-                <p class="import-panel-title" th:text="#{resident.import.title}">Bulk Import Residents</p>
-                <p class="import-panel-desc" th:text="#{resident.import.desc}">Column format: Resident ID | Name | Gender | DOB | Mobile | Guardian | Guardian Phone</p>
-            </div>
-            <form th:action="@{/residents/import}" method="post" enctype="multipart/form-data"
-                  class="d-flex align-items-center gap-2 flex-shrink-0 flex-wrap">
-                <input type="file" name="file" accept=".xlsx,.xls" required
-                       id="resImportFile" style="display:none;"
-                       onchange="document.getElementById('resFileNameSpan').textContent = this.files[0]?.name || 'No file chosen'">
-                <button type="button" onclick="document.getElementById('resImportFile').click()"
-                        class="btn btn-secondary">Choose File</button>
-                <span id="resFileNameSpan" style="font-size:13px; color:var(--text-muted); white-space:nowrap;">No file chosen</span>
-                <button type="submit" class="btn btn-outline-primary">
-                    <i class="bi bi-upload me-1"></i>
-                    <span th:text="#{resident.import.btn}">Upload Excel</span>
-                </button>
-            </form>
         </div>
 
         <!-- Search Component Filter -->
-        <div th:replace="~{fragments/search :: search(baseUrl='/residents', keyword=${keyword}, size=${residentsPage.size}, sort=${sort}, direction=${direction}, placeholder=#{resident.search.placeholder})}">
+        <div
+            th:replace="~{fragments/search :: search(baseUrl='/residents', keyword=${keyword}, size=${residentsPage.size}, sort=${sort}, direction=${direction}, placeholder=#{resident.search.placeholder})}">
         </div>
 
-        <!-- Main Roster Directory Table -->
-        <div class="table-card">
+        <!-- Main Roster Directory Card -->
+        <div class="card">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
                     <thead>
@@ -90,14 +91,15 @@
                         <!-- Roster Loop -->
                         <tr th:each="res : ${residentsPage.content}" th:if="${res != null}">
 
+                            <!-- Photo -->
                             <td>
                                 <img th:if="${res.photo != null}" th:src="@{'/uploads/' + ${res.photo}}"
-                                     class="rounded-circle object-fit-cover"
-                                     style="width:42px;height:42px;border:1.5px solid var(--border);">
+                                    class="rounded-circle object-fit-cover"
+                                    style="width: 48px; height: 48px; border: 2px solid #E2E8F0;">
                                 <div th:if="${res.photo == null}"
-                                     class="rounded-circle d-flex align-items-center justify-content-center"
-                                     style="width:42px;height:42px;background:var(--primary-xlight);color:var(--primary-dark);border:1.5px solid var(--primary-light);">
-                                    <i class="bi bi-person" style="font-size:17px;"></i>
+                                    class="rounded-circle bg-light d-flex align-items-center justify-content-center"
+                                    style="width: 48px; height: 48px; border: 2px solid #E2E8F0; color: #64748B;">
+                                    <i class="bi bi-person" style="font-size: 18px;"></i>
                                 </div>
                             </td>
 
@@ -146,22 +148,23 @@
                                     th:text="#{resident.status.unknown}">Unknown</span>
                             </td>
 
+                            <!-- Actions -->
                             <td class="text-end">
                                 <div class="d-inline-flex gap-2">
                                     <a th:href="@{/residents/view/{id}(id=${res.id})}"
-                                       class="btn btn-icon btn-icon-view" th:title="#{resident.btn.view}">
+                                        class="btn btn-outline-primary btn-sm px-3" th:title="#{resident.btn.view}">
                                         <i class="bi bi-eye"></i>
                                     </a>
                                     <a th:href="@{/residents/edit/{id}(id=${res.id})}"
-                                       class="btn btn-icon btn-icon-edit"
-                                       sec:authorize="hasAnyRole('ADMIN', 'MANAGER')" th:title="#{resident.btn.edit}">
+                                        class="btn btn-outline-primary btn-sm px-3"
+                                        sec:authorize="hasAnyRole('ADMIN', 'MANAGER')" th:title="#{resident.btn.edit}">
                                         <i class="bi bi-pencil"></i>
                                     </a>
                                     <a th:href="@{/residents/delete/{id}(id=${res.id})}"
-                                       class="btn btn-icon btn-icon-delete"
-                                       th:data-confirm="#{resident.confirm.delete}"
-                                       onclick="return confirm(this.getAttribute('data-confirm'));"
-                                       sec:authorize="hasRole('ADMIN')" th:title="#{resident.btn.delete}">
+                                        class="btn btn-outline-danger btn-sm px-3"
+                                        th:data-confirm="#{resident.confirm.delete}"
+                                        onclick="return confirm(this.getAttribute('data-confirm'));"
+                                        sec:authorize="hasRole('ADMIN')" th:title="#{resident.btn.delete}">
                                         <i class="bi bi-trash"></i>
                                     </a>
                                 </div>
@@ -170,8 +173,11 @@
                     </tbody>
                 </table>
             </div>
+
             <!-- Reusable Pagination Component -->
-            <div th:replace="~{fragments/pagination :: pagination(page=${residentsPage}, baseUrl='/residents', queryParams=${paginationQuery})}"></div>
+            <div
+                th:replace="~{fragments/pagination :: pagination(page=${residentsPage}, baseUrl='/residents', queryParams=${paginationQuery})}">
+            </div>
         </div>
 
     </div>
