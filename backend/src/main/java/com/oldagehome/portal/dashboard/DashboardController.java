@@ -77,25 +77,11 @@ public class DashboardController {
         try {
             java.util.Map<String, Object> graphData = new java.util.HashMap<>();
             
-            // Build 7 days
-            java.util.List<java.util.Map<String, Object>> weekData = new java.util.ArrayList<>();
-            LocalDate weekStart = now.minusDays(6);
-            java.util.List<com.oldagehome.portal.dto.DonationTrendDTO> dbWeek = donorService.getDonationTrend(weekStart);
-            java.util.Map<LocalDate, Long> weekMap = new java.util.HashMap<>();
-            for (com.oldagehome.portal.dto.DonationTrendDTO dto : dbWeek) {
-                // Since getDonationTrend maps amounts, we can count entries manually, but since Donor has donationDate, 
-                // we can just use the DTO which is actually built manually in DonorServiceImpl.
-                // Wait, DonorServiceImpl builds it using DonationRepository.getDonationTrend! 
-                // That returns SUM(amount), not count. The Javascript expects 'count' for donors registered!
-            }
-            
-            // Wait, the user wants 'donorGraphJson' to show Donors Registered over time.
-            // Let's implement this manually here using the list of donors.
-            java.util.List<com.oldagehome.portal.donor.Donor> donors = donorService.getAllDonors(); // simple approach
+            java.util.List<com.oldagehome.portal.donor.Donor> donors = donorService.getAllDonors();
             java.util.Map<LocalDate, Long> donorCounts = new java.util.HashMap<>();
             for (com.oldagehome.portal.donor.Donor d : donors) {
-                if (d.getCreatedAt() != null) {
-                    LocalDate dDate = d.getCreatedAt().toLocalDate();
+                LocalDate dDate = d.getCreatedAt() != null ? d.getCreatedAt().toLocalDate() : d.getDonationDate();
+                if (dDate != null) {
                     donorCounts.put(dDate, donorCounts.getOrDefault(dDate, 0L) + 1);
                 }
             }
@@ -103,6 +89,7 @@ public class DashboardController {
             java.time.format.DateTimeFormatter dtf = java.time.format.DateTimeFormatter.ofPattern("MMM d");
             
             // Week
+            java.util.List<java.util.Map<String, Object>> weekData = new java.util.ArrayList<>();
             for (int i = 6; i >= 0; i--) {
                 LocalDate d = now.minusDays(i);
                 java.util.Map<String, Object> item = new java.util.HashMap<>();
@@ -129,8 +116,9 @@ public class DashboardController {
                 yearCounts.put(now.minusMonths(i).format(monthFmt), 0L);
             }
             for (com.oldagehome.portal.donor.Donor d : donors) {
-                if (d.getCreatedAt() != null && !d.getCreatedAt().toLocalDate().isBefore(now.minusMonths(11).withDayOfMonth(1))) {
-                    String mLabel = d.getCreatedAt().format(monthFmt);
+                LocalDate dDate = d.getCreatedAt() != null ? d.getCreatedAt().toLocalDate() : d.getDonationDate();
+                if (dDate != null && !dDate.isBefore(now.minusMonths(11).withDayOfMonth(1))) {
+                    String mLabel = dDate.format(monthFmt);
                     if (yearCounts.containsKey(mLabel)) {
                         yearCounts.put(mLabel, yearCounts.get(mLabel) + 1);
                     }
@@ -147,10 +135,9 @@ public class DashboardController {
             graphData.put("month", monthData);
             graphData.put("year", yearData);
 
-            String trendJson = objectMapper.writeValueAsString(graphData);
-            model.addAttribute("donorGraphJson", trendJson);
+            model.addAttribute("donorGraphMap", graphData);
         } catch (Exception e) {
-            model.addAttribute("donorGraphJson", "{\"week\":[],\"month\":[],\"year\":[]}");
+            model.addAttribute("donorGraphMap", new java.util.HashMap<>());
         }
 
         return "dashboard";

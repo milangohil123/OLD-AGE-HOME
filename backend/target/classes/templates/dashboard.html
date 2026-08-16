@@ -113,9 +113,6 @@
                     </div>
                 </div>
 
-                <!-- Hidden element that carries the JSON safely from Thymeleaf to JavaScript -->
-                <div id="donorGraphData" th:attr="data-graph=${donorGraphJson}" style="display:none;"></div>
-
                 <!-- Chart container -->
                 <div id="graphContainer" style="position: relative; height: 300px; width: 100%;">
                     <canvas id="overviewChart"></canvas>
@@ -238,28 +235,25 @@
             <!-- End of content cards -->
         </div>
 
-        <script>
+        <script th:inline="javascript">
             (function () {
-                var dataEl = document.getElementById('donorGraphData');
                 var graphContainer = document.getElementById('graphContainer');
                 var canvas = document.getElementById('overviewChart');
 
-                if (!dataEl || !graphContainer || !canvas) return;
+                if (!graphContainer || !canvas) return;
 
-                var rawJson = dataEl.getAttribute('data-graph') || '{"week":[],"month":[],"year":[]}';
+                /*[# th:if="${donorGraphMap != null}"]*/
+                var graphDataAll = /*[[${donorGraphMap}]]*/ { week: [], month: [], year: [] };
+                /*[/]*/
+                /*[# th:if="${donorGraphMap == null}"]*/
                 var graphDataAll = { week: [], month: [], year: [] };
-                try {
-                    graphDataAll = JSON.parse(rawJson);
-                } catch (e) {
-                    console.error('[Dashboard] Failed to parse donor graph JSON:', e, rawJson);
-                }
+                /*[/]*/
 
                 var currentChart = null;
 
                 function renderChart(period) {
-                    var trendData = graphDataAll[period] || [];
+                    var trendData = (graphDataAll && graphDataAll[period]) ? graphDataAll[period] : [];
 
-                    // ALWAYS show graph container, never hide it even if values are 0
                     graphContainer.style.display = 'block';
 
                     var labels = trendData.map(function (item) {
