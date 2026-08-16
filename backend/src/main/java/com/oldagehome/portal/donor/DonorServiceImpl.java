@@ -435,4 +435,32 @@ public class DonorServiceImpl implements DonorService {
         BigDecimal total = donorRepository.sumTotalDonationAmount();
         return total != null ? total : BigDecimal.ZERO;
     }
+
+    @Override
+    public List<com.oldagehome.portal.dto.DonationTrendDTO> getDonationTrend(LocalDate startDate) {
+        List<com.oldagehome.portal.dto.DonationTrendDTO> dbData = donationRepository.getDonationTrend(startDate);
+        
+        // Convert DB data to a Map for quick lookup
+        Map<LocalDate, BigDecimal> dataMap = new HashMap<>();
+        if (dbData != null) {
+            for (com.oldagehome.portal.dto.DonationTrendDTO dto : dbData) {
+                if (dto.getDate() != null) {
+                    dataMap.put(dto.getDate(), dto.getAmount());
+                }
+            }
+        }
+        
+        // Fill missing dates with 0
+        List<com.oldagehome.portal.dto.DonationTrendDTO> result = new ArrayList<>();
+        LocalDate currentDate = startDate;
+        LocalDate endDate = LocalDate.now();
+        
+        while (!currentDate.isAfter(endDate)) {
+            BigDecimal amount = dataMap.getOrDefault(currentDate, BigDecimal.ZERO);
+            result.add(new com.oldagehome.portal.dto.DonationTrendDTO(currentDate, amount));
+            currentDate = currentDate.plusDays(1);
+        }
+        
+        return result;
+    }
 }

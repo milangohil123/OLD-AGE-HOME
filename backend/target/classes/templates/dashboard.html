@@ -31,6 +31,9 @@
                     <div class="d-flex flex-column">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <span class="text-dark fw-bold" style="font-size: 14px;" th:text="#{dashboard.stat.residents}">Total Residents</span>
+                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 28px; height: 28px; background-color: var(--primary-xlight); color: var(--primary);">
+                                <i class="bi bi-people" style="font-size: 14px;"></i>
+                            </div>
                         </div>
                         <h2 class="fw-bold text-dark mb-1" th:text="${totalResidents}">0</h2>
                         <span class="text-muted" style="font-size: 12px;">All active and past records</span>
@@ -44,6 +47,9 @@
                     <div class="d-flex flex-column">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <span class="text-dark fw-bold" style="font-size: 14px;" th:text="#{dashboard.stat.donors}">Total Donors</span>
+                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 28px; height: 28px; background-color: var(--primary-xlight); color: var(--primary);">
+                                <i class="bi bi-person" style="font-size: 14px;"></i>
+                            </div>
                         </div>
                         <h2 class="fw-bold text-dark mb-1" th:text="${totalDonors}">0</h2>
                         <span class="text-muted" style="font-size: 12px;">All registered donors</span>
@@ -57,6 +63,9 @@
                     <div class="d-flex flex-column">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <span class="text-dark fw-bold" style="font-size: 14px;">Donations (This Month)</span>
+                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 28px; height: 28px; background-color: var(--primary-xlight); color: var(--primary);">
+                                <i class="bi bi-gift" style="font-size: 14px;"></i>
+                            </div>
                         </div>
                         <h2 class="fw-bold text-dark mb-1" th:text="${monthDonations}">0</h2>
                         <span class="text-muted" style="font-size: 12px;">Number of donations</span>
@@ -70,6 +79,9 @@
                     <div class="d-flex flex-column">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <span class="text-dark fw-bold" style="font-size: 14px;">Total Raised</span>
+                            <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 28px; height: 28px; background-color: var(--primary-xlight); color: var(--primary);">
+                                <i class="bi bi-currency-rupee" style="font-size: 14px;"></i>
+                            </div>
                         </div>
                         <h2 class="fw-bold text-dark mb-1" th:text="'₹' + ${#numbers.formatDecimal(totalDonationAmount != null ? totalDonationAmount : 0, 1, 'COMMA', 2, 'POINT')}">₹0.00</h2>
                         <span class="text-muted" style="font-size: 12px;">Overall donations</span>
@@ -77,6 +89,27 @@
                 </div>
             </div>
         </div>
+
+        <!-- ── Overview Graph Card ─────────────────────────────────────── -->
+        <div class="card mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="fw-bold text-dark mb-0">Overview</h5>
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" style="font-size: 13px; color: #475569;">
+                        Last 30 Days
+                    </button>
+                </div>
+            </div>
+            
+            <div id="graphEmptyState" class="text-center py-5 d-none">
+                <p class="text-muted mb-0">No donation data available for the last 30 days.</p>
+            </div>
+            
+            <div id="graphContainer" style="height: 300px; width: 100%;">
+                <canvas id="overviewChart"></canvas>
+            </div>
+        </div>
+
 
         <!-- ── Quick Actions and Recent Activity Row ─────────────────────── -->
         <div class="row">
@@ -204,6 +237,118 @@
 
     </div>
 
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            // Raw JSON data from Spring
+            var trendJson = /*[[${donationTrendJson}]]*/ '[]';
+            
+            var trendData = [];
+            try {
+                if (typeof trendJson === 'string') {
+                    trendData = JSON.parse(trendJson);
+                } else {
+                    trendData = trendJson; // Already parsed by Thymeleaf if not stringified explicitly
+                }
+            } catch (e) {
+                console.error('Error parsing trend JSON', e);
+            }
+
+            var graphContainer = document.getElementById('graphContainer');
+            var graphEmptyState = document.getElementById('graphEmptyState');
+
+            // Check if there is any data > 0
+            var hasData = trendData.some(function(item) {
+                return item.amount > 0;
+            });
+
+            if (!hasData || trendData.length === 0) {
+                graphContainer.classList.add('d-none');
+                graphEmptyState.classList.remove('d-none');
+                return;
+            }
+
+            var labels = trendData.map(function(item) {
+                // Format date to 'MMM D' (e.g. Aug 14)
+                var date = new Date(item.date);
+                var month = date.toLocaleString('default', { month: 'short' });
+                return month + ' ' + date.getDate();
+            });
+
+            var dataValues = trendData.map(function(item) {
+                return item.amount;
+            });
+
+            var ctx = document.getElementById('overviewChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Donation Amount (₹)',
+                        data: dataValues,
+                        borderColor: '#16a34a',
+                        backgroundColor: 'rgba(22, 163, 74, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0, // Match reference (smooth line, no dots unless hovering)
+                        pointHoverRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    var value = context.parsed.y;
+                                    return '₹' + value.toLocaleString('en-IN');
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#94a3b8',
+                                font: {
+                                    size: 11
+                                },
+                                maxTicksLimit: 10 // Prevent clutter
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: '#f1f5f9',
+                                drawBorder: false,
+                            },
+                            ticks: {
+                                color: '#94a3b8',
+                                font: {
+                                    size: 11
+                                },
+                                callback: function(value) {
+                                    if (value >= 1000) {
+                                        return (value / 1000) + 'k';
+                                    }
+                                    return value;
+                                }
+                            },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

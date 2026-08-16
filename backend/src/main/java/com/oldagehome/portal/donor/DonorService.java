@@ -51,4 +51,7 @@ public interface DonorService {
     long countTodayDonations();
     long countThisMonthDonations();
     BigDecimal sumTotalDonationAmount();
+
+    // --- Graph Data ---
+    List<com.oldagehome.portal.dto.DonationTrendDTO> getDonationTrend(java.time.LocalDate startDate);
 }
