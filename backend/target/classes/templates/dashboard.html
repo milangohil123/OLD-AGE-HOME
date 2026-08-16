@@ -235,122 +235,125 @@
             </div>
         </div>
 
-    </div>
+            <!-- End of content cards -->
+        </div>
 
-    <script>
-        (function () {
-            var dataEl = document.getElementById('donorGraphData');
-            var graphContainer = document.getElementById('graphContainer');
-            var canvas = document.getElementById('overviewChart');
+        <script>
+            (function () {
+                var dataEl = document.getElementById('donorGraphData');
+                var graphContainer = document.getElementById('graphContainer');
+                var canvas = document.getElementById('overviewChart');
 
-            if (!dataEl || !graphContainer || !canvas) return;
+                if (!dataEl || !graphContainer || !canvas) return;
 
-            var rawJson = dataEl.getAttribute('data-graph') || '{"week":[],"month":[],"year":[]}';
-            var graphDataAll = { week: [], month: [], year: [] };
-            try {
-                graphDataAll = JSON.parse(rawJson);
-            } catch (e) {
-                console.error('[Dashboard] Failed to parse donor graph JSON:', e, rawJson);
-            }
-
-            var currentChart = null;
-
-            function renderChart(period) {
-                var trendData = graphDataAll[period] || [];
-
-                // ALWAYS show graph container, never hide it even if values are 0
-                graphContainer.style.display = 'block';
-
-                var labels = trendData.map(function (item) {
-                    return item.label;
-                });
-
-                var values = trendData.map(function (item) {
-                    return parseFloat(item.count) || 0;
-                });
-
-                if (currentChart) {
-                    currentChart.destroy();
+                var rawJson = dataEl.getAttribute('data-graph') || '{"week":[],"month":[],"year":[]}';
+                var graphDataAll = { week: [], month: [], year: [] };
+                try {
+                    graphDataAll = JSON.parse(rawJson);
+                } catch (e) {
+                    console.error('[Dashboard] Failed to parse donor graph JSON:', e, rawJson);
                 }
 
-                currentChart = new Chart(canvas, {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Donors Registered',
-                            data: values,
-                            borderColor: '#16a34a',
-                            backgroundColor: 'rgba(22, 163, 74, 0.08)',
-                            borderWidth: 2,
-                            fill: true,
-                            tension: 0.4,
-                            pointRadius: 0,
-                            pointHoverRadius: 5,
-                            pointHoverBackgroundColor: '#16a34a'
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        interaction: {
-                            mode: 'index',
-                            intersect: false
+                var currentChart = null;
+
+                function renderChart(period) {
+                    var trendData = graphDataAll[period] || [];
+
+                    // ALWAYS show graph container, never hide it even if values are 0
+                    graphContainer.style.display = 'block';
+
+                    var labels = trendData.map(function (item) {
+                        return item.label;
+                    });
+
+                    var values = trendData.map(function (item) {
+                        return parseFloat(item.count) || 0;
+                    });
+
+                    if (currentChart) {
+                        currentChart.destroy();
+                    }
+
+                    currentChart = new Chart(canvas, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Donors Registered',
+                                data: values,
+                                borderColor: '#16a34a',
+                                backgroundColor: 'rgba(22, 163, 74, 0.08)',
+                                borderWidth: 2,
+                                fill: true,
+                                tension: 0.4,
+                                pointRadius: 0,
+                                pointHoverRadius: 5,
+                                pointHoverBackgroundColor: '#16a34a'
+                            }]
                         },
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: {
-                                callbacks: {
-                                    label: function (ctx) {
-                                        return ctx.parsed.y + ' Donors';
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            interaction: {
+                                mode: 'index',
+                                intersect: false
+                            },
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (ctx) {
+                                            return ctx.parsed.y + ' Donors';
+                                        }
                                     }
-                                }
-                            }
-                        },
-                        scales: {
-                            x: {
-                                grid: { display: false },
-                                border: { display: false },
-                                ticks: {
-                                    color: '#94a3b8',
-                                    font: { size: 11 },
-                                    maxTicksLimit: 12,
-                                    maxRotation: 0
                                 }
                             },
-                            y: {
-                                grid: { color: '#f1f5f9', drawBorder: false, borderDash: [5, 5] },
-                                border: { display: false },
-                                ticks: {
-                                    color: '#94a3b8',
-                                    font: { size: 11 },
-                                    stepSize: 1,
-                                    callback: function (v) {
-                                        if (v % 1 !== 0) return '';
-                                        if (v >= 100000) return (v / 100000).toFixed(1) + 'L';
-                                        if (v >= 1000) return (v / 1000).toFixed(0) + 'k';
-                                        return v;
+                            scales: {
+                                x: {
+                                    grid: { display: false },
+                                    border: { display: false },
+                                    ticks: {
+                                        color: '#94a3b8',
+                                        font: { size: 11 },
+                                        maxTicksLimit: 12,
+                                        maxRotation: 0
                                     }
                                 },
-                                beginAtZero: true
+                                y: {
+                                    grid: { color: '#f1f5f9', drawBorder: false, borderDash: [5, 5] },
+                                    border: { display: false },
+                                    ticks: {
+                                        color: '#94a3b8',
+                                        font: { size: 11 },
+                                        stepSize: 1,
+                                        callback: function (v) {
+                                            if (v % 1 !== 0) return '';
+                                            if (v >= 100000) return (v / 100000).toFixed(1) + 'L';
+                                            if (v >= 1000) return (v / 1000).toFixed(0) + 'k';
+                                            return v;
+                                        }
+                                    },
+                                    beginAtZero: true
+                                }
                             }
                         }
-                    }
-                });
-            }
+                    });
+                }
 
-            // Dropdown logic for graph period
-            var graphPeriodSelect = document.getElementById('graph-period-select');
+                // Dropdown logic for graph period
+                var graphPeriodSelect = document.getElementById('graph-period-select');
 
-            if (graphPeriodSelect) {
-                graphPeriodSelect.addEventListener('change', function() {
-                    renderChart(this.value);
-                });
-            }
+                if (graphPeriodSelect) {
+                    graphPeriodSelect.addEventListener('change', function() {
+                        renderChart(this.value);
+                    });
+                }
 
-            // Initial render
-            renderChart('month'); // Start with month as seen in reference image
-        })();
-    </script>
+                // Initial render
+                renderChart('week');
+            })();
+        </script>
+
+    </div>
 </body>
 </html>
