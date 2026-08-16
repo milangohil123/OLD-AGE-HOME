@@ -94,19 +94,22 @@ public class SecurityConfig {
                                                 .maximumSessions(3)
                                                 .sessionRegistry(sessionRegistry())
                                                 .expiredUrl("/login?timeout=true"))
+                                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                                 .headers(headers -> headers
                                                 .cacheControl(cache -> cache.disable())
 
                                                 .contentSecurityPolicy(csp -> csp.policyDirectives(
-                                                                "default-src 'self'; " +
+                                                                "default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval'; " +
+                                                                                "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " +
+                                                                                "script-src-elem 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " +
+                                                                                "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com https://cdnjs.cloudflare.com; " +
+                                                                                "style-src-elem 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com https://cdnjs.cloudflare.com; " +
                                                                                 "img-src 'self' data: blob: https:; " +
-                                                                                "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
-                                                                                +
-                                                                                "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; "
-                                                                                +
-                                                                                "font-src 'self' data: https://fonts.gstatic.com https://cdn.jsdelivr.net; "
-                                                                                +
-                                                                                "connect-src 'self';"))
+                                                                                "font-src 'self' data: https://fonts.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " +
+                                                                                "connect-src 'self' https: wss:; " +
+                                                                                "worker-src 'self' blob:; " +
+                                                                                "frame-src 'self'; " +
+                                                                                "object-src 'none';"))
 
                                                 .frameOptions(frame -> frame.sameOrigin())
 
@@ -142,5 +145,17 @@ public class SecurityConfig {
         @Bean
         public HttpSessionEventPublisher httpSessionEventPublisher() {
                 return new HttpSessionEventPublisher();
+        }
+
+        @Bean
+        public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
+                org.springframework.web.cors.CorsConfiguration configuration = new org.springframework.web.cors.CorsConfiguration();
+                configuration.setAllowedOriginPatterns(java.util.List.of("*"));
+                configuration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+                configuration.setAllowedHeaders(java.util.List.of("*"));
+                configuration.setAllowCredentials(true);
+                org.springframework.web.cors.UrlBasedCorsConfigurationSource source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
+                source.registerCorsConfiguration("/**", configuration);
+                return source;
         }
 }
