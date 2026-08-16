@@ -14,6 +14,8 @@ public interface ResidentService {
 
     long countTotalResidents();
 
+    long countTotalResidentsBefore(java.time.LocalDate date);
+
     List<Resident> getRecentResidents(int limit);
 
     Resident getResidentById(Long id);

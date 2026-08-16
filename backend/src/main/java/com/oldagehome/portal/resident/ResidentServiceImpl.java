@@ -46,6 +46,11 @@ public class ResidentServiceImpl implements ResidentService {
     }
 
     @Override
+    public long countTotalResidentsBefore(java.time.LocalDate date) {
+        return residentRepository.countByJoiningDateBefore(date);
+    }
+
+    @Override
     public List<Resident> getRecentResidents(int limit) {
         return residentRepository
                 .findAll(

@@ -37,4 +37,14 @@ public interface DonorRepository extends JpaRepository<Donor, Long>, JpaSpecific
        /** Sum total donation amount across all donors. */
        @Query("SELECT COALESCE(SUM(d.donationAmount), 0) FROM Donor d")
        BigDecimal sumTotalDonationAmount();
+
+       long countByCreatedAtBefore(java.time.LocalDateTime date);
+
+       List<Donor> findByCreatedAtAfter(java.time.LocalDateTime date);
+
+       @Query("SELECT COUNT(d) FROM Donor d WHERE d.donationDate >= :startDate AND d.donationDate <= :endDate")
+       long countByDonationDateBetween(@Param("startDate") java.time.LocalDate startDate, @Param("endDate") java.time.LocalDate endDate);
+
+       @Query("SELECT COALESCE(SUM(d.donationAmount), 0) FROM Donor d WHERE d.donationDate < :date")
+       BigDecimal sumTotalDonationAmountBefore(@Param("date") java.time.LocalDate date);
 }
