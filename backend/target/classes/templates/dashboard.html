@@ -6,23 +6,6 @@
 
     <div id="dashboard-content">
 
-        <!-- Welcome Banner -->
-        <div class="card mb-4 welcome-banner-card">
-            <div class="d-flex align-items-center gap-3">
-                <div class="welcome-icon-circle">
-                    <i class="bi bi-house-door" style="font-size: 20px;"></i>
-                </div>
-                <div>
-                    <h2 class="mb-1 fw-bold" style="color: var(--primary);"
-                        th:text="#{dashboard.welcome(${#authentication.name})}">Welcome, <span
-                            sec:authentication="name">Admin</span>!</h2>
-                    <p class="text-muted mb-0" style="font-size: 13px;" th:text="#{dashboard.welcome.desc}">
-                        Smart Old Age Home administration portal — manage residents, donors, and reports.
-                    </p>
-                </div>
-            </div>
-        </div>
-
         <!-- ── Top Filter Bar ────────────────────────────────────────────── -->
         <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
             <div class="d-flex gap-2 flex-wrap">
@@ -53,11 +36,10 @@
                 <div class="card h-100 p-3 shadow-sm" style="border-radius: 8px; border: 1px solid #e2e8f0;">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <span class="fw-bold" style="font-size: 13px; color: #1e293b;" th:text="#{dashboard.stat.residents}">Residents</span>
-                        <span th:if="${residentTrend != null}"
-                              th:classappend="${residentTrendUp} ? 'bg-success text-success' : 'bg-danger text-danger'"
-                              class="badge rounded-pill fw-bold" style="font-size: 11px; --bs-bg-opacity: .15;">
-                            <i th:classappend="${residentTrendUp} ? 'bi bi-caret-up-fill' : 'bi bi-caret-down-fill'"></i>
-                            <span th:text="${residentTrendUp ? '+' : '-'} + ${residentTrend} + '%'"></span>
+                        <span class="badge rounded-pill fw-bold" 
+                              th:style="${residentTrendUp == false ? 'background-color: #fee2e2; color: #ef4444; font-size: 11px; padding: 4px 8px;' : 'background-color: #dcfce7; color: #16a34a; font-size: 11px; padding: 4px 8px;'}">
+                            <i th:classappend="${residentTrendUp == false ? 'bi bi-caret-down-fill' : 'bi bi-caret-up-fill'}"></i>
+                            <span th:text="${residentTrendUp == false ? '-' : '+'} + ${residentTrend != null ? residentTrend : '0.00'} + '%'"></span>
                         </span>
                     </div>
                     <h2 class="fw-bold mb-1" style="font-size: 28px; color: #0f172a;" th:text="${totalResidents}">0</h2>
@@ -70,11 +52,10 @@
                 <div class="card h-100 p-3 shadow-sm" style="border-radius: 8px; border: 1px solid #e2e8f0;">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <span class="fw-bold" style="font-size: 13px; color: #1e293b;">Total Donors</span>
-                        <span th:if="${donorTrend != null}"
-                              th:classappend="${donorTrendUp} ? 'bg-success text-success' : 'bg-danger text-danger'"
-                              class="badge rounded-pill fw-bold" style="font-size: 11px; --bs-bg-opacity: .15;">
-                            <i th:classappend="${donorTrendUp} ? 'bi bi-caret-up-fill' : 'bi bi-caret-down-fill'"></i>
-                            <span th:text="${donorTrendUp ? '+' : '-'} + ${donorTrend} + '%'"></span>
+                        <span class="badge rounded-pill fw-bold" 
+                              th:style="${donorTrendUp == false ? 'background-color: #fee2e2; color: #ef4444; font-size: 11px; padding: 4px 8px;' : 'background-color: #dcfce7; color: #16a34a; font-size: 11px; padding: 4px 8px;'}">
+                            <i th:classappend="${donorTrendUp == false ? 'bi bi-caret-down-fill' : 'bi bi-caret-up-fill'}"></i>
+                            <span th:text="${donorTrendUp == false ? '-' : '+'} + ${donorTrend != null ? donorTrend : '0.00'} + '%'"></span>
                         </span>
                     </div>
                     <h2 class="fw-bold mb-1" style="font-size: 28px; color: #0f172a;" th:text="${totalDonors}">0</h2>
@@ -87,11 +68,10 @@
                 <div class="card h-100 p-3 shadow-sm" style="border-radius: 8px; border: 1px solid #e2e8f0;">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <span class="fw-bold" style="font-size: 13px; color: #1e293b;">Month Donations</span>
-                        <span th:if="${donationMonthTrend != null}"
-                              th:classappend="${donationMonthTrendUp} ? 'bg-success text-success' : 'bg-danger text-danger'"
-                              class="badge rounded-pill fw-bold" style="font-size: 11px; --bs-bg-opacity: .15;">
-                            <i th:classappend="${donationMonthTrendUp} ? 'bi bi-caret-up-fill' : 'bi bi-caret-down-fill'"></i>
-                            <span th:text="${donationMonthTrendUp ? '+' : '-'} + ${donationMonthTrend} + '%'"></span>
+                        <span class="badge rounded-pill fw-bold" 
+                              th:style="${donationMonthTrendUp == false ? 'background-color: #fee2e2; color: #ef4444; font-size: 11px; padding: 4px 8px;' : 'background-color: #dcfce7; color: #16a34a; font-size: 11px; padding: 4px 8px;'}">
+                            <i th:classappend="${donationMonthTrendUp == false ? 'bi bi-caret-down-fill' : 'bi bi-caret-up-fill'}"></i>
+                            <span th:text="${donationMonthTrendUp == false ? '-' : '+'} + ${donationMonthTrend != null ? donationMonthTrend : '0.00'} + '%'"></span>
                         </span>
                     </div>
                     <h2 class="fw-bold mb-1" style="font-size: 28px; color: #0f172a;" th:text="${monthDonations}">0</h2>
@@ -104,11 +84,10 @@
                 <div class="card h-100 p-3 shadow-sm" style="border-radius: 8px; border: 1px solid #e2e8f0;">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <span class="fw-bold" style="font-size: 13px; color: #1e293b;">Total Donations</span>
-                        <span th:if="${amountTrend != null}"
-                              th:classappend="${amountTrendUp} ? 'bg-success text-success' : 'bg-danger text-danger'"
-                              class="badge rounded-pill fw-bold" style="font-size: 11px; --bs-bg-opacity: .15;">
-                            <i th:classappend="${amountTrendUp} ? 'bi bi-caret-up-fill' : 'bi bi-caret-down-fill'"></i>
-                            <span th:text="${amountTrendUp ? '+' : '-'} + ${amountTrend} + '%'"></span>
+                        <span class="badge rounded-pill fw-bold" 
+                              th:style="${amountTrendUp == false ? 'background-color: #fee2e2; color: #ef4444; font-size: 11px; padding: 4px 8px;' : 'background-color: #dcfce7; color: #16a34a; font-size: 11px; padding: 4px 8px;'}">
+                            <i th:classappend="${amountTrendUp == false ? 'bi bi-caret-down-fill' : 'bi bi-caret-up-fill'}"></i>
+                            <span th:text="${amountTrendUp == false ? '-' : '+'} + ${amountTrend != null ? amountTrend : '0.00'} + '%'"></span>
                         </span>
                     </div>
                     <h2 class="fw-bold mb-1" style="font-size: 28px; color: #0f172a;" th:text="'₹' + ${#numbers.formatDecimal(totalDonationAmount != null ? totalDonationAmount : 0, 1, 'COMMA', 0, 'POINT')}">₹0</h2>
@@ -118,17 +97,17 @@
         </div>
 
         <!-- ── Overview Graph Card ─────────────────────────────────────── -->
-        <div class="card mb-4 shadow-sm" style="border-radius: 8px; border: 1px solid #e2e8f0;">
+        <div class="card mb-4 shadow-sm border-0" style="border-radius: 8px; border: 1px solid #e2e8f0 !important;">
             <div class="card-body p-4">
                 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
                     <h6 class="fw-bold mb-0" style="color: #0f172a; font-size: 16px;">Overview</h6>
                     <div class="d-flex gap-2">
-                        <select class="form-select form-select-sm border bg-white text-dark" id="graph-period-select" style="width: auto; font-size: 13px; font-weight: 500;">
+                        <select class="form-select form-select-sm border bg-white text-dark shadow-sm" id="graph-period-select" style="width: auto; font-size: 13px; font-weight: 500;">
                             <option value="week" selected>Week</option>
                             <option value="month">Month</option>
                             <option value="year">Year</option>
                         </select>
-                        <button class="btn btn-sm btn-light bg-white border d-flex align-items-center gap-2 text-dark" style="font-size: 13px; font-weight: 500;">
+                        <button class="btn btn-sm btn-light bg-white border d-flex align-items-center gap-2 text-dark shadow-sm" style="font-size: 13px; font-weight: 500;">
                             <i class="bi bi-box-arrow-up-right text-muted"></i> Open as insights
                         </button>
                     </div>
@@ -136,12 +115,6 @@
 
                 <!-- Hidden element that carries the JSON safely from Thymeleaf to JavaScript -->
                 <div id="donorGraphData" th:attr="data-graph=${donorGraphJson}" style="display:none;"></div>
-
-                <!-- Empty state (hidden by default; shown by JS if no data) -->
-                <div id="graphEmptyState" class="text-center py-5" style="display:none;">
-                    <i class="bi bi-bar-chart text-muted mb-3" style="font-size: 40px;"></i>
-                    <p class="text-muted mb-0">No donor data available for this period.</p>
-                </div>
 
                 <!-- Chart container -->
                 <div id="graphContainer" style="position: relative; height: 300px; width: 100%;">
@@ -154,7 +127,7 @@
         <div class="row g-4">
             <!-- Left Card: Quick Actions -->
             <div class="col-md-6">
-                <div class="card h-100 shadow-sm" style="border-radius: 8px; border: 1px solid #e2e8f0;">
+                <div class="card h-100 shadow-sm border-0" style="border-radius: 8px; border: 1px solid #e2e8f0 !important;">
                     <div class="card-body p-4">
                         <h6 class="fw-bold mb-4" style="color: #0f172a; font-size: 16px;">Quick Actions</h6>
 
@@ -162,7 +135,7 @@
                             <!-- Action 1 -->
                             <a th:href="@{/residents/new}" class="d-flex align-items-center justify-content-between p-3 border rounded-3 text-dark text-decoration-none" style="border-color: #f1f5f9 !important;">
                                 <div class="d-flex align-items-center gap-3">
-                                    <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 36px; height: 36px; background-color: #f0fdf4; color: #22c55e;">
+                                    <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 36px; height: 36px; background-color: #dcfce7; color: #16a34a;">
                                         <i class="bi bi-plus-lg" style="font-size: 16px;"></i>
                                     </div>
                                     <div>
@@ -170,13 +143,13 @@
                                         <small class="text-muted" style="font-size: 12px;">Register a new resident</small>
                                     </div>
                                 </div>
-                                <span style="color: #22c55e; font-size: 18px;">&rarr;</span>
+                                <span style="color: #16a34a; font-size: 18px;">&rarr;</span>
                             </a>
 
                             <!-- Action 2 -->
                             <a th:href="@{/donors/new}" class="d-flex align-items-center justify-content-between p-3 border rounded-3 text-dark text-decoration-none" style="border-color: #f1f5f9 !important;">
                                 <div class="d-flex align-items-center gap-3">
-                                    <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 36px; height: 36px; background-color: #f0fdf4; color: #22c55e;">
+                                    <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 36px; height: 36px; background-color: #dcfce7; color: #16a34a;">
                                         <i class="bi bi-plus-lg" style="font-size: 16px;"></i>
                                     </div>
                                     <div>
@@ -184,13 +157,13 @@
                                         <small class="text-muted" style="font-size: 12px;">Register a new donor</small>
                                     </div>
                                 </div>
-                                <span style="color: #22c55e; font-size: 18px;">&rarr;</span>
+                                <span style="color: #16a34a; font-size: 18px;">&rarr;</span>
                             </a>
 
                             <!-- Action 3 -->
                             <a th:href="@{/reports}" class="d-flex align-items-center justify-content-between p-3 border rounded-3 text-dark text-decoration-none" style="border-color: #f1f5f9 !important;">
                                 <div class="d-flex align-items-center gap-3">
-                                    <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 36px; height: 36px; background-color: #f0fdf4; color: #22c55e;">
+                                    <div class="d-flex align-items-center justify-content-center rounded-circle" style="width: 36px; height: 36px; background-color: #dcfce7; color: #16a34a;">
                                         <i class="bi bi-bar-chart" style="font-size: 16px;"></i>
                                     </div>
                                     <div>
@@ -198,7 +171,7 @@
                                         <small class="text-muted" style="font-size: 12px;">View and export reports</small>
                                     </div>
                                 </div>
-                                <span style="color: #22c55e; font-size: 18px;">&rarr;</span>
+                                <span style="color: #16a34a; font-size: 18px;">&rarr;</span>
                             </a>
                         </div>
                     </div>
@@ -207,7 +180,7 @@
 
             <!-- Right Card: Recent Activity -->
             <div class="col-md-6">
-                <div class="card h-100 shadow-sm" style="border-radius: 8px; border: 1px solid #e2e8f0;">
+                <div class="card h-100 shadow-sm border-0" style="border-radius: 8px; border: 1px solid #e2e8f0 !important;">
                     <div class="card-body p-4 d-flex flex-column">
                         <h6 class="fw-bold mb-4" style="color: #0f172a; font-size: 16px;">Recent Activity</h6>
 
@@ -215,7 +188,7 @@
                             <!-- Activity 1 -->
                             <div class="d-flex align-items-center justify-content-between">
                                 <div class="d-flex align-items-center gap-2">
-                                    <div class="rounded-circle" style="width: 6px; height: 6px; background-color: #22c55e;"></div>
+                                    <div class="rounded-circle" style="width: 6px; height: 6px; background-color: #16a34a;"></div>
                                     <span style="font-size: 13px; color: #0f172a;" th:text="#{dashboard.activity.resident_added}">New resident registered</span>
                                 </div>
                                 <span class="text-muted" style="font-size: 12px;">2 hours ago</span>
@@ -223,7 +196,7 @@
                             <!-- Activity 2 -->
                             <div class="d-flex align-items-center justify-content-between">
                                 <div class="d-flex align-items-center gap-2">
-                                    <div class="rounded-circle" style="width: 6px; height: 6px; background-color: #22c55e;"></div>
+                                    <div class="rounded-circle" style="width: 6px; height: 6px; background-color: #16a34a;"></div>
                                     <span style="font-size: 13px; color: #0f172a;" th:text="#{dashboard.activity.donor_added}">New donor added</span>
                                 </div>
                                 <span class="text-muted" style="font-size: 12px;">1 day ago</span>
@@ -231,7 +204,7 @@
                             <!-- Activity 3 -->
                             <div class="d-flex align-items-center justify-content-between">
                                 <div class="d-flex align-items-center gap-2">
-                                    <div class="rounded-circle" style="width: 6px; height: 6px; background-color: #22c55e;"></div>
+                                    <div class="rounded-circle" style="width: 6px; height: 6px; background-color: #16a34a;"></div>
                                     <span style="font-size: 13px; color: #0f172a;" th:text="#{dashboard.activity.report_generated}">Report generated</span>
                                 </div>
                                 <span class="text-muted" style="font-size: 12px;">2 days ago</span>
@@ -239,7 +212,7 @@
                             <!-- Activity 4 -->
                             <div class="d-flex align-items-center justify-content-between">
                                 <div class="d-flex align-items-center gap-2">
-                                    <div class="rounded-circle" style="width: 6px; height: 6px; background-color: #22c55e;"></div>
+                                    <div class="rounded-circle" style="width: 6px; height: 6px; background-color: #16a34a;"></div>
                                     <span style="font-size: 13px; color: #0f172a;" th:text="#{dashboard.activity.admin_login}">Admin logged in</span>
                                 </div>
                                 <span class="text-muted" style="font-size: 12px;">2 days ago</span>
@@ -247,7 +220,7 @@
                             <!-- Activity 5 -->
                             <div class="d-flex align-items-center justify-content-between">
                                 <div class="d-flex align-items-center gap-2">
-                                    <div class="rounded-circle" style="width: 6px; height: 6px; background-color: #22c55e;"></div>
+                                    <div class="rounded-circle" style="width: 6px; height: 6px; background-color: #16a34a;"></div>
                                     <span style="font-size: 13px; color: #0f172a;" th:text="#{dashboard.activity.export}">Data export completed</span>
                                 </div>
                                 <span class="text-muted" style="font-size: 12px;">3 days ago</span>
@@ -266,111 +239,118 @@
 
     <script>
         (function () {
-            var dataEl = document.getElementById('donationTrendData');
+            var dataEl = document.getElementById('donorGraphData');
             var graphContainer = document.getElementById('graphContainer');
-            var graphEmptyState = document.getElementById('graphEmptyState');
             var canvas = document.getElementById('overviewChart');
 
             if (!dataEl || !graphContainer || !canvas) return;
 
-            var rawJson = dataEl.getAttribute('data-trend') || '[]';
-            var trendData = [];
+            var rawJson = dataEl.getAttribute('data-graph') || '{"week":[],"month":[],"year":[]}';
+            var graphDataAll = { week: [], month: [], year: [] };
             try {
-                trendData = JSON.parse(rawJson);
+                graphDataAll = JSON.parse(rawJson);
             } catch (e) {
-                console.error('[Dashboard] Failed to parse donation trend JSON:', e, rawJson);
-                graphContainer.style.display = 'none';
-                graphEmptyState.style.display = 'block';
-                return;
+                console.error('[Dashboard] Failed to parse donor graph JSON:', e, rawJson);
             }
 
-            // Check whether any day has a non-zero donation amount
-            var hasData = trendData.some(function (item) {
-                return parseFloat(item.amount) > 0;
-            });
+            var currentChart = null;
 
-            if (!hasData || trendData.length === 0) {
-                graphContainer.style.display = 'none';
-                graphEmptyState.style.display = 'block';
-                return;
-            }
+            function renderChart(period) {
+                var trendData = graphDataAll[period] || [];
 
-            var labels = trendData.map(function (item) {
-                // item.date arrives as "2026-08-01" (ISO string)
-                var parts = item.date.split('-');
-                var d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-                var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                return months[d.getMonth()] + ' ' + d.getDate();
-            });
+                // ALWAYS show graph container, never hide it even if values are 0
+                graphContainer.style.display = 'block';
 
-            var values = trendData.map(function (item) {
-                return parseFloat(item.amount) || 0;
-            });
+                var labels = trendData.map(function (item) {
+                    return item.label;
+                });
 
-            new Chart(canvas, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Donation Amount (\u20B9)',
-                        data: values,
-                        borderColor: '#16a34a',
-                        backgroundColor: 'rgba(22, 163, 74, 0.08)',
-                        borderWidth: 2,
-                        fill: true,
-                        tension: 0.4,
-                        pointRadius: 0,
-                        pointHoverRadius: 5,
-                        pointHoverBackgroundColor: '#16a34a'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: {
-                        mode: 'index',
-                        intersect: false
+                var values = trendData.map(function (item) {
+                    return parseFloat(item.count) || 0;
+                });
+
+                if (currentChart) {
+                    currentChart.destroy();
+                }
+
+                currentChart = new Chart(canvas, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Donors Registered',
+                            data: values,
+                            borderColor: '#16a34a',
+                            backgroundColor: 'rgba(22, 163, 74, 0.08)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 0,
+                            pointHoverRadius: 5,
+                            pointHoverBackgroundColor: '#16a34a'
+                        }]
                     },
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: function (ctx) {
-                                    return '\u20B9' + ctx.parsed.y.toLocaleString('en-IN', { minimumFractionDigits: 2 });
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (ctx) {
+                                        return ctx.parsed.y + ' Donors';
+                                    }
                                 }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            grid: { display: false },
-                            border: { display: false },
-                            ticks: {
-                                color: '#94a3b8',
-                                font: { size: 11 },
-                                maxTicksLimit: 12,
-                                maxRotation: 0
                             }
                         },
-                        y: {
-                            grid: { color: '#f1f5f9' },
-                            border: { display: false },
-                            ticks: {
-                                color: '#94a3b8',
-                                font: { size: 11 },
-                                callback: function (v) {
-                                    if (v >= 100000) return (v / 100000).toFixed(1) + 'L';
-                                    if (v >= 1000) return (v / 1000).toFixed(0) + 'k';
-                                    return v;
+                        scales: {
+                            x: {
+                                grid: { display: false },
+                                border: { display: false },
+                                ticks: {
+                                    color: '#94a3b8',
+                                    font: { size: 11 },
+                                    maxTicksLimit: 12,
+                                    maxRotation: 0
                                 }
                             },
-                            beginAtZero: true
+                            y: {
+                                grid: { color: '#f1f5f9', drawBorder: false, borderDash: [5, 5] },
+                                border: { display: false },
+                                ticks: {
+                                    color: '#94a3b8',
+                                    font: { size: 11 },
+                                    stepSize: 1,
+                                    callback: function (v) {
+                                        if (v % 1 !== 0) return '';
+                                        if (v >= 100000) return (v / 100000).toFixed(1) + 'L';
+                                        if (v >= 1000) return (v / 1000).toFixed(0) + 'k';
+                                        return v;
+                                    }
+                                },
+                                beginAtZero: true
+                            }
                         }
                     }
-                }
-            });
+                });
+            }
+
+            // Dropdown logic for graph period
+            var graphPeriodSelect = document.getElementById('graph-period-select');
+
+            if (graphPeriodSelect) {
+                graphPeriodSelect.addEventListener('change', function() {
+                    renderChart(this.value);
+                });
+            }
+
+            // Initial render
+            renderChart('month'); // Start with month as seen in reference image
         })();
     </script>
 </body>
-
 </html>
