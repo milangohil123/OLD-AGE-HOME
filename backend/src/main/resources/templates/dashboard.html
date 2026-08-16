@@ -94,18 +94,22 @@
         <div class="card mb-4">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h5 class="fw-bold text-dark mb-0">Overview</h5>
-                <div class="dropdown">
-                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" style="font-size: 13px; color: #475569;">
-                        Last 30 Days
-                    </button>
-                </div>
+                <span class="badge bg-light text-secondary border" style="font-size: 12px; font-weight: 500;">Last 30 Days</span>
             </div>
-            
-            <div id="graphEmptyState" class="text-center py-5 d-none">
+
+            <!-- Hidden element that carries the JSON safely from Thymeleaf to JavaScript -->
+            <div id="donationTrendData"
+                 th:attr="data-trend=${donationTrendJson}"
+                 style="display:none;"></div>
+
+            <!-- Empty state (hidden by default; shown by JS if no data) -->
+            <div id="graphEmptyState" class="text-center py-5" style="display:none;">
+                <i class="bi bi-bar-chart text-muted mb-3" style="font-size: 40px;"></i>
                 <p class="text-muted mb-0">No donation data available for the last 30 days.</p>
             </div>
-            
-            <div id="graphContainer" style="height: 300px; width: 100%;">
+
+            <!-- Chart container -->
+            <div id="graphContainer" style="position: relative; height: 300px; width: 100%;">
                 <canvas id="overviewChart"></canvas>
             </div>
         </div>
@@ -237,109 +241,104 @@
 
     </div>
 
-    <script th:inline="javascript">
-        document.addEventListener('DOMContentLoaded', function () {
-            // Raw JSON data from Spring
-            var trendJson = /*[[${donationTrendJson}]]*/ '[]';
-            
-            var trendData = [];
-            try {
-                if (typeof trendJson === 'string') {
-                    trendData = JSON.parse(trendJson);
-                } else {
-                    trendData = trendJson; // Already parsed by Thymeleaf if not stringified explicitly
-                }
-            } catch (e) {
-                console.error('Error parsing trend JSON', e);
-            }
-
+    <script>
+        (function () {
+            var dataEl = document.getElementById('donationTrendData');
             var graphContainer = document.getElementById('graphContainer');
             var graphEmptyState = document.getElementById('graphEmptyState');
+            var canvas = document.getElementById('overviewChart');
 
-            // Check if there is any data > 0
-            var hasData = trendData.some(function(item) {
-                return item.amount > 0;
-            });
+            if (!dataEl || !graphContainer || !canvas) return;
 
-            if (!hasData || trendData.length === 0) {
-                graphContainer.classList.add('d-none');
-                graphEmptyState.classList.remove('d-none');
+            var rawJson = dataEl.getAttribute('data-trend') || '[]';
+            var trendData = [];
+            try {
+                trendData = JSON.parse(rawJson);
+            } catch (e) {
+                console.error('[Dashboard] Failed to parse donation trend JSON:', e, rawJson);
+                graphContainer.style.display = 'none';
+                graphEmptyState.style.display = 'block';
                 return;
             }
 
-            var labels = trendData.map(function(item) {
-                // Format date to 'MMM D' (e.g. Aug 14)
-                var date = new Date(item.date);
-                var month = date.toLocaleString('default', { month: 'short' });
-                return month + ' ' + date.getDate();
+            // Check whether any day has a non-zero donation amount
+            var hasData = trendData.some(function (item) {
+                return parseFloat(item.amount) > 0;
             });
 
-            var dataValues = trendData.map(function(item) {
-                return item.amount;
+            if (!hasData || trendData.length === 0) {
+                graphContainer.style.display = 'none';
+                graphEmptyState.style.display = 'block';
+                return;
+            }
+
+            var labels = trendData.map(function (item) {
+                // item.date arrives as "2026-08-01" (ISO string)
+                var parts = item.date.split('-');
+                var d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+                var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                return months[d.getMonth()] + ' ' + d.getDate();
             });
 
-            var ctx = document.getElementById('overviewChart').getContext('2d');
-            new Chart(ctx, {
+            var values = trendData.map(function (item) {
+                return parseFloat(item.amount) || 0;
+            });
+
+            new Chart(canvas, {
                 type: 'line',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Donation Amount (₹)',
-                        data: dataValues,
+                        label: 'Donation Amount (\u20B9)',
+                        data: values,
                         borderColor: '#16a34a',
-                        backgroundColor: 'rgba(22, 163, 74, 0.1)',
+                        backgroundColor: 'rgba(22, 163, 74, 0.08)',
                         borderWidth: 2,
                         fill: true,
                         tension: 0.4,
-                        pointRadius: 0, // Match reference (smooth line, no dots unless hovering)
-                        pointHoverRadius: 4
+                        pointRadius: 0,
+                        pointHoverRadius: 5,
+                        pointHoverBackgroundColor: '#16a34a'
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
                     plugins: {
-                        legend: {
-                            display: false
-                        },
+                        legend: { display: false },
                         tooltip: {
                             callbacks: {
-                                label: function(context) {
-                                    var value = context.parsed.y;
-                                    return '₹' + value.toLocaleString('en-IN');
+                                label: function (ctx) {
+                                    return '\u20B9' + ctx.parsed.y.toLocaleString('en-IN', {minimumFractionDigits: 2});
                                 }
                             }
                         }
                     },
                     scales: {
                         x: {
-                            grid: {
-                                display: false,
-                                drawBorder: false
-                            },
+                            grid: { display: false },
+                            border: { display: false },
                             ticks: {
                                 color: '#94a3b8',
-                                font: {
-                                    size: 11
-                                },
-                                maxTicksLimit: 10 // Prevent clutter
+                                font: { size: 11 },
+                                maxTicksLimit: 12,
+                                maxRotation: 0
                             }
                         },
                         y: {
-                            grid: {
-                                color: '#f1f5f9',
-                                drawBorder: false,
-                            },
+                            grid: { color: '#f1f5f9' },
+                            border: { display: false },
                             ticks: {
                                 color: '#94a3b8',
-                                font: {
-                                    size: 11
-                                },
-                                callback: function(value) {
-                                    if (value >= 1000) {
-                                        return (value / 1000) + 'k';
-                                    }
-                                    return value;
+                                font: { size: 11 },
+                                callback: function (v) {
+                                    if (v >= 100000) return (v / 100000).toFixed(1) + 'L';
+                                    if (v >= 1000) return (v / 1000).toFixed(0) + 'k';
+                                    return v;
                                 }
                             },
                             beginAtZero: true
@@ -347,7 +346,7 @@
                     }
                 }
             });
-        });
+        })();
     </script>
 </body>
 
