@@ -26,8 +26,8 @@ public class DonorServiceImpl implements DonorService {
 
     @Autowired
     public DonorServiceImpl(DonorRepository donorRepository,
-                            DonationRepository donationRepository,
-                            com.oldagehome.portal.audit.AuditService auditService) {
+            DonationRepository donationRepository,
+            com.oldagehome.portal.audit.AuditService auditService) {
         this.donorRepository = donorRepository;
         this.donationRepository = donationRepository;
         this.auditService = auditService;
@@ -52,14 +52,21 @@ public class DonorServiceImpl implements DonorService {
 
     @Override
     public List<Donor> getRecentDonors(int limit) {
-        return donorRepository.findAll(org.springframework.data.domain.PageRequest.of(0, limit, org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "createdAt"))).getContent();
+        return donorRepository
+                .findAll(
+                        org.springframework.data.domain.PageRequest.of(0, limit,
+                                org.springframework.data.domain.Sort
+                                        .by(org.springframework.data.domain.Sort.Direction.DESC, "createdAt")))
+                .getContent();
     }
 
     @Override
     public Donor getDonorById(Long id) {
         return donorRepository.findById(id)
                 .orElseThrow(() -> {
-                    auditService.logActivity(com.oldagehome.portal.audit.AuditModule.DONOR, com.oldagehome.portal.audit.AuditAction.VIEW, "Failed to view donor: not found", "Donor", id, false, "Donor not found");
+                    auditService.logActivity(com.oldagehome.portal.audit.AuditModule.DONOR,
+                            com.oldagehome.portal.audit.AuditAction.VIEW, "Failed to view donor: not found", "Donor",
+                            id, false, "Donor not found");
                     return new RuntimeException("Donor not found with id: " + id);
                 });
     }
@@ -67,7 +74,7 @@ public class DonorServiceImpl implements DonorService {
     @Override
     public DonorFormDTO getDonorFormDtoById(Long id) {
         Donor donor = getDonorById(id);
-        
+
         DonorFormDTO dto = DonorFormDTO.builder()
                 .id(donor.getId())
                 .fullName(donor.getFullName())
@@ -94,7 +101,8 @@ public class DonorServiceImpl implements DonorService {
         if (donor.getDonationType() == DonationType.MEDICINE && donor.getMedicineItems() != null) {
             List<DonorFormDTO.MedicineItemDTO> medDtos = new ArrayList<>();
             for (MedicineDonationItem item : donor.getMedicineItems()) {
-                medDtos.add(new DonorFormDTO.MedicineItemDTO(item.getId(), item.getMedicineName(), item.getPrice(), item.getExpiryDate()));
+                medDtos.add(new DonorFormDTO.MedicineItemDTO(item.getId(), item.getMedicineName(), item.getPrice(),
+                        item.getExpiryDate()));
             }
             dto.setMedicineItems(medDtos);
         }
@@ -114,14 +122,19 @@ public class DonorServiceImpl implements DonorService {
     public Donor saveDonor(DonorFormDTO dto) {
         Donor donor = new Donor();
         mapDtoToEntity(dto, donor);
-        
+
         Donor saved = donorRepository.save(donor);
-        
-        auditService.logActivity(com.oldagehome.portal.audit.AuditModule.DONOR, com.oldagehome.portal.audit.AuditAction.CREATE, "Created donor record for: " + saved.getFullName(), "Donor", saved.getId(), true, null);
-        
+
+        auditService.logActivity(com.oldagehome.portal.audit.AuditModule.DONOR,
+                com.oldagehome.portal.audit.AuditAction.CREATE, "Created donor record for: " + saved.getFullName(),
+                "Donor", saved.getId(), true, null);
+
         BigDecimal amount = saved.getDonationAmount() != null ? saved.getDonationAmount() : BigDecimal.ZERO;
-        auditService.logActivity(com.oldagehome.portal.audit.AuditModule.DONATION, com.oldagehome.portal.audit.AuditAction.CREATE, "Created donation record for: " + saved.getFullName() + ", Type: " + saved.getDonationType() + ", Amount: ₹" + amount, "Donation", saved.getId(), true, null);
-        
+        auditService.logActivity(com.oldagehome.portal.audit.AuditModule.DONATION,
+                com.oldagehome.portal.audit.AuditAction.CREATE, "Created donation record for: " + saved.getFullName()
+                        + ", Type: " + saved.getDonationType() + ", Amount: ₹" + amount,
+                "Donation", saved.getId(), true, null);
+
         return saved;
     }
 
@@ -129,18 +142,22 @@ public class DonorServiceImpl implements DonorService {
     public Donor updateDonor(DonorFormDTO dto) {
         Donor existing = getDonorById(dto.getId());
         mapDtoToEntity(dto, existing);
-        
+
         Donor updated = donorRepository.save(existing);
-        
-        auditService.logActivity(com.oldagehome.portal.audit.AuditModule.DONOR, com.oldagehome.portal.audit.AuditAction.UPDATE, "Updated donor record for: " + updated.getFullName(), "Donor", updated.getId(), true, null);
-        
+
+        auditService.logActivity(com.oldagehome.portal.audit.AuditModule.DONOR,
+                com.oldagehome.portal.audit.AuditAction.UPDATE, "Updated donor record for: " + updated.getFullName(),
+                "Donor", updated.getId(), true, null);
+
         return updated;
     }
 
     @Override
     public Donor saveDonor(Donor donor) {
         Donor saved = donorRepository.save(donor);
-        auditService.logActivity(com.oldagehome.portal.audit.AuditModule.DONOR, com.oldagehome.portal.audit.AuditAction.CREATE, "Created donor record for: " + saved.getFullName(), "Donor", saved.getId(), true, null);
+        auditService.logActivity(com.oldagehome.portal.audit.AuditModule.DONOR,
+                com.oldagehome.portal.audit.AuditAction.CREATE, "Created donor record for: " + saved.getFullName(),
+                "Donor", saved.getId(), true, null);
         return saved;
     }
 
@@ -148,13 +165,15 @@ public class DonorServiceImpl implements DonorService {
     public void deleteDonor(Long id) {
         Donor existing = getDonorById(id);
         donorRepository.delete(existing);
-        auditService.logActivity(com.oldagehome.portal.audit.AuditModule.DONOR, com.oldagehome.portal.audit.AuditAction.DELETE, "Deleted donor record of: " + existing.getFullName(), "Donor", id, true, null);
+        auditService.logActivity(com.oldagehome.portal.audit.AuditModule.DONOR,
+                com.oldagehome.portal.audit.AuditAction.DELETE, "Deleted donor record of: " + existing.getFullName(),
+                "Donor", id, true, null);
     }
 
     @Override
     public void saveDonation(DonationFormDTO dto) {
         Donor donor = getDonorById(dto.getDonorId());
-        
+
         Donation donation = Donation.builder()
                 .donor(donor)
                 .donationFrequency(dto.getDonationFrequency())
@@ -164,8 +183,9 @@ public class DonorServiceImpl implements DonorService {
                 .transactionId(dto.getTransactionId())
                 .remarks(dto.getRemarks())
                 .build();
-                
-        if (dto.getDonationType() == DonationType.MEDICINE || (dto.getDonationType() != null && dto.getDonationType().isFoodType())) {
+
+        if (dto.getDonationType() == DonationType.MEDICINE
+                || (dto.getDonationType() != null && dto.getDonationType().isFoodType())) {
             donation.setDonationAmount(BigDecimal.ZERO);
         } else {
             donation.setDonationAmount(dto.getDonationAmount());
@@ -174,7 +194,8 @@ public class DonorServiceImpl implements DonorService {
         if (dto.getDonationType() == DonationType.MEDICINE && dto.getMedicineItems() != null) {
             int displayOrder = 1;
             for (DonorFormDTO.MedicineItemDTO itemDto : dto.getMedicineItems()) {
-                if (itemDto.getMedicineName() == null || itemDto.getMedicineName().isBlank()) continue;
+                if (itemDto.getMedicineName() == null || itemDto.getMedicineName().isBlank())
+                    continue;
                 MedicineDonationItem item = MedicineDonationItem.builder()
                         .donor(donor)
                         .donation(donation)
@@ -188,7 +209,8 @@ public class DonorServiceImpl implements DonorService {
         } else if (dto.getDonationType() != null && dto.getDonationType().isFoodType() && dto.getFoodItems() != null) {
             int displayOrder = 1;
             for (DonorFormDTO.FoodItemDTO itemDto : dto.getFoodItems()) {
-                if (itemDto.getFoodName() == null || itemDto.getFoodName().isBlank()) continue;
+                if (itemDto.getFoodName() == null || itemDto.getFoodName().isBlank())
+                    continue;
                 FoodDonationItem item = FoodDonationItem.builder()
                         .donor(donor)
                         .donation(donation)
@@ -199,11 +221,14 @@ public class DonorServiceImpl implements DonorService {
                 donation.getFoodItems().add(item);
             }
         }
-        
+
         Donation saved = donationRepository.save(donation);
-        
+
         BigDecimal amount = saved.getDonationAmount() != null ? saved.getDonationAmount() : BigDecimal.ZERO;
-        auditService.logActivity(com.oldagehome.portal.audit.AuditModule.DONATION, com.oldagehome.portal.audit.AuditAction.CREATE, "Added new donation for: " + donor.getFullName() + ", Type: " + saved.getDonationType() + ", Amount: ₹" + amount, "Donation", saved.getId(), true, null);
+        auditService.logActivity(com.oldagehome.portal.audit.AuditModule.DONATION,
+                com.oldagehome.portal.audit.AuditAction.CREATE, "Added new donation for: " + donor.getFullName()
+                        + ", Type: " + saved.getDonationType() + ", Amount: ₹" + amount,
+                "Donation", saved.getId(), true, null);
     }
 
     private void mapDtoToEntity(DonorFormDTO dto, Donor donor) {
@@ -219,30 +244,35 @@ public class DonorServiceImpl implements DonorService {
         donor.setDonationFrequency(dto.getDonationFrequency());
         donor.setDonationType(dto.getDonationType());
         donor.setDonationCategory(dto.getDonationCategory());
-        
+
         // Handle specific type requirements
-        if (dto.getDonationType() == DonationType.MEDICINE || (dto.getDonationType() != null && dto.getDonationType().isFoodType())) {
+        if (dto.getDonationType() == DonationType.MEDICINE
+                || (dto.getDonationType() != null && dto.getDonationType().isFoodType())) {
             donor.setDonationAmount(BigDecimal.ZERO);
         } else {
             donor.setDonationAmount(dto.getDonationAmount());
         }
-        
+
         donor.setDonationDate(dto.getDonationDate());
-        
+
         if (dto.getPaymentMethod() != null && !dto.getPaymentMethod().isBlank()) {
             String pm = dto.getPaymentMethod().trim();
-            if (pm.equalsIgnoreCase("CASH")) donor.setPaymentMethod("Cash");
-            else if (pm.equalsIgnoreCase("UPI")) donor.setPaymentMethod("UPI");
-            else if (pm.equalsIgnoreCase("CHEQUE")) donor.setPaymentMethod("Cheque");
-            else donor.setPaymentMethod(pm.substring(0, 1).toUpperCase() + pm.substring(1).toLowerCase());
+            if (pm.equalsIgnoreCase("CASH"))
+                donor.setPaymentMethod("Cash");
+            else if (pm.equalsIgnoreCase("UPI"))
+                donor.setPaymentMethod("UPI");
+            else if (pm.equalsIgnoreCase("CHEQUE"))
+                donor.setPaymentMethod("Cheque");
+            else
+                donor.setPaymentMethod(pm.substring(0, 1).toUpperCase() + pm.substring(1).toLowerCase());
         } else {
             donor.setPaymentMethod(dto.getPaymentMethod());
         }
-        
+
         donor.setTransactionId(dto.getTransactionId());
         donor.setRemarks(dto.getRemarks());
         donor.setStatus(dto.getStatus());
-        
+
         if (dto.getPhoto() != null && !dto.getPhoto().isBlank()) {
             donor.setPhoto(dto.getPhoto());
         }
@@ -254,7 +284,8 @@ public class DonorServiceImpl implements DonorService {
             if (dto.getMedicineItems() != null) {
                 int displayOrder = 1;
                 for (DonorFormDTO.MedicineItemDTO itemDto : dto.getMedicineItems()) {
-                    if (itemDto.getMedicineName() == null || itemDto.getMedicineName().isBlank()) continue;
+                    if (itemDto.getMedicineName() == null || itemDto.getMedicineName().isBlank())
+                        continue;
                     MedicineDonationItem item = MedicineDonationItem.builder()
                             .donor(donor)
                             .medicineName(itemDto.getMedicineName().trim())
@@ -271,7 +302,8 @@ public class DonorServiceImpl implements DonorService {
             if (dto.getFoodItems() != null) {
                 int displayOrder = 1;
                 for (DonorFormDTO.FoodItemDTO itemDto : dto.getFoodItems()) {
-                    if (itemDto.getFoodName() == null || itemDto.getFoodName().isBlank()) continue;
+                    if (itemDto.getFoodName() == null || itemDto.getFoodName().isBlank())
+                        continue;
                     FoodDonationItem item = FoodDonationItem.builder()
                             .donor(donor)
                             .foodName(itemDto.getFoodName().trim())
@@ -305,7 +337,8 @@ public class DonorServiceImpl implements DonorService {
         int successCount = 0;
         int failCount = 0;
 
-        // Group rows so that multiple medicine or food lines are aggregated under one Donor
+        // Group rows so that multiple medicine or food lines are aggregated under one
+        // Donor
         Map<String, Donor> activeImportMap = new HashMap<>();
 
         for (DonorImportDTO dto : dtos) {
@@ -317,11 +350,11 @@ public class DonorServiceImpl implements DonorService {
             try {
                 // Key to identify a unique donor/donation event
                 String key = dto.getFullName() + "|" +
-                             (dto.getMobile() != null ? dto.getMobile() : "") + "|" +
-                             (dto.getEmail() != null ? dto.getEmail() : "") + "|" +
-                             dto.getDonationDate().toString() + "|" +
-                             (dto.getDonationType() != null ? dto.getDonationType().name() : "") + "|" +
-                             (dto.getTransactionId() != null ? dto.getTransactionId() : "");
+                        (dto.getMobile() != null ? dto.getMobile() : "") + "|" +
+                        (dto.getEmail() != null ? dto.getEmail() : "") + "|" +
+                        dto.getDonationDate().toString() + "|" +
+                        (dto.getDonationType() != null ? dto.getDonationType().name() : "") + "|" +
+                        (dto.getTransactionId() != null ? dto.getTransactionId() : "");
 
                 Donor donor = activeImportMap.get(key);
                 boolean isNew = false;
@@ -345,7 +378,8 @@ public class DonorServiceImpl implements DonorService {
                             .mobile(dto.getMobile())
                             .email(dto.getEmail())
                             .address(dto.getAddress())
-                            .donationFrequency(dto.getDonationFrequency() != null ? dto.getDonationFrequency() : DonationFrequency.ONE_TIME)
+                            .donationFrequency(dto.getDonationFrequency() != null ? dto.getDonationFrequency()
+                                    : DonationFrequency.ONE_TIME)
                             .donationType(dto.getDonationType())
                             .donationCategory(category)
                             .donationAmount(dto.getDonationAmount() != null ? dto.getDonationAmount() : BigDecimal.ZERO)
@@ -360,7 +394,8 @@ public class DonorServiceImpl implements DonorService {
                 }
 
                 // Add item details if applicable
-                if (dto.getDonationType() == DonationType.MEDICINE && dto.getMedicineName() != null && !dto.getMedicineName().isEmpty()) {
+                if (dto.getDonationType() == DonationType.MEDICINE && dto.getMedicineName() != null
+                        && !dto.getMedicineName().isEmpty()) {
                     int nextOrder = donor.getMedicineItems().size() + 1;
                     MedicineDonationItem item = MedicineDonationItem.builder()
                             .donor(donor)
@@ -370,7 +405,8 @@ public class DonorServiceImpl implements DonorService {
                             .displayOrder(nextOrder)
                             .build();
                     donor.getMedicineItems().add(item);
-                } else if (dto.getDonationType() != null && dto.getDonationType().isFoodType() && dto.getFoodName() != null && !dto.getFoodName().isEmpty()) {
+                } else if (dto.getDonationType() != null && dto.getDonationType().isFoodType()
+                        && dto.getFoodName() != null && !dto.getFoodName().isEmpty()) {
                     int nextOrder = donor.getFoodItems().size() + 1;
                     FoodDonationItem item = FoodDonationItem.builder()
                             .donor(donor)
@@ -394,8 +430,10 @@ public class DonorServiceImpl implements DonorService {
             }
         }
 
-        auditService.logActivity(com.oldagehome.portal.audit.AuditModule.DONOR, com.oldagehome.portal.audit.AuditAction.IMPORT, 
-            "Imported donors from Excel. Success: " + successCount + ", Failed: " + failCount, "Donor", null, true, null);
+        auditService.logActivity(com.oldagehome.portal.audit.AuditModule.DONOR,
+                com.oldagehome.portal.audit.AuditAction.IMPORT,
+                "Imported donors from Excel. Success: " + successCount + ", Failed: " + failCount, "Donor", null, true,
+                null);
 
         return dtos;
     }
@@ -437,112 +475,9 @@ public class DonorServiceImpl implements DonorService {
     }
 
     @Override
-    public long countDonationsByMonth(int year, int month) {
-        return donorRepository.countDonationsByMonth(year, month);
-    }
-
-    @Override
-    public long countDonorsRegisteredByDateTime(java.time.LocalDateTime dateTime) {
-        return donorRepository.countDonorsRegisteredByDateTime(dateTime);
-    }
-
-    @Override
-    public BigDecimal sumDonationAmountByMonth(int year, int month) {
-        BigDecimal result = donorRepository.sumDonationAmountByMonth(year, month);
-        return result != null ? result : BigDecimal.ZERO;
-    }
-
-    @Override
-    public java.util.List<java.util.Map<String, Object>> getDonorGraphWeek() {
-        LocalDate today = LocalDate.now();
-        LocalDate monday = today.with(java.time.DayOfWeek.MONDAY);
-        java.time.LocalDateTime start = java.time.LocalDateTime.of(monday, java.time.LocalTime.MIDNIGHT);
-        java.time.LocalDateTime end = java.time.LocalDateTime.of(monday.plusDays(7), java.time.LocalTime.MIDNIGHT);
-
-        java.util.List<Object[]> dbData = donorRepository.countDonorRegistrationsByDay(start, end);
-
-        Map<LocalDate, Long> countMap = new HashMap<>();
-        for (Object[] row : dbData) {
-            int yr = ((Number) row[0]).intValue();
-            int mo = ((Number) row[1]).intValue();
-            int dy = ((Number) row[2]).intValue();
-            long cnt = ((Number) row[3]).longValue();
-            countMap.put(LocalDate.of(yr, mo, dy), cnt);
-        }
-
-        String[] dayLabels = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
-        java.util.List<java.util.Map<String, Object>> result = new ArrayList<>();
-        for (int i = 0; i < 7; i++) {
-            LocalDate date = monday.plusDays(i);
-            java.util.Map<String, Object> point = new java.util.LinkedHashMap<>();
-            point.put("label", dayLabels[i]);
-            point.put("count", countMap.getOrDefault(date, 0L));
-            result.add(point);
-        }
-        return result;
-    }
-
-    @Override
-    public java.util.List<java.util.Map<String, Object>> getDonorGraphMonth() {
-        LocalDate today = LocalDate.now();
-        LocalDate firstDay = today.withDayOfMonth(1);
-        java.time.LocalDateTime start = java.time.LocalDateTime.of(firstDay, java.time.LocalTime.MIDNIGHT);
-        java.time.LocalDateTime end = java.time.LocalDateTime.of(firstDay.plusMonths(1), java.time.LocalTime.MIDNIGHT);
-
-        java.util.List<Object[]> dbData = donorRepository.countDonorRegistrationsByDay(start, end);
-
-        Map<LocalDate, Long> countMap = new HashMap<>();
-        for (Object[] row : dbData) {
-            int yr = ((Number) row[0]).intValue();
-            int mo = ((Number) row[1]).intValue();
-            int dy = ((Number) row[2]).intValue();
-            long cnt = ((Number) row[3]).longValue();
-            countMap.put(LocalDate.of(yr, mo, dy), cnt);
-        }
-
-        String monthAbbr = today.getMonth().getDisplayName(
-                java.time.format.TextStyle.SHORT, java.util.Locale.ENGLISH);
-        int daysInMonth = firstDay.lengthOfMonth();
-        java.util.List<java.util.Map<String, Object>> result = new ArrayList<>();
-        for (int d = 1; d <= daysInMonth; d++) {
-            LocalDate date = firstDay.withDayOfMonth(d);
-            java.util.Map<String, Object> point = new java.util.LinkedHashMap<>();
-            point.put("label", monthAbbr + " " + d);
-            point.put("count", countMap.getOrDefault(date, 0L));
-            result.add(point);
-        }
-        return result;
-    }
-
-    @Override
-    public java.util.List<java.util.Map<String, Object>> getDonorGraphYear() {
-        int year = LocalDate.now().getYear();
-        java.util.List<Object[]> dbData = donorRepository.countDonorRegistrationsByMonth(year);
-
-        Map<Integer, Long> countMap = new HashMap<>();
-        for (Object[] row : dbData) {
-            int mo = ((Number) row[0]).intValue();
-            long cnt = ((Number) row[1]).longValue();
-            countMap.put(mo, cnt);
-        }
-
-        String[] monthLabels = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                                 "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
-        java.util.List<java.util.Map<String, Object>> result = new ArrayList<>();
-        for (int m = 1; m <= 12; m++) {
-            java.util.Map<String, Object> point = new java.util.LinkedHashMap<>();
-            point.put("label", monthLabels[m - 1]);
-            point.put("count", countMap.getOrDefault(m, 0L));
-            result.add(point);
-        }
-        return result;
-    }
-
-
-    @Override
     public List<com.oldagehome.portal.dto.DonationTrendDTO> getDonationTrend(LocalDate startDate) {
         List<com.oldagehome.portal.dto.DonationTrendDTO> dbData = donationRepository.getDonationTrend(startDate);
-        
+
         // Convert DB data to a Map for quick lookup
         Map<LocalDate, BigDecimal> dataMap = new HashMap<>();
         if (dbData != null) {
@@ -552,18 +487,18 @@ public class DonorServiceImpl implements DonorService {
                 }
             }
         }
-        
+
         // Fill missing dates with 0
         List<com.oldagehome.portal.dto.DonationTrendDTO> result = new ArrayList<>();
         LocalDate currentDate = startDate;
         LocalDate endDate = LocalDate.now();
-        
+
         while (!currentDate.isAfter(endDate)) {
             BigDecimal amount = dataMap.getOrDefault(currentDate, BigDecimal.ZERO);
             result.add(new com.oldagehome.portal.dto.DonationTrendDTO(currentDate, amount));
             currentDate = currentDate.plusDays(1);
         }
-        
+
         return result;
     }
 }

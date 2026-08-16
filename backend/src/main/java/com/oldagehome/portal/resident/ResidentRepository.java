@@ -13,20 +13,16 @@ import java.util.Optional;
 @Repository
 public interface ResidentRepository extends JpaRepository<Resident, Long>, JpaSpecificationExecutor<Resident> {
 
-
     /**
-     * Search residents by full name, resident ID, guardian name, mobile, guardian phone, or room number.
+     * Search residents by full name, resident ID, guardian name, mobile, guardian
+     * phone, or room number.
      * Supports case-insensitive searching and matches substrings.
      */
     @Query("SELECT r FROM Resident r WHERE " +
-           "LOWER(r.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-           "LOWER(r.guardianName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-           "LOWER(r.mobile) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-           "LOWER(r.guardianPhone) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-           "LOWER(COALESCE(r.roomNumber, '')) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+            "LOWER(r.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(r.guardianName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(r.mobile) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(r.guardianPhone) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(COALESCE(r.roomNumber, '')) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     Page<Resident> searchResidents(@Param("keyword") String keyword, Pageable pageable);
-
-    /** Count residents whose joining date is on or before the given date (used for trend comparison). */
-    @Query("SELECT COUNT(r) FROM Resident r WHERE r.joiningDate <= :date")
-    long countResidentsJoinedByDate(@Param("date") java.time.LocalDate date);
 }

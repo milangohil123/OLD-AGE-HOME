@@ -22,7 +22,7 @@ public class ResidentServiceImpl implements ResidentService {
 
     @Autowired
     public ResidentServiceImpl(ResidentRepository residentRepository,
-                               com.oldagehome.portal.audit.AuditService auditService) {
+            com.oldagehome.portal.audit.AuditService auditService) {
         this.residentRepository = residentRepository;
         this.auditService = auditService;
     }
@@ -46,20 +46,22 @@ public class ResidentServiceImpl implements ResidentService {
     }
 
     @Override
-    public long countResidentsJoinedByDate(java.time.LocalDate date) {
-        return residentRepository.countResidentsJoinedByDate(date);
-    }
-
-    @Override
     public List<Resident> getRecentResidents(int limit) {
-        return residentRepository.findAll(org.springframework.data.domain.PageRequest.of(0, limit, org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "createdAt"))).getContent();
+        return residentRepository
+                .findAll(
+                        org.springframework.data.domain.PageRequest.of(0, limit,
+                                org.springframework.data.domain.Sort
+                                        .by(org.springframework.data.domain.Sort.Direction.DESC, "createdAt")))
+                .getContent();
     }
 
     @Override
     public Resident getResidentById(Long id) {
         return residentRepository.findById(id)
                 .orElseThrow(() -> {
-                    auditService.logActivity(com.oldagehome.portal.audit.AuditModule.RESIDENT, com.oldagehome.portal.audit.AuditAction.VIEW, "Failed to view resident: not found", "Resident", id, false, "Resident not found");
+                    auditService.logActivity(com.oldagehome.portal.audit.AuditModule.RESIDENT,
+                            com.oldagehome.portal.audit.AuditAction.VIEW, "Failed to view resident: not found",
+                            "Resident", id, false, "Resident not found");
                     return new RuntimeException("Resident not found with id: " + id);
                 });
     }
@@ -67,14 +69,16 @@ public class ResidentServiceImpl implements ResidentService {
     @Override
     public Resident saveResident(Resident resident) {
         Resident saved = residentRepository.save(resident);
-        auditService.logActivity(com.oldagehome.portal.audit.AuditModule.RESIDENT, com.oldagehome.portal.audit.AuditAction.CREATE, "Created resident: " + saved.getFullName(), "Resident", saved.getId(), true, null);
+        auditService.logActivity(com.oldagehome.portal.audit.AuditModule.RESIDENT,
+                com.oldagehome.portal.audit.AuditAction.CREATE, "Created resident: " + saved.getFullName(), "Resident",
+                saved.getId(), true, null);
         return saved;
     }
 
     @Override
     public Resident updateResident(Resident resident) {
         Resident existing = getResidentById(resident.getId());
-        
+
         // Merge attributes
         existing.setFullName(resident.getFullName());
         existing.setGender(resident.getGender());
@@ -95,14 +99,16 @@ public class ResidentServiceImpl implements ResidentService {
         existing.setOccupation(resident.getOccupation());
         existing.setDisability(resident.getDisability());
         existing.setAadhaarNumber(resident.getAadhaarNumber());
-        
+
         // Only update photo if a new one is set
         if (resident.getPhoto() != null) {
             existing.setPhoto(resident.getPhoto());
         }
-        
+
         Resident updated = residentRepository.save(existing);
-        auditService.logActivity(com.oldagehome.portal.audit.AuditModule.RESIDENT, com.oldagehome.portal.audit.AuditAction.UPDATE, "Updated resident: " + updated.getFullName(), "Resident", updated.getId(), true, null);
+        auditService.logActivity(com.oldagehome.portal.audit.AuditModule.RESIDENT,
+                com.oldagehome.portal.audit.AuditAction.UPDATE, "Updated resident: " + updated.getFullName(),
+                "Resident", updated.getId(), true, null);
         return updated;
     }
 
@@ -110,9 +116,10 @@ public class ResidentServiceImpl implements ResidentService {
     public void deleteResident(Long id) {
         Resident existing = getResidentById(id);
         residentRepository.delete(existing);
-        auditService.logActivity(com.oldagehome.portal.audit.AuditModule.RESIDENT, com.oldagehome.portal.audit.AuditAction.DELETE, "Deleted resident: " + existing.getFullName(), "Resident", id, true, null);
+        auditService.logActivity(com.oldagehome.portal.audit.AuditModule.RESIDENT,
+                com.oldagehome.portal.audit.AuditAction.DELETE, "Deleted resident: " + existing.getFullName(),
+                "Resident", id, true, null);
     }
-
 
     @Override
     public List<ResidentImportDTO> importFromExcel(MultipartFile file) throws Exception {
@@ -162,10 +169,12 @@ public class ResidentServiceImpl implements ResidentService {
                 failCount++;
             }
         }
-        
-        auditService.logActivity(com.oldagehome.portal.audit.AuditModule.RESIDENT, com.oldagehome.portal.audit.AuditAction.IMPORT, 
-            "Imported residents from Excel. Success: " + successCount + ", Failed: " + failCount, "Resident", null, true, null);
-            
+
+        auditService.logActivity(com.oldagehome.portal.audit.AuditModule.RESIDENT,
+                com.oldagehome.portal.audit.AuditAction.IMPORT,
+                "Imported residents from Excel. Success: " + successCount + ", Failed: " + failCount, "Resident", null,
+                true, null);
+
         return dtos;
     }
 }
