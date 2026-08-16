@@ -458,6 +458,11 @@ public class DonorServiceImpl implements DonorService {
     }
 
     @Override
+    public long countTotalDonorsBefore(LocalDate date) {
+        return donorRepository.countByCreatedAtBefore(date.atStartOfDay());
+    }
+
+    @Override
     public long countTodayDonations() {
         return donorRepository.countByDonationDate(LocalDate.now());
     }
@@ -469,8 +474,19 @@ public class DonorServiceImpl implements DonorService {
     }
 
     @Override
+    public long countDonationsBetween(LocalDate start, LocalDate end) {
+        return donorRepository.countByDonationDateBetween(start, end);
+    }
+
+    @Override
     public BigDecimal sumTotalDonationAmount() {
         BigDecimal total = donorRepository.sumTotalDonationAmount();
+        return total != null ? total : BigDecimal.ZERO;
+    }
+
+    @Override
+    public BigDecimal sumTotalDonationAmountBefore(LocalDate date) {
+        BigDecimal total = donorRepository.sumTotalDonationAmountBefore(date);
         return total != null ? total : BigDecimal.ZERO;
     }
 

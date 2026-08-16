@@ -49,11 +49,17 @@ public interface DonorService {
     // --- Dashboard stats ---
     long countTotalDonors();
 
+    long countTotalDonorsBefore(java.time.LocalDate date);
+
     long countTodayDonations();
 
     long countThisMonthDonations();
 
+    long countDonationsBetween(java.time.LocalDate start, java.time.LocalDate end);
+
     BigDecimal sumTotalDonationAmount();
+
+    BigDecimal sumTotalDonationAmountBefore(java.time.LocalDate date);
 
     // --- Graph Data ---
     List<com.oldagehome.portal.dto.DonationTrendDTO> getDonationTrend(java.time.LocalDate startDate);
