@@ -99,9 +99,9 @@ public class SecurityConfig {
                                                 .cacheControl(cache -> cache.disable())
 
                                                 .contentSecurityPolicy(csp -> csp.policyDirectives(
-                                                                "default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval'; " +
-                                                                                "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " +
-                                                                                "script-src-elem 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " +
+                                                                "default-src 'self' https: data: blob: 'unsafe-inline'; " +
+                                                                                "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " +
+                                                                                "script-src-elem 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " +
                                                                                 "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com https://cdnjs.cloudflare.com; " +
                                                                                 "style-src-elem 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com https://cdnjs.cloudflare.com; " +
                                                                                 "img-src 'self' data: blob: https:; " +
