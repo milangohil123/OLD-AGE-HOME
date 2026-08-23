@@ -3,415 +3,250 @@
     th:replace="~{fragments/layout :: main(~{::#resident-profile-container}, 'residents', 'Resident Profile')}">
 
 <body>
+<div id="resident-profile-container">
 
-    <div id="resident-profile-container">
-
-        <!-- ── Action Bar ──────────────────────────────────────────── -->
-        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-            <div>
-                <h3 class="mb-0 fw-bold">Resident Profile</h3>
-                <p class="text-muted mb-0" style="font-size: 13px;">Detailed health record and personal information.</p>
-            </div>
-            <div class="d-flex gap-2">
-                <a th:href="@{/residents}" class="btn btn-secondary px-3">
-                    <i class="bi bi-arrow-left me-1"></i> Back
-                </a>
-                <a th:href="@{/residents/edit/{id}(id=${resident.id})}" class="btn btn-primary px-3"
-                    sec:authorize="hasAnyRole('ADMIN', 'MANAGER')">
-                    <i class="bi bi-pencil me-1"></i> Edit Profile
-                </a>
-            </div>
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h3 class="mb-0 fw-bold" style="letter-spacing:-0.02em;">Resident Profile</h3>
+            <p class="text-muted mb-0" style="font-size:13px;">Detailed health record and personal information.</p>
         </div>
-
-        <!-- ── Profile Header Card ─────────────────────────────────── -->
-        <div class="card mb-4 p-0" style="overflow: hidden;">
-            <div class="d-flex flex-column flex-md-row">
-
-                <!-- Avatar Column -->
-                <div class="d-flex flex-column align-items-center justify-content-center p-4"
-                    style="min-width: 210px; border-right: 1px solid var(--border); background: #FAFBFC;">
-                    <img th:if="${resident.photo != null}" th:src="@{'/uploads/' + ${resident.photo}}"
-                        class="rounded-circle object-fit-cover"
-                        style="width: 120px; height: 120px; border: 3px solid var(--border);">
-                    <div th:if="${resident.photo == null}"
-                        class="rounded-circle d-flex align-items-center justify-content-center"
-                        style="width: 120px; height: 120px; background: var(--primary-light); border: 3px solid var(--border); flex-shrink: 0;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="none"
-                            stroke="var(--primary)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                            <circle cx="12" cy="7" r="4" />
-                        </svg>
-                    </div>
-                    <h4 class="fw-bold mb-1 mt-3 text-center" style="font-size: 18px;" th:text="${resident.fullName}">
-                        Resident Name</h4>
-                    <p class="text-muted mb-2" style="font-size: 13px;">Resident</p>
-                    <span th:if="${resident.status.name() == 'ACTIVE'}"
-                        class="badge bg-success bg-opacity-10 text-success px-3 py-1 rounded-pill">Active</span>
-                    <span th:if="${resident.status.name() == 'DISCHARGED'}"
-                        class="badge bg-secondary bg-opacity-10 text-secondary px-3 py-1 rounded-pill">Discharged</span>
-                    <span th:if="${resident.status.name() == 'DECEASED'}"
-                        class="badge bg-danger bg-opacity-10 text-danger px-3 py-1 rounded-pill">Deceased</span>
-                </div>
-
-                <!-- Quick Info Grid -->
-                <div class="p-4 flex-grow-1">
-                    <p class="pf-section-eyebrow mb-3">Quick Information</p>
-                    <div class="row g-4">
-                        <div class="col-sm-6 col-lg-4">
-                            <div class="d-flex align-items-start gap-2">
-                                <i class="bi bi-telephone pf-quick-icon"></i>
-                                <div>
-                                    <div class="pf-quick-label">Mobile</div>
-                                    <div class="pf-quick-value"
-                                        th:classappend="${resident.mobile == null or resident.mobile.isEmpty()} ? 'pf-empty'"
-                                        th:text="${resident.mobile != null and !resident.mobile.isEmpty()} ? ${resident.mobile} : 'Not Provided'">
-                                        —</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-lg-4">
-                            <div class="d-flex align-items-start gap-2">
-                                <i class="bi bi-envelope pf-quick-icon"></i>
-                                <div>
-                                    <div class="pf-quick-label">Email</div>
-                                    <div class="pf-quick-value"
-                                        th:classappend="${resident.email == null or resident.email.isEmpty()} ? 'pf-empty'"
-                                        th:text="${resident.email != null and !resident.email.isEmpty()} ? ${resident.email} : 'Not Provided'">
-                                        —</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-lg-4">
-                            <div class="d-flex align-items-start gap-2">
-                                <i class="bi bi-calendar3 pf-quick-icon"></i>
-                                <div>
-                                    <div class="pf-quick-label">Joining Date</div>
-                                    <div class="pf-quick-value"
-                                        th:text="${T(com.oldagehome.portal.utils.DateFormatter).displayDate(resident.joiningDate)}">
-                                        —</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-lg-4">
-                            <div class="d-flex align-items-start gap-2">
-                                <i class="bi bi-person-badge pf-quick-icon"></i>
-                                <div>
-                                    <div class="pf-quick-label">Age / Gender</div>
-                                    <div class="pf-quick-value"
-                                        th:text="${resident.age} + ' yrs / ' + ${resident.gender}">—</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-lg-4">
-                            <div class="d-flex align-items-start gap-2">
-                                <i class="bi bi-door-open pf-quick-icon"></i>
-                                <div>
-                                    <div class="pf-quick-label">Room Number</div>
-                                    <div class="pf-quick-value"
-                                        th:classappend="${resident.roomNumber == null or resident.roomNumber.isEmpty()} ? 'pf-empty'"
-                                        th:text="${resident.roomNumber != null and !resident.roomNumber.isEmpty()} ? ${resident.roomNumber} : '—'">
-                                        —</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm-6 col-lg-4">
-                            <div class="d-flex align-items-start gap-2">
-                                <i class="bi bi-droplet-half pf-quick-icon"></i>
-                                <div>
-                                    <div class="pf-quick-label">Blood Group</div>
-                                    <div class="pf-quick-value"
-                                        th:classappend="${resident.bloodGroup == null or resident.bloodGroup.isEmpty()} ? 'pf-empty'"
-                                        th:text="${resident.bloodGroup != null and !resident.bloodGroup.isEmpty()} ? ${resident.bloodGroup} : 'Not Disclosed'">
-                                        —</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="d-flex gap-2">
+            <a th:href="@{/residents}" class="btn btn-outline-secondary btn-sm px-3" style="border-radius:8px;font-size:13px;font-weight:600;">
+                <i class="bi bi-arrow-left me-1"></i> Back to Residents
+            </a>
+            <a th:href="@{/residents/edit/{id}(id=${resident.id})}" class="btn btn-primary btn-sm px-3"
+               sec:authorize="hasAnyRole('ADMIN','MANAGER')" style="border-radius:8px;font-size:13px;font-weight:600;">
+                <i class="bi bi-pencil me-1"></i> Edit Profile
+            </a>
         </div>
-
-        <!-- ── Detail Sections ────────────────────────────────────────── -->
-        <div class="row g-4">
-
-            <!-- Left Column -->
-            <div class="col-lg-4 col-md-12">
-
-                <!-- Personal Information -->
-                <div class="card mb-4">
-                    <h5 class="pf-card-title">
-                        <i class="bi bi-person-lines-fill"></i> Personal Information
-                    </h5>
-                    <div class="pf-field-group">
-                        <div class="pf-field">
-                            <span class="pf-label">Date of Birth</span>
-                            <span class="pf-value" th:classappend="${resident.dateOfBirth == null} ? 'pf-empty'"
-                                th:text="${resident.dateOfBirth != null ? #temporals.format(resident.dateOfBirth, 'dd MMM yyyy') : 'Not Provided'}">—</span>
-                        </div>
-                        <div class="pf-field">
-                            <span class="pf-label">Occupation</span>
-                            <span class="pf-value"
-                                th:classappend="${resident.occupation == null or resident.occupation.isEmpty()} ? 'pf-empty'"
-                                th:text="${resident.occupation != null and !resident.occupation.isEmpty()} ? ${resident.occupation} : 'Not Provided'">—</span>
-                        </div>
-                        <div class="pf-field pf-field--last">
-                            <span class="pf-label">Disability / Special Care</span>
-                            <span class="pf-value"
-                                th:classappend="${resident.disability == null or resident.disability.isEmpty()} ? 'pf-empty'"
-                                th:text="${resident.disability != null and !resident.disability.isEmpty()} ? ${resident.disability} : 'None'">—</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Address -->
-                <div class="card mb-4">
-                    <h5 class="pf-card-title">
-                        <i class="bi bi-geo-alt"></i> Permanent Address
-                    </h5>
-                    <div class="pf-field-group">
-                        <div class="pf-field pf-field--last">
-                            <span class="pf-label">Full Address</span>
-                            <p class="pf-value mb-0" style="white-space: pre-line;"
-                                th:classappend="${resident.address == null or resident.address.isEmpty()} ? 'pf-empty'"
-                                th:text="${resident.address != null and !resident.address.isEmpty()} ? ${resident.address} : 'Not Provided'">
-                                —</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Identity -->
-                <div class="card">
-                    <h5 class="pf-card-title">
-                        <i class="bi bi-shield-check"></i> Identity
-                    </h5>
-                    <div class="pf-field-group">
-                        <div class="pf-field pf-field--last">
-                            <span class="pf-label">Aadhaar Number</span>
-                            <span class="pf-value font-monospace"
-                                th:classappend="${resident.aadhaarNumber == null or resident.aadhaarNumber.isEmpty()} ? 'pf-empty'"
-                                th:text="${resident.aadhaarNumber != null and !resident.aadhaarNumber.isEmpty()} ? ${resident.aadhaarNumber} : 'Not Provided'">—</span>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- Right Column -->
-            <div class="col-lg-8 col-md-12">
-
-                <!-- Guardian / Emergency Contact -->
-                <div class="card mb-4">
-                    <h5 class="pf-card-title">
-                        <i class="bi bi-people"></i> Guardian / Emergency Contact
-                    </h5>
-                    <div class="row g-0">
-                        <div class="col-sm-6 pf-field-group pf-field-grid">
-                            <div class="pf-field">
-                                <span class="pf-label">Guardian Name</span>
-                                <span class="pf-value"
-                                    th:classappend="${resident.guardianName == null or resident.guardianName.isEmpty()} ? 'pf-empty'"
-                                    th:text="${resident.guardianName != null and !resident.guardianName.isEmpty()} ? ${resident.guardianName} : '—'">—</span>
-                            </div>
-                        </div>
-                        <div class="col-sm-6 pf-field-group pf-field-grid">
-                            <div class="pf-field">
-                                <span class="pf-label">Guardian Phone</span>
-                                <span class="pf-value"
-                                    th:classappend="${resident.guardianPhone == null or resident.guardianPhone.isEmpty()} ? 'pf-empty'"
-                                    th:text="${resident.guardianPhone != null and !resident.guardianPhone.isEmpty()} ? ${resident.guardianPhone} : '—'">—</span>
-                            </div>
-                        </div>
-                        <div class="col-sm-6 pf-field-group pf-field-grid">
-                            <div class="pf-field">
-                                <span class="pf-label">Guardian Email</span>
-                                <span class="pf-value"
-                                    th:classappend="${resident.guardianEmail == null or resident.guardianEmail.isEmpty()} ? 'pf-empty'"
-                                    th:text="${resident.guardianEmail != null and !resident.guardianEmail.isEmpty()} ? ${resident.guardianEmail} : '—'">—</span>
-                            </div>
-                        </div>
-                        <div class="col-sm-6 pf-field-group pf-field-grid">
-                            <div class="pf-field">
-                                <span class="pf-label">Guardian Address</span>
-                                <p class="pf-value mb-0" style="white-space: pre-line;"
-                                    th:classappend="${resident.guardianAddress == null or resident.guardianAddress.isEmpty()} ? 'pf-empty'"
-                                    th:text="${resident.guardianAddress != null and !resident.guardianAddress.isEmpty()} ? ${resident.guardianAddress} : '—'">
-                                    —</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Medical Information -->
-                <div class="card">
-                    <h5 class="pf-card-title">
-                        <i class="bi bi-clipboard2-pulse"></i> Medical Information
-                    </h5>
-
-                    <div class="pf-field-group">
-                        <div class="pf-field">
-                            <span class="pf-label d-flex align-items-center gap-1">
-                                <i class="bi bi-journal-medical" style="font-size: 12px;"></i> General Medical Notes
-                            </span>
-                            <div class="pf-prose-block"
-                                th:classappend="${resident.medicalNotes == null or resident.medicalNotes.isEmpty()} ? 'pf-empty'"
-                                th:text="${resident.medicalNotes != null and !resident.medicalNotes.isEmpty()} ? ${resident.medicalNotes} : 'No medical notes on file.'">
-                                —</div>
-                        </div>
-                        <div class="pf-field pf-field--last">
-                            <span class="pf-label d-flex align-items-center gap-1">
-                                <i class="bi bi-capsule" style="font-size: 12px;"></i> Medical Prescription &amp; Doctor
-                                Instructions
-                            </span>
-                            <div class="pf-prose-block"
-                                th:classappend="${resident.medicalPrescription == null or resident.medicalPrescription.isEmpty()} ? 'pf-empty'"
-                                th:text="${resident.medicalPrescription != null and !resident.medicalPrescription.isEmpty()} ? ${resident.medicalPrescription} : 'No prescription details on file.'">
-                                —</div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
     </div>
 
-    <style>
-        /* ── Eye-brow label above quick-info grid ──────────────── */
-        .pf-section-eyebrow {
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: .07em;
-            color: var(--text-muted);
-        }
+    <!-- Hero Card -->
+    <div class="pf-hero mb-4">
+        <div class="pf-hero-left">
+            <img th:if="${resident.photo != null}" th:src="@{'/uploads/'+${resident.photo}}" class="pf-avatar-img" alt="Photo">
+            <div th:if="${resident.photo == null}" class="pf-avatar-init">
+                <span th:text="${#strings.toUpperCase(#strings.substring(resident.fullName,0,1))}">R</span>
+            </div>
+            <div class="pf-hero-meta">
+                <h4 class="pf-hero-name" th:text="${resident.fullName}">Resident Name</h4>
+                <p class="pf-hero-sub"><i class="bi bi-door-open me-1"></i>
+                    <span th:text="${resident.roomNumber != null and !resident.roomNumber.isEmpty() ? 'Room '+resident.roomNumber : 'No Room Assigned'}">Room 101</span>
+                </p>
+                <span th:if="${resident.status.name()=='ACTIVE'}" class="pf-badge pf-badge-green"><i class="bi bi-circle-fill me-1" style="font-size:7px;"></i> Active</span>
+                <span th:if="${resident.status.name()=='DISCHARGED'}" class="pf-badge pf-badge-gray"><i class="bi bi-circle-fill me-1" style="font-size:7px;"></i> Discharged</span>
+                <span th:if="${resident.status.name()=='DECEASED'}" class="pf-badge pf-badge-red"><i class="bi bi-circle-fill me-1" style="font-size:7px;"></i> Deceased</span>
+            </div>
+        </div>
+        <div class="pf-hero-divider"></div>
+        <div class="pf-hero-stats">
+            <div class="pf-stat">
+                <span class="pf-stat-label"><i class="bi bi-person-badge me-1"></i>Resident ID</span>
+                <span class="pf-stat-val" th:text="'RES-'+${#strings.leftPad(''+resident.id,3,'0')}">RES-001</span>
+            </div>
+            <div class="pf-stat">
+                <span class="pf-stat-label"><i class="bi bi-calendar-check me-1"></i>Admission Date</span>
+                <span class="pf-stat-val" th:text="${resident.joiningDate!=null?#temporals.format(resident.joiningDate,'dd MMM yyyy'):'—'}">—</span>
+            </div>
+            <div class="pf-stat">
+                <span class="pf-stat-label"><i class="bi bi-person-badge me-1"></i>Age / Gender</span>
+                <span class="pf-stat-val" th:text="${(resident.age!=null?resident.age+' yrs':'—')+' / '+(resident.gender!=null?resident.gender:'—')}">—</span>
+            </div>
+            <div class="pf-stat">
+                <span class="pf-stat-label"><i class="bi bi-telephone me-1"></i>Mobile</span>
+                <span class="pf-stat-val" th:text="${resident.mobile!=null and !resident.mobile.isEmpty()?resident.mobile:'Not Provided'}">—</span>
+            </div>
+            <div class="pf-stat">
+                <span class="pf-stat-label"><i class="bi bi-droplet-half me-1"></i>Blood Group</span>
+                <span class="pf-stat-val" th:text="${resident.bloodGroup!=null and !resident.bloodGroup.isEmpty()?resident.bloodGroup:'Not Disclosed'}">—</span>
+            </div>
+            <div class="pf-stat">
+                <span class="pf-stat-label"><i class="bi bi-envelope me-1"></i>Email</span>
+                <span class="pf-stat-val" th:classappend="${resident.email==null or resident.email.isEmpty()}?'pf-muted'"
+                      th:text="${resident.email!=null and !resident.email.isEmpty()?resident.email:'Not Provided'}">—</span>
+            </div>
+        </div>
+    </div>
 
-        /* ── Quick-info row (icon + label + value) ─────────────── */
-        .pf-quick-icon {
-            font-size: 16px;
-            color: var(--primary);
-            margin-top: 2px;
-            flex-shrink: 0;
-        }
+    <!-- Personal Information -->
+    <div class="pf-card mb-4">
+        <div class="pf-card-hd">
+            <div class="d-flex align-items-center gap-2">
+                <div class="pf-icon pf-icon-green"><i class="bi bi-person-lines-fill"></i></div>
+                <span class="pf-card-title">Personal Information</span>
+            </div>
+            <a th:href="@{/residents/edit/{id}(id=${resident.id})}" class="pf-edit-btn" sec:authorize="hasAnyRole('ADMIN','MANAGER')">
+                <i class="bi bi-pencil me-1"></i>Edit
+            </a>
+        </div>
+        <div class="pf-grid pf-grid-3">
+            <div class="pf-field"><span class="pf-lbl">Full Name</span><span class="pf-val" th:text="${resident.fullName}">—</span></div>
+            <div class="pf-field"><span class="pf-lbl">Date of Birth</span><span class="pf-val" th:classappend="${resident.dateOfBirth==null}?'pf-muted'" th:text="${resident.dateOfBirth!=null?#temporals.format(resident.dateOfBirth,'dd MMM yyyy'):'Not Provided'}">—</span></div>
+            <div class="pf-field"><span class="pf-lbl">Age</span><span class="pf-val" th:classappend="${resident.age==null}?'pf-muted'" th:text="${resident.age!=null?resident.age+' years':'Not Provided'}">—</span></div>
+            <div class="pf-field"><span class="pf-lbl">Gender</span><span class="pf-val" th:classappend="${resident.gender==null}?'pf-muted'" th:text="${resident.gender!=null?resident.gender:'Not Provided'}">—</span></div>
+            <div class="pf-field"><span class="pf-lbl">Blood Group</span><span class="pf-val" th:classappend="${resident.bloodGroup==null or resident.bloodGroup.isEmpty()}?'pf-muted'" th:text="${resident.bloodGroup!=null and !resident.bloodGroup.isEmpty()?resident.bloodGroup:'Not Disclosed'}">—</span></div>
+            <div class="pf-field"><span class="pf-lbl">Mobile</span><span class="pf-val" th:classappend="${resident.mobile==null or resident.mobile.isEmpty()}?'pf-muted'" th:text="${resident.mobile!=null and !resident.mobile.isEmpty()?resident.mobile:'Not Provided'}">—</span></div>
+            <div class="pf-field"><span class="pf-lbl">Email</span><span class="pf-val" th:classappend="${resident.email==null or resident.email.isEmpty()}?'pf-muted'" th:text="${resident.email!=null and !resident.email.isEmpty()?resident.email:'Not Provided'}">—</span></div>
+            <div class="pf-field"><span class="pf-lbl">Occupation</span><span class="pf-val" th:classappend="${resident.occupation==null or resident.occupation.isEmpty()}?'pf-muted'" th:text="${resident.occupation!=null and !resident.occupation.isEmpty()?resident.occupation:'Not Provided'}">—</span></div>
+            <div class="pf-field"><span class="pf-lbl">Disability / Special Care</span><span class="pf-val" th:classappend="${resident.disability==null or resident.disability.isEmpty()}?'pf-muted'" th:text="${resident.disability!=null and !resident.disability.isEmpty()?resident.disability:'None'}">—</span></div>
+            <div class="pf-field"><span class="pf-lbl">Room Number</span><span class="pf-val" th:classappend="${resident.roomNumber==null or resident.roomNumber.isEmpty()}?'pf-muted'" th:text="${resident.roomNumber!=null and !resident.roomNumber.isEmpty()?resident.roomNumber:'Not Assigned'}">—</span></div>
+            <div class="pf-field"><span class="pf-lbl">Admission Date</span><span class="pf-val" th:text="${resident.joiningDate!=null?#temporals.format(resident.joiningDate,'dd MMM yyyy'):'—'}">—</span></div>
+            <div class="pf-field"><span class="pf-lbl">Status</span>
+                <span th:if="${resident.status.name()=='ACTIVE'}" class="pf-info-badge pf-badge-green">Active</span>
+                <span th:if="${resident.status.name()=='DISCHARGED'}" class="pf-info-badge pf-badge-gray">Discharged</span>
+                <span th:if="${resident.status.name()=='DECEASED'}" class="pf-info-badge pf-badge-red">Deceased</span>
+            </div>
+        </div>
+    </div>
 
-        .pf-quick-label {
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: .05em;
-            color: var(--text-muted);
-            line-height: 1.3;
-            margin-bottom: 2px;
-        }
+    <!-- Address -->
+    <div class="pf-card mb-4">
+        <div class="pf-card-hd">
+            <div class="d-flex align-items-center gap-2">
+                <div class="pf-icon pf-icon-green"><i class="bi bi-geo-alt-fill"></i></div>
+                <span class="pf-card-title">Address</span>
+            </div>
+            <a th:href="@{/residents/edit/{id}(id=${resident.id})}" class="pf-edit-btn" sec:authorize="hasAnyRole('ADMIN','MANAGER')">
+                <i class="bi bi-pencil me-1"></i>Edit
+            </a>
+        </div>
+        <div class="pf-grid pf-grid-2">
+            <div class="pf-field pf-span2"><span class="pf-lbl">Full Address</span><span class="pf-val" th:classappend="${resident.address==null or resident.address.isEmpty()}?'pf-muted'" th:text="${resident.address!=null and !resident.address.isEmpty()?resident.address:'Not Provided'}">—</span></div>
+            <div class="pf-field"><span class="pf-lbl">Aadhaar Number</span><span class="pf-val font-monospace" th:classappend="${resident.aadhaarNumber==null or resident.aadhaarNumber.isEmpty()}?'pf-muted'" th:text="${resident.aadhaarNumber!=null and !resident.aadhaarNumber.isEmpty()?resident.aadhaarNumber:'Not Provided'}">—</span></div>
+        </div>
+    </div>
 
-        .pf-quick-value {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-primary);
-            line-height: 1.4;
-        }
+    <!-- Guardian / Emergency Contact -->
+    <div class="pf-card mb-4">
+        <div class="pf-card-hd">
+            <div class="d-flex align-items-center gap-2">
+                <div class="pf-icon pf-icon-green"><i class="bi bi-people-fill"></i></div>
+                <span class="pf-card-title">Guardian / Emergency Contact</span>
+            </div>
+            <a th:href="@{/residents/edit/{id}(id=${resident.id})}" class="pf-edit-btn" sec:authorize="hasAnyRole('ADMIN','MANAGER')">
+                <i class="bi bi-pencil me-1"></i>Edit
+            </a>
+        </div>
+        <div class="pf-grid pf-grid-3">
+            <div class="pf-field"><span class="pf-lbl">Guardian Name</span><span class="pf-val" th:classappend="${resident.guardianName==null or resident.guardianName.isEmpty()}?'pf-muted'" th:text="${resident.guardianName!=null and !resident.guardianName.isEmpty()?resident.guardianName:'Not Provided'}">—</span></div>
+            <div class="pf-field"><span class="pf-lbl">Guardian Phone</span><span class="pf-val" th:classappend="${resident.guardianPhone==null or resident.guardianPhone.isEmpty()}?'pf-muted'" th:text="${resident.guardianPhone!=null and !resident.guardianPhone.isEmpty()?resident.guardianPhone:'Not Provided'}">—</span></div>
+            <div class="pf-field"><span class="pf-lbl">Guardian Email</span><span class="pf-val" th:classappend="${resident.guardianEmail==null or resident.guardianEmail.isEmpty()}?'pf-muted'" th:text="${resident.guardianEmail!=null and !resident.guardianEmail.isEmpty()?resident.guardianEmail:'Not Provided'}">—</span></div>
+            <div class="pf-field pf-span3"><span class="pf-lbl">Guardian Address</span><span class="pf-val" th:classappend="${resident.guardianAddress==null or resident.guardianAddress.isEmpty()}?'pf-muted'" th:text="${resident.guardianAddress!=null and !resident.guardianAddress.isEmpty()?resident.guardianAddress:'Not Provided'}">—</span></div>
+        </div>
+    </div>
 
-        /* ── Card section heading ───────────────────────────────── */
-        .pf-card-title {
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--primary);
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 12px;
-            margin-bottom: 0;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+    <!-- Medical Information -->
+    <div class="pf-card mb-4">
+        <div class="pf-card-hd">
+            <div class="d-flex align-items-center gap-2">
+                <div class="pf-icon pf-icon-red"><i class="bi bi-clipboard2-pulse-fill"></i></div>
+                <span class="pf-card-title">Medical Information</span>
+            </div>
+            <a th:href="@{/residents/edit/{id}(id=${resident.id})}" class="pf-edit-btn" sec:authorize="hasAnyRole('ADMIN','MANAGER')">
+                <i class="bi bi-pencil me-1"></i>Edit
+            </a>
+        </div>
+        <div class="pf-grid pf-grid-1">
+            <div class="pf-field">
+                <span class="pf-lbl"><i class="bi bi-journal-medical me-1"></i>General Medical Notes</span>
+                <div class="pf-prose" th:classappend="${resident.medicalNotes==null or resident.medicalNotes.isEmpty()}?'pf-muted'" th:text="${resident.medicalNotes!=null and !resident.medicalNotes.isEmpty()?resident.medicalNotes:'No medical notes on file.'}">—</div>
+            </div>
+            <div class="pf-field">
+                <span class="pf-lbl"><i class="bi bi-capsule me-1"></i>Medical Prescription &amp; Doctor Instructions</span>
+                <div class="pf-prose" th:classappend="${resident.medicalPrescription==null or resident.medicalPrescription.isEmpty()}?'pf-muted'" th:text="${resident.medicalPrescription!=null and !resident.medicalPrescription.isEmpty()?resident.medicalPrescription:'No prescription details on file.'}">—</div>
+            </div>
+        </div>
+    </div>
 
-        /* ── Field group container ─────────────────────────────── */
-        .pf-field-group {
-            display: flex;
-            flex-direction: column;
-        }
+    <!-- Record Metadata -->
+    <div class="pf-card mb-2">
+        <div class="pf-card-hd">
+            <div class="d-flex align-items-center gap-2">
+                <div class="pf-icon pf-icon-slate"><i class="bi bi-clock-history"></i></div>
+                <span class="pf-card-title">Record Metadata</span>
+            </div>
+        </div>
+        <div class="pf-grid pf-grid-3">
+            <div class="pf-field"><span class="pf-lbl">Record Created</span><span class="pf-val" th:classappend="${resident.createdAt==null}?'pf-muted'" th:text="${resident.createdAt!=null?#temporals.format(resident.createdAt,'dd MMM yyyy, HH:mm'):'—'}">—</span></div>
+            <div class="pf-field"><span class="pf-lbl">Last Updated</span><span class="pf-val" th:classappend="${resident.updatedAt==null}?'pf-muted'" th:text="${resident.updatedAt!=null?#temporals.format(resident.updatedAt,'dd MMM yyyy, HH:mm'):'—'}">—</span></div>
+        </div>
+    </div>
 
-        /* ── Individual field: label on top, value below ────────── */
-        .pf-field {
-            padding: 16px 0;
-            border-bottom: 1px solid #F1F5F9;
-        }
-
-        .pf-field--last,
-        .pf-field-group>.pf-field:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
-        }
-
-        .pf-label {
-            display: block;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text-muted);
-            margin-bottom: 5px;
-            line-height: 1.3;
-        }
-
-        .pf-value {
-            display: block;
-            font-size: 17px;
-            font-weight: 600;
-            color: var(--text-primary);
-            line-height: 1.4;
-        }
-
-        /* ── Empty State Muted Text ────────────────────────────── */
-        .pf-value.pf-empty,
-        .pf-quick-value.pf-empty,
-        .pf-prose-block.pf-empty {
-            color: var(--text-muted) !important;
-            font-weight: 500;
-        }
-
-        /* ── Multi-line prose block (notes, prescriptions) ─────── */
-        .pf-prose-block {
-            font-size: 15px;
-            font-weight: 500;
-            color: var(--text-primary);
-            line-height: 1.75;
-            white-space: pre-line;
-            background: #F8FAFC;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 14px 16px;
-            margin-top: 2px;
-        }
-
-        /* ── Grid variant for guardian (2-col) ─────────────────── */
-        .pf-field-grid {
-            padding: 0 0 0 0;
-        }
-
-        .pf-field-grid .pf-field {
-            padding: 16px 20px 16px 0;
-            border-bottom: 1px solid #F1F5F9;
-            border-right: none;
-            height: 100%;
-        }
-
-        @media (min-width: 576px) {
-            .pf-field-grid:nth-child(odd) .pf-field {
-                border-right: 1px solid #F1F5F9;
-                padding-right: 20px;
-            }
-
-            .pf-field-grid:nth-last-child(-n+2) .pf-field {
-                border-bottom: none;
-                padding-bottom: 0;
-            }
-        }
-
-        @media (max-width: 575.98px) {
-            .pf-field-grid:last-child .pf-field {
-                border-bottom: none;
-                padding-bottom: 0;
-            }
-        }
-    </style>
-
+</div>
+<style>
+/* ══ Hero Card ══════════════════════════════════════════════════ */
+.pf-hero{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius-card);box-shadow:var(--shadow-sm);display:flex;align-items:stretch;overflow:hidden;}
+.pf-hero-left{display:flex;flex-direction:row;align-items:center;gap:20px;padding:28px 32px;background:var(--primary-xlight);min-width:300px;flex-shrink:0;}
+.pf-avatar-img{width:84px;height:84px;border-radius:50%;object-fit:cover;border:3px solid var(--primary-light);box-shadow:0 2px 8px rgba(22,163,74,.15);}
+.pf-avatar-init{width:84px;height:84px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--primary-hover));display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(22,163,74,.25);flex-shrink:0;}
+.pf-avatar-init span{font-size:30px;font-weight:700;color:#fff;}
+.pf-hero-meta{display:flex;flex-direction:column;gap:4px;}
+.pf-hero-name{font-size:19px;font-weight:700;color:var(--text-primary);margin:0;letter-spacing:-0.02em;line-height:1.2;}
+.pf-hero-sub{font-size:12px;color:var(--text-muted);margin:2px 0 5px;}
+.pf-badge{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;width:fit-content;}
+.pf-badge-green{background:#dcfce7;color:#16a34a;}
+.pf-badge-gray{background:#f1f5f9;color:#475569;}
+.pf-badge-red{background:#fee2e2;color:#dc2626;}
+.pf-hero-divider{width:1px;background:var(--border);flex-shrink:0;margin:20px 0;}
+.pf-hero-stats{display:grid;grid-template-columns:repeat(3,1fr);flex:1;align-content:center;}
+.pf-stat{padding:14px 18px;border-bottom:1px solid var(--border);border-right:1px solid var(--border);}
+.pf-stat:nth-child(3n){border-right:none;}
+.pf-stat:nth-last-child(-n+3){border-bottom:none;}
+.pf-stat-label{display:block;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin-bottom:4px;}
+.pf-stat-val{display:block;font-size:13.5px;font-weight:600;color:var(--text-primary);}
+/* ══ Info Cards ═════════════════════════════════════════════════ */
+.pf-card{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius-card);box-shadow:var(--shadow-sm);overflow:hidden;}
+.pf-card-hd{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;border-bottom:1px solid var(--border);background:#FAFBFC;}
+.pf-card-title{font-size:14px;font-weight:700;color:var(--text-primary);letter-spacing:-0.01em;}
+.pf-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.pf-icon-green{background:var(--primary-light);color:var(--primary);}
+.pf-icon-red{background:#fee2e2;color:#dc2626;}
+.pf-icon-slate{background:#f1f5f9;color:#64748b;}
+.pf-edit-btn{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:var(--primary);background:var(--primary-light);border:1px solid #bbf7d0;border-radius:8px;padding:4px 12px;text-decoration:none;transition:background .15s;}
+.pf-edit-btn:hover{background:#bbf7d0;color:var(--primary-hover);}
+/* ══ Info Grid ══════════════════════════════════════════════════ */
+.pf-grid{display:grid;padding:0;}
+.pf-grid-3{grid-template-columns:repeat(3,1fr);}
+.pf-grid-2{grid-template-columns:repeat(2,1fr);}
+.pf-grid-1{grid-template-columns:1fr;}
+.pf-field{padding:18px 24px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+.pf-grid-3 .pf-field:nth-child(3n),.pf-grid-2 .pf-field:nth-child(2n){border-right:none;}
+.pf-grid-3 .pf-field:nth-last-child(-n+3),.pf-grid-2 .pf-field:nth-last-child(-n+2),.pf-grid-1 .pf-field:last-child{border-bottom:none;}
+.pf-span2{grid-column:span 2;}
+.pf-span3{grid-column:span 3;border-right:none;}
+.pf-lbl{display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-muted);margin-bottom:5px;}
+.pf-val{display:block;font-size:14px;font-weight:600;color:var(--text-primary);line-height:1.4;}
+.pf-muted{color:var(--text-muted)!important;font-weight:500!important;}
+.pf-info-badge{display:inline-flex;align-items:center;font-size:12px;font-weight:600;padding:3px 10px;border-radius:100px;margin-top:2px;}
+.pf-prose{font-size:13.5px;font-weight:500;color:var(--text-primary);line-height:1.7;white-space:pre-line;background:#F8FAFC;border:1px solid var(--border);border-radius:10px;padding:13px 16px;margin-top:4px;}
+/* ══ Responsive ═════════════════════════════════════════════════ */
+@media(max-width:991.98px){
+    .pf-hero{flex-direction:column;}
+    .pf-hero-left{min-width:unset;}
+    .pf-hero-divider{width:100%;height:1px;margin:0;}
+    .pf-hero-stats{grid-template-columns:repeat(2,1fr);}
+    .pf-stat:nth-child(3n){border-right:1px solid var(--border);}
+    .pf-stat:nth-child(2n){border-right:none;}
+    .pf-stat:nth-last-child(-n+3){border-bottom:1px solid var(--border);}
+    .pf-stat:nth-last-child(-n+2){border-bottom:none;}
+    .pf-grid-3{grid-template-columns:repeat(2,1fr);}
+    .pf-grid-3 .pf-field:nth-child(3n){border-right:1px solid var(--border);}
+    .pf-grid-3 .pf-field:nth-child(2n){border-right:none;}
+    .pf-grid-3 .pf-field:nth-last-child(-n+3){border-bottom:1px solid var(--border);}
+    .pf-grid-3 .pf-field:nth-last-child(-n+2){border-bottom:none;}
+    .pf-span3{grid-column:span 2;}
+}
+@media(max-width:575.98px){
+    .pf-hero-left{flex-direction:column;text-align:center;padding:24px 20px;}
+    .pf-hero-meta{align-items:center;}
+    .pf-hero-stats,.pf-grid-3,.pf-grid-2{grid-template-columns:1fr;}
+    .pf-stat{border-right:none!important;border-bottom:1px solid var(--border)!important;}
+    .pf-stat:last-child{border-bottom:none!important;}
+    .pf-field,.pf-span2,.pf-span3{border-right:none!important;grid-column:span 1!important;}
+    .pf-field:last-child{border-bottom:none!important;}
+    .pf-grid-3 .pf-field:nth-last-child(-n+3),.pf-grid-2 .pf-field:nth-last-child(-n+2){border-bottom:1px solid var(--border);}
+}
+</style>
 </body>
-
 </html>
