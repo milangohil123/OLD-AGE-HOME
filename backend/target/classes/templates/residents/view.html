@@ -8,8 +8,8 @@
     <!-- Page Header -->
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div>
-            <h3 class="mb-0 fw-bold" style="letter-spacing:-0.02em;">Resident Profile</h3>
-            <p class="text-muted mb-0" style="font-size:13px;">Detailed health record and personal information.</p>
+            <h3 class="mb-0 fw-bold text-dark" style="letter-spacing:-0.02em; font-size: 24px;">Resident Profile</h3>
+            <p class="text-muted mb-0" style="font-size:13.5px;">Detailed health record and personal information.</p>
         </div>
         <div class="d-flex gap-2">
             <a th:href="@{/residents}" class="btn btn-outline-secondary btn-sm px-3" style="border-radius:8px;font-size:13px;font-weight:600;">
@@ -27,23 +27,23 @@
         <div class="pf-hero-left">
             <img th:if="${resident.photo != null}" th:src="@{'/uploads/'+${resident.photo}}" class="pf-avatar-img" alt="Photo">
             <div th:if="${resident.photo == null}" class="pf-avatar-init">
-                <span th:text="${#strings.toUpperCase(#strings.substring(resident.fullName,0,1))}">R</span>
+                <span th:text="${#strings.toUpperCase(#strings.substring(resident.fullName!=null?resident.fullName:'R',0,1))}">R</span>
             </div>
             <div class="pf-hero-meta">
                 <h4 class="pf-hero-name" th:text="${resident.fullName}">Resident Name</h4>
                 <p class="pf-hero-sub"><i class="bi bi-door-open me-1"></i>
-                    <span th:text="${resident.roomNumber != null and !resident.roomNumber.isEmpty() ? 'Room '+resident.roomNumber : 'No Room Assigned'}">Room 101</span>
+                    <span th:text="${!#strings.isEmpty(resident.roomNumber) ? 'Room '+resident.roomNumber : 'No Room Assigned'}">Room 101</span>
                 </p>
-                <span th:if="${resident.status.name()=='ACTIVE'}" class="pf-badge pf-badge-green"><i class="bi bi-circle-fill me-1" style="font-size:7px;"></i> Active</span>
-                <span th:if="${resident.status.name()=='DISCHARGED'}" class="pf-badge pf-badge-gray"><i class="bi bi-circle-fill me-1" style="font-size:7px;"></i> Discharged</span>
-                <span th:if="${resident.status.name()=='DECEASED'}" class="pf-badge pf-badge-red"><i class="bi bi-circle-fill me-1" style="font-size:7px;"></i> Deceased</span>
+                <span th:if="${resident.status != null and resident.status.name()=='ACTIVE'}" class="pf-badge pf-badge-green"><i class="bi bi-circle-fill me-1" style="font-size:7px;"></i> Active</span>
+                <span th:if="${resident.status != null and resident.status.name()=='DISCHARGED'}" class="pf-badge pf-badge-gray"><i class="bi bi-circle-fill me-1" style="font-size:7px;"></i> Discharged</span>
+                <span th:if="${resident.status != null and resident.status.name()=='DECEASED'}" class="pf-badge pf-badge-red"><i class="bi bi-circle-fill me-1" style="font-size:7px;"></i> Deceased</span>
             </div>
         </div>
         <div class="pf-hero-divider"></div>
         <div class="pf-hero-stats">
             <div class="pf-stat">
                 <span class="pf-stat-label"><i class="bi bi-person-badge me-1"></i>Resident ID</span>
-                <span class="pf-stat-val" th:text="'RES-'+${#strings.leftPad(''+resident.id,3,'0')}">RES-001</span>
+                <span class="pf-stat-val" th:text="'RES-' + ${#numbers.formatInteger(resident.id, 3)}">RES-001</span>
             </div>
             <div class="pf-stat">
                 <span class="pf-stat-label"><i class="bi bi-calendar-check me-1"></i>Admission Date</span>
@@ -55,16 +55,16 @@
             </div>
             <div class="pf-stat">
                 <span class="pf-stat-label"><i class="bi bi-telephone me-1"></i>Mobile</span>
-                <span class="pf-stat-val" th:text="${resident.mobile!=null and !resident.mobile.isEmpty()?resident.mobile:'Not Provided'}">—</span>
+                <span class="pf-stat-val" th:text="${!#strings.isEmpty(resident.mobile)?resident.mobile:'Not Provided'}">—</span>
             </div>
             <div class="pf-stat">
                 <span class="pf-stat-label"><i class="bi bi-droplet-half me-1"></i>Blood Group</span>
-                <span class="pf-stat-val" th:text="${resident.bloodGroup!=null and !resident.bloodGroup.isEmpty()?resident.bloodGroup:'Not Disclosed'}">—</span>
+                <span class="pf-stat-val" th:text="${!#strings.isEmpty(resident.bloodGroup)?resident.bloodGroup:'Not Disclosed'}">—</span>
             </div>
             <div class="pf-stat">
                 <span class="pf-stat-label"><i class="bi bi-envelope me-1"></i>Email</span>
-                <span class="pf-stat-val" th:classappend="${resident.email==null or resident.email.isEmpty()}?'pf-muted'"
-                      th:text="${resident.email!=null and !resident.email.isEmpty()?resident.email:'Not Provided'}">—</span>
+                <span class="pf-stat-val" th:classappend="${#strings.isEmpty(resident.email)}?'pf-muted'"
+                      th:text="${!#strings.isEmpty(resident.email)?resident.email:'Not Provided'}">—</span>
             </div>
         </div>
     </div>
@@ -85,17 +85,17 @@
             <div class="pf-field"><span class="pf-lbl">Date of Birth</span><span class="pf-val" th:classappend="${resident.dateOfBirth==null}?'pf-muted'" th:text="${resident.dateOfBirth!=null?#temporals.format(resident.dateOfBirth,'dd MMM yyyy'):'Not Provided'}">—</span></div>
             <div class="pf-field"><span class="pf-lbl">Age</span><span class="pf-val" th:classappend="${resident.age==null}?'pf-muted'" th:text="${resident.age!=null?resident.age+' years':'Not Provided'}">—</span></div>
             <div class="pf-field"><span class="pf-lbl">Gender</span><span class="pf-val" th:classappend="${resident.gender==null}?'pf-muted'" th:text="${resident.gender!=null?resident.gender:'Not Provided'}">—</span></div>
-            <div class="pf-field"><span class="pf-lbl">Blood Group</span><span class="pf-val" th:classappend="${resident.bloodGroup==null or resident.bloodGroup.isEmpty()}?'pf-muted'" th:text="${resident.bloodGroup!=null and !resident.bloodGroup.isEmpty()?resident.bloodGroup:'Not Disclosed'}">—</span></div>
-            <div class="pf-field"><span class="pf-lbl">Mobile</span><span class="pf-val" th:classappend="${resident.mobile==null or resident.mobile.isEmpty()}?'pf-muted'" th:text="${resident.mobile!=null and !resident.mobile.isEmpty()?resident.mobile:'Not Provided'}">—</span></div>
-            <div class="pf-field"><span class="pf-lbl">Email</span><span class="pf-val" th:classappend="${resident.email==null or resident.email.isEmpty()}?'pf-muted'" th:text="${resident.email!=null and !resident.email.isEmpty()?resident.email:'Not Provided'}">—</span></div>
-            <div class="pf-field"><span class="pf-lbl">Occupation</span><span class="pf-val" th:classappend="${resident.occupation==null or resident.occupation.isEmpty()}?'pf-muted'" th:text="${resident.occupation!=null and !resident.occupation.isEmpty()?resident.occupation:'Not Provided'}">—</span></div>
-            <div class="pf-field"><span class="pf-lbl">Disability / Special Care</span><span class="pf-val" th:classappend="${resident.disability==null or resident.disability.isEmpty()}?'pf-muted'" th:text="${resident.disability!=null and !resident.disability.isEmpty()?resident.disability:'None'}">—</span></div>
-            <div class="pf-field"><span class="pf-lbl">Room Number</span><span class="pf-val" th:classappend="${resident.roomNumber==null or resident.roomNumber.isEmpty()}?'pf-muted'" th:text="${resident.roomNumber!=null and !resident.roomNumber.isEmpty()?resident.roomNumber:'Not Assigned'}">—</span></div>
+            <div class="pf-field"><span class="pf-lbl">Blood Group</span><span class="pf-val" th:classappend="${#strings.isEmpty(resident.bloodGroup)}?'pf-muted'" th:text="${!#strings.isEmpty(resident.bloodGroup)?resident.bloodGroup:'Not Disclosed'}">—</span></div>
+            <div class="pf-field"><span class="pf-lbl">Mobile</span><span class="pf-val" th:classappend="${#strings.isEmpty(resident.mobile)}?'pf-muted'" th:text="${!#strings.isEmpty(resident.mobile)?resident.mobile:'Not Provided'}">—</span></div>
+            <div class="pf-field"><span class="pf-lbl">Email</span><span class="pf-val" th:classappend="${#strings.isEmpty(resident.email)}?'pf-muted'" th:text="${!#strings.isEmpty(resident.email)?resident.email:'Not Provided'}">—</span></div>
+            <div class="pf-field"><span class="pf-lbl">Occupation</span><span class="pf-val" th:classappend="${#strings.isEmpty(resident.occupation)}?'pf-muted'" th:text="${!#strings.isEmpty(resident.occupation)?resident.occupation:'Not Provided'}">—</span></div>
+            <div class="pf-field"><span class="pf-lbl">Disability / Special Care</span><span class="pf-val" th:classappend="${#strings.isEmpty(resident.disability)}?'pf-muted'" th:text="${!#strings.isEmpty(resident.disability)?resident.disability:'None'}">—</span></div>
+            <div class="pf-field"><span class="pf-lbl">Room Number</span><span class="pf-val" th:classappend="${#strings.isEmpty(resident.roomNumber)}?'pf-muted'" th:text="${!#strings.isEmpty(resident.roomNumber)?resident.roomNumber:'Not Assigned'}">—</span></div>
             <div class="pf-field"><span class="pf-lbl">Admission Date</span><span class="pf-val" th:text="${resident.joiningDate!=null?#temporals.format(resident.joiningDate,'dd MMM yyyy'):'—'}">—</span></div>
             <div class="pf-field"><span class="pf-lbl">Status</span>
-                <span th:if="${resident.status.name()=='ACTIVE'}" class="pf-info-badge pf-badge-green">Active</span>
-                <span th:if="${resident.status.name()=='DISCHARGED'}" class="pf-info-badge pf-badge-gray">Discharged</span>
-                <span th:if="${resident.status.name()=='DECEASED'}" class="pf-info-badge pf-badge-red">Deceased</span>
+                <span th:if="${resident.status != null and resident.status.name()=='ACTIVE'}" class="pf-info-badge pf-badge-green">Active</span>
+                <span th:if="${resident.status != null and resident.status.name()=='DISCHARGED'}" class="pf-info-badge pf-badge-gray">Discharged</span>
+                <span th:if="${resident.status != null and resident.status.name()=='DECEASED'}" class="pf-info-badge pf-badge-red">Deceased</span>
             </div>
         </div>
     </div>
@@ -112,8 +112,8 @@
             </a>
         </div>
         <div class="pf-grid pf-grid-2">
-            <div class="pf-field pf-span2"><span class="pf-lbl">Full Address</span><span class="pf-val" th:classappend="${resident.address==null or resident.address.isEmpty()}?'pf-muted'" th:text="${resident.address!=null and !resident.address.isEmpty()?resident.address:'Not Provided'}">—</span></div>
-            <div class="pf-field"><span class="pf-lbl">Aadhaar Number</span><span class="pf-val font-monospace" th:classappend="${resident.aadhaarNumber==null or resident.aadhaarNumber.isEmpty()}?'pf-muted'" th:text="${resident.aadhaarNumber!=null and !resident.aadhaarNumber.isEmpty()?resident.aadhaarNumber:'Not Provided'}">—</span></div>
+            <div class="pf-field pf-span2"><span class="pf-lbl">Full Address</span><span class="pf-val" th:classappend="${#strings.isEmpty(resident.address)}?'pf-muted'" th:text="${!#strings.isEmpty(resident.address)?resident.address:'Not Provided'}">—</span></div>
+            <div class="pf-field"><span class="pf-lbl">Aadhaar Number</span><span class="pf-val font-monospace" th:classappend="${#strings.isEmpty(resident.aadhaarNumber)}?'pf-muted'" th:text="${!#strings.isEmpty(resident.aadhaarNumber)?resident.aadhaarNumber:'Not Provided'}">—</span></div>
         </div>
     </div>
 
@@ -129,10 +129,10 @@
             </a>
         </div>
         <div class="pf-grid pf-grid-3">
-            <div class="pf-field"><span class="pf-lbl">Guardian Name</span><span class="pf-val" th:classappend="${resident.guardianName==null or resident.guardianName.isEmpty()}?'pf-muted'" th:text="${resident.guardianName!=null and !resident.guardianName.isEmpty()?resident.guardianName:'Not Provided'}">—</span></div>
-            <div class="pf-field"><span class="pf-lbl">Guardian Phone</span><span class="pf-val" th:classappend="${resident.guardianPhone==null or resident.guardianPhone.isEmpty()}?'pf-muted'" th:text="${resident.guardianPhone!=null and !resident.guardianPhone.isEmpty()?resident.guardianPhone:'Not Provided'}">—</span></div>
-            <div class="pf-field"><span class="pf-lbl">Guardian Email</span><span class="pf-val" th:classappend="${resident.guardianEmail==null or resident.guardianEmail.isEmpty()}?'pf-muted'" th:text="${resident.guardianEmail!=null and !resident.guardianEmail.isEmpty()?resident.guardianEmail:'Not Provided'}">—</span></div>
-            <div class="pf-field pf-span3"><span class="pf-lbl">Guardian Address</span><span class="pf-val" th:classappend="${resident.guardianAddress==null or resident.guardianAddress.isEmpty()}?'pf-muted'" th:text="${resident.guardianAddress!=null and !resident.guardianAddress.isEmpty()?resident.guardianAddress:'Not Provided'}">—</span></div>
+            <div class="pf-field"><span class="pf-lbl">Guardian Name</span><span class="pf-val" th:classappend="${#strings.isEmpty(resident.guardianName)}?'pf-muted'" th:text="${!#strings.isEmpty(resident.guardianName)?resident.guardianName:'Not Provided'}">—</span></div>
+            <div class="pf-field"><span class="pf-lbl">Guardian Phone</span><span class="pf-val" th:classappend="${#strings.isEmpty(resident.guardianPhone)}?'pf-muted'" th:text="${!#strings.isEmpty(resident.guardianPhone)?resident.guardianPhone:'Not Provided'}">—</span></div>
+            <div class="pf-field"><span class="pf-lbl">Guardian Email</span><span class="pf-val" th:classappend="${#strings.isEmpty(resident.guardianEmail)}?'pf-muted'" th:text="${!#strings.isEmpty(resident.guardianEmail)?resident.guardianEmail:'Not Provided'}">—</span></div>
+            <div class="pf-field pf-span3"><span class="pf-lbl">Guardian Address</span><span class="pf-val" th:classappend="${#strings.isEmpty(resident.guardianAddress)}?'pf-muted'" th:text="${!#strings.isEmpty(resident.guardianAddress)?resident.guardianAddress:'Not Provided'}">—</span></div>
         </div>
     </div>
 
@@ -150,11 +150,11 @@
         <div class="pf-grid pf-grid-1">
             <div class="pf-field">
                 <span class="pf-lbl"><i class="bi bi-journal-medical me-1"></i>General Medical Notes</span>
-                <div class="pf-prose" th:classappend="${resident.medicalNotes==null or resident.medicalNotes.isEmpty()}?'pf-muted'" th:text="${resident.medicalNotes!=null and !resident.medicalNotes.isEmpty()?resident.medicalNotes:'No medical notes on file.'}">—</div>
+                <div class="pf-prose" th:classappend="${#strings.isEmpty(resident.medicalNotes)}?'pf-muted'" th:text="${!#strings.isEmpty(resident.medicalNotes)?resident.medicalNotes:'No medical notes on file.'}">—</div>
             </div>
             <div class="pf-field">
                 <span class="pf-lbl"><i class="bi bi-capsule me-1"></i>Medical Prescription &amp; Doctor Instructions</span>
-                <div class="pf-prose" th:classappend="${resident.medicalPrescription==null or resident.medicalPrescription.isEmpty()}?'pf-muted'" th:text="${resident.medicalPrescription!=null and !resident.medicalPrescription.isEmpty()?resident.medicalPrescription:'No prescription details on file.'}">—</div>
+                <div class="pf-prose" th:classappend="${#strings.isEmpty(resident.medicalPrescription)}?'pf-muted'" th:text="${!#strings.isEmpty(resident.medicalPrescription)?resident.medicalPrescription:'No prescription details on file.'}">—</div>
             </div>
         </div>
     </div>
@@ -173,7 +173,6 @@
         </div>
     </div>
 
-</style>
 </div>
 </body>
 </html>
