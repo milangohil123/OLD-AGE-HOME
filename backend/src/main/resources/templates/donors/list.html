@@ -18,9 +18,13 @@
                 <div class="portal-kpi-card">
                     <div class="portal-kpi-header">
                         <span class="portal-kpi-title" th:text="#{dashboard.stat.donors}">Total Donors</span>
+                        <i class="bi bi-people portal-kpi-icon"></i>
                     </div>
                     <div class="portal-kpi-value" th:text="${totalDonors}">0</div>
-                    <div class="portal-kpi-subtitle">&nbsp;</div>
+                    <div class="portal-kpi-bottom">
+                        <canvas class="kpi-sparkline portal-kpi-sparkline" th:attr="data-trend=${donorTrend}" data-color="#16a34a"></canvas>
+                        <p class="portal-kpi-desc">Registered donors</p>
+                    </div>
                 </div>
             </div>
 
@@ -29,9 +33,13 @@
                 <div class="portal-kpi-card">
                     <div class="portal-kpi-header">
                         <span class="portal-kpi-title" th:text="#{dashboard.stat.donations.today}">Today's Donations</span>
+                        <i class="bi bi-gift portal-kpi-icon"></i>
                     </div>
                     <div class="portal-kpi-value" th:text="${todayDonations}">0</div>
-                    <div class="portal-kpi-subtitle">&nbsp;</div>
+                    <div class="portal-kpi-bottom">
+                        <canvas class="kpi-sparkline portal-kpi-sparkline" th:attr="data-trend=${donationCountTrend}" data-color="#3b82f6"></canvas>
+                        <p class="portal-kpi-desc">Recorded today</p>
+                    </div>
                 </div>
             </div>
 
@@ -40,9 +48,13 @@
                 <div class="portal-kpi-card">
                     <div class="portal-kpi-header">
                         <span class="portal-kpi-title" th:text="#{dashboard.stat.donations.month}">This Month's Donations</span>
+                        <i class="bi bi-calendar-check portal-kpi-icon"></i>
                     </div>
                     <div class="portal-kpi-value" th:text="${monthDonations}">0</div>
-                    <div class="portal-kpi-subtitle">&nbsp;</div>
+                    <div class="portal-kpi-bottom">
+                        <canvas class="kpi-sparkline portal-kpi-sparkline" th:attr="data-trend=${donationCountTrend}" data-color="#8b5cf6"></canvas>
+                        <p class="portal-kpi-desc">Recorded this month</p>
+                    </div>
                 </div>
             </div>
 
@@ -51,11 +63,15 @@
                 <div class="portal-kpi-card">
                     <div class="portal-kpi-header">
                         <span class="portal-kpi-title" th:text="#{dashboard.stat.raised}">Total Amount Raised</span>
+                        <i class="bi bi-currency-rupee portal-kpi-icon"></i>
                     </div>
                     <div class="portal-kpi-value"
                         th:text="'₹' + ${#numbers.formatDecimal(totalAmount != null ? totalAmount : 0, 1, 'COMMA', 2, 'POINT')}">
                         ₹0.00</div>
-                    <div class="portal-kpi-subtitle">&nbsp;</div>
+                    <div class="portal-kpi-bottom">
+                        <canvas class="kpi-sparkline portal-kpi-sparkline" th:attr="data-trend=${donationAmountTrend}" data-color="#f59e0b"></canvas>
+                        <p class="portal-kpi-desc">Total contributions</p>
+                    </div>
                 </div>
             </div>
 

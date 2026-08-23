@@ -33,4 +33,9 @@ public interface FoodScheduleService {
 
     /** Schedules from yesterday back 6 more days, grouped by date with totals. */
     List<DailyScheduleGroupDTO> getPast7DaysGroups();
+
+    // --- Trend Sparkline methods ---
+    String getMealTrend(int days);
+
+    String getMealTrendByType(int days, MealType mealType);
 }

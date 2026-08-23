@@ -48,4 +48,14 @@ public interface DonorRepository extends JpaRepository<Donor, Long>, JpaSpecific
 
        @Query("SELECT COALESCE(SUM(d.donationAmount), 0) FROM Donor d WHERE d.donationDate < :date")
        BigDecimal sumTotalDonationAmountBefore(@Param("date") java.time.LocalDate date);
+
+       // --- Trend Sparkline queries ---
+       @Query("SELECT CAST(d.createdAt AS date) as date, COUNT(d) as count FROM Donor d WHERE d.createdAt >= :startDate GROUP BY CAST(d.createdAt AS date) ORDER BY CAST(d.createdAt AS date) ASC")
+       List<Object[]> countDonorsGroupedByDate(@Param("startDate") java.time.LocalDateTime startDate);
+
+       @Query("SELECT d.donationDate as date, COUNT(d) as count FROM Donor d WHERE d.donationDate >= :startDate GROUP BY d.donationDate ORDER BY d.donationDate ASC")
+       List<Object[]> countDonationsGroupedByDate(@Param("startDate") java.time.LocalDate startDate);
+
+       @Query("SELECT d.donationDate as date, SUM(d.donationAmount) as total FROM Donor d WHERE d.donationDate >= :startDate GROUP BY d.donationDate ORDER BY d.donationDate ASC")
+       List<Object[]> sumDonationsGroupedByDate(@Param("startDate") java.time.LocalDate startDate);
 }

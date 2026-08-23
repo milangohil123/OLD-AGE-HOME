@@ -71,4 +71,11 @@ public interface FoodScheduleRepository extends JpaRepository<FoodSchedule, Long
     List<FoodSchedule> findByDateRangeOrderByDateDescMealTypeAsc(
             @Param("fromDate") LocalDate fromDate,
             @Param("toDate") LocalDate toDate);
+
+    // --- Trend Sparkline queries ---
+    @Query("SELECT fs.mealDate as date, COUNT(fs) as count FROM FoodSchedule fs WHERE fs.mealDate >= :startDate GROUP BY fs.mealDate ORDER BY fs.mealDate ASC")
+    List<Object[]> countMealsGroupedByDate(@Param("startDate") LocalDate startDate);
+
+    @Query("SELECT fs.mealDate as date, COUNT(fs) as count FROM FoodSchedule fs WHERE fs.mealDate >= :startDate AND fs.mealType = :mealType GROUP BY fs.mealDate ORDER BY fs.mealDate ASC")
+    List<Object[]> countMealsGroupedByDateAndType(@Param("startDate") LocalDate startDate, @Param("mealType") MealType mealType);
 }

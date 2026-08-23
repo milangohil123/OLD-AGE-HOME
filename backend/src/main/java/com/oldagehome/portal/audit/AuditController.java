@@ -67,6 +67,11 @@ public class AuditController {
         model.addAttribute("failedActivities", auditService.countFailedActivities());
         model.addAttribute("totalRecords", auditService.getTotalRecords());
         
+        // Trend data for sparklines
+        model.addAttribute("totalLogTrend", auditService.getLogTrend(7));
+        model.addAttribute("successLogTrend", auditService.getLogTrendBySuccess(7, true));
+        model.addAttribute("failedLogTrend", auditService.getLogTrendBySuccess(7, false));
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         var latestLogin = auditService.getLatestLogin();
         var latestUpdate = auditService.getLatestSystemUpdate();

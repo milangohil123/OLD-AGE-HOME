@@ -229,4 +229,17 @@ public class FoodScheduleServiceImpl implements FoodScheduleService {
 
         return groups;
     }
+
+    // --- Trend Sparkline methods ---
+    @Override
+    public String getMealTrend(int days) {
+        java.util.List<Object[]> results = foodScheduleRepository.countMealsGroupedByDate(LocalDate.now().minusDays(days - 1));
+        return com.oldagehome.portal.utils.TrendUtils.generateTrendJson(results, days);
+    }
+
+    @Override
+    public String getMealTrendByType(int days, MealType mealType) {
+        java.util.List<Object[]> results = foodScheduleRepository.countMealsGroupedByDateAndType(LocalDate.now().minusDays(days - 1), mealType);
+        return com.oldagehome.portal.utils.TrendUtils.generateTrendJson(results, days);
+    }
 }

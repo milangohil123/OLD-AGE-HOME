@@ -361,6 +361,34 @@ a:hover {
     margin-top: 8px;
 }
 
+/* ── KPI Sparkline ────────────────────────────────────────── */
+.portal-kpi-bottom {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 16px;
+    height: 30px;
+}
+
+.portal-kpi-sparkline {
+    width: 80px;
+    height: 30px;
+    flex-shrink: 0;
+}
+
+.portal-kpi-desc {
+    font-size: 13px;
+    color: #64748b;
+    font-weight: 500;
+    line-height: 1.2;
+    margin: 0;
+}
+
+.portal-kpi-icon {
+    font-size: 18px;
+    color: #94a3b8;
+}
+
 /* ── Buttons ────────────────────────────────────────────────── */
 .btn {
     font-size: 13px;

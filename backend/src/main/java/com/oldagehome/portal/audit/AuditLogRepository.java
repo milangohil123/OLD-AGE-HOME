@@ -45,4 +45,11 @@ public interface AuditLogRepository extends JpaRepository<AuditLog, Long> {
     @org.springframework.data.jpa.repository.Modifying
     @Query("DELETE FROM AuditLog a WHERE a.timestamp < :beforeDate")
     void deleteByTimestampBefore(@Param("beforeDate") LocalDateTime beforeDate);
+
+    // --- Trend Sparkline queries ---
+    @Query("SELECT CAST(a.timestamp AS date) as date, COUNT(a) as count FROM AuditLog a WHERE a.timestamp >= :startDate GROUP BY CAST(a.timestamp AS date) ORDER BY CAST(a.timestamp AS date) ASC")
+    List<Object[]> countLogsGroupedByDate(@Param("startDate") LocalDateTime startDate);
+
+    @Query("SELECT CAST(a.timestamp AS date) as date, COUNT(a) as count FROM AuditLog a WHERE a.timestamp >= :startDate AND a.success = :success GROUP BY CAST(a.timestamp AS date) ORDER BY CAST(a.timestamp AS date) ASC")
+    List<Object[]> countLogsGroupedByDateAndSuccess(@Param("startDate") LocalDateTime startDate, @Param("success") boolean success);
 }

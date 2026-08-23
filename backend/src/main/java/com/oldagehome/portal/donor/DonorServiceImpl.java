@@ -485,9 +485,27 @@ public class DonorServiceImpl implements DonorService {
     }
 
     @Override
-    public BigDecimal sumTotalDonationAmountBefore(LocalDate date) {
-        BigDecimal total = donorRepository.sumTotalDonationAmountBefore(date);
-        return total != null ? total : BigDecimal.ZERO;
+    public BigDecimal sumTotalDonationAmountBefore(java.time.LocalDate date) {
+        return donorRepository.sumTotalDonationAmountBefore(date);
+    }
+
+    // --- Trend Sparkline methods ---
+    @Override
+    public String getDonorTrend(int days) {
+        java.util.List<Object[]> results = donorRepository.countDonorsGroupedByDate(java.time.LocalDateTime.now().minusDays(days - 1).with(java.time.LocalTime.MIN));
+        return com.oldagehome.portal.utils.TrendUtils.generateTrendJson(results, days);
+    }
+
+    @Override
+    public String getDonationCountTrend(int days) {
+        java.util.List<Object[]> results = donorRepository.countDonationsGroupedByDate(java.time.LocalDate.now().minusDays(days - 1));
+        return com.oldagehome.portal.utils.TrendUtils.generateTrendJson(results, days);
+    }
+
+    @Override
+    public String getDonationAmountTrend(int days) {
+        java.util.List<Object[]> results = donorRepository.sumDonationsGroupedByDate(java.time.LocalDate.now().minusDays(days - 1));
+        return com.oldagehome.portal.utils.TrendUtils.generateTrendJson(results, days);
     }
 
     @Override

@@ -80,6 +80,12 @@ public class ReportController {
         model.addAttribute("expiredMedicines", inventoryService.countExpired());
         model.addAttribute("availableMedicines", inventoryService.countAvailable());
 
+        // Trend data for sparklines
+        model.addAttribute("donorTrend", donorService.getDonorTrend(7));
+        model.addAttribute("amountTrend", donorService.getDonationAmountTrend(7));
+        // Note: For totalResidents and totalMedicines we do not have historical grouped data in this phase.
+        // The Thymeleaf template will detect null and display a neutral placeholder.
+
         // Recents
         model.addAttribute("recentDonations", donorService.getRecentDonors(5));
         model.addAttribute("recentResidents", residentService.getRecentResidents(5));

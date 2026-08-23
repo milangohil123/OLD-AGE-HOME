@@ -41,6 +41,12 @@ public interface AuditService {
 
     LocalDateTime getLatestSystemUpdate();
 
+    // --- Trend Sparkline methods ---
+    String getLogTrend(int days);
+
+    String getLogTrendBySuccess(int days, boolean success);
+
+
     void logActivity(
             AuditModule module,
             AuditAction action,

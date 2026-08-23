@@ -14,9 +14,13 @@
                 <div class="portal-kpi-card">
                     <div class="portal-kpi-header">
                         <span class="portal-kpi-title">Total Logs</span>
+                        <i class="bi bi-card-list portal-kpi-icon"></i>
                     </div>
                     <div class="portal-kpi-value" th:text="${totalRecords}">0</div>
-                    <div class="portal-kpi-subtitle">&nbsp;</div>
+                    <div class="portal-kpi-bottom">
+                        <canvas class="kpi-sparkline portal-kpi-sparkline" th:attr="data-trend=${totalLogTrend}" data-color="#64748b"></canvas>
+                        <p class="portal-kpi-desc">Recorded system activities</p>
+                    </div>
                 </div>
             </div>
 
@@ -25,9 +29,13 @@
                 <div class="portal-kpi-card">
                     <div class="portal-kpi-header">
                         <span class="portal-kpi-title">Today's Logs</span>
+                        <i class="bi bi-calendar2-day portal-kpi-icon"></i>
                     </div>
                     <div class="portal-kpi-value" th:text="${todayActivities}">0</div>
-                    <div class="portal-kpi-subtitle">&nbsp;</div>
+                    <div class="portal-kpi-bottom">
+                        <canvas class="kpi-sparkline portal-kpi-sparkline" th:attr="data-trend=${totalLogTrend}" data-color="#3b82f6"></canvas>
+                        <p class="portal-kpi-desc">Activities recorded today</p>
+                    </div>
                 </div>
             </div>
 
@@ -36,9 +44,13 @@
                 <div class="portal-kpi-card">
                     <div class="portal-kpi-header">
                         <span class="portal-kpi-title">Success Actions</span>
+                        <i class="bi bi-check-circle portal-kpi-icon"></i>
                     </div>
                     <div class="portal-kpi-value" th:text="${successfulActivities}">0</div>
-                    <div class="portal-kpi-subtitle">&nbsp;</div>
+                    <div class="portal-kpi-bottom">
+                        <canvas class="kpi-sparkline portal-kpi-sparkline" th:attr="data-trend=${successLogTrend}" data-color="#16a34a"></canvas>
+                        <p class="portal-kpi-desc">Successfully completed</p>
+                    </div>
                 </div>
             </div>
 
@@ -47,9 +59,13 @@
                 <div class="portal-kpi-card">
                     <div class="portal-kpi-header">
                         <span class="portal-kpi-title">Failed Actions</span>
+                        <i class="bi bi-exclamation-circle portal-kpi-icon"></i>
                     </div>
                     <div class="portal-kpi-value" style="color: #ef4444;" th:text="${failedActivities}">0</div>
-                    <div class="portal-kpi-subtitle">&nbsp;</div>
+                    <div class="portal-kpi-bottom">
+                        <canvas class="kpi-sparkline portal-kpi-sparkline" th:attr="data-trend=${failedLogTrend}" data-color="#ef4444"></canvas>
+                        <p class="portal-kpi-desc">Actions requiring attention</p>
+                    </div>
                 </div>
             </div>
 
@@ -58,9 +74,12 @@
                 <div class="portal-kpi-card">
                     <div class="portal-kpi-header">
                         <span class="portal-kpi-title">Latest Login</span>
+                        <i class="bi bi-box-arrow-in-right portal-kpi-icon"></i>
                     </div>
                     <div class="portal-kpi-value sm" th:text="${latestLogin}">Never</div>
-                    <div class="portal-kpi-subtitle">&nbsp;</div>
+                    <div class="portal-kpi-bottom">
+                        <p class="portal-kpi-desc">Most recent administrator login</p>
+                    </div>
                 </div>
             </div>
 
@@ -69,9 +88,12 @@
                 <div class="portal-kpi-card">
                     <div class="portal-kpi-header">
                         <span class="portal-kpi-title">Latest Update</span>
+                        <i class="bi bi-pencil-square portal-kpi-icon"></i>
                     </div>
                     <div class="portal-kpi-value sm" th:text="${latestUpdate}">Never</div>
-                    <div class="portal-kpi-subtitle">&nbsp;</div>
+                    <div class="portal-kpi-bottom">
+                        <p class="portal-kpi-desc">Most recent system update</p>
+                    </div>
                 </div>
             </div>
 

@@ -61,6 +61,13 @@ public interface DonorService {
 
     BigDecimal sumTotalDonationAmountBefore(java.time.LocalDate date);
 
+    // --- Trend Sparkline methods ---
+    String getDonorTrend(int days);
+
+    String getDonationCountTrend(int days);
+
+    String getDonationAmountTrend(int days);
+
     // --- Graph Data ---
     List<com.oldagehome.portal.dto.DonationTrendDTO> getDonationTrend(java.time.LocalDate startDate);
 }

@@ -22,9 +22,13 @@
                 <div class="portal-kpi-card">
                     <div class="portal-kpi-header">
                         <span class="portal-kpi-title">Today's Meals</span>
+                        <i class="bi bi-calendar2-day portal-kpi-icon"></i>
                     </div>
                     <div class="portal-kpi-value" th:text="${dashboard.todaysMealsCount}">0</div>
-                    <div class="portal-kpi-subtitle">&nbsp;</div>
+                    <div class="portal-kpi-bottom">
+                        <canvas class="kpi-sparkline portal-kpi-sparkline" th:attr="data-trend=${mealTrend}" data-color="#16a34a"></canvas>
+                        <p class="portal-kpi-desc">Meals scheduled today</p>
+                    </div>
                 </div>
             </div>
 
@@ -33,9 +37,13 @@
                 <div class="portal-kpi-card">
                     <div class="portal-kpi-header">
                         <span class="portal-kpi-title">Breakfast</span>
+                        <i class="bi bi-sunrise portal-kpi-icon"></i>
                     </div>
                     <div class="portal-kpi-value" th:text="${dashboard.todayBreakfastCount}">0</div>
-                    <div class="portal-kpi-subtitle">&nbsp;</div>
+                    <div class="portal-kpi-bottom">
+                        <canvas class="kpi-sparkline portal-kpi-sparkline" th:attr="data-trend=${breakfastTrend}" data-color="#f59e0b"></canvas>
+                        <p class="portal-kpi-desc">Breakfast schedules</p>
+                    </div>
                 </div>
             </div>
 
@@ -44,9 +52,13 @@
                 <div class="portal-kpi-card">
                     <div class="portal-kpi-header">
                         <span class="portal-kpi-title">Lunch</span>
+                        <i class="bi bi-sun portal-kpi-icon"></i>
                     </div>
                     <div class="portal-kpi-value" th:text="${dashboard.todayLunchCount}">0</div>
-                    <div class="portal-kpi-subtitle">&nbsp;</div>
+                    <div class="portal-kpi-bottom">
+                        <canvas class="kpi-sparkline portal-kpi-sparkline" th:attr="data-trend=${lunchTrend}" data-color="#eab308"></canvas>
+                        <p class="portal-kpi-desc">Lunch schedules</p>
+                    </div>
                 </div>
             </div>
 
@@ -55,9 +67,13 @@
                 <div class="portal-kpi-card">
                     <div class="portal-kpi-header">
                         <span class="portal-kpi-title">Dinner</span>
+                        <i class="bi bi-moon-stars portal-kpi-icon"></i>
                     </div>
                     <div class="portal-kpi-value" th:text="${dashboard.todayDinnerCount}">0</div>
-                    <div class="portal-kpi-subtitle">&nbsp;</div>
+                    <div class="portal-kpi-bottom">
+                        <canvas class="kpi-sparkline portal-kpi-sparkline" th:attr="data-trend=${dinnerTrend}" data-color="#3b82f6"></canvas>
+                        <p class="portal-kpi-desc">Dinner schedules</p>
+                    </div>
                 </div>
             </div>
 
@@ -71,9 +87,12 @@
                 <div class="portal-kpi-card">
                     <div class="portal-kpi-header">
                         <span class="portal-kpi-title">Active Food Sponsors</span>
+                        <i class="bi bi-heart portal-kpi-icon"></i>
                     </div>
                     <div class="portal-kpi-value" th:text="${dashboard.activeFoodSponsorsCount}">0</div>
-                    <div class="portal-kpi-subtitle">&nbsp;</div>
+                    <div class="portal-kpi-bottom">
+                        <p class="portal-kpi-desc">&mdash; No historical trend</p>
+                    </div>
                 </div>
             </div>
 
@@ -82,9 +101,12 @@
                 <div class="portal-kpi-card">
                     <div class="portal-kpi-header">
                         <span class="portal-kpi-title">Upcoming Schedules</span>
+                        <i class="bi bi-calendar-event portal-kpi-icon"></i>
                     </div>
                     <div class="portal-kpi-value" th:text="${dashboard.upcomingSchedulesCount}">0</div>
-                    <div class="portal-kpi-subtitle">&nbsp;</div>
+                    <div class="portal-kpi-bottom">
+                        <p class="portal-kpi-desc">&mdash; No historical trend</p>
+                    </div>
                 </div>
             </div>
 

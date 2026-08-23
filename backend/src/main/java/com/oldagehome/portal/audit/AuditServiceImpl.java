@@ -342,4 +342,17 @@ public class AuditServiceImpl implements AuditService {
         }
         return sb.toString().getBytes();
     }
+
+    // --- Trend Sparkline methods ---
+    @Override
+    public String getLogTrend(int days) {
+        java.util.List<Object[]> results = auditLogRepository.countLogsGroupedByDate(LocalDateTime.now().minusDays(days - 1).with(java.time.LocalTime.MIN));
+        return com.oldagehome.portal.utils.TrendUtils.generateTrendJson(results, days);
+    }
+
+    @Override
+    public String getLogTrendBySuccess(int days, boolean success) {
+        java.util.List<Object[]> results = auditLogRepository.countLogsGroupedByDateAndSuccess(LocalDateTime.now().minusDays(days - 1).with(java.time.LocalTime.MIN), success);
+        return com.oldagehome.portal.utils.TrendUtils.generateTrendJson(results, days);
+    }
 }

@@ -76,6 +76,11 @@ public class DonorController {
         model.addAttribute("monthDonations", donorService.countThisMonthDonations());
         model.addAttribute("totalAmount", donorService.sumTotalDonationAmount());
 
+        // Trend data for sparklines
+        model.addAttribute("donorTrend", donorService.getDonorTrend(7));
+        model.addAttribute("donationCountTrend", donorService.getDonationCountTrend(7));
+        model.addAttribute("donationAmountTrend", donorService.getDonationAmountTrend(7));
+
         return "donors/list";
     }
 

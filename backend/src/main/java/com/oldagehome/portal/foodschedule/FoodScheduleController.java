@@ -49,6 +49,12 @@ public class FoodScheduleController {
             model.addAttribute("todayDate", java.time.LocalDate.now());
             model.addAttribute("activePage", "food-schedule");
 
+            // Trend data for sparklines
+            model.addAttribute("mealTrend", foodScheduleService.getMealTrend(7));
+            model.addAttribute("breakfastTrend", foodScheduleService.getMealTrendByType(7, MealType.BREAKFAST));
+            model.addAttribute("lunchTrend", foodScheduleService.getMealTrendByType(7, MealType.LUNCH));
+            model.addAttribute("dinnerTrend", foodScheduleService.getMealTrendByType(7, MealType.DINNER));
+
             return "food-schedule/list";
         } catch (Exception e) {
             e.printStackTrace();
