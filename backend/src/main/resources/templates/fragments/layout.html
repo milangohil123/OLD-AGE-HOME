@@ -96,12 +96,20 @@
             </ul>
         </aside>
 
+        <!-- Mobile Sidebar Overlay -->
+        <div id="sidebarOverlay" class="d-lg-none" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.4); z-index: 1030;"></div>
+
         <!-- Main Wrapper -->
         <div class="app-main">
             <!-- Navbar -->
             <nav class="app-navbar">
-                <div class="navbar-title">
-                    <span class="fs-5 fw-bold text-dark" th:text="${title}">Dashboard</span>
+                <div class="d-flex align-items-center gap-2 gap-md-3">
+                    <button id="mobileSidebarToggle" class="btn btn-link p-0 text-dark d-lg-none" style="text-decoration: none;">
+                        <i class="bi bi-list fs-2"></i>
+                    </button>
+                    <div class="navbar-title">
+                        <span class="fs-5 fw-bold text-dark" th:text="${title}">Dashboard</span>
+                    </div>
                 </div>
 
                 <!-- Center Search Input & Bell matching reference -->
@@ -189,6 +197,29 @@
     <!-- KPI Sparklines Initialization -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Mobile Sidebar Toggle Logic
+            var sidebarToggle = document.getElementById('mobileSidebarToggle');
+            var sidebar = document.querySelector('.app-sidebar');
+            var overlay = document.getElementById('sidebarOverlay');
+            
+            if (sidebarToggle && sidebar && overlay) {
+                function toggleSidebar() {
+                    var isShowing = sidebar.classList.toggle('show');
+                    overlay.style.display = isShowing ? 'block' : 'none';
+                    document.body.style.overflow = isShowing ? 'hidden' : '';
+                }
+                
+                sidebarToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    toggleSidebar();
+                });
+                
+                overlay.addEventListener('click', function() {
+                    toggleSidebar();
+                });
+            }
+
+            // KPI Sparklines
             document.querySelectorAll('.kpi-sparkline').forEach(function(canvas) {
                 var trendDataStr = canvas.getAttribute('data-trend');
                 if (!trendDataStr || trendDataStr === '[]') return;
