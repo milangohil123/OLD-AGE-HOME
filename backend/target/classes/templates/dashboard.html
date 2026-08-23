@@ -288,135 +288,150 @@
         </div>
 
         <!-- End of content cards -->
-    </div>
 
-    <script th:inline="javascript">
-        /*
-         * Capture backend data at Thymeleaf render-time (server-side substitution).
-         * DOM interaction and Chart instantiation are deferred to DOMContentLoaded
-         * so that both the canvas and Chart.js are guaranteed to be available.
-         */
-        /*[# th:if="${donorGraphMap != null}"]*/
-        var dashboardGraphData = /*[[${donorGraphMap}]]*/ { week: [], month: [], year: [] };
-        /*[/]*/
-        /*[# th:if="${donorGraphMap == null}"]*/
-        var dashboardGraphData = { week: [], month: [], year: [] };
-        /*[/]*/
+        <!-- ═══════════════════════════════════════════════════════════════
+             Overview Chart Script
+             MUST be inside #dashboard-content so Thymeleaf includes it
+             when the fragment selector ~{::#dashboard-content} is resolved.
+             ═══════════════════════════════════════════════════════════════ -->
+        <script th:inline="javascript">
+            /*
+             * donorGraphData is populated by the DashboardController via
+             * model.addAttribute("donorGraphMap", graphData).
+             * Thymeleaf serialises the Map to a JSON object at render-time.
+             * DOMContentLoaded defers Chart instantiation until the full
+             * document (including Chart.js from <head>) is ready.
+             */
+            var donorGraphData = /*[[${donorGraphMap}]]*/ { week: [], month: [], year: [] };
 
-        document.addEventListener('DOMContentLoaded', function () {
-            // Guard: Chart.js must be loaded
-            if (typeof Chart === 'undefined') {
-                console.error('Chart.js is not loaded — overviewChart cannot be rendered.');
-                return;
-            }
+            console.log('[Dashboard] donorGraphData loaded:', donorGraphData);
 
-            var graphContainer = document.getElementById('graphContainer');
-            var canvas = document.getElementById('overviewChart');
+            document.addEventListener('DOMContentLoaded', function () {
+                console.log('[Dashboard] DOMContentLoaded fired. readyState:', document.readyState);
+                console.log('[Dashboard] Chart available:', typeof Chart);
 
-            // Guard: canvas must exist in DOM
-            if (!graphContainer || !canvas) {
-                console.error('overviewChart canvas not found in DOM.');
-                return;
-            }
-
-            var currentChart = null;
-
-            function renderChart(period) {
-                var trendData = (dashboardGraphData && dashboardGraphData[period]) ? dashboardGraphData[period] : [];
-
-                graphContainer.style.display = 'block';
-
-                var labels = trendData.map(function (item) {
-                    return item.label;
-                });
-
-                var values = trendData.map(function (item) {
-                    return parseFloat(item.count) || 0;
-                });
-
-                if (currentChart) {
-                    currentChart.destroy();
+                // Guard: Chart.js must be present
+                if (typeof Chart === 'undefined') {
+                    console.error('[Dashboard] Chart.js is not loaded — overviewChart cannot render.');
+                    return;
                 }
 
-                currentChart = new Chart(canvas, {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Donors Registered',
-                            data: values,
-                            borderColor: '#16a34a',
-                            backgroundColor: 'rgba(22, 163, 74, 0.08)',
-                            borderWidth: 2,
-                            fill: true,
-                            tension: 0.4,
-                            pointRadius: 0,
-                            pointHoverRadius: 5,
-                            pointHoverBackgroundColor: '#16a34a'
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        interaction: {
-                            mode: 'index',
-                            intersect: false
+                var graphContainer = document.getElementById('graphContainer');
+                var canvas = document.getElementById('overviewChart');
+
+                console.log('[Dashboard] Canvas:', canvas);
+
+                // Guard: canvas must exist in DOM
+                if (!graphContainer || !canvas) {
+                    console.error('[Dashboard] overviewChart canvas not found in DOM.');
+                    return;
+                }
+
+                console.log('[Dashboard] donorGraphData:', donorGraphData);
+
+                var currentChart = null;
+
+                function renderChart(period) {
+                    var selectedData = (donorGraphData && donorGraphData[period]) ? donorGraphData[period] : [];
+
+                    console.log('[Dashboard] renderChart period:', period);
+                    console.log('[Dashboard] Selected graph data:', selectedData);
+
+                    var labels = selectedData.map(function (item) { return item.label; });
+                    var values = selectedData.map(function (item) { return parseFloat(item.count) || 0; });
+
+                    console.log('[Dashboard] Labels:', labels);
+                    console.log('[Dashboard] Values:', values);
+
+                    // Destroy previous chart instance to avoid overlay
+                    if (currentChart) {
+                        currentChart.destroy();
+                        currentChart = null;
+                    }
+
+                    console.log('[Dashboard] Creating Chart instance');
+
+                    currentChart = new Chart(canvas, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Donors Registered',
+                                data: values,
+                                borderColor: '#16a34a',
+                                backgroundColor: 'rgba(22, 163, 74, 0.08)',
+                                borderWidth: 2,
+                                fill: true,
+                                tension: 0.4,
+                                pointRadius: 3,
+                                pointBackgroundColor: '#16a34a',
+                                pointHoverRadius: 5,
+                                pointHoverBackgroundColor: '#16a34a'
+                            }]
                         },
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: {
-                                callbacks: {
-                                    label: function (ctx) {
-                                        return ctx.parsed.y + ' Donors';
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            interaction: {
+                                mode: 'index',
+                                intersect: false
+                            },
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (ctx) {
+                                            return ctx.parsed.y + ' Donors';
+                                        }
                                     }
-                                }
-                            }
-                        },
-                        scales: {
-                            x: {
-                                grid: { display: false },
-                                border: { display: false },
-                                ticks: {
-                                    color: '#94a3b8',
-                                    font: { size: 11 },
-                                    maxTicksLimit: 12,
-                                    maxRotation: 0
                                 }
                             },
-                            y: {
-                                grid: { color: '#f1f5f9', drawBorder: false, borderDash: [5, 5] },
-                                border: { display: false },
-                                ticks: {
-                                    color: '#94a3b8',
-                                    font: { size: 11 },
-                                    stepSize: 1,
-                                    callback: function (v) {
-                                        if (v % 1 !== 0) return '';
-                                        if (v >= 100000) return (v / 100000).toFixed(1) + 'L';
-                                        if (v >= 1000) return (v / 1000).toFixed(0) + 'k';
-                                        return v;
+                            scales: {
+                                x: {
+                                    grid: { display: false },
+                                    border: { display: false },
+                                    ticks: {
+                                        color: '#94a3b8',
+                                        font: { size: 11 },
+                                        maxTicksLimit: 12,
+                                        maxRotation: 0
                                     }
                                 },
-                                beginAtZero: true
+                                y: {
+                                    grid: { color: '#f1f5f9', borderDash: [5, 5] },
+                                    border: { display: false },
+                                    ticks: {
+                                        color: '#94a3b8',
+                                        font: { size: 11 },
+                                        stepSize: 1,
+                                        callback: function (v) {
+                                            if (v % 1 !== 0) return '';
+                                            if (v >= 100000) return (v / 100000).toFixed(1) + 'L';
+                                            if (v >= 1000) return (v / 1000).toFixed(0) + 'k';
+                                            return v;
+                                        }
+                                    },
+                                    beginAtZero: true
+                                }
                             }
                         }
-                    }
-                });
-            }
+                    });
 
-            // Dropdown logic for graph period (Week / Month / Year)
-            var graphPeriodSelect = document.getElementById('graph-period-select');
+                    console.log('[Dashboard] Chart instance created:', currentChart);
+                }
 
-            if (graphPeriodSelect) {
-                graphPeriodSelect.addEventListener('change', function () {
-                    renderChart(this.value);
-                });
-            }
+                // Period selector (Week / Month / Year dropdown)
+                var graphPeriodSelect = document.getElementById('graph-period-select');
+                if (graphPeriodSelect) {
+                    graphPeriodSelect.addEventListener('change', function () {
+                        renderChart(this.value);
+                    });
+                }
 
-            // Initial render — defaults to Week view
-            renderChart('week');
-        });
-    </script>
+                // Auto-render Week view on page load
+                renderChart('week');
+            });
+        </script>
 
     </div>
 </body>
