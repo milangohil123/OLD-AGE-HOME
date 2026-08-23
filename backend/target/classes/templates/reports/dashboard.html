@@ -26,61 +26,47 @@
 
             <!-- Total Residents -->
             <div class="col">
-                <div class="portal-kpi-card">
-                    <div class="portal-kpi-header">
-                        <span class="portal-kpi-title">Total Residents</span>
-                        <i class="bi bi-people portal-kpi-icon"></i>
+                <div class="card h-100 p-3 shadow-sm" style="border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="fw-bold" style="font-size: 13px; color: #1e293b;">Total Residents</span>
+                        <i class="bi bi-people text-muted" style="font-size: 16px;"></i>
                     </div>
-                    <div class="portal-kpi-value" th:text="${totalResidents}">0</div>
-                    <div class="portal-kpi-bottom">
-                        <p class="portal-kpi-desc">&mdash; No historical trend</p>
-                    </div>
+                    <h2 class="fw-bold mb-0" style="font-size: 28px; color: #0f172a;" th:text="${totalResidents}">0</h2>
                 </div>
             </div>
 
             <!-- Total Donors -->
             <div class="col">
-                <div class="portal-kpi-card">
-                    <div class="portal-kpi-header">
-                        <span class="portal-kpi-title">Total Donors</span>
-                        <i class="bi bi-person-hearts portal-kpi-icon"></i>
+                <div class="card h-100 p-3 shadow-sm" style="border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="fw-bold" style="font-size: 13px; color: #1e293b;">Total Donors</span>
+                        <i class="bi bi-person-hearts text-muted" style="font-size: 16px;"></i>
                     </div>
-                    <div class="portal-kpi-value" th:text="${totalDonors}">0</div>
-                    <div class="portal-kpi-bottom">
-                        <canvas class="kpi-sparkline portal-kpi-sparkline" th:attr="data-trend=${donorTrend}" data-color="#16a34a"></canvas>
-                        <p class="portal-kpi-desc">Registered donors</p>
-                    </div>
+                    <h2 class="fw-bold mb-0" style="font-size: 28px; color: #0f172a;" th:text="${totalDonors}">0</h2>
                 </div>
             </div>
 
             <!-- Total Raised -->
             <div class="col">
-                <div class="portal-kpi-card">
-                    <div class="portal-kpi-header">
-                        <span class="portal-kpi-title">Total Raised</span>
-                        <i class="bi bi-currency-rupee portal-kpi-icon"></i>
+                <div class="card h-100 p-3 shadow-sm" style="border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="fw-bold" style="font-size: 13px; color: #1e293b;">Total Raised</span>
+                        <i class="bi bi-currency-rupee text-muted" style="font-size: 16px;"></i>
                     </div>
-                    <div class="portal-kpi-value"
+                    <h2 class="fw-bold mb-0" style="font-size: 28px; color: #0f172a;"
                         th:text="'₹' + ${#numbers.formatDecimal(totalDonationAmount, 1, 'COMMA', 2, 'POINT')}">
-                        ₹0.00</div>
-                    <div class="portal-kpi-bottom">
-                        <canvas class="kpi-sparkline portal-kpi-sparkline" th:attr="data-trend=${amountTrend}" data-color="#f59e0b"></canvas>
-                        <p class="portal-kpi-desc">Total contributions</p>
-                    </div>
+                        ₹0.00</h2>
                 </div>
             </div>
 
             <!-- Total Medicines -->
             <div class="col">
-                <div class="portal-kpi-card">
-                    <div class="portal-kpi-header">
-                        <span class="portal-kpi-title">Total Medicines</span>
-                        <i class="bi bi-capsule portal-kpi-icon"></i>
+                <div class="card h-100 p-3 shadow-sm" style="border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="fw-bold" style="font-size: 13px; color: #1e293b;">Total Medicines</span>
+                        <i class="bi bi-capsule text-muted" style="font-size: 16px;"></i>
                     </div>
-                    <div class="portal-kpi-value" th:text="${totalMedicines}">0</div>
-                    <div class="portal-kpi-bottom">
-                        <p class="portal-kpi-desc">&mdash; No historical trend</p>
-                    </div>
+                    <h2 class="fw-bold mb-0" style="font-size: 28px; color: #0f172a;" th:text="${totalMedicines}">0</h2>
                 </div>
             </div>
 
