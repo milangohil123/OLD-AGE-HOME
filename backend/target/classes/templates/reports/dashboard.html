@@ -22,62 +22,56 @@
         </div>
 
         <!-- ── Stats Summary ── -->
-        <div class="row mb-4">
-            <div class="col-xl-3 col-md-6 mb-3">
-                <div class="card py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon-circle">
-                            <i class="bi bi-people" style="font-size: 18px;"></i>
-                        </div>
-                        <div>
-                            <h2 class="fw-bold mb-0 text-primary" th:text="${totalResidents}">0</h2>
-                            <span class="text-muted fw-semibold" style="font-size: 13px;">Total Residents</span>
-                        </div>
+        <div class="row mb-4 row-cols-1 row-cols-sm-2 row-cols-xl-4 g-3">
+
+            <!-- Total Residents -->
+            <div class="col">
+                <div class="portal-kpi-card">
+                    <div class="portal-kpi-header">
+                        <span class="portal-kpi-title">Total Residents</span>
                     </div>
+                    <div class="portal-kpi-value" th:text="${totalResidents}">0</div>
+                    <div class="portal-kpi-subtitle">&nbsp;</div>
                 </div>
             </div>
-            <div class="col-xl-3 col-md-6 mb-3">
-                <div class="card py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon-circle">
-                            <i class="bi bi-gift" style="font-size: 18px;"></i>
-                        </div>
-                        <div>
-                            <h2 class="fw-bold mb-0 text-primary" th:text="${totalDonors}">0</h2>
-                            <span class="text-muted fw-semibold" style="font-size: 13px;">Total Donors</span>
-                        </div>
+
+            <!-- Total Donors -->
+            <div class="col">
+                <div class="portal-kpi-card">
+                    <div class="portal-kpi-header">
+                        <span class="portal-kpi-title">Total Donors</span>
                     </div>
+                    <div class="portal-kpi-value" th:text="${totalDonors}">0</div>
+                    <div class="portal-kpi-subtitle">&nbsp;</div>
                 </div>
             </div>
-            <div class="col-xl-3 col-md-6 mb-3">
-                <div class="card py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon-circle">
-                            <i class="bi bi-currency-rupee" style="font-size: 18px;"></i>
-                        </div>
-                        <div>
-                            <h2 class="fw-bold mb-0 text-primary"
-                                th:text="'₹' + ${#numbers.formatDecimal(totalDonationAmount, 1, 'COMMA', 2, 'POINT')}">
-                                ₹0.00</h2>
-                            <span class="text-muted fw-semibold" style="font-size: 13px;">Total Raised</span>
-                        </div>
+
+            <!-- Total Raised -->
+            <div class="col">
+                <div class="portal-kpi-card">
+                    <div class="portal-kpi-header">
+                        <span class="portal-kpi-title">Total Raised</span>
                     </div>
+                    <div class="portal-kpi-value"
+                        th:text="'₹' + ${#numbers.formatDecimal(totalDonationAmount, 1, 'COMMA', 2, 'POINT')}">
+                        ₹0.00</div>
+                    <div class="portal-kpi-subtitle">&nbsp;</div>
                 </div>
             </div>
-            <div class="col-xl-3 col-md-6 mb-3">
-                <div class="card py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon-circle">
-                            <i class="bi bi-capsule" style="font-size: 18px;"></i>
-                        </div>
-                        <div>
-                            <h2 class="fw-bold mb-0 text-primary" th:text="${totalMedicines}">0</h2>
-                            <span class="text-muted fw-semibold" style="font-size: 13px;">Total Medicines</span>
-                        </div>
+
+            <!-- Total Medicines -->
+            <div class="col">
+                <div class="portal-kpi-card">
+                    <div class="portal-kpi-header">
+                        <span class="portal-kpi-title">Total Medicines</span>
                     </div>
+                    <div class="portal-kpi-value" th:text="${totalMedicines}">0</div>
+                    <div class="portal-kpi-subtitle">&nbsp;</div>
                 </div>
             </div>
+
         </div>
+
 
         <!-- ── Report Module Cards ── -->
         <div class="row mb-4">

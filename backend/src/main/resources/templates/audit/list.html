@@ -7,86 +7,76 @@
     <div id="audit-list">
 
         <!-- ── Stats Cards ── -->
-        <div class="row mb-4">
-            <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-                <div class="card py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon-circle" style="width: 40px; height: 40px; font-size: 16px;">
-                            <i class="bi bi-clipboard-data"></i>
-                        </div>
-                        <div>
-                            <h3 class="fw-bold mb-0 text-primary" th:text="${totalRecords}">0</h3>
-                            <span class="text-muted fw-semibold" style="font-size: 12px;">Total Logs</span>
-                        </div>
+        <div class="row mb-4 row-cols-1 row-cols-sm-2 row-cols-xl-3 g-3">
+
+            <!-- Total Logs -->
+            <div class="col">
+                <div class="portal-kpi-card">
+                    <div class="portal-kpi-header">
+                        <span class="portal-kpi-title">Total Logs</span>
                     </div>
+                    <div class="portal-kpi-value" th:text="${totalRecords}">0</div>
+                    <div class="portal-kpi-subtitle">&nbsp;</div>
                 </div>
             </div>
-            <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-                <div class="card py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon-circle" style="width: 40px; height: 40px; font-size: 16px;">
-                            <i class="bi bi-calendar-day"></i>
-                        </div>
-                        <div>
-                            <h3 class="fw-bold mb-0 text-primary" th:text="${todayActivities}">0</h3>
-                            <span class="text-muted fw-semibold" style="font-size: 12px;">Today's Logs</span>
-                        </div>
+
+            <!-- Today's Logs -->
+            <div class="col">
+                <div class="portal-kpi-card">
+                    <div class="portal-kpi-header">
+                        <span class="portal-kpi-title">Today's Logs</span>
                     </div>
+                    <div class="portal-kpi-value" th:text="${todayActivities}">0</div>
+                    <div class="portal-kpi-subtitle">&nbsp;</div>
                 </div>
             </div>
-            <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-                <div class="card py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon-circle" style="width: 40px; height: 40px; font-size: 16px;">
-                            <i class="bi bi-check-circle"></i>
-                        </div>
-                        <div>
-                            <h3 class="fw-bold mb-0 text-primary" th:text="${successfulActivities}">0</h3>
-                            <span class="text-muted fw-semibold" style="font-size: 12px;">Success Actions</span>
-                        </div>
+
+            <!-- Success Actions -->
+            <div class="col">
+                <div class="portal-kpi-card">
+                    <div class="portal-kpi-header">
+                        <span class="portal-kpi-title">Success Actions</span>
                     </div>
+                    <div class="portal-kpi-value" th:text="${successfulActivities}">0</div>
+                    <div class="portal-kpi-subtitle">&nbsp;</div>
                 </div>
             </div>
-            <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-                <div class="card py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon-circle" style="width: 40px; height: 40px; font-size: 16px;">
-                            <i class="bi bi-x-circle"></i>
-                        </div>
-                        <div>
-                            <h3 class="fw-bold mb-0 text-danger" th:text="${failedActivities}">0</h3>
-                            <span class="text-muted fw-semibold" style="font-size: 12px;">Failed Actions</span>
-                        </div>
+
+            <!-- Failed Actions -->
+            <div class="col">
+                <div class="portal-kpi-card">
+                    <div class="portal-kpi-header">
+                        <span class="portal-kpi-title">Failed Actions</span>
                     </div>
+                    <div class="portal-kpi-value" style="color: #ef4444;" th:text="${failedActivities}">0</div>
+                    <div class="portal-kpi-subtitle">&nbsp;</div>
                 </div>
             </div>
-            <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-                <div class="card py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon-circle" style="width: 40px; height: 40px; font-size: 16px;">
-                            <i class="bi bi-door-open"></i>
-                        </div>
-                        <div>
-                            <h5 class="fw-bold mb-0 text-primary" th:text="${latestLogin}">Never</h5>
-                            <span class="text-muted fw-semibold" style="font-size: 12px;">Latest Login</span>
-                        </div>
+
+            <!-- Latest Login (date/time — use smaller value class) -->
+            <div class="col">
+                <div class="portal-kpi-card">
+                    <div class="portal-kpi-header">
+                        <span class="portal-kpi-title">Latest Login</span>
                     </div>
+                    <div class="portal-kpi-value sm" th:text="${latestLogin}">Never</div>
+                    <div class="portal-kpi-subtitle">&nbsp;</div>
                 </div>
             </div>
-            <div class="col-xl-2 col-md-4 col-sm-6 mb-3">
-                <div class="card py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon-circle" style="width: 40px; height: 40px; font-size: 16px;">
-                            <i class="bi bi-arrow-clockwise"></i>
-                        </div>
-                        <div>
-                            <h5 class="fw-bold mb-0 text-primary" th:text="${latestUpdate}">Never</h5>
-                            <span class="text-muted fw-semibold" style="font-size: 12px;">Latest Update</span>
-                        </div>
+
+            <!-- Latest Update (date/time — use smaller value class) -->
+            <div class="col">
+                <div class="portal-kpi-card">
+                    <div class="portal-kpi-header">
+                        <span class="portal-kpi-title">Latest Update</span>
                     </div>
+                    <div class="portal-kpi-value sm" th:text="${latestUpdate}">Never</div>
+                    <div class="portal-kpi-subtitle">&nbsp;</div>
                 </div>
             </div>
+
         </div>
+
 
         <!-- ── Action Ribbon & Export ── -->
         <div class="card mb-4">

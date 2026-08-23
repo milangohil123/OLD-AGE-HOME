@@ -13,89 +13,83 @@
         <!-- ═══════════════════════════════════════════════════════════════════ -->
         <!-- KPI CARDS                                                           -->
         <!-- ═══════════════════════════════════════════════════════════════════ -->
-        <div class="row mb-4">
-            <div class="col-md-3 col-sm-6 mb-3 mb-md-0">
-                <div class="card py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon-circle">
-                            <i class="bi bi-calendar-event" style="font-size: 18px;"></i>
-                        </div>
-                        <div>
-                            <h2 class="fw-bold mb-0 text-primary" th:text="${dashboard.todaysMealsCount}">0</h2>
-                            <span class="text-muted fw-semibold" style="font-size: 13px;">Today's Meals</span>
-                        </div>
+
+        <!-- Row 1: Today's Meals, Breakfast, Lunch, Dinner -->
+        <div class="row mb-3 row-cols-1 row-cols-sm-2 row-cols-xl-4 g-3">
+
+            <!-- Today's Meals -->
+            <div class="col">
+                <div class="portal-kpi-card">
+                    <div class="portal-kpi-header">
+                        <span class="portal-kpi-title">Today's Meals</span>
                     </div>
+                    <div class="portal-kpi-value" th:text="${dashboard.todaysMealsCount}">0</div>
+                    <div class="portal-kpi-subtitle">&nbsp;</div>
                 </div>
             </div>
-            <div class="col-md-3 col-sm-6 mb-3 mb-md-0">
-                <div class="card py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon-circle">
-                            <i class="bi bi-sunrise" style="font-size: 18px;"></i>
-                        </div>
-                        <div>
-                            <h2 class="fw-bold mb-0 text-primary" th:text="${dashboard.todayBreakfastCount}">0</h2>
-                            <span class="text-muted fw-semibold" style="font-size: 13px;">Breakfast</span>
-                        </div>
+
+            <!-- Breakfast -->
+            <div class="col">
+                <div class="portal-kpi-card">
+                    <div class="portal-kpi-header">
+                        <span class="portal-kpi-title">Breakfast</span>
                     </div>
+                    <div class="portal-kpi-value" th:text="${dashboard.todayBreakfastCount}">0</div>
+                    <div class="portal-kpi-subtitle">&nbsp;</div>
                 </div>
             </div>
-            <div class="col-md-3 col-sm-6 mb-3 mb-md-0">
-                <div class="card py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon-circle">
-                            <i class="bi bi-sun" style="font-size: 18px;"></i>
-                        </div>
-                        <div>
-                            <h2 class="fw-bold mb-0 text-primary" th:text="${dashboard.todayLunchCount}">0</h2>
-                            <span class="text-muted fw-semibold" style="font-size: 13px;">Lunch</span>
-                        </div>
+
+            <!-- Lunch -->
+            <div class="col">
+                <div class="portal-kpi-card">
+                    <div class="portal-kpi-header">
+                        <span class="portal-kpi-title">Lunch</span>
                     </div>
+                    <div class="portal-kpi-value" th:text="${dashboard.todayLunchCount}">0</div>
+                    <div class="portal-kpi-subtitle">&nbsp;</div>
                 </div>
             </div>
-            <div class="col-md-3 col-sm-6 mb-3 mb-md-0">
-                <div class="card py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon-circle">
-                            <i class="bi bi-moon-stars" style="font-size: 18px;"></i>
-                        </div>
-                        <div>
-                            <h2 class="fw-bold mb-0 text-primary" th:text="${dashboard.todayDinnerCount}">0</h2>
-                            <span class="text-muted fw-semibold" style="font-size: 13px;">Dinner</span>
-                        </div>
+
+            <!-- Dinner -->
+            <div class="col">
+                <div class="portal-kpi-card">
+                    <div class="portal-kpi-header">
+                        <span class="portal-kpi-title">Dinner</span>
                     </div>
+                    <div class="portal-kpi-value" th:text="${dashboard.todayDinnerCount}">0</div>
+                    <div class="portal-kpi-subtitle">&nbsp;</div>
                 </div>
             </div>
+
         </div>
 
-        <div class="row mb-4">
-            <div class="col-md-6 col-sm-6 mb-3 mb-md-0">
-                <div class="card py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon-circle">
-                            <i class="bi bi-people" style="font-size: 18px;"></i>
-                        </div>
-                        <div>
-                            <h2 class="fw-bold mb-0 text-primary" th:text="${dashboard.activeFoodSponsorsCount}">0</h2>
-                            <span class="text-muted fw-semibold" style="font-size: 13px;">Active Food Sponsors</span>
-                        </div>
+        <!-- Row 2: Active Food Sponsors, Upcoming Schedules -->
+        <div class="row mb-4 g-3">
+
+            <!-- Active Food Sponsors -->
+            <div class="col-md-6">
+                <div class="portal-kpi-card">
+                    <div class="portal-kpi-header">
+                        <span class="portal-kpi-title">Active Food Sponsors</span>
                     </div>
+                    <div class="portal-kpi-value" th:text="${dashboard.activeFoodSponsorsCount}">0</div>
+                    <div class="portal-kpi-subtitle">&nbsp;</div>
                 </div>
             </div>
-            <div class="col-md-6 col-sm-6 mb-3 mb-md-0">
-                <div class="card py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon-circle">
-                            <i class="bi bi-clock-history" style="font-size: 18px;"></i>
-                        </div>
-                        <div>
-                            <h2 class="fw-bold mb-0 text-primary" th:text="${dashboard.upcomingSchedulesCount}">0</h2>
-                            <span class="text-muted fw-semibold" style="font-size: 13px;">Upcoming Schedules</span>
-                        </div>
+
+            <!-- Upcoming Schedules -->
+            <div class="col-md-6">
+                <div class="portal-kpi-card">
+                    <div class="portal-kpi-header">
+                        <span class="portal-kpi-title">Upcoming Schedules</span>
                     </div>
+                    <div class="portal-kpi-value" th:text="${dashboard.upcomingSchedulesCount}">0</div>
+                    <div class="portal-kpi-subtitle">&nbsp;</div>
                 </div>
             </div>
+
         </div>
+
 
         <!-- ═══════════════════════════════════════════════════════════════════ -->
         <!-- SECTION 3 + 4 : EXISTING SEARCH + MANAGEMENT TABLE                 -->

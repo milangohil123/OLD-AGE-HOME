@@ -11,65 +11,54 @@
         <div th:replace="~{fragments/alerts :: error(${errorMessage})}"></div>
 
         <!-- ── Stats Cards ── -->
-        <div class="row mb-4">
-            <div class="col-md-3 col-sm-6 mb-3 mb-md-0">
-                <div class="card py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon-circle">
-                            <i class="bi bi-people" style="font-size: 18px;"></i>
-                        </div>
-                        <div>
-                            <h2 class="fw-bold mb-0 text-primary" th:text="${totalDonors}">0</h2>
-                            <span class="text-muted fw-semibold" style="font-size: 13px;"
-                                th:text="#{dashboard.stat.donors}">Total Donors</span>
-                        </div>
+        <div class="row mb-4 row-cols-1 row-cols-sm-2 row-cols-xl-4 g-3">
+
+            <!-- Total Donors -->
+            <div class="col">
+                <div class="portal-kpi-card">
+                    <div class="portal-kpi-header">
+                        <span class="portal-kpi-title" th:text="#{dashboard.stat.donors}">Total Donors</span>
                     </div>
+                    <div class="portal-kpi-value" th:text="${totalDonors}">0</div>
+                    <div class="portal-kpi-subtitle">&nbsp;</div>
                 </div>
             </div>
-            <div class="col-md-3 col-sm-6 mb-3 mb-md-0">
-                <div class="card py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon-circle">
-                            <i class="bi bi-calendar-check" style="font-size: 18px;"></i>
-                        </div>
-                        <div>
-                            <h2 class="fw-bold mb-0 text-primary" th:text="${todayDonations}">0</h2>
-                            <span class="text-muted fw-semibold" style="font-size: 13px;"
-                                th:text="#{dashboard.stat.donations.today}">Today's Donations</span>
-                        </div>
+
+            <!-- Today's Donations -->
+            <div class="col">
+                <div class="portal-kpi-card">
+                    <div class="portal-kpi-header">
+                        <span class="portal-kpi-title" th:text="#{dashboard.stat.donations.today}">Today's Donations</span>
                     </div>
+                    <div class="portal-kpi-value" th:text="${todayDonations}">0</div>
+                    <div class="portal-kpi-subtitle">&nbsp;</div>
                 </div>
             </div>
-            <div class="col-md-3 col-sm-6 mb-3 mb-md-0">
-                <div class="card py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon-circle">
-                            <i class="bi bi-calendar3" style="font-size: 18px;"></i>
-                        </div>
-                        <div>
-                            <h2 class="fw-bold mb-0 text-primary" th:text="${monthDonations}">0</h2>
-                            <span class="text-muted fw-semibold" style="font-size: 13px;"
-                                th:text="#{dashboard.stat.donations.month}">This Month</span>
-                        </div>
+
+            <!-- This Month's Donations -->
+            <div class="col">
+                <div class="portal-kpi-card">
+                    <div class="portal-kpi-header">
+                        <span class="portal-kpi-title" th:text="#{dashboard.stat.donations.month}">This Month's Donations</span>
                     </div>
+                    <div class="portal-kpi-value" th:text="${monthDonations}">0</div>
+                    <div class="portal-kpi-subtitle">&nbsp;</div>
                 </div>
             </div>
-            <div class="col-md-3 col-sm-6">
-                <div class="card py-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="stat-icon-circle">
-                            <i class="bi bi-currency-rupee" style="font-size: 18px;"></i>
-                        </div>
-                        <div>
-                            <h2 class="fw-bold mb-0 text-primary"
-                                th:text="'₹' + ${#numbers.formatDecimal(totalAmount != null ? totalAmount : 0, 1, 'COMMA', 2, 'POINT')}">
-                                ₹0.00</h2>
-                            <span class="text-muted fw-semibold" style="font-size: 13px;"
-                                th:text="#{dashboard.stat.raised}">Total Raised</span>
-                        </div>
+
+            <!-- Total Amount Raised -->
+            <div class="col">
+                <div class="portal-kpi-card">
+                    <div class="portal-kpi-header">
+                        <span class="portal-kpi-title" th:text="#{dashboard.stat.raised}">Total Amount Raised</span>
                     </div>
+                    <div class="portal-kpi-value"
+                        th:text="'₹' + ${#numbers.formatDecimal(totalAmount != null ? totalAmount : 0, 1, 'COMMA', 2, 'POINT')}">
+                        ₹0.00</div>
+                    <div class="portal-kpi-subtitle">&nbsp;</div>
                 </div>
             </div>
+
         </div>
 
         <!-- ── Action Ribbon ── -->
