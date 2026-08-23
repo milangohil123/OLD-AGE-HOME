@@ -7,38 +7,38 @@
     <div id="audit-list">
 
         <!-- ── Stats Cards ── -->
-        <div class="row mb-4 row-cols-1 row-cols-sm-2 row-cols-xl-3 g-3">
-
-            <!-- Total Logs -->
+        <div class="row mb-4 row-cols-1 row-cols-sm-2 row-cols-xl-4 g-3">
+            <!-- Today's Activity -->
             <div class="col">
                 <div class="card h-100 p-3 shadow-sm" style="border-radius: 8px; border: 1px solid #e2e8f0;">
                     <div class="d-flex justify-content-between align-items-start mb-2">
-                        <span class="fw-bold" style="font-size: 13px; color: #1e293b;">Total Logs</span>
-                        <i class="bi bi-card-list text-muted" style="font-size: 16px;"></i>
+                        <span class="fw-bold" style="font-size: 13px; color: #1e293b;">Today's Activity</span>
+                        <span class="badge rounded-pill fw-bold"
+                            th:style="${todayActivitiesTrendUp == false ? 'background-color: #fee2e2; color: #ef4444; font-size: 11px; padding: 4px 8px;' : 'background-color: #dcfce7; color: #16a34a; font-size: 11px; padding: 4px 8px;'}">
+                            <i th:classappend="${todayActivitiesTrendUp == false ? 'bi bi-caret-down-fill' : 'bi bi-caret-up-fill'}"></i>
+                            <span th:text="${todayActivitiesTrendUp == false ? '-' : '+'} + ${todayActivitiesTrend != null ? todayActivitiesTrend : '0.00'} + '%'"></span>
+                        </span>
                     </div>
-                    <h2 class="fw-bold mb-0" style="font-size: 28px; color: #0f172a;" th:text="${totalRecords}">0</h2>
+                    <h2 class="fw-bold mb-1" style="font-size: 28px; color: #0f172a;" th:text="${todayActivities}">0</h2>
+                    <span class="text-muted" style="font-size: 12px;"
+                        th:text="'vs. ' + ${prevTodayActivities != null ? prevTodayActivities : 0} + ' yesterday'">vs. 0 yesterday</span>
                 </div>
             </div>
 
-            <!-- Today's Logs -->
+            <!-- Successful Actions -->
             <div class="col">
                 <div class="card h-100 p-3 shadow-sm" style="border-radius: 8px; border: 1px solid #e2e8f0;">
                     <div class="d-flex justify-content-between align-items-start mb-2">
-                        <span class="fw-bold" style="font-size: 13px; color: #1e293b;">Today's Logs</span>
-                        <i class="bi bi-calendar2-day text-muted" style="font-size: 16px;"></i>
+                        <span class="fw-bold" style="font-size: 13px; color: #1e293b;">Successful Actions</span>
+                        <span class="badge rounded-pill fw-bold"
+                            th:style="${successfulActivitiesTrendUp == false ? 'background-color: #fee2e2; color: #ef4444; font-size: 11px; padding: 4px 8px;' : 'background-color: #dcfce7; color: #16a34a; font-size: 11px; padding: 4px 8px;'}">
+                            <i th:classappend="${successfulActivitiesTrendUp == false ? 'bi bi-caret-down-fill' : 'bi bi-caret-up-fill'}"></i>
+                            <span th:text="${successfulActivitiesTrendUp == false ? '-' : '+'} + ${successfulActivitiesTrend != null ? successfulActivitiesTrend : '0.00'} + '%'"></span>
+                        </span>
                     </div>
-                    <h2 class="fw-bold mb-0" style="font-size: 28px; color: #0f172a;" th:text="${todayActivities}">0</h2>
-                </div>
-            </div>
-
-            <!-- Success Actions -->
-            <div class="col">
-                <div class="card h-100 p-3 shadow-sm" style="border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <span class="fw-bold" style="font-size: 13px; color: #1e293b;">Success Actions</span>
-                        <i class="bi bi-check-circle text-muted" style="font-size: 16px;"></i>
-                    </div>
-                    <h2 class="fw-bold mb-0" style="font-size: 28px; color: #0f172a;" th:text="${successfulActivities}">0</h2>
+                    <h2 class="fw-bold mb-1" style="font-size: 28px; color: #0f172a;" th:text="${successfulActivities}">0</h2>
+                    <span class="text-muted" style="font-size: 12px;"
+                        th:text="'vs. ' + ${prevSuccessfulActivities != null ? prevSuccessfulActivities : 0} + ' yesterday'">vs. 0 yesterday</span>
                 </div>
             </div>
 
@@ -47,31 +47,32 @@
                 <div class="card h-100 p-3 shadow-sm" style="border-radius: 8px; border: 1px solid #e2e8f0;">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <span class="fw-bold" style="font-size: 13px; color: #1e293b;">Failed Actions</span>
-                        <i class="bi bi-exclamation-circle text-muted" style="font-size: 16px;"></i>
+                        <span class="badge rounded-pill fw-bold"
+                            th:style="${failedActivitiesTrendUp == false ? 'background-color: #dcfce7; color: #16a34a; font-size: 11px; padding: 4px 8px;' : 'background-color: #fee2e2; color: #ef4444; font-size: 11px; padding: 4px 8px;'}">
+                            <i th:classappend="${failedActivitiesTrendUp == false ? 'bi bi-caret-down-fill' : 'bi bi-caret-up-fill'}"></i>
+                            <span th:text="${failedActivitiesTrendUp == false ? '-' : '+'} + ${failedActivitiesTrend != null ? failedActivitiesTrend : '0.00'} + '%'"></span>
+                        </span>
                     </div>
-                    <h2 class="fw-bold mb-0" style="font-size: 28px; color: #ef4444;" th:text="${failedActivities}">0</h2>
+                    <h2 class="fw-bold mb-1" style="font-size: 28px; color: #0f172a;" th:text="${failedActivities}">0</h2>
+                    <span class="text-muted" style="font-size: 12px;"
+                        th:text="'vs. ' + ${prevFailedActivities != null ? prevFailedActivities : 0} + ' yesterday'">vs. 0 yesterday</span>
                 </div>
             </div>
-
-            <!-- Latest Login (date/time — use smaller value class) -->
+            
+            <!-- Total Records -->
             <div class="col">
                 <div class="card h-100 p-3 shadow-sm" style="border-radius: 8px; border: 1px solid #e2e8f0;">
                     <div class="d-flex justify-content-between align-items-start mb-2">
-                        <span class="fw-bold" style="font-size: 13px; color: #1e293b;">Latest Login</span>
-                        <i class="bi bi-box-arrow-in-right text-muted" style="font-size: 16px;"></i>
+                        <span class="fw-bold" style="font-size: 13px; color: #1e293b;">Total Records</span>
+                        <span class="badge rounded-pill fw-bold"
+                            th:style="${totalRecordsTrendUp == false ? 'background-color: #fee2e2; color: #ef4444; font-size: 11px; padding: 4px 8px;' : 'background-color: #dcfce7; color: #16a34a; font-size: 11px; padding: 4px 8px;'}">
+                            <i th:classappend="${totalRecordsTrendUp == false ? 'bi bi-caret-down-fill' : 'bi bi-caret-up-fill'}"></i>
+                            <span th:text="${totalRecordsTrendUp == false ? '-' : '+'} + ${totalRecordsTrend != null ? totalRecordsTrend : '0.00'} + '%'"></span>
+                        </span>
                     </div>
-                    <h2 class="fw-bold mb-0" style="font-size: 18px; color: #0f172a; margin-top: auto;" th:text="${latestLogin}">Never</h2>
-                </div>
-            </div>
-
-            <!-- Latest Update (date/time — use smaller value class) -->
-            <div class="col">
-                <div class="card h-100 p-3 shadow-sm" style="border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <span class="fw-bold" style="font-size: 13px; color: #1e293b;">Latest Update</span>
-                        <i class="bi bi-pencil-square text-muted" style="font-size: 16px;"></i>
-                    </div>
-                    <h2 class="fw-bold mb-0" style="font-size: 18px; color: #0f172a; margin-top: auto;" th:text="${latestUpdate}">Never</h2>
+                    <h2 class="fw-bold mb-1" style="font-size: 28px; color: #0f172a;" th:text="${totalRecords}">0</h2>
+                    <span class="text-muted" style="font-size: 12px;"
+                        th:text="'vs. ' + ${prevTotalRecords != null ? prevTotalRecords : 0} + ' yesterday'">vs. 0 yesterday</span>
                 </div>
             </div>
 

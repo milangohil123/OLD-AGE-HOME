@@ -30,8 +30,10 @@ public interface AuditService {
     byte[] exportLogs(List<AuditLog> logs, String format) throws IOException;
 
     long countTodayActivities();
+    long countActivitiesBetween(LocalDateTime start, LocalDateTime end);
 
     long countFailedActivities();
+    long countActivitiesBySuccessBetween(LocalDateTime start, LocalDateTime end, boolean success);
 
     long countSuccessfulActivities();
 

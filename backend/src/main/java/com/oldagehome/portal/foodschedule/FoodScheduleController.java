@@ -42,7 +42,49 @@ public class FoodScheduleController {
             Page<FoodScheduleDTO> schedules = foodScheduleService.searchSchedules(searchDTO, pageable);
 
             model.addAttribute("schedules", schedules);
-            model.addAttribute("dashboard", foodScheduleService.getDashboardStats());
+            com.oldagehome.portal.foodschedule.dto.FoodDashboardDTO stats = foodScheduleService.getDashboardStats();
+            model.addAttribute("dashboard", stats);
+            
+            // Calculate trends vs yesterday
+            java.time.LocalDate yesterday = java.time.LocalDate.now().minusDays(1);
+            com.oldagehome.portal.foodschedule.dto.FoodDashboardDTO prevStats = foodScheduleService.getDashboardStatsForDate(yesterday);
+            
+            double todaysMealsTrendVal = prevStats.getTodaysMealsCount() > 0 ? ((double) (stats.getTodaysMealsCount() - prevStats.getTodaysMealsCount()) / prevStats.getTodaysMealsCount()) * 100 : 0.0;
+            model.addAttribute("prevTodaysMeals", prevStats.getTodaysMealsCount());
+            model.addAttribute("todaysMealsTrend", String.format("%.2f", Math.abs(todaysMealsTrendVal)));
+            model.addAttribute("todaysMealsTrendUp", todaysMealsTrendVal >= 0);
+
+            double breakfastTrendVal = prevStats.getTodayBreakfastCount() > 0 ? ((double) (stats.getTodayBreakfastCount() - prevStats.getTodayBreakfastCount()) / prevStats.getTodayBreakfastCount()) * 100 : 0.0;
+            model.addAttribute("prevBreakfast", prevStats.getTodayBreakfastCount());
+            model.addAttribute("breakfastTrendValStr", String.format("%.2f", Math.abs(breakfastTrendVal)));
+            model.addAttribute("breakfastTrendUp", breakfastTrendVal >= 0);
+
+            double lunchTrendVal = prevStats.getTodayLunchCount() > 0 ? ((double) (stats.getTodayLunchCount() - prevStats.getTodayLunchCount()) / prevStats.getTodayLunchCount()) * 100 : 0.0;
+            model.addAttribute("prevLunch", prevStats.getTodayLunchCount());
+            model.addAttribute("lunchTrendValStr", String.format("%.2f", Math.abs(lunchTrendVal)));
+            model.addAttribute("lunchTrendUp", lunchTrendVal >= 0);
+
+            double dinnerTrendVal = prevStats.getTodayDinnerCount() > 0 ? ((double) (stats.getTodayDinnerCount() - prevStats.getTodayDinnerCount()) / prevStats.getTodayDinnerCount()) * 100 : 0.0;
+            model.addAttribute("prevDinner", prevStats.getTodayDinnerCount());
+            model.addAttribute("dinnerTrendValStr", String.format("%.2f", Math.abs(dinnerTrendVal)));
+            model.addAttribute("dinnerTrendUp", dinnerTrendVal >= 0);
+
+            // Active Food Sponsors trend vs yesterday
+            double activeSponsorsTrendVal = prevStats.getActiveFoodSponsorsCount() > 0
+                    ? ((double) (stats.getActiveFoodSponsorsCount() - prevStats.getActiveFoodSponsorsCount()) / prevStats.getActiveFoodSponsorsCount()) * 100
+                    : (stats.getActiveFoodSponsorsCount() > 0 ? 100.0 : 0.0);
+            model.addAttribute("prevActiveSponsors", prevStats.getActiveFoodSponsorsCount());
+            model.addAttribute("activeSponsorsTrend", String.format("%.2f", Math.abs(activeSponsorsTrendVal)));
+            model.addAttribute("activeSponsorsTrendUp", activeSponsorsTrendVal >= 0);
+
+            // Upcoming Schedules trend vs yesterday
+            double upcomingTrendVal = prevStats.getUpcomingSchedulesCount() > 0
+                    ? ((double) (stats.getUpcomingSchedulesCount() - prevStats.getUpcomingSchedulesCount()) / prevStats.getUpcomingSchedulesCount()) * 100
+                    : (stats.getUpcomingSchedulesCount() > 0 ? 100.0 : 0.0);
+            model.addAttribute("prevUpcoming", prevStats.getUpcomingSchedulesCount());
+            model.addAttribute("upcomingTrend", String.format("%.2f", Math.abs(upcomingTrendVal)));
+            model.addAttribute("upcomingTrendUp", upcomingTrendVal >= 0);
+
             model.addAttribute("sponsors", foodScheduleService.getFoodSponsors());
             model.addAttribute("todaysSchedules", foodScheduleService.getTodaysSchedules());
             model.addAttribute("past7DaysGroups", foodScheduleService.getPast7DaysGroups());

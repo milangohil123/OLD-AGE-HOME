@@ -100,8 +100,20 @@ public class AuditServiceImpl implements AuditService {
 
     @Override
     @Transactional(readOnly = true)
+    public long countActivitiesBetween(LocalDateTime start, LocalDateTime end) {
+        return auditLogRepository.countByTimestampBetween(start, end);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public long countFailedActivities() {
         return auditLogRepository.countByTimestampAfterAndSuccess(LocalDate.now().atStartOfDay(), false);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public long countActivitiesBySuccessBetween(LocalDateTime start, LocalDateTime end, boolean success) {
+        return auditLogRepository.countByTimestampBetweenAndSuccess(start, end, success);
     }
 
     @Override

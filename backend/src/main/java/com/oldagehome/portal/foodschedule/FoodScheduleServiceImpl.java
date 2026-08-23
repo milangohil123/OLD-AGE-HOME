@@ -110,15 +110,20 @@ public class FoodScheduleServiceImpl implements FoodScheduleService {
     @Override
     @Transactional(readOnly = true)
     public FoodDashboardDTO getDashboardStats() {
-        LocalDate today = LocalDate.now();
+        return getDashboardStatsForDate(LocalDate.now());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public FoodDashboardDTO getDashboardStatsForDate(LocalDate date) {
         FoodDashboardDTO stats = new FoodDashboardDTO();
 
-        stats.setTodaysMealsCount(foodScheduleRepository.countByMealDate(today));
-        stats.setTodayBreakfastCount(foodScheduleRepository.countByMealDateAndMealType(today, MealType.BREAKFAST));
-        stats.setTodayLunchCount(foodScheduleRepository.countByMealDateAndMealType(today, MealType.LUNCH));
-        stats.setTodayDinnerCount(foodScheduleRepository.countByMealDateAndMealType(today, MealType.DINNER));
+        stats.setTodaysMealsCount(foodScheduleRepository.countByMealDate(date));
+        stats.setTodayBreakfastCount(foodScheduleRepository.countByMealDateAndMealType(date, MealType.BREAKFAST));
+        stats.setTodayLunchCount(foodScheduleRepository.countByMealDateAndMealType(date, MealType.LUNCH));
+        stats.setTodayDinnerCount(foodScheduleRepository.countByMealDateAndMealType(date, MealType.DINNER));
         stats.setActiveFoodSponsorsCount(foodScheduleRepository.countActiveFoodSponsors());
-        stats.setUpcomingSchedulesCount(foodScheduleRepository.countByMealDateGreaterThanEqual(today.plusDays(1)));
+        stats.setUpcomingSchedulesCount(foodScheduleRepository.countByMealDateGreaterThanEqual(date.plusDays(1)));
 
         return stats;
     }

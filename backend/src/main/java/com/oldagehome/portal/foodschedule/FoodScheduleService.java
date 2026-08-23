@@ -24,6 +24,8 @@ public interface FoodScheduleService {
     
     FoodDashboardDTO getDashboardStats();
     
+    FoodDashboardDTO getDashboardStatsForDate(java.time.LocalDate date);
+    
     List<FoodSponsorDTO> getFoodSponsors();
     
     void validateDuplicateMeal(FoodScheduleDTO dto);

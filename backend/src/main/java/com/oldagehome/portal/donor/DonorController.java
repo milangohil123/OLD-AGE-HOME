@@ -70,11 +70,51 @@ public class DonorController {
         model.addAttribute("keyword", keyword);
         model.addAttribute("activePage", "donors");
 
-        // Dashboard stats for list page header cards
-        model.addAttribute("totalDonors", donorService.countTotalDonors());
-        model.addAttribute("todayDonations", donorService.countTodayDonations());
-        model.addAttribute("monthDonations", donorService.countThisMonthDonations());
-        model.addAttribute("totalAmount", donorService.sumTotalDonationAmount());
+        // Dashboard stats for list page header cards with trends
+        java.time.LocalDate now = java.time.LocalDate.now();
+
+        // Total Donors
+        long totalDonors = donorService.countTotalDonors();
+        long prevTotalDonors = donorService.countTotalDonorsBefore(now.minusDays(30));
+        double totalDonorsTrendVal = prevTotalDonors > 0 ? ((double) (totalDonors - prevTotalDonors) / prevTotalDonors) * 100 : 0.0;
+        model.addAttribute("totalDonors", totalDonors);
+        model.addAttribute("prevTotalDonors", prevTotalDonors);
+        model.addAttribute("totalDonorsTrend", String.format("%.2f", Math.abs(totalDonorsTrendVal)));
+        model.addAttribute("totalDonorsTrendUp", totalDonorsTrendVal >= 0);
+
+        // Today's Donations
+        long todayDonations = donorService.countTodayDonations();
+        long prevTodayDonations = donorService.countDonationsBetween(now.minusDays(1), now.minusDays(1));
+        double todayDonationsTrendVal = prevTodayDonations > 0 ? ((double) (todayDonations - prevTodayDonations) / prevTodayDonations) * 100 : 0.0;
+        model.addAttribute("todayDonations", todayDonations);
+        model.addAttribute("prevTodayDonations", prevTodayDonations);
+        model.addAttribute("todayDonationsTrend", String.format("%.2f", Math.abs(todayDonationsTrendVal)));
+        model.addAttribute("todayDonationsTrendUp", todayDonationsTrendVal >= 0);
+
+        // This Month's Donations
+        long monthDonations = donorService.countThisMonthDonations();
+        long prevMonthDonations = donorService.countDonationsBetween(
+            now.minusMonths(1).withDayOfMonth(1), 
+            now.minusMonths(1).withDayOfMonth(now.minusMonths(1).lengthOfMonth())
+        );
+        double donationMonthTrend = prevMonthDonations > 0 ? ((double) (monthDonations - prevMonthDonations) / prevMonthDonations) * 100 : 0.0;
+        model.addAttribute("monthDonations", monthDonations);
+        model.addAttribute("prevMonthDonations", prevMonthDonations);
+        model.addAttribute("donationMonthTrend", String.format("%.2f", Math.abs(donationMonthTrend)));
+        model.addAttribute("donationMonthTrendUp", donationMonthTrend >= 0);
+
+        // Total Amount
+        java.math.BigDecimal totalAmount = donorService.sumTotalDonationAmount();
+        java.math.BigDecimal prevMonthAmount = donorService.sumTotalDonationAmountBefore(now.withDayOfMonth(1));
+        double amountTrend = 0.0;
+        if (prevMonthAmount.compareTo(java.math.BigDecimal.ZERO) > 0) {
+            java.math.BigDecimal diff = totalAmount.subtract(prevMonthAmount);
+            amountTrend = diff.divide(prevMonthAmount, 4, java.math.RoundingMode.HALF_UP).multiply(new java.math.BigDecimal("100")).doubleValue();
+        }
+        model.addAttribute("totalAmount", totalAmount);
+        model.addAttribute("prevMonthAmount", prevMonthAmount);
+        model.addAttribute("amountTrend", String.format("%.2f", Math.abs(amountTrend)));
+        model.addAttribute("amountTrendUp", amountTrend >= 0);
 
         // Trend data for sparklines
         model.addAttribute("donorTrend", donorService.getDonorTrend(7));

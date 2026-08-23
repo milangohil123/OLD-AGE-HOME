@@ -70,19 +70,57 @@ public class ReportController {
     public String dashboard(Model model) {
         model.addAttribute("activePage", "reports");
         
-        // Dashboard Stats
-        model.addAttribute("totalResidents", residentService.countTotalResidents());
-        model.addAttribute("totalDonors", donorService.countTotalDonors());
+        // Dashboard Stats with trends
+        LocalDate now = LocalDate.now();
+
+        // Total Residents
+        long totalResidents = residentService.countTotalResidents();
+        long prevResidents = residentService.countTotalResidentsBefore(now.minusDays(30));
+        double residentTrend = prevResidents > 0 ? ((double) (totalResidents - prevResidents) / prevResidents) * 100 : 0.0;
+        model.addAttribute("totalResidents", totalResidents);
+        model.addAttribute("prevResidents", prevResidents);
+        model.addAttribute("residentTrend", String.format("%.2f", Math.abs(residentTrend)));
+        model.addAttribute("residentTrendUp", residentTrend >= 0);
+
+        // Total Donors
+        long totalDonors = donorService.countTotalDonors();
+        long prevDonors = donorService.countTotalDonorsBefore(now.minusDays(30));
+        double donorTrendVal = prevDonors > 0 ? ((double) (totalDonors - prevDonors) / prevDonors) * 100 : 0.0;
+        model.addAttribute("totalDonors", totalDonors);
+        model.addAttribute("prevDonors", prevDonors);
+        model.addAttribute("donorTrend", String.format("%.2f", Math.abs(donorTrendVal)));
+        model.addAttribute("donorTrendUp", donorTrendVal >= 0);
+
+        // Total Raised
+        java.math.BigDecimal totalDonationAmount = donorService.sumTotalDonationAmount();
+        java.math.BigDecimal prevMonthAmount = donorService.sumTotalDonationAmountBefore(now.withDayOfMonth(1));
+        double amountTrendVal = 0.0;
+        if (prevMonthAmount.compareTo(java.math.BigDecimal.ZERO) > 0) {
+            java.math.BigDecimal diff = totalDonationAmount.subtract(prevMonthAmount);
+            amountTrendVal = diff.divide(prevMonthAmount, 4, java.math.RoundingMode.HALF_UP).multiply(new java.math.BigDecimal("100")).doubleValue();
+        }
+        model.addAttribute("totalDonationAmount", totalDonationAmount);
+        model.addAttribute("prevMonthAmount", prevMonthAmount);
+        model.addAttribute("amountTrend", String.format("%.2f", Math.abs(amountTrendVal)));
+        model.addAttribute("amountTrendUp", amountTrendVal >= 0);
+
+        // Total Medicines
+        long totalMedicines = inventoryService.countTotalMedicines();
+        long prevTotalMedicines = totalMedicines; // Not tracking historical total currently
+        double medicineTrendVal = 0.0;
+        model.addAttribute("totalMedicines", totalMedicines);
+        model.addAttribute("prevTotalMedicines", prevTotalMedicines);
+        model.addAttribute("medicineTrend", String.format("%.2f", Math.abs(medicineTrendVal)));
+        model.addAttribute("medicineTrendUp", medicineTrendVal >= 0);
+
         model.addAttribute("totalDonations", donorService.countTodayDonations() + donorService.countThisMonthDonations()); // approximate or total donation entries count
-        model.addAttribute("totalDonationAmount", donorService.sumTotalDonationAmount());
-        model.addAttribute("totalMedicines", inventoryService.countTotalMedicines());
         model.addAttribute("lowStock", inventoryService.countLowStock());
         model.addAttribute("expiredMedicines", inventoryService.countExpired());
         model.addAttribute("availableMedicines", inventoryService.countAvailable());
 
-        // Trend data for sparklines
-        model.addAttribute("donorTrend", donorService.getDonorTrend(7));
-        model.addAttribute("amountTrend", donorService.getDonationAmountTrend(7));
+        // Trend data for sparklines (use distinct names to avoid overwriting KPI percentage strings above)
+        model.addAttribute("donorSparklineTrend", donorService.getDonorTrend(7));
+        model.addAttribute("amountSparklineTrend", donorService.getDonationAmountTrend(7));
         // Note: For totalResidents and totalMedicines we do not have historical grouped data in this phase.
         // The Thymeleaf template will detect null and display a neutral placeholder.
 

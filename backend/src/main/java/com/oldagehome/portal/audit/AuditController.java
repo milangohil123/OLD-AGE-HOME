@@ -62,11 +62,51 @@ public class AuditController {
         model.addAttribute("activePage", "audit");
 
         // Dashboard Stats
-        model.addAttribute("todayActivities", auditService.countTodayActivities());
-        model.addAttribute("successfulActivities", auditService.countSuccessfulActivities());
-        model.addAttribute("failedActivities", auditService.countFailedActivities());
-        model.addAttribute("totalRecords", auditService.getTotalRecords());
+        long todayActivities = auditService.countTodayActivities();
+        long successfulActivities = auditService.countSuccessfulActivities();
+        long failedActivities = auditService.countFailedActivities();
+        long totalRecords = auditService.getTotalRecords();
         
+        java.time.LocalDateTime yesterdayStart = LocalDate.now().minusDays(1).atStartOfDay();
+        java.time.LocalDateTime yesterdayEnd = LocalDate.now().minusDays(1).atTime(23, 59, 59);
+        
+        long prevTodayActivities = auditService.countActivitiesBetween(yesterdayStart, yesterdayEnd);
+        double todayActivitiesTrend = prevTodayActivities > 0 ? ((double) (todayActivities - prevTodayActivities) / prevTodayActivities) * 100 : 0.0;
+
+        long prevSuccessfulActivities = auditService.countActivitiesBySuccessBetween(yesterdayStart, yesterdayEnd, true);
+        double successfulActivitiesTrend = prevSuccessfulActivities > 0 ? ((double) (successfulActivities - prevSuccessfulActivities) / prevSuccessfulActivities) * 100 : 0.0;
+
+        long prevFailedActivities = auditService.countActivitiesBySuccessBetween(yesterdayStart, yesterdayEnd, false);
+        double failedActivitiesTrend = prevFailedActivities > 0 ? ((double) (failedActivities - prevFailedActivities) / prevFailedActivities) * 100 : 0.0;
+
+        model.addAttribute("todayActivities", todayActivities);
+        model.addAttribute("prevTodayActivities", prevTodayActivities);
+        model.addAttribute("todayActivitiesTrend", String.format("%.2f", Math.abs(todayActivitiesTrend)));
+        model.addAttribute("todayActivitiesTrendUp", todayActivitiesTrend >= 0);
+
+        model.addAttribute("successfulActivities", successfulActivities);
+        model.addAttribute("prevSuccessfulActivities", prevSuccessfulActivities);
+        model.addAttribute("successfulActivitiesTrend", String.format("%.2f", Math.abs(successfulActivitiesTrend)));
+        model.addAttribute("successfulActivitiesTrendUp", successfulActivitiesTrend >= 0);
+
+        model.addAttribute("failedActivities", failedActivities);
+        model.addAttribute("prevFailedActivities", prevFailedActivities);
+        model.addAttribute("failedActivitiesTrend", String.format("%.2f", Math.abs(failedActivitiesTrend)));
+        model.addAttribute("failedActivitiesTrendUp", failedActivitiesTrend >= 0);
+
+        model.addAttribute("totalRecords", totalRecords);
+
+        // Total Records trend: compare today's total vs yesterday's added records
+        long prevTotalRecords1 = auditService.countActivitiesBetween(
+                LocalDate.now().minusDays(1).atStartOfDay(),
+                LocalDate.now().minusDays(1).atTime(23, 59, 59));
+        double totalRecordsTrend1 = prevTotalRecords1 > 0
+                ? ((double) (totalRecords - prevTotalRecords1) / prevTotalRecords1) * 100
+                : (totalRecords > 0 ? 100.0 : 0.0);
+        model.addAttribute("prevTotalRecords", prevTotalRecords1);
+        model.addAttribute("totalRecordsTrend", String.format("%.2f", Math.abs(totalRecordsTrend1)));
+        model.addAttribute("totalRecordsTrendUp", totalRecordsTrend1 >= 0);
+
         // Trend data for sparklines
         model.addAttribute("totalLogTrend", auditService.getLogTrend(7));
         model.addAttribute("successLogTrend", auditService.getLogTrendBySuccess(7, true));
@@ -123,11 +163,51 @@ public class AuditController {
         model.addAttribute("endDate", endDate);
         model.addAttribute("activePage", "audit");
 
-        model.addAttribute("todayActivities", auditService.countTodayActivities());
-        model.addAttribute("successfulActivities", auditService.countSuccessfulActivities());
-        model.addAttribute("failedActivities", auditService.countFailedActivities());
-        model.addAttribute("totalRecords", auditService.getTotalRecords());
+        long todayActivities = auditService.countTodayActivities();
+        long successfulActivities = auditService.countSuccessfulActivities();
+        long failedActivities = auditService.countFailedActivities();
+        long totalRecords = auditService.getTotalRecords();
         
+        java.time.LocalDateTime yesterdayStart = LocalDate.now().minusDays(1).atStartOfDay();
+        java.time.LocalDateTime yesterdayEnd = LocalDate.now().minusDays(1).atTime(23, 59, 59);
+        
+        long prevTodayActivities = auditService.countActivitiesBetween(yesterdayStart, yesterdayEnd);
+        double todayActivitiesTrend = prevTodayActivities > 0 ? ((double) (todayActivities - prevTodayActivities) / prevTodayActivities) * 100 : 0.0;
+
+        long prevSuccessfulActivities = auditService.countActivitiesBySuccessBetween(yesterdayStart, yesterdayEnd, true);
+        double successfulActivitiesTrend = prevSuccessfulActivities > 0 ? ((double) (successfulActivities - prevSuccessfulActivities) / prevSuccessfulActivities) * 100 : 0.0;
+
+        long prevFailedActivities = auditService.countActivitiesBySuccessBetween(yesterdayStart, yesterdayEnd, false);
+        double failedActivitiesTrend = prevFailedActivities > 0 ? ((double) (failedActivities - prevFailedActivities) / prevFailedActivities) * 100 : 0.0;
+
+        model.addAttribute("todayActivities", todayActivities);
+        model.addAttribute("prevTodayActivities", prevTodayActivities);
+        model.addAttribute("todayActivitiesTrend", String.format("%.2f", Math.abs(todayActivitiesTrend)));
+        model.addAttribute("todayActivitiesTrendUp", todayActivitiesTrend >= 0);
+
+        model.addAttribute("successfulActivities", successfulActivities);
+        model.addAttribute("prevSuccessfulActivities", prevSuccessfulActivities);
+        model.addAttribute("successfulActivitiesTrend", String.format("%.2f", Math.abs(successfulActivitiesTrend)));
+        model.addAttribute("successfulActivitiesTrendUp", successfulActivitiesTrend >= 0);
+
+        model.addAttribute("failedActivities", failedActivities);
+        model.addAttribute("prevFailedActivities", prevFailedActivities);
+        model.addAttribute("failedActivitiesTrend", String.format("%.2f", Math.abs(failedActivitiesTrend)));
+        model.addAttribute("failedActivitiesTrendUp", failedActivitiesTrend >= 0);
+
+        model.addAttribute("totalRecords", totalRecords);
+
+        // Total Records trend: compare today's total vs yesterday's added records
+        long prevTotalRecords2 = auditService.countActivitiesBetween(
+                LocalDate.now().minusDays(1).atStartOfDay(),
+                LocalDate.now().minusDays(1).atTime(23, 59, 59));
+        double totalRecordsTrend2 = prevTotalRecords2 > 0
+                ? ((double) (totalRecords - prevTotalRecords2) / prevTotalRecords2) * 100
+                : (totalRecords > 0 ? 100.0 : 0.0);
+        model.addAttribute("prevTotalRecords", prevTotalRecords2);
+        model.addAttribute("totalRecordsTrend", String.format("%.2f", Math.abs(totalRecordsTrend2)));
+        model.addAttribute("totalRecordsTrendUp", totalRecordsTrend2 >= 0);
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         var latestLogin = auditService.getLatestLogin();
         var latestUpdate = auditService.getLatestSystemUpdate();

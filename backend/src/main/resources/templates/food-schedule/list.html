@@ -16,15 +16,20 @@
 
         <!-- Row 1: Today's Meals, Breakfast, Lunch, Dinner -->
         <div class="row mb-3 row-cols-1 row-cols-sm-2 row-cols-xl-4 g-3">
-
             <!-- Today's Meals -->
             <div class="col">
                 <div class="card h-100 p-3 shadow-sm" style="border-radius: 8px; border: 1px solid #e2e8f0;">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <span class="fw-bold" style="font-size: 13px; color: #1e293b;">Today's Meals</span>
-                        <i class="bi bi-calendar2-day text-muted" style="font-size: 16px;"></i>
+                        <span class="badge rounded-pill fw-bold"
+                            th:style="${todaysMealsTrendUp == false ? 'background-color: #fee2e2; color: #ef4444; font-size: 11px; padding: 4px 8px;' : 'background-color: #dcfce7; color: #16a34a; font-size: 11px; padding: 4px 8px;'}">
+                            <i th:classappend="${todaysMealsTrendUp == false ? 'bi bi-caret-down-fill' : 'bi bi-caret-up-fill'}"></i>
+                            <span th:text="${todaysMealsTrendUp == false ? '-' : '+'} + ${todaysMealsTrend != null ? todaysMealsTrend : '0.00'} + '%'"></span>
+                        </span>
                     </div>
-                    <h2 class="fw-bold mb-0" style="font-size: 28px; color: #0f172a;" th:text="${dashboard.todaysMealsCount}">0</h2>
+                    <h2 class="fw-bold mb-1" style="font-size: 28px; color: #0f172a;" th:text="${dashboard.todaysMealsCount}">0</h2>
+                    <span class="text-muted" style="font-size: 12px;"
+                        th:text="'vs. ' + ${prevTodaysMeals != null ? prevTodaysMeals : 0} + ' yesterday'">vs. 0 yesterday</span>
                 </div>
             </div>
 
@@ -33,9 +38,15 @@
                 <div class="card h-100 p-3 shadow-sm" style="border-radius: 8px; border: 1px solid #e2e8f0;">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <span class="fw-bold" style="font-size: 13px; color: #1e293b;">Breakfast</span>
-                        <i class="bi bi-sunrise text-muted" style="font-size: 16px;"></i>
+                        <span class="badge rounded-pill fw-bold"
+                            th:style="${breakfastTrendUp == false ? 'background-color: #fee2e2; color: #ef4444; font-size: 11px; padding: 4px 8px;' : 'background-color: #dcfce7; color: #16a34a; font-size: 11px; padding: 4px 8px;'}">
+                            <i th:classappend="${breakfastTrendUp == false ? 'bi bi-caret-down-fill' : 'bi bi-caret-up-fill'}"></i>
+                            <span th:text="${breakfastTrendUp == false ? '-' : '+'} + ${breakfastTrendValStr != null ? breakfastTrendValStr : '0.00'} + '%'"></span>
+                        </span>
                     </div>
-                    <h2 class="fw-bold mb-0" style="font-size: 28px; color: #0f172a;" th:text="${dashboard.todayBreakfastCount}">0</h2>
+                    <h2 class="fw-bold mb-1" style="font-size: 28px; color: #0f172a;" th:text="${dashboard.todayBreakfastCount}">0</h2>
+                    <span class="text-muted" style="font-size: 12px;"
+                        th:text="'vs. ' + ${prevBreakfast != null ? prevBreakfast : 0} + ' yesterday'">vs. 0 yesterday</span>
                 </div>
             </div>
 
@@ -44,9 +55,15 @@
                 <div class="card h-100 p-3 shadow-sm" style="border-radius: 8px; border: 1px solid #e2e8f0;">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <span class="fw-bold" style="font-size: 13px; color: #1e293b;">Lunch</span>
-                        <i class="bi bi-sun text-muted" style="font-size: 16px;"></i>
+                        <span class="badge rounded-pill fw-bold"
+                            th:style="${lunchTrendUp == false ? 'background-color: #fee2e2; color: #ef4444; font-size: 11px; padding: 4px 8px;' : 'background-color: #dcfce7; color: #16a34a; font-size: 11px; padding: 4px 8px;'}">
+                            <i th:classappend="${lunchTrendUp == false ? 'bi bi-caret-down-fill' : 'bi bi-caret-up-fill'}"></i>
+                            <span th:text="${lunchTrendUp == false ? '-' : '+'} + ${lunchTrendValStr != null ? lunchTrendValStr : '0.00'} + '%'"></span>
+                        </span>
                     </div>
-                    <h2 class="fw-bold mb-0" style="font-size: 28px; color: #0f172a;" th:text="${dashboard.todayLunchCount}">0</h2>
+                    <h2 class="fw-bold mb-1" style="font-size: 28px; color: #0f172a;" th:text="${dashboard.todayLunchCount}">0</h2>
+                    <span class="text-muted" style="font-size: 12px;"
+                        th:text="'vs. ' + ${prevLunch != null ? prevLunch : 0} + ' yesterday'">vs. 0 yesterday</span>
                 </div>
             </div>
 
@@ -55,12 +72,17 @@
                 <div class="card h-100 p-3 shadow-sm" style="border-radius: 8px; border: 1px solid #e2e8f0;">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <span class="fw-bold" style="font-size: 13px; color: #1e293b;">Dinner</span>
-                        <i class="bi bi-moon-stars text-muted" style="font-size: 16px;"></i>
+                        <span class="badge rounded-pill fw-bold"
+                            th:style="${dinnerTrendUp == false ? 'background-color: #fee2e2; color: #ef4444; font-size: 11px; padding: 4px 8px;' : 'background-color: #dcfce7; color: #16a34a; font-size: 11px; padding: 4px 8px;'}">
+                            <i th:classappend="${dinnerTrendUp == false ? 'bi bi-caret-down-fill' : 'bi bi-caret-up-fill'}"></i>
+                            <span th:text="${dinnerTrendUp == false ? '-' : '+'} + ${dinnerTrendValStr != null ? dinnerTrendValStr : '0.00'} + '%'"></span>
+                        </span>
                     </div>
-                    <h2 class="fw-bold mb-0" style="font-size: 28px; color: #0f172a;" th:text="${dashboard.todayDinnerCount}">0</h2>
+                    <h2 class="fw-bold mb-1" style="font-size: 28px; color: #0f172a;" th:text="${dashboard.todayDinnerCount}">0</h2>
+                    <span class="text-muted" style="font-size: 12px;"
+                        th:text="'vs. ' + ${prevDinner != null ? prevDinner : 0} + ' yesterday'">vs. 0 yesterday</span>
                 </div>
             </div>
-
         </div>
 
         <!-- Row 2: Active Food Sponsors, Upcoming Schedules -->
@@ -71,9 +93,15 @@
                 <div class="card h-100 p-3 shadow-sm" style="border-radius: 8px; border: 1px solid #e2e8f0;">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <span class="fw-bold" style="font-size: 13px; color: #1e293b;">Active Food Sponsors</span>
-                        <i class="bi bi-heart text-muted" style="font-size: 16px;"></i>
+                        <span class="badge rounded-pill fw-bold"
+                            th:style="${activeSponsorsTrendUp == false ? 'background-color: #fee2e2; color: #ef4444; font-size: 11px; padding: 4px 8px;' : 'background-color: #dcfce7; color: #16a34a; font-size: 11px; padding: 4px 8px;'}">
+                            <i th:classappend="${activeSponsorsTrendUp == false ? 'bi bi-caret-down-fill' : 'bi bi-caret-up-fill'}"></i>
+                            <span th:text="${activeSponsorsTrendUp == false ? '-' : '+'} + ${activeSponsorsTrend != null ? activeSponsorsTrend : '0.00'} + '%'"></span>
+                        </span>
                     </div>
-                    <h2 class="fw-bold mb-0" style="font-size: 28px; color: #0f172a;" th:text="${dashboard.activeFoodSponsorsCount}">0</h2>
+                    <h2 class="fw-bold mb-1" style="font-size: 28px; color: #0f172a;" th:text="${dashboard.activeFoodSponsorsCount}">0</h2>
+                    <span class="text-muted" style="font-size: 12px;"
+                        th:text="'vs. ' + ${prevActiveSponsors != null ? prevActiveSponsors : 0} + ' yesterday'">vs. 0 yesterday</span>
                 </div>
             </div>
 
@@ -82,9 +110,15 @@
                 <div class="card h-100 p-3 shadow-sm" style="border-radius: 8px; border: 1px solid #e2e8f0;">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <span class="fw-bold" style="font-size: 13px; color: #1e293b;">Upcoming Schedules</span>
-                        <i class="bi bi-calendar-event text-muted" style="font-size: 16px;"></i>
+                        <span class="badge rounded-pill fw-bold"
+                            th:style="${upcomingTrendUp == false ? 'background-color: #fee2e2; color: #ef4444; font-size: 11px; padding: 4px 8px;' : 'background-color: #dcfce7; color: #16a34a; font-size: 11px; padding: 4px 8px;'}">
+                            <i th:classappend="${upcomingTrendUp == false ? 'bi bi-caret-down-fill' : 'bi bi-caret-up-fill'}"></i>
+                            <span th:text="${upcomingTrendUp == false ? '-' : '+'} + ${upcomingTrend != null ? upcomingTrend : '0.00'} + '%'"></span>
+                        </span>
                     </div>
-                    <h2 class="fw-bold mb-0" style="font-size: 28px; color: #0f172a;" th:text="${dashboard.upcomingSchedulesCount}">0</h2>
+                    <h2 class="fw-bold mb-1" style="font-size: 28px; color: #0f172a;" th:text="${dashboard.upcomingSchedulesCount}">0</h2>
+                    <span class="text-muted" style="font-size: 12px;"
+                        th:text="'vs. ' + ${prevUpcoming != null ? prevUpcoming : 0} + ' yesterday'">vs. 0 yesterday</span>
                 </div>
             </div>
 

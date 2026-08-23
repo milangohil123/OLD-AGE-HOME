@@ -11,16 +11,21 @@
         <div th:replace="~{fragments/alerts :: error(${errorMessage})}"></div>
 
         <!-- ── Stats Cards ── -->
-        <div class="row mb-4 row-cols-1 row-cols-sm-2 row-cols-xl-4 g-3">
-
+        <div class="row mb-4 row-cols-1 row-cols-md-2 row-cols-xl-4 g-3">
             <!-- Total Donors -->
             <div class="col">
                 <div class="card h-100 p-3 shadow-sm" style="border-radius: 8px; border: 1px solid #e2e8f0;">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <span class="fw-bold" style="font-size: 13px; color: #1e293b;" th:text="#{dashboard.stat.donors}">Total Donors</span>
-                        <i class="bi bi-people text-muted" style="font-size: 16px;"></i>
+                        <span class="badge rounded-pill fw-bold"
+                            th:style="${totalDonorsTrendUp == false ? 'background-color: #fee2e2; color: #ef4444; font-size: 11px; padding: 4px 8px;' : 'background-color: #dcfce7; color: #16a34a; font-size: 11px; padding: 4px 8px;'}">
+                            <i th:classappend="${totalDonorsTrendUp == false ? 'bi bi-caret-down-fill' : 'bi bi-caret-up-fill'}"></i>
+                            <span th:text="${totalDonorsTrendUp == false ? '-' : '+'} + ${totalDonorsTrend != null ? totalDonorsTrend : '0.00'} + '%'"></span>
+                        </span>
                     </div>
-                    <h2 class="fw-bold mb-0" style="font-size: 28px; color: #0f172a;" th:text="${totalDonors}">0</h2>
+                    <h2 class="fw-bold mb-1" style="font-size: 28px; color: #0f172a;" th:text="${totalDonors}">0</h2>
+                    <span class="text-muted" style="font-size: 12px;"
+                        th:text="'vs. ' + ${prevTotalDonors != null ? prevTotalDonors : 0} + ' prior'">vs. 0 prior</span>
                 </div>
             </div>
 
@@ -29,9 +34,15 @@
                 <div class="card h-100 p-3 shadow-sm" style="border-radius: 8px; border: 1px solid #e2e8f0;">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <span class="fw-bold" style="font-size: 13px; color: #1e293b;" th:text="#{dashboard.stat.donations.today}">Today's Donations</span>
-                        <i class="bi bi-gift text-muted" style="font-size: 16px;"></i>
+                        <span class="badge rounded-pill fw-bold"
+                            th:style="${todayDonationsTrendUp == false ? 'background-color: #fee2e2; color: #ef4444; font-size: 11px; padding: 4px 8px;' : 'background-color: #dcfce7; color: #16a34a; font-size: 11px; padding: 4px 8px;'}">
+                            <i th:classappend="${todayDonationsTrendUp == false ? 'bi bi-caret-down-fill' : 'bi bi-caret-up-fill'}"></i>
+                            <span th:text="${todayDonationsTrendUp == false ? '-' : '+'} + ${todayDonationsTrend != null ? todayDonationsTrend : '0.00'} + '%'"></span>
+                        </span>
                     </div>
-                    <h2 class="fw-bold mb-0" style="font-size: 28px; color: #0f172a;" th:text="${todayDonations}">0</h2>
+                    <h2 class="fw-bold mb-1" style="font-size: 28px; color: #0f172a;" th:text="${todayDonations}">0</h2>
+                    <span class="text-muted" style="font-size: 12px;"
+                        th:text="'vs. ' + ${prevTodayDonations != null ? prevTodayDonations : 0} + ' prior'">vs. 0 prior</span>
                 </div>
             </div>
 
@@ -40,9 +51,15 @@
                 <div class="card h-100 p-3 shadow-sm" style="border-radius: 8px; border: 1px solid #e2e8f0;">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <span class="fw-bold" style="font-size: 13px; color: #1e293b;" th:text="#{dashboard.stat.donations.month}">This Month's Donations</span>
-                        <i class="bi bi-calendar-check text-muted" style="font-size: 16px;"></i>
+                        <span class="badge rounded-pill fw-bold"
+                            th:style="${donationMonthTrendUp == false ? 'background-color: #fee2e2; color: #ef4444; font-size: 11px; padding: 4px 8px;' : 'background-color: #dcfce7; color: #16a34a; font-size: 11px; padding: 4px 8px;'}">
+                            <i th:classappend="${donationMonthTrendUp == false ? 'bi bi-caret-down-fill' : 'bi bi-caret-up-fill'}"></i>
+                            <span th:text="${donationMonthTrendUp == false ? '-' : '+'} + ${donationMonthTrend != null ? donationMonthTrend : '0.00'} + '%'"></span>
+                        </span>
                     </div>
-                    <h2 class="fw-bold mb-0" style="font-size: 28px; color: #0f172a;" th:text="${monthDonations}">0</h2>
+                    <h2 class="fw-bold mb-1" style="font-size: 28px; color: #0f172a;" th:text="${monthDonations}">0</h2>
+                    <span class="text-muted" style="font-size: 12px;"
+                        th:text="'vs. ' + ${prevMonthDonations != null ? prevMonthDonations : 0} + ' prior'">vs. 0 prior</span>
                 </div>
             </div>
 
@@ -51,14 +68,19 @@
                 <div class="card h-100 p-3 shadow-sm" style="border-radius: 8px; border: 1px solid #e2e8f0;">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <span class="fw-bold" style="font-size: 13px; color: #1e293b;" th:text="#{dashboard.stat.raised}">Total Amount Raised</span>
-                        <i class="bi bi-currency-rupee text-muted" style="font-size: 16px;"></i>
+                        <span class="badge rounded-pill fw-bold"
+                            th:style="${amountTrendUp == false ? 'background-color: #fee2e2; color: #ef4444; font-size: 11px; padding: 4px 8px;' : 'background-color: #dcfce7; color: #16a34a; font-size: 11px; padding: 4px 8px;'}">
+                            <i th:classappend="${amountTrendUp == false ? 'bi bi-caret-down-fill' : 'bi bi-caret-up-fill'}"></i>
+                            <span th:text="${amountTrendUp == false ? '-' : '+'} + ${amountTrend != null ? amountTrend : '0.00'} + '%'"></span>
+                        </span>
                     </div>
-                    <h2 class="fw-bold mb-0" style="font-size: 28px; color: #0f172a;"
+                    <h2 class="fw-bold mb-1" style="font-size: 28px; color: #0f172a;"
                         th:text="'₹' + ${#numbers.formatDecimal(totalAmount != null ? totalAmount : 0, 1, 'COMMA', 2, 'POINT')}">
                         ₹0.00</h2>
+                    <span class="text-muted" style="font-size: 12px;"
+                        th:text="'vs. ₹' + ${#numbers.formatDecimal(prevMonthAmount != null ? prevMonthAmount : 0, 1, 'COMMA', 2, 'POINT')} + ' prior'">vs. ₹0.00 prior</span>
                 </div>
             </div>
-
         </div>
 
         <!-- ── Action Ribbon ── -->

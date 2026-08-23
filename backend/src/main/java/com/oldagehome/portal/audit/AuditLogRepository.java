@@ -38,8 +38,10 @@ public interface AuditLogRepository extends JpaRepository<AuditLog, Long> {
     Page<AuditLog> searchLogs(@Param("keyword") String keyword, Pageable pageable);
 
     long countByTimestampAfter(LocalDateTime startOfDay);
+    long countByTimestampBetween(LocalDateTime start, LocalDateTime end);
 
     long countByTimestampAfterAndSuccess(LocalDateTime startOfDay, boolean success);
+    long countByTimestampBetweenAndSuccess(LocalDateTime start, LocalDateTime end, boolean success);
 
     Optional<AuditLog> findFirstByActionOrderByTimestampDesc(AuditAction action);
 
