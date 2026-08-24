@@ -181,7 +181,7 @@
                             </td>
                         </tr>
                         <!-- Data Rows -->
-                        <tr th:each="log : ${auditPage.content}">
+                        <tr th:each="log : ${auditPage.content}" style="content-visibility: auto;">
                             <td th:text="${#temporals.format(log.timestamp, 'dd-MM-yyyy HH:mm:ss')}">Time</td>
                             <td>
                                 <strong th:text="${log.username}">user</strong><br>

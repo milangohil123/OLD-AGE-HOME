@@ -130,19 +130,8 @@ public class DashboardController {
 
         // Graph data
         try {
-            List<Donor> donors = donorService.getAllDonors();
-            Map<LocalDate, Long> donorCounts = new HashMap<>();
-            Map<LocalDate, BigDecimal> fundCounts = new HashMap<>();
-
-            for (Donor d : donors) {
-                LocalDate dDate = d.getCreatedAt() != null ? d.getCreatedAt().toLocalDate() : d.getDonationDate();
-                if (dDate != null && !dDate.isBefore(periodStart) && !dDate.isAfter(now)) {
-                    donorCounts.put(dDate, donorCounts.getOrDefault(dDate, 0L) + 1);
-                    if (d.getDonationAmount() != null) {
-                        fundCounts.put(dDate, fundCounts.getOrDefault(dDate, BigDecimal.ZERO).add(d.getDonationAmount()));
-                    }
-                }
-            }
+            Map<LocalDate, Long> donorCounts = donorService.getDonorCountsPerDay(now.minusMonths(12).withDayOfMonth(1));
+            Map<LocalDate, BigDecimal> fundCounts = donorService.getFundCountsPerDay(now.minusMonths(12).withDayOfMonth(1));
 
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MMM d");
             
@@ -161,15 +150,22 @@ public class DashboardController {
                     fundsMonthCounts.put(label, BigDecimal.ZERO);
                 }
                 
-                for (Donor d : donors) {
-                    LocalDate dDate = d.getCreatedAt() != null ? d.getCreatedAt().toLocalDate() : d.getDonationDate();
+                for (Map.Entry<LocalDate, Long> entry : donorCounts.entrySet()) {
+                    LocalDate dDate = entry.getKey();
                     if (dDate != null && !dDate.isBefore(now.minusMonths(11).withDayOfMonth(1))) {
                         String mLabel = dDate.format(monthFmt);
                         if (donorMonthCounts.containsKey(mLabel)) {
-                            donorMonthCounts.put(mLabel, donorMonthCounts.get(mLabel) + 1);
-                            if (d.getDonationAmount() != null) {
-                                fundsMonthCounts.put(mLabel, fundsMonthCounts.get(mLabel).add(d.getDonationAmount()));
-                            }
+                            donorMonthCounts.put(mLabel, donorMonthCounts.get(mLabel) + entry.getValue());
+                        }
+                    }
+                }
+                
+                for (Map.Entry<LocalDate, BigDecimal> entry : fundCounts.entrySet()) {
+                    LocalDate dDate = entry.getKey();
+                    if (dDate != null && !dDate.isBefore(now.minusMonths(11).withDayOfMonth(1))) {
+                        String mLabel = dDate.format(monthFmt);
+                        if (fundsMonthCounts.containsKey(mLabel)) {
+                            fundsMonthCounts.put(mLabel, fundsMonthCounts.get(mLabel).add(entry.getValue()));
                         }
                     }
                 }
@@ -248,19 +244,8 @@ public class DashboardController {
         csvBuilder.append("Date,New Donors,Funds Received\n");
         
         try {
-            List<Donor> donors = donorService.getAllDonors();
-            Map<LocalDate, Long> donorCounts = new HashMap<>();
-            Map<LocalDate, BigDecimal> fundCounts = new HashMap<>();
-
-            for (Donor d : donors) {
-                LocalDate dDate = d.getCreatedAt() != null ? d.getCreatedAt().toLocalDate() : d.getDonationDate();
-                if (dDate != null && !dDate.isBefore(periodStart) && !dDate.isAfter(now)) {
-                    donorCounts.put(dDate, donorCounts.getOrDefault(dDate, 0L) + 1);
-                    if (d.getDonationAmount() != null) {
-                        fundCounts.put(dDate, fundCounts.getOrDefault(dDate, BigDecimal.ZERO).add(d.getDonationAmount()));
-                    }
-                }
-            }
+            Map<LocalDate, Long> donorCounts = donorService.getDonorCountsPerDay(periodStart);
+            Map<LocalDate, BigDecimal> fundCounts = donorService.getFundCountsPerDay(periodStart);
             
             for (int i = period - 1; i >= 0; i--) {
                 LocalDate d = now.minusDays(i);

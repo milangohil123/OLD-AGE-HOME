@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -109,6 +110,7 @@ public class FoodScheduleController {
     }
 
     @PostMapping("/save")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public String saveSchedule(@Valid @ModelAttribute("schedule") FoodScheduleDTO dto,
                                BindingResult result,
                                RedirectAttributes redirectAttributes) {
@@ -142,6 +144,7 @@ public class FoodScheduleController {
     }
 
     @GetMapping("/delete/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public String deleteSchedule(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             foodScheduleService.deleteSchedule(id);

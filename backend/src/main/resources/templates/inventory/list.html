@@ -114,7 +114,7 @@
                         <!-- Inventory Rows -->
                         <th:block th:each="item, iterStat : ${inventoryList}">
                             <!-- Main Row -->
-                            <tr style="cursor: pointer;" data-bs-toggle="collapse" th:data-bs-target="'#collapseRow-' + ${iterStat.index}" aria-expanded="false">
+                            <tr style="cursor: pointer; content-visibility: auto;" data-bs-toggle="collapse" th:data-bs-target="'#collapseRow-' + ${iterStat.index}" aria-expanded="false">
                                 <td class="px-4 fw-bold text-dark" th:text="${item.itemName}">Wheat</td>
                                 <td class="px-4">
                                     <span class="badge rounded-pill" 

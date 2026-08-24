@@ -205,7 +205,7 @@
                                     No food schedules found.
                                 </td>
                             </tr>
-                            <tr th:each="schedule : ${schedules.content}">
+                            <tr th:each="schedule : ${schedules.content}" style="content-visibility: auto;">
                                 <!-- CHECK 3 : date format 'dd MMM yyyy' → "27 Jul 2026" ✅ -->
                                 <td class="fw-medium" th:text="${#temporals.format(schedule.mealDate, 'dd MMM yyyy')}">
                                     Date</td>
@@ -311,7 +311,7 @@
                                 </td>
                             </tr>
                             <!-- CHECK 1 : ordered BREAKFAST → LUNCH → DINNER via ORDER BY fs.mealType ASC in repo ✅ -->
-                            <tr th:each="s : ${todaysSchedules}">
+                            <tr th:each="s : ${todaysSchedules}" style="content-visibility: auto;">
                                 <td class="ps-3">
                                     <span class="badge fw-semibold"
                                         th:classappend="${s.mealType.name() == 'BREAKFAST' ? 'bg-success bg-opacity-10 text-success' :
@@ -449,7 +449,7 @@
                                     </thead>
                                     <tbody>
                                         <!-- CHECK 1 : ordered B→L→D per group via ORDER BY in repo ✅ -->
-                                        <tr th:each="s : ${group.schedules}">
+                                        <tr th:each="s : ${group.schedules}" style="content-visibility: auto;">
                                             <td class="ps-3">
                                                 <span class="badge fw-semibold"
                                                     th:classappend="${s.mealType.name() == 'BREAKFAST' ? 'bg-success bg-opacity-10 text-success' :

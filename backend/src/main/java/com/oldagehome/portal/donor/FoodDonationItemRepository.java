@@ -13,6 +13,9 @@ public interface FoodDonationItemRepository extends JpaRepository<FoodDonationIt
 
     List<FoodDonationItem> findByDonorIdOrderByDisplayOrderAsc(Long donorId);
 
+    @Query("SELECT f.foodName, f.quantity, d.fullName, d.donationDate, d.donationType FROM FoodDonationItem f JOIN f.donor d")
+    List<Object[]> findAllProjected();
+
     @Modifying
     @Query("DELETE FROM FoodDonationItem f WHERE f.donor.id = :donorId")
     void deleteByDonorId(@Param("donorId") Long donorId);

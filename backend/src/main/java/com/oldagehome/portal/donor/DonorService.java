@@ -70,4 +70,6 @@ public interface DonorService {
 
     // --- Graph Data ---
     List<com.oldagehome.portal.dto.DonationTrendDTO> getDonationTrend(java.time.LocalDate startDate);
+    java.util.Map<java.time.LocalDate, Long> getDonorCountsPerDay(java.time.LocalDate startDate);
+    java.util.Map<java.time.LocalDate, BigDecimal> getFundCountsPerDay(java.time.LocalDate startDate);
 }

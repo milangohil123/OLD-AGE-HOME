@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -164,6 +165,7 @@ public class DonorController {
     // -------------------------------------------------------------------------
 
     @PostMapping("/save")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public String saveDonor(
             @Valid @ModelAttribute("donor") DonorFormDTO donorFormDto,
             BindingResult bindingResult,
@@ -234,6 +236,7 @@ public class DonorController {
     // -------------------------------------------------------------------------
 
     @PostMapping("/update")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public String updateDonor(
             @Valid @ModelAttribute("donor") DonorFormDTO donorFormDto,
             BindingResult bindingResult,
@@ -283,6 +286,7 @@ public class DonorController {
     // -------------------------------------------------------------------------
 
     @GetMapping("/delete/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public String deleteDonor(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
         Donor donor = donorService.getDonorById(id);
 
@@ -319,6 +323,7 @@ public class DonorController {
     // -------------------------------------------------------------------------
 
     @PostMapping("/import")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public String importExcel(
             @RequestParam("file") MultipartFile file,
             Model model,
@@ -383,6 +388,7 @@ public class DonorController {
     // -------------------------------------------------------------------------
 
     @PostMapping("/{id}/donations")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
     public String saveDonation(
             @PathVariable("id") Long id,
             @Valid @ModelAttribute("donation") DonationFormDTO donationFormDto,

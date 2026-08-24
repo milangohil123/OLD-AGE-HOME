@@ -162,7 +162,7 @@
                         </tr>
 
                         <!-- Donor Rows -->
-                        <tr th:each="d : ${donorsPage.content}" th:if="${d != null}">
+                        <tr th:each="d : ${donorsPage.content}" th:if="${d != null}" style="content-visibility: auto;">
                             <td>
                                 <img th:if="${d.photo != null}" th:src="@{'/uploads/' + ${d.photo}}"
                                     class="rounded-circle object-fit-cover"

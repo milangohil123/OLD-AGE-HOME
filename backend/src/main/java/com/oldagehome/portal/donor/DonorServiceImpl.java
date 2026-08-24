@@ -62,13 +62,26 @@ public class DonorServiceImpl implements DonorService {
 
     @Override
     public Donor getDonorById(Long id) {
-        return donorRepository.findById(id)
+        Donor donor = donorRepository.findById(id)
                 .orElseThrow(() -> {
                     auditService.logActivity(com.oldagehome.portal.audit.AuditModule.DONOR,
                             com.oldagehome.portal.audit.AuditAction.VIEW, "Failed to view donor: not found", "Donor",
                             id, false, "Donor not found");
                     return new RuntimeException("Donor not found with id: " + id);
                 });
+        
+        // Initialize lazy collections to avoid LazyInitializationException since OSIV is disabled
+        if (donor.getFoodItems() != null) {
+            donor.getFoodItems().size();
+        }
+        if (donor.getMedicineItems() != null) {
+            donor.getMedicineItems().size();
+        }
+        if (donor.getDonations() != null) {
+            donor.getDonations().size();
+        }
+        
+        return donor;
     }
 
     @Override
@@ -534,5 +547,46 @@ public class DonorServiceImpl implements DonorService {
         }
 
         return result;
+    }
+
+    @Override
+    public Map<LocalDate, Long> getDonorCountsPerDay(LocalDate startDate) {
+        List<Object[]> results = donorRepository.countDonorsGroupedByDate(startDate.atStartOfDay());
+        Map<LocalDate, Long> map = new HashMap<>();
+        for (Object[] row : results) {
+            if (row[0] != null) {
+                LocalDate date = null;
+                if (row[0] instanceof java.sql.Date) {
+                    date = ((java.sql.Date) row[0]).toLocalDate();
+                } else if (row[0] instanceof java.sql.Timestamp) {
+                    date = ((java.sql.Timestamp) row[0]).toLocalDateTime().toLocalDate();
+                } else {
+                    date = LocalDate.parse(row[0].toString());
+                }
+                map.put(date, ((Number) row[1]).longValue());
+            }
+        }
+        return map;
+    }
+
+    @Override
+    public Map<LocalDate, BigDecimal> getFundCountsPerDay(LocalDate startDate) {
+        List<Object[]> results = donorRepository.sumDonationsGroupedByDate(startDate);
+        Map<LocalDate, BigDecimal> map = new HashMap<>();
+        for (Object[] row : results) {
+            if (row[0] != null) {
+                LocalDate date = null;
+                if (row[0] instanceof java.sql.Date) {
+                    date = ((java.sql.Date) row[0]).toLocalDate();
+                } else if (row[0] instanceof java.sql.Timestamp) {
+                    date = ((java.sql.Timestamp) row[0]).toLocalDateTime().toLocalDate();
+                } else {
+                    date = LocalDate.parse(row[0].toString());
+                }
+                BigDecimal amount = (BigDecimal) row[1];
+                map.put(date, amount != null ? amount : BigDecimal.ZERO);
+            }
+        }
+        return map;
     }
 }

@@ -13,6 +13,9 @@ public interface MedicineDonationItemRepository extends JpaRepository<MedicineDo
 
     List<MedicineDonationItem> findByDonorIdOrderByDisplayOrderAsc(Long donorId);
 
+    @Query("SELECT m.medicineName, d.fullName, d.donationDate, d.donationType FROM MedicineDonationItem m JOIN m.donor d")
+    List<Object[]> findAllProjected();
+
     @Modifying
     @Query("DELETE FROM MedicineDonationItem m WHERE m.donor.id = :donorId")
     void deleteByDonorId(@Param("donorId") Long donorId);

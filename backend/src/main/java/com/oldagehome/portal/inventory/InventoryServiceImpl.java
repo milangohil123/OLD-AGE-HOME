@@ -1,8 +1,6 @@
 package com.oldagehome.portal.inventory;
 
-import com.oldagehome.portal.donor.FoodDonationItem;
 import com.oldagehome.portal.donor.FoodDonationItemRepository;
-import com.oldagehome.portal.donor.MedicineDonationItem;
 import com.oldagehome.portal.donor.MedicineDonationItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,12 +37,15 @@ public class InventoryServiceImpl implements InventoryService {
         boolean fetchMedicine = category == null || category.isEmpty() || category.equalsIgnoreCase("All") || category.equalsIgnoreCase("Medicine");
 
         if (fetchFood) {
-            List<FoodDonationItem> foods = foodRepo.findAll();
-            for (FoodDonationItem f : foods) {
-                if (f.getDonor() == null || f.getFoodName() == null) continue;
+            List<Object[]> foods = foodRepo.findAllProjected();
+            for (Object[] f : foods) {
+                if (f[0] == null) continue;
                 
-                String rawName = f.getFoodName().trim();
-                String rawQuantity = f.getQuantity() != null ? f.getQuantity().trim() : "1 Unit";
+                String rawName = ((String) f[0]).trim();
+                String rawQuantity = f[1] != null ? ((String) f[1]).trim() : "1 Unit";
+                String donorName = f[2] != null ? (String) f[2] : "Unknown";
+                LocalDate donationDate = f[3] != null ? (LocalDate) f[3] : null;
+                String donationType = f[4] != null ? f[4].toString() : "UNKNOWN";
                 
                 double amount = 1.0;
                 String unit = "Unit";
@@ -76,29 +77,33 @@ public class InventoryServiceImpl implements InventoryService {
                 
                 // Track contributor
                 InventoryContributorDTO contributor = InventoryContributorDTO.builder()
-                        .donorName(f.getDonor().getFullName())
+                        .donorName(donorName)
                         .quantity(amount == (long)amount ? String.format("%d %s", (long)amount, unit) : String.format("%.2f %s", amount, unit))
-                        .donationDate(f.getDonor().getDonationDate())
-                        .donationType(f.getDonor().getDonationType().name())
+                        .donationDate(donationDate)
+                        .donationType(donationType)
                         .build();
                         
                 itemDto.getContributors().add(contributor);
                 
                 // Update last contribution date
-                if (f.getDonor().getDonationDate() != null) {
-                    if (itemDto.getLastContributionDate() == null || f.getDonor().getDonationDate().isAfter(itemDto.getLastContributionDate())) {
-                        itemDto.setLastContributionDate(f.getDonor().getDonationDate());
+                if (donationDate != null) {
+                    if (itemDto.getLastContributionDate() == null || donationDate.isAfter(itemDto.getLastContributionDate())) {
+                        itemDto.setLastContributionDate(donationDate);
                     }
                 }
             }
         }
 
         if (fetchMedicine) {
-            List<MedicineDonationItem> meds = medicineRepo.findAll();
-            for (MedicineDonationItem m : meds) {
-                if (m.getDonor() == null || m.getMedicineName() == null) continue;
+            List<Object[]> meds = medicineRepo.findAllProjected();
+            for (Object[] m : meds) {
+                if (m[0] == null) continue;
                 
-                String rawName = m.getMedicineName().trim();
+                String rawName = ((String) m[0]).trim();
+                String donorName = m[1] != null ? (String) m[1] : "Unknown";
+                LocalDate donationDate = m[2] != null ? (LocalDate) m[2] : null;
+                String donationType = m[3] != null ? m[3].toString() : "UNKNOWN";
+
                 double amount = 1.0;
                 String unit = "Unit";
                 
@@ -119,18 +124,18 @@ public class InventoryServiceImpl implements InventoryService {
                 
                 // Track contributor
                 InventoryContributorDTO contributor = InventoryContributorDTO.builder()
-                        .donorName(m.getDonor().getFullName())
+                        .donorName(donorName)
                         .quantity("1 Unit")
-                        .donationDate(m.getDonor().getDonationDate())
-                        .donationType(m.getDonor().getDonationType().name())
+                        .donationDate(donationDate)
+                        .donationType(donationType)
                         .build();
                         
                 itemDto.getContributors().add(contributor);
                 
                 // Update last contribution date
-                if (m.getDonor().getDonationDate() != null) {
-                    if (itemDto.getLastContributionDate() == null || m.getDonor().getDonationDate().isAfter(itemDto.getLastContributionDate())) {
-                        itemDto.setLastContributionDate(m.getDonor().getDonationDate());
+                if (donationDate != null) {
+                    if (itemDto.getLastContributionDate() == null || donationDate.isAfter(itemDto.getLastContributionDate())) {
+                        itemDto.setLastContributionDate(donationDate);
                     }
                 }
             }
