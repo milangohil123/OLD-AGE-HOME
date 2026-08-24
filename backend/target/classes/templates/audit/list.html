@@ -79,81 +79,79 @@
         </div>
 
 
-        <!-- ── Action Ribbon & Export ── -->
-        <div class="card mb-4">
-            <div class="row align-items-center py-2">
-                <div class="col-md-5">
-                    <h3 class="mb-0 fw-bold">System Audit Logs</h3>
-                    <p class="text-muted mb-0" style="font-size: 13px;">Monitor system activity, user logins, and
-                        database alterations.</p>
-                </div>
-                <div class="col-md-7 text-md-end text-start mt-3 mt-md-0 d-flex justify-content-md-end gap-2 flex-wrap">
-                    <a th:href="@{/admin/audit/export(username=${username}, module=${module}, action=${action}, success=${success}, startDate=${startDate}, endDate=${endDate}, format='PDF')}"
-                        class="btn btn-primary px-3">
-                        <i class="bi bi-file-earmark-pdf me-1"></i> Export PDF
-                    </a>
-                    <a th:href="@{/admin/audit/export(username=${username}, module=${module}, action=${action}, success=${success}, startDate=${startDate}, endDate=${endDate}, format='EXCEL')}"
-                        class="btn btn-outline-primary px-3">
-                        <i class="bi bi-file-earmark-spreadsheet me-1"></i> Export Excel
-                    </a>
-                    <a th:href="@{/admin/audit/export(username=${username}, module=${module}, action=${action}, success=${success}, startDate=${startDate}, endDate=${endDate}, format='CSV')}"
-                        class="btn btn-outline-primary px-3">
-                        <i class="bi bi-filetype-csv me-1"></i> Export CSV
-                    </a>
+        <!-- Beautiful Action & Filter Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 12px; border: 1px solid #e2e8f0 !important; background-color: #ffffff;">
+                    <!-- Clean Minimal Banner -->
+                    <div class="p-4 p-md-4 border-bottom position-relative" style="border-color: #f1f5f9 !important; background: url('data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1440 320\'><path fill=\'%23dcfce7\' fill-opacity=\'0.6\' d=\'M0,128L80,144C160,160,320,192,480,181.3C640,171,800,117,960,112C1120,107,1280,149,1360,170.7L1440,192L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z\'></path><path fill=\'%23bbf7d0\' fill-opacity=\'0.5\' d=\'M0,224L80,213.3C160,203,320,181,480,192C640,203,800,245,960,240C1120,235,1280,181,1360,154.7L1440,128L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z\'></path></svg>') no-repeat bottom center; background-size: cover;">
+                        <div class="row align-items-center position-relative" style="z-index: 1;">
+                            <div class="col-md-7 col-lg-8 mb-3 mb-md-0">
+                                <h3 class="mb-1 fw-bold text-dark" style="font-size: 22px; color: #0f172a;">System Audit Logs</h3>
+                                <p class="text-muted mb-0" style="font-size: 14px;">Monitor system activity, user logins, and database alterations.</p>
+                            </div>
+                            <div class="col-md-5 col-lg-4 text-md-end text-start d-flex justify-content-md-end gap-2 flex-wrap">
+                                <a th:href="@{/admin/audit/export(username=${username}, module=${module}, action=${action}, success=${success}, startDate=${startDate}, endDate=${endDate}, format='PDF')}" class="btn btn-outline-secondary shadow-sm d-inline-flex align-items-center justify-content-center" style="border-radius: 8px; height: 42px; padding: 0 16px;" title="Export PDF">
+                                    <i class="bi bi-file-earmark-pdf me-1"></i> PDF
+                                </a>
+                                <a th:href="@{/admin/audit/export(username=${username}, module=${module}, action=${action}, success=${success}, startDate=${startDate}, endDate=${endDate}, format='EXCEL')}" class="btn btn-outline-secondary shadow-sm d-inline-flex align-items-center justify-content-center" style="border-radius: 8px; height: 42px; padding: 0 16px;" title="Export Excel">
+                                    <i class="bi bi-file-earmark-spreadsheet me-1"></i> Excel
+                                </a>
+                                <a th:href="@{/admin/audit/export(username=${username}, module=${module}, action=${action}, success=${success}, startDate=${startDate}, endDate=${endDate}, format='CSV')}" class="btn btn-outline-secondary shadow-sm d-inline-flex align-items-center justify-content-center" style="border-radius: 8px; height: 42px; padding: 0 16px;" title="Export CSV">
+                                    <i class="bi bi-filetype-csv me-1"></i> CSV
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Filters integrated below banner -->
+                    <div class="bg-white p-3 p-md-4">
+                        <form th:action="@{/admin/audit/filter}" method="get" class="row g-3 align-items-end">
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold" style="font-size: 13px;">Username</label>
+                                <div class="input-group" style="height: 40px;">
+                                    <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+                                    <input type="text" name="username" class="form-control border-start-0 ps-0" th:value="${username}" placeholder="Search username...">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label fw-semibold" style="font-size: 13px;">Module</label>
+                                <select name="module" class="form-select" style="height: 40px;">
+                                    <option value="ALL">All Modules</option>
+                                    <option th:each="m : ${modules}" th:value="${m}" th:text="${m}" th:selected="${m.name() == module}"></option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label fw-semibold" style="font-size: 13px;">Action</label>
+                                <select name="action" class="form-select" style="height: 40px;">
+                                    <option value="ALL">All Actions</option>
+                                    <option th:each="a : ${actions}" th:value="${a}" th:text="${a}" th:selected="${a.name() == action}"></option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label fw-semibold" style="font-size: 13px;">Status</label>
+                                <select name="success" class="form-select" style="height: 40px;">
+                                    <option value="">All Statuses</option>
+                                    <option value="true" th:selected="${success == true}">Success</option>
+                                    <option value="false" th:selected="${success == false}">Failure</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 d-flex gap-2">
+                                <button type="submit" class="btn btn-success fw-bold flex-grow-1" style="height: 40px; border-radius: 8px;">
+                                    Filter
+                                </button>
+                                <a th:href="@{/admin/audit}" class="btn btn-outline-secondary d-flex align-items-center justify-content-center" style="height: 40px; width: 40px; border-radius: 8px;" title="Clear">
+                                    <i class="bi bi-x-lg"></i>
+                                </a>
+                            </div>
+                            <input type="hidden" name="page" value="0">
+                            <input type="hidden" name="size" th:value="${auditPage.size}">
+                            <input type="hidden" name="sort" th:value="${sort}">
+                            <input type="hidden" name="direction" th:value="${direction}">
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
-
-        <!-- ── Filters ── -->
-        <div class="card mb-4">
-            <h5 class="fw-bold text-primary mb-3">
-                <i class="bi bi-funnel me-2"></i>Filter Logs
-            </h5>
-            <form th:action="@{/admin/audit/filter}" method="get" class="row g-3">
-                <div class="col-md-3">
-                    <label class="form-label fw-semibold">Username</label>
-                    <input type="text" name="username" class="form-control" th:value="${username}"
-                        placeholder="Search username...">
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label fw-semibold">Module</label>
-                    <select name="module" class="form-select">
-                        <option value="ALL">All Modules</option>
-                        <option th:each="m : ${modules}" th:value="${m}" th:text="${m}"
-                            th:selected="${m.name() == module}"></option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label fw-semibold">Action</label>
-                    <select name="action" class="form-select">
-                        <option value="ALL">All Actions</option>
-                        <option th:each="a : ${actions}" th:value="${a}" th:text="${a}"
-                            th:selected="${a.name() == action}"></option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label fw-semibold">Status</label>
-                    <select name="success" class="form-select">
-                        <option value="">All Statuses</option>
-                        <option value="true" th:selected="${success == true}">Success Only</option>
-                        <option value="false" th:selected="${success == false}">Failure Only</option>
-                    </select>
-                </div>
-                <div class="col-md-2 d-flex align-items-end gap-2">
-                    <button type="submit" class="btn btn-primary w-100" style="height: 48px;">
-                        <i class="bi bi-search me-1"></i> Apply
-                    </button>
-                    <a th:href="@{/admin/audit}"
-                        class="btn btn-outline-primary px-3 d-flex align-items-center justify-content-center"
-                        style="height: 48px;">
-                        <i class="bi bi-x-lg"></i>
-                    </a>
-                </div>
-                <input type="hidden" name="page" value="0">
-                <input type="hidden" name="size" th:value="${auditPage.size}">
-                <input type="hidden" name="sort" th:value="${sort}">
-                <input type="hidden" name="direction" th:value="${direction}">
-            </form>
         </div>
 
         <!-- ── Main Table ── -->

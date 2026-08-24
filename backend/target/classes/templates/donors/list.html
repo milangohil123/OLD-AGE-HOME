@@ -83,47 +83,48 @@
             </div>
         </div>
 
-        <!-- ── Action Ribbon ── -->
-        <div class="card mb-4">
-            <div class="row align-items-center py-2">
-                <div class="col-md-6">
-                    <h3 class="mb-0 fw-bold text-dark" style="letter-spacing:-0.02em; font-size: 24px;" th:text="#{donor.list.title}">Donors Directory</h3>
-                    <p class="text-muted mb-0" style="font-size: 13.5px;" th:text="#{donor.list.desc}">Browse, manage, and
-                        export donor contribution records.</p>
-                </div>
-                <div class="col-md-6 text-md-end text-start mt-3 mt-md-0 d-flex justify-content-md-end gap-2 flex-wrap">
-                    <a th:href="@{/donors/new}" class="btn btn-primary px-4">
-                        <i class="bi bi-plus-lg me-1"></i> <span th:text="#{donor.btn.add}">Add Donor</span>
-                    </a>
-                    <a th:href="@{/donors/export}" class="btn btn-outline-primary px-3">
-                        <i class="bi bi-download me-1"></i> <span th:text="#{donor.btn.export}">Export Excel</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- ── Excel Bulk Import Panel ── -->
-        <div class="card mb-4" sec:authorize="hasAnyRole('ADMIN', 'MANAGER')">
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                <div>
-                    <h5 class="mb-1 fw-bold">
-                        <i class="bi bi-file-earmark-arrow-up me-2 text-primary"></i><span
-                            th:text="#{donor.import.title}">Bulk Import Donors</span>
-                    </h5>
-                    <p class="text-muted mb-0 small">Import multiple donor records from a spreadsheet.<br>
-                        Column order: Donor Name | Mobile | Email | Address | Donation Frequency | Donation Type |
-                        Payment Method | Transaction ID | Donation Date | Medicine Name | Price | Expiry Date | Food
-                        Name | Quantity | Donation Amount</p>
-                </div>
-                <div>
-                    <form th:action="@{/donors/import}" method="post" enctype="multipart/form-data"
-                        class="d-flex gap-2">
-                        <input type="file" name="file" class="form-control" accept=".xlsx,.xls" required
-                            style="max-width: 240px;">
-                        <button type="submit" class="btn btn-outline-primary" style="height: 48px; white-space: nowrap;">
-                            <i class="bi bi-upload me-1"></i> <span th:text="#{donor.import.btn}">Upload</span>
-                        </button>
-                    </form>
+        <!-- Beautiful Action & Import Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 12px; border: 1px solid #e2e8f0 !important; background-color: #ffffff;">
+                    <!-- Clean Minimal Banner -->
+                    <div class="p-4 p-md-4 border-bottom position-relative" style="border-color: #f1f5f9 !important; background: url('data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1440 320\'><path fill=\'%23dcfce7\' fill-opacity=\'0.6\' d=\'M0,128L80,144C160,160,320,192,480,181.3C640,171,800,117,960,112C1120,107,1280,149,1360,170.7L1440,192L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z\'></path><path fill=\'%23bbf7d0\' fill-opacity=\'0.5\' d=\'M0,224L80,213.3C160,203,320,181,480,192C640,203,800,245,960,240C1120,235,1280,181,1360,154.7L1440,128L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z\'></path></svg>') no-repeat bottom center; background-size: cover;">
+                        <div class="row align-items-center position-relative" style="z-index: 1;">
+                            <div class="col-md-7 col-lg-8 mb-3 mb-md-0">
+                                <h3 class="mb-1 fw-bold text-dark" style="font-size: 22px; color: #0f172a;" th:text="#{donor.list.title}">Donors Directory</h3>
+                                <p class="text-muted mb-0" style="font-size: 14px;" th:text="#{donor.list.desc}">Browse, manage, and export donor contribution records.</p>
+                            </div>
+                            <div class="col-md-5 col-lg-4 text-md-end text-start">
+                                <a th:href="@{/donors/new}" class="btn btn-success fw-bold px-4 shadow-sm" style="border-radius: 8px; height: 42px; font-size: 13.5px;">
+                                    <i class="bi bi-plus-lg me-1"></i> <span th:text="#{donor.btn.add}">Add Donor</span>
+                                </a>
+                                <a th:href="@{/donors/export}" class="btn btn-outline-secondary ms-2 shadow-sm d-inline-flex align-items-center justify-content-center" style="border-radius: 8px; height: 42px; width: 42px; padding: 0;" title="Export to Excel">
+                                    <i class="bi bi-download"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Bulk Import integrated below banner -->
+                    <div class="bg-white p-3 p-md-4" sec:authorize="hasAnyRole('ADMIN', 'MANAGER')">
+                        <div class="row align-items-center">
+                            <div class="col-xl-6 mb-3 mb-xl-0">
+                                <div class="d-flex align-items-center gap-2 mb-1">
+                                    <i class="bi bi-file-earmark-spreadsheet-fill text-success fs-5"></i>
+                                    <h6 class="mb-0 fw-bold text-dark" th:text="#{donor.import.title}">Bulk Import Donors</h6>
+                                </div>
+                                <p class="text-muted small mb-0 ms-4">Import multiple donor records from a spreadsheet.<br>Column order: Donor Name | Mobile | Email | Address | Donation Frequency | Donation Type | Payment Method | Transaction ID | Donation Date | Medicine Name | Price | Expiry Date | Food Name | Quantity | Donation Amount</p>
+                            </div>
+                            <div class="col-xl-6">
+                                <form th:action="@{/donors/import}" method="post" enctype="multipart/form-data" class="d-flex flex-column flex-sm-row justify-content-xl-end gap-2">
+                                    <input type="file" name="file" class="form-control shadow-sm" accept=".xlsx,.xls" required style="max-width: 100%; sm:max-width: 320px; border-radius: 8px; font-size: 13.5px; height: 42px;">
+                                    <button type="submit" class="btn btn-success fw-bold px-4 shadow-sm" style="border-radius: 8px; height: 42px; white-space: nowrap; font-size: 13.5px;">
+                                        <i class="bi bi-upload me-1"></i> <span th:text="#{donor.import.btn}">Upload</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
