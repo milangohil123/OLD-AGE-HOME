@@ -26,12 +26,14 @@ public class DashboardController {
     private final DonorService donorService;
     private final ResidentService residentService;
     private final ObjectMapper objectMapper;
+    private final com.oldagehome.portal.inventory.InventoryService inventoryService;
 
     @Autowired
-    public DashboardController(DonorService donorService, ResidentService residentService, ObjectMapper objectMapper) {
+    public DashboardController(DonorService donorService, ResidentService residentService, ObjectMapper objectMapper, com.oldagehome.portal.inventory.InventoryService inventoryService) {
         this.donorService = donorService;
         this.residentService = residentService;
         this.objectMapper = objectMapper;
+        this.inventoryService = inventoryService;
     }
 
     private LocalDate getCompareDate(LocalDate baseDate, int periodDays, String compareType) {
@@ -119,6 +121,12 @@ public class DashboardController {
         model.addAttribute("compare", compare);
         model.addAttribute("periodLabel", getPeriodLabel(period));
         model.addAttribute("compareLabel", getCompareLabel(compare));
+
+        // NEW TICKER DATA (Non-redundant)
+        model.addAttribute("tickerInventoryItems", inventoryService.countTotalItems());
+        model.addAttribute("tickerRecentContributions", inventoryService.countRecentContributions());
+        model.addAttribute("tickerTodayDonations", donorService.countDonationsBetween(now, now));
+        model.addAttribute("tickerLast30DaysDonors", currentPeriodDonations); // Roughly new activity
 
         // Graph data
         try {

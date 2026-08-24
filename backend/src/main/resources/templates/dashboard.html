@@ -6,14 +6,6 @@
 
     <div id="dashboard-content">
 
-        <!-- ── Top Header ────────────────────────────────────────────── -->
-        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
-            <h4 class="fw-bold mb-0 text-dark" style="font-size: 22px;">Overview</h4>
-            <button type="button" class="btn btn-light bg-white border shadow-sm fw-bold text-dark" style="border-radius: 8px; font-size: 13.5px; padding: 8px 16px;">
-                Inventory
-            </button>
-        </div>
-
         <!-- ── Infinite Scrolling Ticker ─────────────────────────────────────────── -->
         <style>
             .ticker-wrap {
@@ -75,36 +67,42 @@
                 <div class="ticker-wrap" aria-label="Dashboard Statistics Ticker">
                     <div class="ticker-track">
                         <!-- SET 1 -->
-                        <div class="ticker-item">TOTAL RESIDENTS <span class="ticker-val" th:text="${totalResidents}">0</span></div>
+                        <div class="ticker-item">UNIQUE INVENTORY ITEMS <span class="ticker-val" th:text="${tickerInventoryItems}">0</span></div>
                         <span class="ticker-separator">•</span>
-                        <div class="ticker-item">TOTAL DONORS <span class="ticker-val" th:text="${totalDonors}">0</span></div>
+                        <div class="ticker-item">RECENT CONTRIBUTIONS <span class="ticker-val" th:text="${tickerRecentContributions}">0</span></div>
                         <span class="ticker-separator">•</span>
-                        <div class="ticker-item">MONTH DONATIONS <span class="ticker-val" th:text="${monthDonations}">0</span></div>
+                        <div class="ticker-item">DONATIONS TODAY <span class="ticker-val" th:text="${tickerTodayDonations}">0</span></div>
                         <span class="ticker-separator">•</span>
-                        <div class="ticker-item">TOTAL DONATIONS <span class="ticker-val" th:text="'₹' + ${#numbers.formatDecimal(totalDonationAmount != null ? totalDonationAmount : 0, 1, 'COMMA', 0, 'POINT')}">₹0</span></div>
+                        <div class="ticker-item">30-DAY NEW ACTIVITY <span class="ticker-val" th:text="${tickerLast30DaysDonors}">0</span></div>
                         <span class="ticker-separator">•</span>
-                        <div class="ticker-item">INVENTORY UPDATED</div>
-                        <span class="ticker-separator">•</span>
-                        <div class="ticker-item">FOOD SCHEDULE ACTIVE</div>
+                        <div class="ticker-item">INVENTORY FULLY SYNCED</div>
                         <span class="ticker-separator">•</span>
                         
                         <!-- SET 2 (Duplicate for seamless loop) -->
-                        <div class="ticker-item">TOTAL RESIDENTS <span class="ticker-val" th:text="${totalResidents}">0</span></div>
+                        <div class="ticker-item">UNIQUE INVENTORY ITEMS <span class="ticker-val" th:text="${tickerInventoryItems}">0</span></div>
                         <span class="ticker-separator">•</span>
-                        <div class="ticker-item">TOTAL DONORS <span class="ticker-val" th:text="${totalDonors}">0</span></div>
+                        <div class="ticker-item">RECENT CONTRIBUTIONS <span class="ticker-val" th:text="${tickerRecentContributions}">0</span></div>
                         <span class="ticker-separator">•</span>
-                        <div class="ticker-item">MONTH DONATIONS <span class="ticker-val" th:text="${monthDonations}">0</span></div>
+                        <div class="ticker-item">DONATIONS TODAY <span class="ticker-val" th:text="${tickerTodayDonations}">0</span></div>
                         <span class="ticker-separator">•</span>
-                        <div class="ticker-item">TOTAL DONATIONS <span class="ticker-val" th:text="'₹' + ${#numbers.formatDecimal(totalDonationAmount != null ? totalDonationAmount : 0, 1, 'COMMA', 0, 'POINT')}">₹0</span></div>
+                        <div class="ticker-item">30-DAY NEW ACTIVITY <span class="ticker-val" th:text="${tickerLast30DaysDonors}">0</span></div>
                         <span class="ticker-separator">•</span>
-                        <div class="ticker-item">INVENTORY UPDATED</div>
-                        <span class="ticker-separator">•</span>
-                        <div class="ticker-item">FOOD SCHEDULE ACTIVE</div>
+                        <div class="ticker-item">INVENTORY FULLY SYNCED</div>
                         <span class="ticker-separator" style="padding-right: 24px;">•</span>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- ── Top Header ────────────────────────────────────────────── -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+            <h4 class="fw-bold mb-0 text-dark" style="font-size: 22px;">Overview</h4>
+            <a th:href="@{/inventory}" class="btn btn-light bg-white border shadow-sm fw-bold text-dark text-decoration-none" style="border-radius: 8px; font-size: 13.5px; padding: 8px 16px;">
+                Inventory
+            </a>
+        </div>
+
+
 
         <!-- ── Stats Overview Cards ──────────────────────────────────────── -->
         <div class="row mb-4 row-cols-1 row-cols-md-2 row-cols-xl-4 g-3">
