@@ -39,7 +39,7 @@ public class ResidentReportGenerator {
             document.open();
 
             // Document Header
-            Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18, BaseColor.DARK_GRAY);
+
             Font subTitleFont = FontFactory.getFont(FontFactory.HELVETICA, 10, Font.ITALIC, BaseColor.GRAY);
             Font metaFont = FontFactory.getFont(FontFactory.HELVETICA, 9, Font.NORMAL, BaseColor.DARK_GRAY);
 

@@ -79,6 +79,7 @@ public class DonorFormDTO {
     // ── Status & Photo ────────────────────────────────────────────────────────
 
     @NotNull(message = "Status is required")
+    @Builder.Default
     private DonorStatus status = DonorStatus.ACTIVE;
 
     private String photo;

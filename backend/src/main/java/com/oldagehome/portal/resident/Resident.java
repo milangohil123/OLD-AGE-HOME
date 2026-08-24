@@ -63,6 +63,7 @@ public class Resident {
     @NotNull(message = "Status is required")
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
+    @Builder.Default
     private ResidentStatus status = ResidentStatus.ACTIVE;
 
     @NotBlank(message = "Guardian name is required")

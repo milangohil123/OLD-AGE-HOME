@@ -14,7 +14,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ModelAndView handleGenericException(Exception ex) {
 
-        ex.printStackTrace(); // Print full exception
+        logger.error("An error occurred", ex);
 
         ModelAndView mv = new ModelAndView();
 

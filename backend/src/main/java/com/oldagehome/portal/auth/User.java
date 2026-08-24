@@ -53,6 +53,7 @@ public class User {
     @Column(nullable = false, length = 20)
     private String role; // ADMIN, MANAGER, STAFF
 
+    @Builder.Default
     @Column(nullable = false)
     private boolean enabled = true;
 

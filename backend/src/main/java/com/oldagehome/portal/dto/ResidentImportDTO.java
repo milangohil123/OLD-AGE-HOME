@@ -29,6 +29,8 @@ public class ResidentImportDTO {
     private String aadhaarNumber;
 
     // Status tracking for row-level warnings during Excel import
+    @Builder.Default
     private boolean valid = true;
+    @Builder.Default
     private String errorMessage = "";
 }

@@ -51,6 +51,8 @@ public class DonorImportDTO {
     private BigDecimal donationAmount;
 
     // Row-level import status tracking
+    @Builder.Default
     private boolean valid = true;
+    @Builder.Default
     private String errorMessage = "";
 }

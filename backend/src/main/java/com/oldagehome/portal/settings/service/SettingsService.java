@@ -6,9 +6,9 @@ import com.oldagehome.portal.settings.dto.ProfileDTO;
 import com.oldagehome.portal.settings.dto.PasswordChangeDTO;
 import com.oldagehome.portal.settings.dto.PreferencesDTO;
 import com.oldagehome.portal.settings.dto.OfficeInfoDTO;
-import com.oldagehome.portal.auth.User;
+
 import org.springframework.web.multipart.MultipartFile;
-import java.io.IOException;
+
 import java.util.List;
 import java.util.Map;
 

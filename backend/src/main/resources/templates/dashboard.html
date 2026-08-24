@@ -304,55 +304,18 @@
                         <h6 class="fw-bold mb-4" style="color: #0f172a; font-size: 16px;">Recent Activity</h6>
 
                         <div class="d-flex flex-column gap-3 mb-auto">
-                            <!-- Activity 1 -->
-                            <div class="d-flex align-items-center justify-content-between">
-                                <div class="d-flex align-items-center gap-2">
-                                    <div class="rounded-circle"
-                                        style="width: 6px; height: 6px; background-color: #16a34a;"></div>
-                                    <span style="font-size: 13px; color: #0f172a;"
-                                        th:text="#{dashboard.activity.resident_added}">New resident registered</span>
-                                </div>
-                                <span class="text-muted" style="font-size: 12px;">2 hours ago</span>
+                            <!-- Activities from DB -->
+                            <div th:if="${recentActivities == null or recentActivities.isEmpty()}" class="text-muted text-center" style="font-size: 13px;">
+                                No recent activity
                             </div>
-                            <!-- Activity 2 -->
-                            <div class="d-flex align-items-center justify-content-between">
+                            <div th:each="activity : ${recentActivities}" class="d-flex align-items-center justify-content-between">
                                 <div class="d-flex align-items-center gap-2">
                                     <div class="rounded-circle"
                                         style="width: 6px; height: 6px; background-color: #16a34a;"></div>
                                     <span style="font-size: 13px; color: #0f172a;"
-                                        th:text="#{dashboard.activity.donor_added}">New donor added</span>
+                                        th:text="${activity.description}">Activity description</span>
                                 </div>
-                                <span class="text-muted" style="font-size: 12px;">1 day ago</span>
-                            </div>
-                            <!-- Activity 3 -->
-                            <div class="d-flex align-items-center justify-content-between">
-                                <div class="d-flex align-items-center gap-2">
-                                    <div class="rounded-circle"
-                                        style="width: 6px; height: 6px; background-color: #16a34a;"></div>
-                                    <span style="font-size: 13px; color: #0f172a;"
-                                        th:text="#{dashboard.activity.report_generated}">Report generated</span>
-                                </div>
-                                <span class="text-muted" style="font-size: 12px;">2 days ago</span>
-                            </div>
-                            <!-- Activity 4 -->
-                            <div class="d-flex align-items-center justify-content-between">
-                                <div class="d-flex align-items-center gap-2">
-                                    <div class="rounded-circle"
-                                        style="width: 6px; height: 6px; background-color: #16a34a;"></div>
-                                    <span style="font-size: 13px; color: #0f172a;"
-                                        th:text="#{dashboard.activity.admin_login}">Admin logged in</span>
-                                </div>
-                                <span class="text-muted" style="font-size: 12px;">2 days ago</span>
-                            </div>
-                            <!-- Activity 5 -->
-                            <div class="d-flex align-items-center justify-content-between">
-                                <div class="d-flex align-items-center gap-2">
-                                    <div class="rounded-circle"
-                                        style="width: 6px; height: 6px; background-color: #16a34a;"></div>
-                                    <span style="font-size: 13px; color: #0f172a;"
-                                        th:text="#{dashboard.activity.export}">Data export completed</span>
-                                </div>
-                                <span class="text-muted" style="font-size: 12px;">3 days ago</span>
+                                <span class="text-muted" style="font-size: 12px;" th:text="${activity.timeAgo}">Time</span>
                             </div>
                         </div>
 

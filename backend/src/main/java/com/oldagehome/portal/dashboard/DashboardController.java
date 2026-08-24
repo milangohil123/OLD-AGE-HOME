@@ -17,6 +17,7 @@ import org.springframework.http.MediaType;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -25,15 +26,15 @@ public class DashboardController {
 
     private final DonorService donorService;
     private final ResidentService residentService;
-    private final ObjectMapper objectMapper;
     private final com.oldagehome.portal.inventory.InventoryService inventoryService;
+    private final com.oldagehome.portal.audit.AuditService auditService;
 
     @Autowired
-    public DashboardController(DonorService donorService, ResidentService residentService, ObjectMapper objectMapper, com.oldagehome.portal.inventory.InventoryService inventoryService) {
+    public DashboardController(DonorService donorService, ResidentService residentService, com.oldagehome.portal.inventory.InventoryService inventoryService, com.oldagehome.portal.audit.AuditService auditService) {
         this.donorService = donorService;
         this.residentService = residentService;
-        this.objectMapper = objectMapper;
         this.inventoryService = inventoryService;
+        this.auditService = auditService;
     }
 
     private LocalDate getCompareDate(LocalDate baseDate, int periodDays, String compareType) {
@@ -204,7 +205,43 @@ public class DashboardController {
             model.addAttribute("fundsGraphData", new ArrayList<>());
         }
 
+        // Recent Activities
+        try {
+            org.springframework.data.domain.Page<com.oldagehome.portal.audit.AuditLog> recentLogsPage = 
+                auditService.getAuditLogs("", org.springframework.data.domain.PageRequest.of(0, 5, org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "timestamp")));
+            List<Map<String, String>> recentActivities = new ArrayList<>();
+            for (com.oldagehome.portal.audit.AuditLog log : recentLogsPage.getContent()) {
+                Map<String, String> activity = new HashMap<>();
+                
+                String desc = log.getDescription();
+                if (desc == null || desc.trim().isEmpty()) {
+                    desc = log.getAction() + " " + log.getEntityName();
+                }
+                
+                activity.put("description", desc);
+                activity.put("timeAgo", getTimeAgo(log.getTimestamp()));
+                recentActivities.add(activity);
+            }
+            model.addAttribute("recentActivities", recentActivities);
+        } catch (Exception e) {
+            model.addAttribute("recentActivities", new ArrayList<>());
+        }
+
         return "dashboard";
+    }
+
+    private String getTimeAgo(LocalDateTime dateTime) {
+        if (dateTime == null) return "Unknown";
+        LocalDateTime now = LocalDateTime.now();
+        long minutes = java.time.temporal.ChronoUnit.MINUTES.between(dateTime, now);
+        if (minutes < 1) return "Just now";
+        if (minutes < 60) return minutes + " minute" + (minutes == 1 ? "" : "s") + " ago";
+        long hours = java.time.temporal.ChronoUnit.HOURS.between(dateTime, now);
+        if (hours < 24) return hours + " hour" + (hours == 1 ? "" : "s") + " ago";
+        long days = java.time.temporal.ChronoUnit.DAYS.between(dateTime, now);
+        if (days < 30) return days + " day" + (days == 1 ? "" : "s") + " ago";
+        long months = java.time.temporal.ChronoUnit.MONTHS.between(dateTime, now);
+        return months + " month" + (months == 1 ? "" : "s") + " ago";
     }
 
     @GetMapping("/dashboard/export")
