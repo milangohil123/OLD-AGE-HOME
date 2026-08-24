@@ -14,6 +14,98 @@
             </button>
         </div>
 
+        <!-- ── Infinite Scrolling Ticker ─────────────────────────────────────────── -->
+        <style>
+            .ticker-wrap {
+                width: 100%;
+                overflow: hidden;
+                background-color: #f0fdf4; /* Very light green */
+                border-radius: 8px;
+                border: 1px solid #dcfce7;
+                padding: 12px 0;
+                box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+                position: relative;
+                display: flex;
+            }
+            .ticker-track {
+                display: flex;
+                white-space: nowrap;
+                /* Adjust speed (30s) and keep it linear */
+                animation: ticker-scroll 35s linear infinite;
+            }
+            .ticker-wrap:hover .ticker-track {
+                animation-play-state: paused;
+            }
+            .ticker-item {
+                display: inline-flex;
+                align-items: center;
+                padding: 0 24px;
+                font-size: 13px;
+                font-weight: 600;
+                color: #16a34a; /* Primary green text */
+                letter-spacing: 0.5px;
+            }
+            .ticker-item span.ticker-val {
+                color: #0f172a;
+                margin-left: 8px;
+                font-weight: 700;
+            }
+            .ticker-separator {
+                margin: 0;
+                color: #86efac;
+                font-weight: bold;
+                user-select: none;
+            }
+            @keyframes ticker-scroll {
+                0% { transform: translateX(0); }
+                100% { transform: translateX(-50%); }
+            }
+            @media (prefers-reduced-motion: reduce) {
+                .ticker-track {
+                    animation: none;
+                }
+                .ticker-wrap {
+                    overflow-x: auto;
+                }
+            }
+        </style>
+        
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="ticker-wrap" aria-label="Dashboard Statistics Ticker">
+                    <div class="ticker-track">
+                        <!-- SET 1 -->
+                        <div class="ticker-item">TOTAL RESIDENTS <span class="ticker-val" th:text="${totalResidents}">0</span></div>
+                        <span class="ticker-separator">•</span>
+                        <div class="ticker-item">TOTAL DONORS <span class="ticker-val" th:text="${totalDonors}">0</span></div>
+                        <span class="ticker-separator">•</span>
+                        <div class="ticker-item">MONTH DONATIONS <span class="ticker-val" th:text="${monthDonations}">0</span></div>
+                        <span class="ticker-separator">•</span>
+                        <div class="ticker-item">TOTAL DONATIONS <span class="ticker-val" th:text="'₹' + ${#numbers.formatDecimal(totalDonationAmount != null ? totalDonationAmount : 0, 1, 'COMMA', 0, 'POINT')}">₹0</span></div>
+                        <span class="ticker-separator">•</span>
+                        <div class="ticker-item">INVENTORY UPDATED</div>
+                        <span class="ticker-separator">•</span>
+                        <div class="ticker-item">FOOD SCHEDULE ACTIVE</div>
+                        <span class="ticker-separator">•</span>
+                        
+                        <!-- SET 2 (Duplicate for seamless loop) -->
+                        <div class="ticker-item">TOTAL RESIDENTS <span class="ticker-val" th:text="${totalResidents}">0</span></div>
+                        <span class="ticker-separator">•</span>
+                        <div class="ticker-item">TOTAL DONORS <span class="ticker-val" th:text="${totalDonors}">0</span></div>
+                        <span class="ticker-separator">•</span>
+                        <div class="ticker-item">MONTH DONATIONS <span class="ticker-val" th:text="${monthDonations}">0</span></div>
+                        <span class="ticker-separator">•</span>
+                        <div class="ticker-item">TOTAL DONATIONS <span class="ticker-val" th:text="'₹' + ${#numbers.formatDecimal(totalDonationAmount != null ? totalDonationAmount : 0, 1, 'COMMA', 0, 'POINT')}">₹0</span></div>
+                        <span class="ticker-separator">•</span>
+                        <div class="ticker-item">INVENTORY UPDATED</div>
+                        <span class="ticker-separator">•</span>
+                        <div class="ticker-item">FOOD SCHEDULE ACTIVE</div>
+                        <span class="ticker-separator" style="padding-right: 24px;">•</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- ── Stats Overview Cards ──────────────────────────────────────── -->
         <div class="row mb-4 row-cols-1 row-cols-md-2 row-cols-xl-4 g-3">
             <!-- Residents -->
