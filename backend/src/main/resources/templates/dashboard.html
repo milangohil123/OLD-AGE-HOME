@@ -6,45 +6,12 @@
 
     <div id="dashboard-content">
 
-        <!-- ── Top Filter Bar ────────────────────────────────────────────── -->
+        <!-- ── Top Header ────────────────────────────────────────────── -->
         <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
-            <div class="d-flex gap-2 flex-wrap">
-                <!-- Period Dropdown -->
-                <div class="dropdown">
-                    <button class="btn btn-light bg-white border btn-sm d-flex align-items-center gap-2 text-dark dropdown-toggle"
-                        type="button" id="periodDropdown" data-bs-toggle="dropdown" aria-expanded="false"
-                        style="font-size: 13px; font-weight: 500;">
-                        <i class="bi bi-calendar text-muted"></i> 
-                        <span th:text="${periodLabel != null ? periodLabel : 'Last 30 days'}">Last 30 days</span>
-                    </button>
-                    <ul class="dropdown-menu shadow-sm border-0" aria-labelledby="periodDropdown" style="font-size: 13px;">
-                        <li><a class="dropdown-item" th:href="@{/dashboard(period=7, compare=${compare})}">Last 7 days</a></li>
-                        <li><a class="dropdown-item" th:href="@{/dashboard(period=30, compare=${compare})}">Last 30 days</a></li>
-                        <li><a class="dropdown-item" th:href="@{/dashboard(period=90, compare=${compare})}">Last 90 days</a></li>
-                        <li><a class="dropdown-item" th:href="@{/dashboard(period=365, compare=${compare})}">Last 1 year</a></li>
-                    </ul>
-                </div>
-                <!-- Compare Dropdown -->
-                <div class="dropdown">
-                    <button class="btn btn-light bg-white border btn-sm d-flex align-items-center gap-2 text-dark dropdown-toggle"
-                        type="button" id="compareDropdown" data-bs-toggle="dropdown" aria-expanded="false"
-                        style="font-size: 13px; font-weight: 500;">
-                        <i class="bi bi-arrow-counterclockwise text-muted"></i>
-                        <span th:text="${compareLabel != null ? compareLabel : '1 month earlier'}">1 month earlier</span>
-                    </button>
-                    <ul class="dropdown-menu shadow-sm border-0" aria-labelledby="compareDropdown" style="font-size: 13px;">
-                        <li><a class="dropdown-item" th:href="@{/dashboard(period=${period}, compare='previous_period')}">Previous period</a></li>
-                        <li><a class="dropdown-item" th:href="@{/dashboard(period=${period}, compare='1_month_earlier')}">1 month earlier</a></li>
-                        <li><a class="dropdown-item" th:href="@{/dashboard(period=${period}, compare='1_year_earlier')}">1 year earlier</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="d-flex gap-2 flex-wrap">
-                <a th:href="@{/dashboard/export(period=${period}, compare=${compare})}" class="btn btn-light bg-white border btn-sm d-flex align-items-center gap-2 text-dark"
-                    style="font-size: 13px; font-weight: 500; text-decoration: none;">
-                    <i class="bi bi-download text-muted"></i> Export
-                </a>
-            </div>
+            <h4 class="fw-bold mb-0 text-dark" style="font-size: 22px;">Overview</h4>
+            <button type="button" class="btn btn-light bg-white border shadow-sm fw-bold text-dark" style="border-radius: 8px; font-size: 13.5px; padding: 8px 16px;">
+                Inventory
+            </button>
         </div>
 
         <!-- ── Stats Overview Cards ──────────────────────────────────────── -->
@@ -133,28 +100,35 @@
 
         <!-- ── Charts Grid ─────────────────────────────────────── -->
         <div class="row mb-4 g-4">
-            <!-- Left Chart: Donors Trend -->
-            <div class="col-12 col-md-6">
-                <div class="card shadow-sm border-0 h-100" style="border-radius: 8px;">
+            <!-- Top Chart: Donor Activity -->
+            <div class="col-12">
+                <div class="card shadow-sm border-0" style="border-radius: 12px; border: 1px solid #e2e8f0 !important;">
                     <div class="card-body p-4">
                         <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-                            <h6 class="fw-bold mb-0" style="color: #0f172a; font-size: 16px;">Donors Trend</h6>
+                            <h6 class="fw-bold mb-0" style="color: #0f172a; font-size: 18px;">Donor Activity</h6>
+                            
+                            <!-- Period Controls -->
+                            <div class="d-flex bg-light p-1 rounded" style="border: 1px solid #e2e8f0;">
+                                <a th:href="@{/dashboard(period=7)}" th:classappend="${period == 7 ? 'bg-white shadow-sm text-dark fw-bold' : 'text-muted'}" class="btn btn-sm border-0 px-3" style="font-size: 13px; border-radius: 6px;">Week</a>
+                                <a th:href="@{/dashboard(period=30)}" th:classappend="${period == null or period == 30 ? 'bg-white shadow-sm text-dark fw-bold' : 'text-muted'}" class="btn btn-sm border-0 px-3" style="font-size: 13px; border-radius: 6px;">Month</a>
+                                <a th:href="@{/dashboard(period=365)}" th:classappend="${period == 365 ? 'bg-white shadow-sm text-dark fw-bold' : 'text-muted'}" class="btn btn-sm border-0 px-3" style="font-size: 13px; border-radius: 6px;">Year</a>
+                            </div>
                         </div>
-                        <div style="position: relative; height: 300px; width: 100%;">
+                        <div style="position: relative; height: 320px; width: 100%;">
                             <canvas id="donorsChart"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <!-- Right Chart: Funds Trend -->
-            <div class="col-12 col-md-6">
-                <div class="card shadow-sm border-0 h-100" style="border-radius: 8px;">
+            <!-- Bottom Chart: Donation Activity -->
+            <div class="col-12">
+                <div class="card shadow-sm border-0" style="border-radius: 12px; border: 1px solid #e2e8f0 !important;">
                     <div class="card-body p-4">
                         <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-                            <h6 class="fw-bold mb-0" style="color: #0f172a; font-size: 16px;">Funds Trend</h6>
+                            <h6 class="fw-bold mb-0" style="color: #0f172a; font-size: 18px;">Donation Activity</h6>
                         </div>
-                        <div style="position: relative; height: 300px; width: 100%;">
+                        <div style="position: relative; height: 320px; width: 100%;">
                             <canvas id="fundsChart"></canvas>
                         </div>
                     </div>
@@ -358,13 +332,13 @@
                             datasets: [{
                                 data: dValues,
                                 borderColor: '#16a34a',
-                                backgroundColor: 'transparent',
+                                backgroundColor: 'rgba(22, 163, 74, 0.1)',
                                 borderWidth: 2,
-                                fill: false, // No oversized filled-area graph
-                                tension: 0.3, // Thin smooth line
-                                pointRadius: 2, // Small circular data points
+                                fill: true,
+                                tension: 0.4,
+                                pointRadius: 2,
                                 pointBackgroundColor: '#16a34a',
-                                pointHoverRadius: 4,
+                                pointHoverRadius: 5,
                                 pointHoverBackgroundColor: '#16a34a'
                             }]
                         },
@@ -396,20 +370,15 @@
                     };
 
                     new Chart(fundsCanvas, {
-                        type: 'line',
+                        type: 'bar',
                         data: {
                             labels: fLabels,
                             datasets: [{
                                 data: fValues,
-                                borderColor: '#16a34a',
-                                backgroundColor: 'transparent',
-                                borderWidth: 2,
-                                fill: false, // No large filled-area graph
-                                tension: 0.3, // Thin smooth line
-                                pointRadius: 2, // Small circular data points
-                                pointBackgroundColor: '#16a34a',
-                                pointHoverRadius: 4,
-                                pointHoverBackgroundColor: '#16a34a'
+                                backgroundColor: '#16a34a',
+                                borderRadius: 4,
+                                barThickness: 'flex',
+                                maxBarThickness: 40
                             }]
                         },
                         options: fundsOptions

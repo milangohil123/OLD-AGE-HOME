@@ -13,29 +13,20 @@
         <!-- Beautiful Action & Import Header -->
         <div class="row mb-4">
             <div class="col-12">
-                <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 16px;">
-                    <!-- Themed Banner -->
-                    <div class="position-relative p-4 p-md-5" style="background: linear-gradient(135deg, #16a34a 0%, #14532d 100%);">
-                        <!-- Abstract Background Decorations -->
-                        <div class="position-absolute" style="top: -30px; right: -20px; width: 160px; height: 160px; background: rgba(255,255,255,0.08); border-radius: 50%;"></div>
-                        <div class="position-absolute" style="bottom: -40px; right: 100px; width: 100px; height: 100px; background: rgba(255,255,255,0.06); border-radius: 50%;"></div>
-                        
-                        <div class="row align-items-center position-relative" style="z-index: 1;">
-                            <div class="col-md-7 col-lg-8 mb-4 mb-md-0">
-                                <div class="d-flex align-items-center gap-3 mb-2">
-                                    <div class="bg-white text-success rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 52px; height: 52px; flex-shrink: 0;">
-                                        <i class="bi bi-people-fill fs-4"></i>
-                                    </div>
-                                    <h2 class="mb-0 fw-bold text-white" style="letter-spacing: -0.02em; font-size: 26px;" th:text="#{resident.list.title}">Elderly Residents</h2>
-                                </div>
-                                <p class="text-white-50 mb-0 ms-5 ps-3" style="font-size: 14px; max-width: 500px; line-height: 1.5;" th:text="#{resident.list.desc}">Browse directory database, run registers, or make updates.</p>
+                <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 12px; border: 1px solid #e2e8f0 !important; background-color: #ffffff;">
+                    <!-- Clean Minimal Banner -->
+                    <div class="p-4 p-md-4 border-bottom" style="border-color: #f1f5f9 !important;">
+                        <div class="row align-items-center">
+                            <div class="col-md-7 col-lg-8 mb-3 mb-md-0">
+                                <h3 class="mb-1 fw-bold text-dark" style="font-size: 22px; color: #0f172a;">Residents</h3>
+                                <p class="text-muted mb-0" style="font-size: 14px;">Manage resident records, admissions, and resident information.</p>
                             </div>
                             <div class="col-md-5 col-lg-4 text-md-end text-start">
-                                <a th:href="@{/residents/new}" class="btn btn-light text-success fw-bold px-4 shadow-sm" style="border-radius: 10px; height: 44px; font-size: 13.5px;">
+                                <a th:href="@{/residents/new}" class="btn btn-success fw-bold px-4 shadow-sm" style="border-radius: 8px; height: 42px; font-size: 13.5px;">
                                     <i class="bi bi-plus-lg me-1"></i> <span th:text="#{resident.btn.add}">Add Resident</span>
                                 </a>
-                                <a th:href="@{/residents/export}" class="btn btn-outline-light ms-2 shadow-sm" style="border-radius: 10px; height: 44px; width: 44px; padding: 0; display: inline-flex; justify-content: center;" title="Export to Excel">
-                                    <i class="bi bi-download fs-5"></i>
+                                <a th:href="@{/residents/export}" class="btn btn-outline-secondary ms-2 shadow-sm d-inline-flex align-items-center justify-content-center" style="border-radius: 8px; height: 42px; width: 42px; padding: 0;" title="Export to Excel">
+                                    <i class="bi bi-download"></i>
                                 </a>
                             </div>
                         </div>
