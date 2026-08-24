@@ -55,6 +55,11 @@
                         <i class="bi bi-gift" style="font-size: 16px;"></i> <span th:text="#{nav.donors}">Donors</span>
                     </a>
                 </li>
+                <li class="sidebar-menu-item" th:classappend="${activePage == 'inventory'} ? 'active'">
+                    <a th:href="@{/inventory}">
+                        <i class="bi bi-box-seam" style="font-size: 16px;"></i> <span>Inventory</span>
+                    </a>
+                </li>
                 <li class="sidebar-menu-item" th:classappend="${activePage == 'reports'} ? 'active'">
                     <a th:href="@{/reports}">
                         <i class="bi bi-bar-chart" style="font-size: 16px;"></i> <span
