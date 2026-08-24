@@ -60,12 +60,13 @@ public class InventoryServiceImpl implements InventoryService {
                 }
 
                 String key = (rawName + "_" + unit).toLowerCase();
+                final String finalUnit = unit;
                 
                 InventoryItemDTO itemDto = aggregatedMap.computeIfAbsent(key, k -> InventoryItemDTO.builder()
                         .itemName(rawName)
                         .category("Food")
                         .totalQuantity(0.0)
-                        .unit(unit)
+                        .unit(finalUnit)
                         .donorsCount(0)
                         .lastContributionDate(null)
                         .contributors(new ArrayList<>())
@@ -102,12 +103,13 @@ public class InventoryServiceImpl implements InventoryService {
                 String unit = "Unit";
                 
                 String key = (rawName + "_" + unit).toLowerCase();
+                final String finalUnit = unit;
                 
                 InventoryItemDTO itemDto = aggregatedMap.computeIfAbsent(key, k -> InventoryItemDTO.builder()
                         .itemName(rawName)
                         .category("Medicine")
                         .totalQuantity(0.0)
-                        .unit(unit)
+                        .unit(finalUnit)
                         .donorsCount(0)
                         .lastContributionDate(null)
                         .contributors(new ArrayList<>())
@@ -193,5 +195,29 @@ public class InventoryServiceImpl implements InventoryService {
                 .flatMap(item -> item.getContributors().stream())
                 .filter(c -> c.getDonationDate() != null && !c.getDonationDate().isBefore(thirtyDaysAgo))
                 .count();
+    }
+    
+    // --------------------------------------------------------
+    // Legacy Methods for ReportController compatibility
+    // --------------------------------------------------------
+    
+    @Override
+    public long countTotalMedicines() {
+        return getAggregatedInventory(null, "Medicine").size();
+    }
+
+    @Override
+    public long countLowStock() {
+        return 0; // Dynamic aggregated inventory doesn't natively track low stock
+    }
+
+    @Override
+    public long countExpired() {
+        return 0; // Dynamic aggregated inventory doesn't natively track expiration yet
+    }
+
+    @Override
+    public long countAvailable() {
+        return getAggregatedInventory(null, null).size(); 
     }
 }

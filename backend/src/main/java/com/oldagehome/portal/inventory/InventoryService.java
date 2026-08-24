@@ -15,4 +15,10 @@ public interface InventoryService {
     long countTotalQuantity(); // Optional: Might not make sense if units differ, but we can do a rough sum or count.
     long countFoodCategories();
     long countRecentContributions();
+    
+    // Legacy ReportController Compatibility Methods
+    long countTotalMedicines();
+    long countLowStock();
+    long countExpired();
+    long countAvailable();
 }
