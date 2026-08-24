@@ -9,31 +9,41 @@
         <!-- ── Top Filter Bar ────────────────────────────────────────────── -->
         <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
             <div class="d-flex gap-2 flex-wrap">
-                <button class="btn btn-light bg-white border btn-sm d-flex align-items-center gap-2 text-dark"
-                    style="font-size: 13px; font-weight: 500;">
-                    <i class="bi bi-calendar text-muted"></i> Last 30 days <i
-                        class="bi bi-chevron-down ms-1 text-muted"></i>
-                </button>
-                <button class="btn btn-light bg-white border btn-sm d-flex align-items-center gap-2 text-dark"
-                    style="font-size: 13px; font-weight: 500;">
-                    <i class="bi bi-arrow-counterclockwise text-muted"></i> 1 month earlier <i
-                        class="bi bi-chevron-down ms-1 text-muted"></i>
-                </button>
+                <!-- Period Dropdown -->
+                <div class="dropdown">
+                    <button class="btn btn-light bg-white border btn-sm d-flex align-items-center gap-2 text-dark dropdown-toggle"
+                        type="button" id="periodDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                        style="font-size: 13px; font-weight: 500;">
+                        <i class="bi bi-calendar text-muted"></i> 
+                        <span th:text="${periodLabel != null ? periodLabel : 'Last 30 days'}">Last 30 days</span>
+                    </button>
+                    <ul class="dropdown-menu shadow-sm border-0" aria-labelledby="periodDropdown" style="font-size: 13px;">
+                        <li><a class="dropdown-item" th:href="@{/dashboard(period=7, compare=${compare})}">Last 7 days</a></li>
+                        <li><a class="dropdown-item" th:href="@{/dashboard(period=30, compare=${compare})}">Last 30 days</a></li>
+                        <li><a class="dropdown-item" th:href="@{/dashboard(period=90, compare=${compare})}">Last 90 days</a></li>
+                        <li><a class="dropdown-item" th:href="@{/dashboard(period=365, compare=${compare})}">Last 1 year</a></li>
+                    </ul>
+                </div>
+                <!-- Compare Dropdown -->
+                <div class="dropdown">
+                    <button class="btn btn-light bg-white border btn-sm d-flex align-items-center gap-2 text-dark dropdown-toggle"
+                        type="button" id="compareDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                        style="font-size: 13px; font-weight: 500;">
+                        <i class="bi bi-arrow-counterclockwise text-muted"></i>
+                        <span th:text="${compareLabel != null ? compareLabel : '1 month earlier'}">1 month earlier</span>
+                    </button>
+                    <ul class="dropdown-menu shadow-sm border-0" aria-labelledby="compareDropdown" style="font-size: 13px;">
+                        <li><a class="dropdown-item" th:href="@{/dashboard(period=${period}, compare='previous_period')}">Previous period</a></li>
+                        <li><a class="dropdown-item" th:href="@{/dashboard(period=${period}, compare='1_month_earlier')}">1 month earlier</a></li>
+                        <li><a class="dropdown-item" th:href="@{/dashboard(period=${period}, compare='1_year_earlier')}">1 year earlier</a></li>
+                    </ul>
+                </div>
             </div>
             <div class="d-flex gap-2 flex-wrap">
-                <button class="btn btn-light bg-white border btn-sm d-flex align-items-center gap-2 text-dark"
-                    style="font-size: 13px; font-weight: 500;">
-                    <i class="bi bi-globe text-muted"></i> Old Age Home Portal <i
-                        class="bi bi-chevron-down ms-1 text-muted"></i>
-                </button>
-                <button class="btn btn-light bg-white border btn-sm d-flex align-items-center gap-2 text-dark"
-                    style="font-size: 13px; font-weight: 500;">
-                    <i class="bi bi-funnel text-muted"></i> Filters
-                </button>
-                <button class="btn btn-light bg-white border btn-sm d-flex align-items-center gap-2 text-dark"
-                    style="font-size: 13px; font-weight: 500;">
+                <a th:href="@{/dashboard/export(period=${period}, compare=${compare})}" class="btn btn-light bg-white border btn-sm d-flex align-items-center gap-2 text-dark"
+                    style="font-size: 13px; font-weight: 500; text-decoration: none;">
                     <i class="bi bi-download text-muted"></i> Export
-                </button>
+                </a>
             </div>
         </div>
 
@@ -121,29 +131,33 @@
             </div>
         </div>
 
-        <!-- ── Overview Graph Card ─────────────────────────────────────── -->
-        <div class="card mb-4 shadow-sm border-0" style="border-radius: 8px;">
-            <div class="card-body p-4">
-                <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-                    <h6 class="fw-bold mb-0" style="color: #0f172a; font-size: 16px;">Overview</h6>
-                    <div class="d-flex gap-2">
-                        <select class="form-select form-select-sm border bg-white text-dark shadow-sm"
-                            id="graph-period-select" style="width: auto; font-size: 13px; font-weight: 500;">
-                            <option value="week" selected>Week</option>
-                            <option value="month">Month</option>
-                            <option value="year">Year</option>
-                        </select>
-                        <button
-                            class="btn btn-sm btn-light bg-white border d-flex align-items-center gap-2 text-dark shadow-sm"
-                            style="font-size: 13px; font-weight: 500;">
-                            <i class="bi bi-box-arrow-up-right text-muted"></i> Open as insights
-                        </button>
+        <!-- ── Charts Grid ─────────────────────────────────────── -->
+        <div class="row mb-4 g-4">
+            <!-- Left Chart: Donors Trend -->
+            <div class="col-12 col-md-6">
+                <div class="card shadow-sm border-0 h-100" style="border-radius: 8px;">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                            <h6 class="fw-bold mb-0" style="color: #0f172a; font-size: 16px;">Donors Trend</h6>
+                        </div>
+                        <div style="position: relative; height: 300px; width: 100%;">
+                            <canvas id="donorsChart"></canvas>
+                        </div>
                     </div>
                 </div>
-
-                <!-- Chart container -->
-                <div id="graphContainer" style="position: relative; height: 300px; width: 100%;">
-                    <canvas id="overviewChart"></canvas>
+            </div>
+            
+            <!-- Right Chart: Funds Trend -->
+            <div class="col-12 col-md-6">
+                <div class="card shadow-sm border-0 h-100" style="border-radius: 8px;">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                            <h6 class="fw-bold mb-0" style="color: #0f172a; font-size: 16px;">Funds Trend</h6>
+                        </div>
+                        <div style="position: relative; height: 300px; width: 100%;">
+                            <canvas id="fundsChart"></canvas>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -289,147 +303,118 @@
 
         <!-- End of content cards -->
 
-        <!-- ═══════════════════════════════════════════════════════════════
-             Overview Chart Script
-             MUST be inside #dashboard-content so Thymeleaf includes it
-             when the fragment selector ~{::#dashboard-content} is resolved.
-             ═══════════════════════════════════════════════════════════════ -->
         <script th:inline="javascript">
             /*
-             * donorGraphData is populated by the DashboardController via
-             * model.addAttribute("donorGraphMap", graphData).
-             * Thymeleaf serialises the Map to a JSON object at render-time.
-             * DOMContentLoaded defers Chart instantiation until the full
-             * document (including Chart.js from <head>) is ready.
+             * Graph data is passed dynamically based on the selected period
              */
-            var donorGraphData = /*[[${donorGraphMap}]]*/ { week: [], month: [], year: [] };
-
-            console.log('[Dashboard] donorGraphData loaded:', donorGraphData);
+            var donorGraphData = /*[[${donorGraphData}]]*/ [];
+            var fundsGraphData = /*[[${fundsGraphData}]]*/ [];
 
             document.addEventListener('DOMContentLoaded', function () {
-                console.log('[Dashboard] DOMContentLoaded fired. readyState:', document.readyState);
-                console.log('[Dashboard] Chart available:', typeof Chart);
-
-                // Guard: Chart.js must be present
                 if (typeof Chart === 'undefined') {
-                    console.error('[Dashboard] Chart.js is not loaded — overviewChart cannot render.');
+                    console.error('[Dashboard] Chart.js is not loaded.');
                     return;
                 }
 
-                var graphContainer = document.getElementById('graphContainer');
-                var canvas = document.getElementById('overviewChart');
-
-                console.log('[Dashboard] Canvas:', canvas);
-
-                // Guard: canvas must exist in DOM
-                if (!graphContainer || !canvas) {
-                    console.error('[Dashboard] overviewChart canvas not found in DOM.');
-                    return;
-                }
-
-                console.log('[Dashboard] donorGraphData:', donorGraphData);
-
-                var currentChart = null;
-
-                function renderChart(period) {
-                    var selectedData = (donorGraphData && donorGraphData[period]) ? donorGraphData[period] : [];
-
-                    console.log('[Dashboard] renderChart period:', period);
-                    console.log('[Dashboard] Selected graph data:', selectedData);
-
-                    var labels = selectedData.map(function (item) { return item.label; });
-                    var values = selectedData.map(function (item) { return parseFloat(item.count) || 0; });
-
-                    console.log('[Dashboard] Labels:', labels);
-                    console.log('[Dashboard] Values:', values);
-
-                    // Destroy previous chart instance to avoid overlay
-                    if (currentChart) {
-                        currentChart.destroy();
-                        currentChart = null;
+                // Shared chart options for minimalist green style
+                var commonOptions = {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            border: { display: false },
+                            ticks: { color: '#94a3b8', font: { size: 11 }, maxRotation: 0 }
+                        },
+                        y: {
+                            grid: { color: '#f1f5f9' }, // Light grid lines
+                            border: { display: false },
+                            ticks: {
+                                color: '#94a3b8', 
+                                font: { size: 11 },
+                                beginAtZero: true
+                            }
+                        }
                     }
+                };
 
-                    console.log('[Dashboard] Creating Chart instance');
-
-                    currentChart = new Chart(canvas, {
+                // Donors Chart
+                var donorsCanvas = document.getElementById('donorsChart');
+                if (donorsCanvas) {
+                    var dLabels = donorGraphData.map(function(item) { return item.label; });
+                    var dValues = donorGraphData.map(function(item) { return item.value; });
+                    
+                    new Chart(donorsCanvas, {
                         type: 'line',
                         data: {
-                            labels: labels,
+                            labels: dLabels,
                             datasets: [{
-                                label: 'Donors Registered',
-                                data: values,
+                                data: dValues,
                                 borderColor: '#16a34a',
-                                backgroundColor: 'rgba(22, 163, 74, 0.08)',
+                                backgroundColor: 'transparent',
                                 borderWidth: 2,
-                                fill: true,
-                                tension: 0.4,
-                                pointRadius: 3,
+                                fill: false, // No oversized filled-area graph
+                                tension: 0.3, // Thin smooth line
+                                pointRadius: 2, // Small circular data points
                                 pointBackgroundColor: '#16a34a',
-                                pointHoverRadius: 5,
+                                pointHoverRadius: 4,
                                 pointHoverBackgroundColor: '#16a34a'
                             }]
                         },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            interaction: {
-                                mode: 'index',
-                                intersect: false
-                            },
+                        options: Object.assign({}, commonOptions, {
                             plugins: {
                                 legend: { display: false },
                                 tooltip: {
-                                    callbacks: {
-                                        label: function (ctx) {
-                                            return ctx.parsed.y + ' Donors';
-                                        }
-                                    }
-                                }
-                            },
-                            scales: {
-                                x: {
-                                    grid: { display: false },
-                                    border: { display: false },
-                                    ticks: {
-                                        color: '#94a3b8',
-                                        font: { size: 11 },
-                                        maxTicksLimit: 12,
-                                        maxRotation: 0
-                                    }
-                                },
-                                y: {
-                                    grid: { color: '#f1f5f9', borderDash: [5, 5] },
-                                    border: { display: false },
-                                    ticks: {
-                                        color: '#94a3b8',
-                                        font: { size: 11 },
-                                        stepSize: 1,
-                                        callback: function (v) {
-                                            if (v % 1 !== 0) return '';
-                                            if (v >= 100000) return (v / 100000).toFixed(1) + 'L';
-                                            if (v >= 1000) return (v / 1000).toFixed(0) + 'k';
-                                            return v;
-                                        }
-                                    },
-                                    beginAtZero: true
+                                    callbacks: { label: function(ctx) { return ctx.parsed.y + ' Donors'; } }
                                 }
                             }
-                        }
-                    });
-
-                    console.log('[Dashboard] Chart instance created:', currentChart);
-                }
-
-                // Period selector (Week / Month / Year dropdown)
-                var graphPeriodSelect = document.getElementById('graph-period-select');
-                if (graphPeriodSelect) {
-                    graphPeriodSelect.addEventListener('change', function () {
-                        renderChart(this.value);
+                        })
                     });
                 }
 
-                // Auto-render Week view on page load
-                renderChart('week');
+                // Funds Chart
+                var fundsCanvas = document.getElementById('fundsChart');
+                if (fundsCanvas) {
+                    var fLabels = fundsGraphData.map(function(item) { return item.label; });
+                    var fValues = fundsGraphData.map(function(item) { return item.value; });
+
+                    var fundsOptions = JSON.parse(JSON.stringify(commonOptions));
+                    fundsOptions.scales.y.ticks.callback = function(v) {
+                        if (v >= 100000) return '₹' + (v / 100000).toFixed(1) + 'L';
+                        if (v >= 1000) return '₹' + (v / 1000).toFixed(0) + 'k';
+                        return '₹' + v;
+                    };
+                    fundsOptions.plugins.tooltip = {
+                        callbacks: { label: function(ctx) { return '₹' + ctx.parsed.y; } }
+                    };
+
+                    new Chart(fundsCanvas, {
+                        type: 'line',
+                        data: {
+                            labels: fLabels,
+                            datasets: [{
+                                data: fValues,
+                                borderColor: '#16a34a',
+                                backgroundColor: 'transparent',
+                                borderWidth: 2,
+                                fill: false, // No large filled-area graph
+                                tension: 0.3, // Thin smooth line
+                                pointRadius: 2, // Small circular data points
+                                pointBackgroundColor: '#16a34a',
+                                pointHoverRadius: 4,
+                                pointHoverBackgroundColor: '#16a34a'
+                            }]
+                        },
+                        options: fundsOptions
+                    });
+                }
             });
         </script>
 

@@ -114,15 +114,17 @@
 
                 <!-- Center Search Input & Bell matching reference -->
                 <div class="d-flex align-items-center gap-3">
-                    <div style="position: relative;">
+                    <div style="position: relative;" id="globalSearchContainer">
                         <i class="bi bi-search"
                             style="position: absolute; left: 14px; top: 10px; color: var(--text-muted); font-size: 12px;"></i>
                         <input type="text" id="navbarSearch" name="navbarSearch" class="form-control navbar-search-input"
-                            th:placeholder="#{search.placeholder}">
+                            th:placeholder="#{search.placeholder}" autocomplete="off">
+                        
+                        <!-- Search Results Dropdown -->
+                        <div id="searchResultsDropdown" class="dropdown-menu shadow w-100" style="position: absolute; top: 100%; left: 0; display: none; max-height: 300px; overflow-y: auto; z-index: 1050;">
+                            <!-- Results will be injected here via JS -->
+                        </div>
                     </div>
-                    <button class="btn btn-link p-0 text-dark" style="line-height: 1; text-decoration: none;">
-                        <i class="bi bi-bell" style="font-size: 18px; color: var(--text-muted);"></i>
-                    </button>
                 </div>
 
                 <div class="navbar-user">
@@ -248,7 +250,50 @@
                 } catch (e) {
                     console.error('Error parsing sparkline data', e);
                 }
-            });
+            // Global Search Logic
+            var searchInput = document.getElementById('navbarSearch');
+            var searchDropdown = document.getElementById('searchResultsDropdown');
+            var searchTimeout;
+
+            if (searchInput && searchDropdown) {
+                searchInput.addEventListener('input', function() {
+                    var query = this.value.trim();
+                    clearTimeout(searchTimeout);
+                    
+                    if (query.length < 2) {
+                        searchDropdown.style.display = 'none';
+                        return;
+                    }
+                    
+                    searchTimeout = setTimeout(function() {
+                        fetch('/api/search?q=' + encodeURIComponent(query))
+                            .then(response => response.json())
+                            .then(data => {
+                                searchDropdown.innerHTML = '';
+                                if (data.length === 0) {
+                                    searchDropdown.innerHTML = '<div class="p-2 text-muted small">No results found.</div>';
+                                } else {
+                                    data.forEach(item => {
+                                        var a = document.createElement('a');
+                                        a.className = 'dropdown-item d-flex flex-column py-2 border-bottom';
+                                        a.href = item.url;
+                                        a.innerHTML = '<span class="fw-bold" style="font-size:13px;">' + item.title + '</span><span class="text-muted" style="font-size:11px;">' + item.subtitle + '</span>';
+                                        searchDropdown.appendChild(a);
+                                    });
+                                }
+                                searchDropdown.style.display = 'block';
+                            })
+                            .catch(err => console.error('Search error', err));
+                    }, 300);
+                });
+
+                // Hide dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!document.getElementById('globalSearchContainer').contains(e.target)) {
+                        searchDropdown.style.display = 'none';
+                    }
+                });
+            }
         });
     </script>
 </body>
