@@ -1,13 +1,9 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-    layout:decorate="~{layout/main}">
-
-<head>
-    <title th:text="${pageTitle}">Log Usage</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+    th:replace="~{fragments/layout :: main(~{::#usage-form-container}, 'usage-logs', 'Log Daily Usage')}">
 
 <body>
-    <div layout:fragment="content">
+    <div id="usage-form-container">
         <!-- ── Header ── -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
