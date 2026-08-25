@@ -4,6 +4,25 @@
 
 <body>
     <div id="usage-form-container">
+        <!-- jQuery & Select2 -->
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+        <style>
+            .select2-container .select2-selection--single {
+                height: 38px !important;
+                border: 1px solid #dee2e6 !important;
+                border-radius: 0.375rem !important;
+                display: flex;
+                align-items: center;
+            }
+            .select2-container--default .select2-selection--single .select2-selection__arrow {
+                height: 36px !important;
+            }
+            .select2-container--default .select2-selection--single .select2-selection__rendered {
+                color: #212529 !important;
+            }
+        </style>
         <!-- ── Header ── -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
@@ -61,16 +80,14 @@
                             <tbody>
                                 <tr th:each="item, stat : *{items}" class="item-row">
                                     <td>
-                                        <input class="form-control" th:name="|items[${stat.index}].rawMaterialName|" 
-                                               th:value="${item.rawMaterialName}" 
-                                               list="materialsList" 
-                                               placeholder="Type or select material..." required autocomplete="off">
-                                        <datalist id="materialsList">
+                                        <select class="form-select material-select" th:name="|items[${stat.index}].rawMaterialName|" required>
+                                            <option value="" disabled selected>Select or type material...</option>
                                             <option th:each="rm : ${rawMaterials}" 
                                                     th:value="${rm.itemName}" 
-                                                    th:text="${rm.itemName + ' (Donated: ' + rm.getFormattedTotalQuantity() + ')'}">
+                                                    th:text="${rm.itemName + ' (Donated: ' + rm.totalQuantity + ' ' + rm.unit + ')'}"
+                                                    th:selected="${item.rawMaterialName == rm.itemName}">
                                             </option>
-                                        </datalist>
+                                        </select>
                                     </td>
                                     <td>
                                         <input type="number" step="0.001" class="form-control" th:name="|items[${stat.index}].quantityUsed|" th:value="${item.quantityUsed}" placeholder="e.g. 1.5" required>
@@ -114,6 +131,18 @@
             // The raw materials list passed from controller
             const rawMaterialsList = /*[[${rawMaterials}]]*/ [];
 
+            function initSelect2() {
+                $('.material-select').select2({
+                    tags: true,
+                    placeholder: "Select or type material...",
+                    width: '100%'
+                });
+            }
+
+            $(document).ready(function() {
+                initSelect2();
+            });
+
             function addRow() {
                 const tbody = document.querySelector('#itemsTable tbody');
                 const rowCount = tbody.querySelectorAll('tr.item-row').length;
@@ -121,9 +150,16 @@
                 const tr = document.createElement('tr');
                 tr.className = 'item-row';
                 
+                let optionsHtml = '<option value="" disabled selected>Select or type material...</option>';
+                rawMaterialsList.forEach(rm => {
+                    optionsHtml += `<option value="${rm.itemName}">${rm.itemName} (Donated: ${rm.totalQuantity} ${rm.unit})</option>`;
+                });
+
                 tr.innerHTML = `
                     <td>
-                        <input class="form-control" name="items[${rowCount}].rawMaterialName" list="materialsList" placeholder="Type or select material..." required autocomplete="off">
+                        <select class="form-select material-select" name="items[${rowCount}].rawMaterialName" required>
+                            ${optionsHtml}
+                        </select>
                     </td>
                     <td>
                         <input type="number" step="0.001" class="form-control" name="items[${rowCount}].quantityUsed" placeholder="e.g. 1.5" required>
@@ -144,11 +180,14 @@
                     </td>
                 `;
                 tbody.appendChild(tr);
+                initSelect2();
             }
 
             function removeRow(btn) {
                 const tbody = document.querySelector('#itemsTable tbody');
                 if (tbody.querySelectorAll('tr.item-row').length > 1) {
+                    // Destroy select2 on the row being removed to avoid memory leaks
+                    $(btn).closest('tr').find('.material-select').select2('destroy');
                     btn.closest('tr').remove();
                     reindexRows();
                 } else {
@@ -159,7 +198,7 @@
             function reindexRows() {
                 const rows = document.querySelectorAll('#itemsTable tbody tr.item-row');
                 rows.forEach((row, index) => {
-                    row.querySelector('input[name*=".rawMaterialName"]').name = `items[${index}].rawMaterialName`;
+                    row.querySelector('select[name*=".rawMaterialName"]').name = `items[${index}].rawMaterialName`;
                     row.querySelector('input[name*=".quantityUsed"]').name = `items[${index}].quantityUsed`;
                     row.querySelector('select[name*=".unit"]').name = `items[${index}].unit`;
                 });
