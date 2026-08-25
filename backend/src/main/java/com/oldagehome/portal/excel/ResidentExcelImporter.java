@@ -39,7 +39,8 @@ public class ResidentExcelImporter {
         boolean hasIdColumn = false;
         if (headerRow != null) {
             String firstColHeader = getCellValue(headerRow.getCell(0), dataFormatter).trim().toLowerCase();
-            if (firstColHeader.contains("id")) {
+            // Exact match or matches exactly 'id' or 'resident id'
+            if (firstColHeader.equals("id") || firstColHeader.equals("resident id") || firstColHeader.equals("resident_id")) {
                 hasIdColumn = true;
             }
         }
