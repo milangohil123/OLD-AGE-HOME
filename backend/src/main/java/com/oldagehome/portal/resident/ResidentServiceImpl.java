@@ -158,6 +158,7 @@ public class ResidentServiceImpl implements ResidentService {
     }
 
     @Override
+    @org.springframework.transaction.annotation.Transactional(propagation = org.springframework.transaction.annotation.Propagation.NOT_SUPPORTED)
     public List<ResidentImportDTO> importFromExcel(MultipartFile file) throws Exception {
         if (file.isEmpty()) {
             throw new IllegalArgumentException("Excel file is empty");

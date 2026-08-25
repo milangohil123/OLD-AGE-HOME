@@ -345,6 +345,7 @@ public class DonorServiceImpl implements DonorService {
     // -------------------------------------------------------------------------
 
     @Override
+    @org.springframework.transaction.annotation.Transactional(propagation = org.springframework.transaction.annotation.Propagation.NOT_SUPPORTED)
     public List<DonorImportDTO> importFromExcel(MultipartFile file) throws Exception {
         if (file.isEmpty()) {
             throw new IllegalArgumentException("Excel file is empty.");
