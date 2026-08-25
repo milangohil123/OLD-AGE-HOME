@@ -21,7 +21,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
-@RequestMapping("/inventory/raw-materials/usage")
+@RequestMapping("/inventory/usage")
 @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
 public class RawMaterialUsageController {
 
@@ -133,6 +133,6 @@ public class RawMaterialUsageController {
         rawMaterialService.logUsage(dto.getUsageDate(), dto.getPurpose(), items);
         
         redirectAttributes.addFlashAttribute("successMessage", "Usage logged successfully. Inventory stocks have been updated.");
-        return "redirect:/inventory/raw-materials";
+        return "redirect:/inventory";
     }
 }

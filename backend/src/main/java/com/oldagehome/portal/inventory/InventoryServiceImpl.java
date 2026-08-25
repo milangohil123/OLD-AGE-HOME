@@ -18,14 +18,16 @@ public class InventoryServiceImpl implements InventoryService {
 
     private final FoodDonationItemRepository foodRepo;
     private final MedicineDonationItemRepository medicineRepo;
+    private final RawMaterialInventoryRepository rawMaterialRepo;
 
     // Pattern to extract numbers and letters (e.g., "10 KG" -> "10", "KG")
     private static final Pattern QUANTITY_PATTERN = Pattern.compile("^\\s*([0-9]+(?:\\.[0-9]+)?)\\s*([a-zA-Z]+)?.*");
 
     @Autowired
-    public InventoryServiceImpl(FoodDonationItemRepository foodRepo, MedicineDonationItemRepository medicineRepo) {
+    public InventoryServiceImpl(FoodDonationItemRepository foodRepo, MedicineDonationItemRepository medicineRepo, RawMaterialInventoryRepository rawMaterialRepo) {
         this.foodRepo = foodRepo;
         this.medicineRepo = medicineRepo;
+        this.rawMaterialRepo = rawMaterialRepo;
     }
 
     @Override
@@ -141,7 +143,7 @@ public class InventoryServiceImpl implements InventoryService {
             }
         }
 
-        // Post-process to count unique donors and sort contributors
+        // Post-process to count unique donors, sort contributors, and apply actual stock deductions
         List<InventoryItemDTO> result = new ArrayList<>();
         for (InventoryItemDTO dto : aggregatedMap.values()) {
             // Count unique donors
@@ -155,6 +157,14 @@ public class InventoryServiceImpl implements InventoryService {
                 if (c2.getDonationDate() == null) return -1;
                 return c2.getDonationDate().compareTo(c1.getDonationDate());
             });
+            
+            // Override the total sum with the actual current stock from RawMaterialInventory (which accounts for usage deductions)
+            Optional<RawMaterialInventory> trueStockOpt = rawMaterialRepo.findByItemNameIgnoreCase(dto.getItemName().trim());
+            if (trueStockOpt.isPresent()) {
+                RawMaterialInventory trueStock = trueStockOpt.get();
+                dto.setTotalQuantity(trueStock.getTotalQuantity().doubleValue());
+                dto.setUnit(trueStock.getUnit());
+            }
             
             result.add(dto);
         }
