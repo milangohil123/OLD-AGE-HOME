@@ -260,11 +260,8 @@
                             <!-- Display Photo Preview or Default Icon -->
                             <img th:if="*{photo != null}" th:src="@{'/uploads/' + *{photo}}"
                                 class="rounded-circle object-fit-cover border" style="width: 140px; height: 140px;">
-                            <div th:if="*{photo == null}"
-                                class="rounded-circle bg-light d-flex align-items-center justify-content-center border"
-                                style="width: 140px; height: 140px; font-size: 56px;">
-
-                            </div>
+                            <img th:if="*{photo == null}" th:src="@{/images/default-avatar.jpeg}"
+                                class="rounded-circle object-fit-cover border" style="width: 140px; height: 140px;">
                         </div>
 
                         <div class="mb-0 text-start">

@@ -26,9 +26,7 @@
     <div class="pf-hero mb-4">
         <div class="pf-hero-left">
             <img th:if="${resident.photo != null}" th:src="@{'/uploads/'+${resident.photo}}" class="pf-avatar-img" alt="Photo">
-            <div th:if="${resident.photo == null}" class="pf-avatar-init">
-                <span th:text="${#strings.toUpperCase(#strings.substring(resident.fullName!=null?resident.fullName:'R',0,1))}">R</span>
-            </div>
+            <img th:if="${resident.photo == null}" th:src="@{/images/default-avatar.jpeg}" class="pf-avatar-img" alt="Default Photo">
             <div class="pf-hero-meta">
                 <h4 class="pf-hero-name" th:text="${resident.fullName}">Resident Name</h4>
                 <p class="pf-hero-sub"><i class="bi bi-door-open me-1"></i>

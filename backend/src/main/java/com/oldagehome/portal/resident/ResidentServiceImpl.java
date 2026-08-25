@@ -127,6 +127,37 @@ public class ResidentServiceImpl implements ResidentService {
     }
 
     @Override
+    public void deleteAllResidents() {
+        residentRepository.deleteAllInBatch();
+        auditService.logActivity(com.oldagehome.portal.audit.AuditModule.RESIDENT,
+                com.oldagehome.portal.audit.AuditAction.DELETE, "Deleted all residents",
+                "Resident", null, true, null);
+    }
+
+    @Override
+    public boolean isDuplicateResident(Resident resident) {
+        List<Resident> potentials = residentRepository.findPotentialDuplicates(
+                resident.getFullName(), resident.getDateOfBirth(), resident.getMobile(), resident.getBloodGroup());
+        
+        for (Resident p : potentials) {
+            // If it's the same resident being updated, skip
+            if (resident.getId() != null && resident.getId().equals(p.getId())) {
+                continue;
+            }
+            
+            boolean guardianMatch = (resident.getGuardianName() == null && p.getGuardianName() == null) ||
+                                    (resident.getGuardianName() != null && resident.getGuardianName().equals(p.getGuardianName()));
+            boolean addressMatch = (resident.getAddress() == null && p.getAddress() == null) ||
+                                   (resident.getAddress() != null && resident.getAddress().equals(p.getAddress()));
+            
+            if (guardianMatch && addressMatch) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public List<ResidentImportDTO> importFromExcel(MultipartFile file) throws Exception {
         if (file.isEmpty()) {
             throw new IllegalArgumentException("Excel file is empty");

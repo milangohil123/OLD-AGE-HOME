@@ -36,6 +36,7 @@ public class Resident {
 
     @NotNull(message = "Date of Birth is required")
     @Past(message = "Date of Birth must be in the past")
+    @org.springframework.format.annotation.DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name = "date_of_birth", nullable = false)
     private LocalDate dateOfBirth;
 
@@ -57,6 +58,7 @@ public class Resident {
     private String address;
 
     @NotNull(message = "Joining date is required")
+    @org.springframework.format.annotation.DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name = "joining_date", nullable = false)
     private LocalDate joiningDate;
 

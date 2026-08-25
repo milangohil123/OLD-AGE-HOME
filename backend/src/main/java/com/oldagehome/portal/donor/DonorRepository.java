@@ -18,8 +18,8 @@ public interface DonorRepository extends JpaRepository<Donor, Long>, JpaSpecific
 
        @Query("SELECT d FROM Donor d WHERE " +
                      "LOWER(d.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-                     "LOWER(d.mobile) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-                     "LOWER(d.email) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+                     "LOWER(COALESCE(d.mobile, '')) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+                     "LOWER(COALESCE(d.email, '')) LIKE LOWER(CONCAT('%', :keyword, '%'))")
        Page<Donor> searchDonors(@Param("keyword") String keyword, Pageable pageable);
 
        // --- Dashboard statistics queries ---

@@ -26,6 +26,10 @@ public interface ResidentService {
 
     void deleteResident(Long id);
 
+    void deleteAllResidents();
+
+    boolean isDuplicateResident(Resident resident);
+
     /**
      * Bulk imports resident entries from an uploaded Excel file.
      * Reports row-level errors and successes.

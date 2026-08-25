@@ -115,6 +115,13 @@ public class ResidentController {
             return "residents/form";
         }
 
+        if (residentService.isDuplicateResident(resident)) {
+            bindingResult.rejectValue("fullName", "duplicate", "This resident already exists in the system.");
+            model.addAttribute("statuses", ResidentStatus.values());
+            model.addAttribute("activePage", "residents");
+            return "residents/form";
+        }
+
         // Handle Photo upload
         try {
             if (!photoFile.isEmpty()) {
@@ -221,6 +228,28 @@ public class ResidentController {
                     .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
                     .body(data);
         } catch (IOException e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
+     * Delete all residents after backing them up to an Excel file.
+     */
+    @PostMapping("/backup-and-delete")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    public ResponseEntity<byte[]> backupAndDeleteAll() {
+        try {
+            List<Resident> residents = residentService.getAllResidents();
+            byte[] data = com.oldagehome.portal.excel.ResidentBackupExporter.exportResidentsForBackup(residents);
+            
+            // Only after successful backup generation, delete all
+            residentService.deleteAllResidents();
+            
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=residents_backup_" + java.time.LocalDate.now() + ".xlsx")
+                    .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                    .body(data);
+        } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
     }
