@@ -73,7 +73,7 @@ public class RawMaterialUsageController {
         model.addAttribute("totalElements", usagesPage.getTotalElements());
         model.addAttribute("purpose", purpose);
         model.addAttribute("date", dateStr);
-        model.addAttribute("activePage", "raw-materials");
+        model.addAttribute("activePage", "usage-logs");
         model.addAttribute("pageTitle", "Raw Material Usage History");
 
         return "inventory/raw-material-usage-list";
@@ -87,7 +87,7 @@ public class RawMaterialUsageController {
 
         model.addAttribute("usageForm", dto);
         model.addAttribute("rawMaterials", rawMaterialInventoryRepository.findAll());
-        model.addAttribute("activePage", "raw-materials");
+        model.addAttribute("activePage", "usage-logs");
         model.addAttribute("pageTitle", "Log Daily Usage");
 
         return "inventory/raw-material-usage-form";
@@ -112,7 +112,7 @@ public class RawMaterialUsageController {
                 dto.getItems().add(new RawMaterialUsageFormDTO.UsageItemDTO());
             }
             model.addAttribute("rawMaterials", rawMaterialInventoryRepository.findAll());
-            model.addAttribute("activePage", "raw-materials");
+            model.addAttribute("activePage", "usage-logs");
             model.addAttribute("pageTitle", "Log Daily Usage");
             return "inventory/raw-material-usage-form";
         }

@@ -60,6 +60,16 @@
                         <i class="bi bi-box-seam" style="font-size: 16px;"></i> <span>Inventory</span>
                     </a>
                 </li>
+                <li class="sidebar-menu-item" th:classappend="${activePage == 'raw-materials'} ? 'active'">
+                    <a th:href="@{/inventory/raw-materials}">
+                        <i class="bi bi-basket2" style="font-size: 16px;"></i> <span>Raw Materials</span>
+                    </a>
+                </li>
+                <li class="sidebar-menu-item" th:classappend="${activePage == 'usage-logs'} ? 'active'">
+                    <a th:href="@{/inventory/raw-materials/usage}">
+                        <i class="bi bi-journal-text" style="font-size: 16px;"></i> <span>Usage Logs</span>
+                    </a>
+                </li>
                 <li class="sidebar-menu-item" th:classappend="${activePage == 'reports'} ? 'active'">
                     <a th:href="@{/reports}">
                         <i class="bi bi-bar-chart" style="font-size: 16px;"></i> <span
