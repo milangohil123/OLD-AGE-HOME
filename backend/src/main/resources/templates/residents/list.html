@@ -181,106 +181,106 @@
             </div>
         </div>
 
-    </div>
-
-    <!-- Delete All Modal -->
-    <div class="modal fade" id="deleteAllModal" tabindex="-1" aria-labelledby="deleteAllModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title fw-bold" id="deleteAllModalLabel"><i class="bi bi-exclamation-triangle-fill me-2"></i>Delete All Residents?</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p class="mb-3 text-dark fw-bold">This action will permanently delete all resident records.</p>
-                    <p class="mb-3 text-muted">Before deletion, an Excel backup of all residents will be downloaded automatically.</p>
-                    <p class="mb-0 text-danger fw-bold">Are you sure you want to continue?</p>
-                </div>
-                <div class="modal-footer bg-light border-top-0">
-                    <button type="button" class="btn btn-secondary fw-bold" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger fw-bold px-4" id="confirmDeleteAllBtn" onclick="executeDeleteAll()">
-                        <span id="deleteAllBtnText">Delete All</span>
-                        <span id="deleteAllSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-                    </button>
+        <!-- Delete All Modal -->
+        <div class="modal fade" id="deleteAllModal" tabindex="-1" aria-labelledby="deleteAllModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title fw-bold" id="deleteAllModalLabel"><i class="bi bi-exclamation-triangle-fill me-2"></i>Delete All Residents?</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="mb-3 text-dark fw-bold">This action will permanently delete all resident records.</p>
+                        <p class="mb-3 text-muted">Before deletion, an Excel backup of all residents will be downloaded automatically.</p>
+                        <p class="mb-0 text-danger fw-bold">Are you sure you want to continue?</p>
+                    </div>
+                    <div class="modal-footer bg-light border-top-0">
+                        <button type="button" class="btn btn-secondary fw-bold" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-danger fw-bold px-4" id="confirmDeleteAllBtn" onclick="executeDeleteAll()">
+                            <span id="deleteAllBtnText">Delete All</span>
+                            <span id="deleteAllSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Delete All Logic -->
-    <script>
-        let csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
-        let csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+        <!-- Delete All Logic -->
+        <script>
+            let csrfToken = document.querySelector('meta[name="_csrf"]')?.content || document.querySelector('input[name="_csrf"]')?.value;
+            let csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content || 'X-CSRF-TOKEN';
 
-        function openDeleteAllModal() {
-            var myModal = new bootstrap.Modal(document.getElementById('deleteAllModal'));
-            myModal.show();
-        }
-
-        async function executeDeleteAll() {
-            const btn = document.getElementById('confirmDeleteAllBtn');
-            const btnText = document.getElementById('deleteAllBtnText');
-            const spinner = document.getElementById('deleteAllSpinner');
-            
-            // UI Loading state
-            btn.disabled = true;
-            btnText.textContent = 'Backing up & Deleting...';
-            spinner.classList.remove('d-none');
-            
-            try {
-                const headers = { 'Content-Type': 'application/json' };
-                if (csrfToken && csrfHeader) {
-                    headers[csrfHeader] = csrfToken;
-                }
-                
-                const response = await fetch('/residents/backup-and-delete', {
-                    method: 'POST',
-                    headers: headers
-                });
-                
-                if (!response.ok) {
-                    throw new Error('Server error');
-                }
-                
-                // Get the blob to download
-                const blob = await response.blob();
-                
-                // Extract filename from headers if possible, else use default
-                let filename = 'residents_backup.xlsx';
-                const disposition = response.headers.get('Content-Disposition');
-                if (disposition && disposition.indexOf('filename=') !== -1) {
-                    const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
-                    if (matches != null && matches[1]) {
-                        filename = matches[1].replace(/['"]/g, '');
-                    }
-                }
-                
-                // Trigger download
-                const downloadUrl = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.style.display = 'none';
-                a.href = downloadUrl;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                
-                // Cleanup
-                window.URL.revokeObjectURL(downloadUrl);
-                document.body.removeChild(a);
-                
-                // Wait briefly for download to start, then refresh page to show empty state
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1000);
-                
-            } catch (error) {
-                alert('Backup failed. No residents were deleted.');
-                btn.disabled = false;
-                btnText.textContent = 'Delete All';
-                spinner.classList.add('d-none');
+            function openDeleteAllModal() {
+                var myModal = new bootstrap.Modal(document.getElementById('deleteAllModal'));
+                myModal.show();
             }
-        }
-    </script>
+
+            async function executeDeleteAll() {
+                const btn = document.getElementById('confirmDeleteAllBtn');
+                const btnText = document.getElementById('deleteAllBtnText');
+                const spinner = document.getElementById('deleteAllSpinner');
+                
+                // UI Loading state
+                btn.disabled = true;
+                btnText.textContent = 'Backing up & Deleting...';
+                spinner.classList.remove('d-none');
+                
+                try {
+                    const headers = { 'Content-Type': 'application/json' };
+                    if (csrfToken && csrfHeader) {
+                        headers[csrfHeader] = csrfToken;
+                    }
+                    
+                    const response = await fetch('/residents/backup-and-delete', {
+                        method: 'POST',
+                        headers: headers
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Server error');
+                    }
+                    
+                    // Get the blob to download
+                    const blob = await response.blob();
+                    
+                    // Extract filename from headers if possible, else use default
+                    let filename = 'residents_backup.xlsx';
+                    const disposition = response.headers.get('Content-Disposition');
+                    if (disposition && disposition.indexOf('filename=') !== -1) {
+                        const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
+                        if (matches != null && matches[1]) {
+                            filename = matches[1].replace(/['"]/g, '');
+                        }
+                    }
+                    
+                    // Trigger download
+                    const downloadUrl = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = downloadUrl;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    
+                    // Cleanup
+                    window.URL.revokeObjectURL(downloadUrl);
+                    document.body.removeChild(a);
+                    
+                    // Wait briefly for download to start, then refresh page to show empty state
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                    
+                } catch (error) {
+                    alert('Backup failed. No residents were deleted.');
+                    btn.disabled = false;
+                    btnText.textContent = 'Delete All';
+                    spinner.classList.add('d-none');
+                }
+            }
+        </script>
+
+    </div>
 
 </body>
 
