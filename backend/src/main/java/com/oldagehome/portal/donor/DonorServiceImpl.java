@@ -184,6 +184,14 @@ public class DonorServiceImpl implements DonorService {
     }
 
     @Override
+    public void deleteAllDonors() {
+        donorRepository.deleteAll();
+        auditService.logActivity(com.oldagehome.portal.audit.AuditModule.DONOR,
+                com.oldagehome.portal.audit.AuditAction.DELETE, "Deleted all donors",
+                "Donor", null, true, null);
+    }
+
+    @Override
     public void saveDonation(DonationFormDTO dto) {
         Donor donor = getDonorById(dto.getDonorId());
 

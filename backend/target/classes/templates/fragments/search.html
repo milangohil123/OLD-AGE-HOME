@@ -22,10 +22,10 @@
                 <input type="hidden" name="direction" th:value="${direction}">
             </div>
             <div class="col-md-5 col-sm-12 d-flex gap-2">
-                <button type="button" class="btn btn-outline-secondary px-4" style="height: 48px; background: white;" th:if="${baseUrl != '/residents'}">
+                <button type="button" class="btn btn-outline-secondary px-4" style="height: 48px; background: white;" th:if="${baseUrl != '/residents' and baseUrl != '/donors'}">
                     <i class="bi bi-funnel me-1"></i> <span th:text="${#messages.msgOrNull('search.btn.filters')} ?: 'Filters'">Filters</span>
                 </button>
-                <button type="button" class="btn btn-danger fw-bold px-4 shadow-sm" style="height: 48px; color: white;" th:if="${baseUrl == '/residents'}" onclick="openDeleteAllModal()">
+                <button type="button" class="btn fw-bold px-4 shadow-sm" style="height: 48px; background-color: #f87171; color: white; border: none;" th:if="${baseUrl == '/residents' or baseUrl == '/donors'}" onclick="openDeleteAllModal()">
                     <i class="bi bi-trash-fill me-1"></i> Delete All
                 </button>
                 <button type="submit" class="btn btn-primary px-4 flex-grow-1" style="height: 48px;">Search</button>

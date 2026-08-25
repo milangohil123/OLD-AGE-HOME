@@ -37,6 +37,9 @@ public interface DonorService {
     /** Delete a donor by primary key. */
     void deleteDonor(Long id);
 
+    /** Delete all donor records. */
+    void deleteAllDonors();
+
     /** Save a new donation to an existing donor */
     void saveDonation(DonationFormDTO dto);
 

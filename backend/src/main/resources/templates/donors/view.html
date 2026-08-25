@@ -66,8 +66,8 @@
                 <span class="pf-stat-val" th:classappend="${#strings.isEmpty(donor.donationCategory)}?'pf-muted'" th:text="${!#strings.isEmpty(donor.donationCategory)?donor.donationCategory:'—'}">—</span>
             </div>
             <div class="pf-stat">
-                <span class="pf-stat-label"><i class="bi bi-calendar3 me-1"></i>Donation Date</span>
-                <span class="pf-stat-val" th:text="${donor.donationDate!=null?#temporals.format(donor.donationDate,'dd MMM yyyy'):'—'}">—</span>
+                <span class="pf-stat-label"><i class="bi bi-calendar-check me-1"></i>Donation Date</span>
+                <span class="pf-stat-val" th:text="${donor.donationDate!=null?#temporals.format(donor.donationDate,'dd-MM-yyyy'):'—'}">—</span>
             </div>
         </div>
     </div>
@@ -85,8 +85,8 @@
                 </div>
                 <div class="pf-grid pf-grid-1">
                     <div class="pf-field">
-                        <span class="pf-lbl">Date of Birth</span>
-                        <span class="pf-val" th:classappend="${donor.dateOfBirth==null}?'pf-muted'" th:text="${donor.dateOfBirth!=null?#temporals.format(donor.dateOfBirth,'dd MMM yyyy'):'Not Provided'}">—</span>
+                        <span class="pf-lbl text-uppercase" style="font-size:10.5px;letter-spacing:0.5px;">Date of Birth</span>
+                        <span class="pf-val" th:classappend="${donor.dateOfBirth==null}?'pf-muted'" th:text="${donor.dateOfBirth!=null?#temporals.format(donor.dateOfBirth,'dd-MM-yyyy'):'Not Provided'}">—</span>
                     </div>
                     <div class="pf-field">
                         <span class="pf-lbl">Age / Gender</span>
@@ -133,12 +133,12 @@
                 </div>
                 <div class="pf-grid pf-grid-1">
                     <div class="pf-field">
-                        <span class="pf-lbl">Created</span>
-                        <span class="pf-val" th:classappend="${donor.createdAt==null}?'pf-muted'" th:text="${donor.createdAt!=null?#temporals.format(donor.createdAt,'dd MMM yyyy'):'—'}">—</span>
+                        <span class="pf-lbl text-uppercase" style="font-size:10.5px;letter-spacing:0.5px;">Record Created</span>
+                        <span class="pf-val" th:classappend="${donor.createdAt==null}?'pf-muted'" th:text="${donor.createdAt!=null?#temporals.format(donor.createdAt,'dd-MM-yyyy'):'—'}">—</span>
                     </div>
                     <div class="pf-field">
-                        <span class="pf-lbl">Updated</span>
-                        <span class="pf-val" th:classappend="${donor.updatedAt==null}?'pf-muted'" th:text="${donor.updatedAt!=null?#temporals.format(donor.updatedAt,'dd MMM yyyy HH:mm'):'—'}">—</span>
+                        <span class="pf-lbl text-uppercase" style="font-size:10.5px;letter-spacing:0.5px;">Last Updated</span>
+                        <span class="pf-val" th:classappend="${donor.updatedAt==null}?'pf-muted'" th:text="${donor.updatedAt!=null?#temporals.format(donor.updatedAt,'dd-MM-yyyy HH:mm'):'—'}">—</span>
                     </div>
                 </div>
             </div>

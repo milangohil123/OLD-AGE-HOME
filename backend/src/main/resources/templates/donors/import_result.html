@@ -75,7 +75,7 @@
                                       th:text="'₹' + ${#numbers.formatDecimal(row.donationAmount, 1, 'COMMA', 2, 'POINT')}">₹0.00</span>
                                 <span th:if="${row.donationAmount == null}" class="text-muted">-</span>
                             </td>
-                            <td th:text="${row.donationDate != null ? #temporals.format(row.donationDate, 'dd MMM yyyy') : (row.donationDateString != null ? row.donationDateString : '-')}">-</td>
+                            <td th:text="${row.donationDate != null ? #temporals.format(row.donationDate, 'dd-MM-yyyy') : (row.donationDateString != null ? row.donationDateString : '-')}">-</td>
                             <td>
                                 <span th:if="${row.status != null}"
                                       th:text="${row.status}"

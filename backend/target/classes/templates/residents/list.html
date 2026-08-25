@@ -185,18 +185,18 @@
         <div class="modal fade" id="deleteAllModal" tabindex="-1" aria-labelledby="deleteAllModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content border-0 shadow">
-                    <div class="modal-header bg-danger text-white">
+                    <div class="modal-header text-white" style="background-color: #f87171; border-bottom: none;">
                         <h5 class="modal-title fw-bold" id="deleteAllModalLabel"><i class="bi bi-exclamation-triangle-fill me-2"></i>Delete All Residents?</h5>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <p class="mb-3 text-dark fw-bold">This action will permanently delete all resident records.</p>
                         <p class="mb-3 text-muted">Before deletion, an Excel backup of all residents will be downloaded automatically.</p>
-                        <p class="mb-0 text-danger fw-bold">Are you sure you want to continue?</p>
+                        <p class="mb-0 fw-bold" style="color: #f87171;">Are you sure you want to continue?</p>
                     </div>
                     <div class="modal-footer bg-light border-top-0">
                         <button type="button" class="btn btn-secondary fw-bold" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-danger fw-bold px-4" id="confirmDeleteAllBtn" onclick="executeDeleteAll()">
+                        <button type="button" class="btn fw-bold px-4" style="background-color: #f87171; color: white; border: none;" id="confirmDeleteAllBtn" onclick="executeDeleteAll()">
                             <span id="deleteAllBtnText">Delete All</span>
                             <span id="deleteAllSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
                         </button>

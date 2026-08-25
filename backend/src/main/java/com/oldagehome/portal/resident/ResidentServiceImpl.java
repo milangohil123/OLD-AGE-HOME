@@ -170,6 +170,7 @@ public class ResidentServiceImpl implements ResidentService {
 
         int successCount = 0;
         int failCount = 0;
+        java.util.Set<String> processedSignatures = new java.util.HashSet<>();
 
         // Validate and insert into database
         for (ResidentImportDTO dto : dtos) {
@@ -193,6 +194,24 @@ public class ResidentServiceImpl implements ResidentService {
                             .joiningDate(LocalDate.now()) // Default joining date as today
                             .status(ResidentStatus.ACTIVE)
                             .build();
+
+                    // 1. Check for duplicates within the same file to prevent double-inserts
+                    String signature = resident.getFullName() + "|" + resident.getDateOfBirth() + "|" + resident.getMobile();
+                    if (processedSignatures.contains(signature)) {
+                        dto.setValid(false);
+                        dto.setErrorMessage("Skipped: Duplicate within the same file.");
+                        failCount++;
+                        continue;
+                    }
+                    processedSignatures.add(signature);
+
+                    // 2. Check for duplicates against the database
+                    if (isDuplicateResident(resident)) {
+                        dto.setValid(false);
+                        dto.setErrorMessage("Skipped: Already exists in the system.");
+                        failCount++;
+                        continue;
+                    }
 
                     residentRepository.save(resident);
                     successCount++;

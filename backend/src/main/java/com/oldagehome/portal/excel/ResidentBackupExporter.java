@@ -11,7 +11,7 @@ import java.util.List;
 
 public class ResidentBackupExporter {
 
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
     public static byte[] exportResidentsForBackup(List<Resident> residents) throws IOException {
         String[] columns = {"Resident ID", "Name", "Gender", "DOB", "Mobile", "Guardian", "Guardian Phone"};

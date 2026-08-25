@@ -301,6 +301,30 @@ public class DonorController {
     }
 
     // -------------------------------------------------------------------------
+    // POST /donors/backup-and-delete — Export all then delete all
+    // -------------------------------------------------------------------------
+
+    @PostMapping("/backup-and-delete")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER')")
+    public ResponseEntity<byte[]> backupAndDeleteAll() {
+        try {
+            // 1. Generate Backup
+            byte[] backupData = donorService.exportToExcel();
+
+            // 2. Delete All Records
+            donorService.deleteAllDonors();
+
+            // 3. Return Backup File
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=donors_backup.xlsx")
+                    .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                    .body(backupData);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    // -------------------------------------------------------------------------
     // GET /donors/export — Download Excel
     // -------------------------------------------------------------------------
 

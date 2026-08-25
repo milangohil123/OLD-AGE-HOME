@@ -45,7 +45,7 @@
             </div>
             <div class="pf-stat">
                 <span class="pf-stat-label"><i class="bi bi-calendar-check me-1"></i>Admission Date</span>
-                <span class="pf-stat-val" th:text="${resident.joiningDate!=null?#temporals.format(resident.joiningDate,'dd MMM yyyy'):'—'}">—</span>
+                <span class="pf-stat-val" th:text="${resident.joiningDate!=null?#temporals.format(resident.joiningDate,'dd-MM-yyyy'):'—'}">—</span>
             </div>
             <div class="pf-stat">
                 <span class="pf-stat-label"><i class="bi bi-person-badge me-1"></i>Age / Gender</span>
@@ -80,7 +80,7 @@
         </div>
         <div class="pf-grid pf-grid-3">
             <div class="pf-field"><span class="pf-lbl">Full Name</span><span class="pf-val" th:text="${resident.fullName}">—</span></div>
-            <div class="pf-field"><span class="pf-lbl">Date of Birth</span><span class="pf-val" th:classappend="${resident.dateOfBirth==null}?'pf-muted'" th:text="${resident.dateOfBirth!=null?#temporals.format(resident.dateOfBirth,'dd MMM yyyy'):'Not Provided'}">—</span></div>
+            <div class="pf-field"><span class="pf-lbl">Date of Birth</span><span class="pf-val" th:classappend="${resident.dateOfBirth==null}?'pf-muted'" th:text="${resident.dateOfBirth!=null?#temporals.format(resident.dateOfBirth,'dd-MM-yyyy'):'Not Provided'}">—</span></div>
             <div class="pf-field"><span class="pf-lbl">Age</span><span class="pf-val" th:classappend="${resident.age==null}?'pf-muted'" th:text="${resident.age!=null?resident.age+' years':'Not Provided'}">—</span></div>
             <div class="pf-field"><span class="pf-lbl">Gender</span><span class="pf-val" th:classappend="${resident.gender==null}?'pf-muted'" th:text="${resident.gender!=null?resident.gender:'Not Provided'}">—</span></div>
             <div class="pf-field"><span class="pf-lbl">Blood Group</span><span class="pf-val" th:classappend="${#strings.isEmpty(resident.bloodGroup)}?'pf-muted'" th:text="${!#strings.isEmpty(resident.bloodGroup)?resident.bloodGroup:'Not Disclosed'}">—</span></div>
@@ -89,7 +89,7 @@
             <div class="pf-field"><span class="pf-lbl">Occupation</span><span class="pf-val" th:classappend="${#strings.isEmpty(resident.occupation)}?'pf-muted'" th:text="${!#strings.isEmpty(resident.occupation)?resident.occupation:'Not Provided'}">—</span></div>
             <div class="pf-field"><span class="pf-lbl">Disability / Special Care</span><span class="pf-val" th:classappend="${#strings.isEmpty(resident.disability)}?'pf-muted'" th:text="${!#strings.isEmpty(resident.disability)?resident.disability:'None'}">—</span></div>
             <div class="pf-field"><span class="pf-lbl">Room Number</span><span class="pf-val" th:classappend="${#strings.isEmpty(resident.roomNumber)}?'pf-muted'" th:text="${!#strings.isEmpty(resident.roomNumber)?resident.roomNumber:'Not Assigned'}">—</span></div>
-            <div class="pf-field"><span class="pf-lbl">Admission Date</span><span class="pf-val" th:text="${resident.joiningDate!=null?#temporals.format(resident.joiningDate,'dd MMM yyyy'):'—'}">—</span></div>
+            <div class="pf-field"><span class="pf-lbl">Admission Date</span><span class="pf-val" th:text="${resident.joiningDate!=null?#temporals.format(resident.joiningDate,'dd-MM-yyyy'):'—'}">—</span></div>
             <div class="pf-field"><span class="pf-lbl">Status</span>
                 <span th:if="${resident.status != null and resident.status.name()=='ACTIVE'}" class="pf-info-badge pf-badge-green">Active</span>
                 <span th:if="${resident.status != null and resident.status.name()=='DISCHARGED'}" class="pf-info-badge pf-badge-gray">Discharged</span>
@@ -166,8 +166,8 @@
             </div>
         </div>
         <div class="pf-grid pf-grid-3">
-            <div class="pf-field"><span class="pf-lbl">Record Created</span><span class="pf-val" th:classappend="${resident.createdAt==null}?'pf-muted'" th:text="${resident.createdAt!=null?#temporals.format(resident.createdAt,'dd MMM yyyy, HH:mm'):'—'}">—</span></div>
-            <div class="pf-field"><span class="pf-lbl">Last Updated</span><span class="pf-val" th:classappend="${resident.updatedAt==null}?'pf-muted'" th:text="${resident.updatedAt!=null?#temporals.format(resident.updatedAt,'dd MMM yyyy, HH:mm'):'—'}">—</span></div>
+            <div class="pf-field"><span class="pf-lbl">Record Created</span><span class="pf-val" th:classappend="${resident.createdAt==null}?'pf-muted'" th:text="${resident.createdAt!=null?#temporals.format(resident.createdAt,'dd-MM-yyyy, HH:mm'):'—'}">—</span></div>
+            <div class="pf-field"><span class="pf-lbl">Last Updated</span><span class="pf-val" th:classappend="${resident.updatedAt==null}?'pf-muted'" th:text="${resident.updatedAt!=null?#temporals.format(resident.updatedAt,'dd-MM-yyyy, HH:mm'):'—'}">—</span></div>
         </div>
     </div>
 
