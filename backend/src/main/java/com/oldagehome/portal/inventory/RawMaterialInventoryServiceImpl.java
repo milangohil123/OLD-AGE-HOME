@@ -97,16 +97,38 @@ public class RawMaterialInventoryServiceImpl implements RawMaterialInventoryServ
     }
 
     @Override
-    public InventoryUsage logUsage(LocalDate usageDate, String purpose, List<InventoryUsageItem> items) {
+    public InventoryUsage logUsage(LocalDate usageDate, String purpose, List<RawMaterialUsageFormDTO.UsageItemDTO> items) {
         InventoryUsage usage = InventoryUsage.builder()
                 .usageDate(usageDate)
                 .purpose(purpose)
                 .build();
 
-        for (InventoryUsageItem item : items) {
-            item.setInventoryUsage(usage);
-            usage.getItems().add(item);
-            deductStock(item.getRawMaterial().getItemName(), item.getQuantityUsed(), item.getUnit());
+        for (RawMaterialUsageFormDTO.UsageItemDTO dtoItem : items) {
+            String itemName = dtoItem.getRawMaterialName().trim();
+            
+            // Check if RawMaterialInventory exists, if not create it
+            Optional<RawMaterialInventory> existingOpt = rawMaterialInventoryRepository.findByItemNameIgnoreCase(itemName);
+            RawMaterialInventory rawMaterial;
+            if (existingOpt.isPresent()) {
+                rawMaterial = existingOpt.get();
+            } else {
+                rawMaterial = RawMaterialInventory.builder()
+                        .itemName(itemName)
+                        .totalQuantity(BigDecimal.ZERO)
+                        .unit(dtoItem.getUnit())
+                        .build();
+                rawMaterial = rawMaterialInventoryRepository.save(rawMaterial);
+            }
+
+            InventoryUsageItem usageItem = InventoryUsageItem.builder()
+                    .rawMaterial(rawMaterial)
+                    .quantityUsed(dtoItem.getQuantityUsed())
+                    .unit(dtoItem.getUnit())
+                    .inventoryUsage(usage)
+                    .build();
+
+            usage.getItems().add(usageItem);
+            deductStock(itemName, usageItem.getQuantityUsed(), usageItem.getUnit());
         }
 
         InventoryUsage saved = inventoryUsageRepository.save(usage);

@@ -14,7 +14,7 @@ public interface RawMaterialInventoryService {
     
     void deductStock(String itemName, BigDecimal amountUsed, String unit);
     
-    InventoryUsage logUsage(LocalDate usageDate, String purpose, java.util.List<InventoryUsageItem> items);
+    InventoryUsage logUsage(LocalDate usageDate, String purpose, List<RawMaterialUsageFormDTO.UsageItemDTO> items);
     
     Page<InventoryUsage> searchUsages(String purpose, LocalDate date, Pageable pageable);
     

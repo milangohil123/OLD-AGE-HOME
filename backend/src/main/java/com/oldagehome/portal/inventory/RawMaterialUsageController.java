@@ -14,11 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/inventory/usage")
@@ -26,13 +22,12 @@ import java.util.stream.Collectors;
 public class RawMaterialUsageController {
 
     private final RawMaterialInventoryService rawMaterialService;
-    private final RawMaterialInventoryRepository rawMaterialInventoryRepository;
+    private final InventoryService inventoryService;
 
     @Autowired
-    public RawMaterialUsageController(RawMaterialInventoryService rawMaterialService,
-                                      RawMaterialInventoryRepository rawMaterialInventoryRepository) {
+    public RawMaterialUsageController(RawMaterialInventoryService rawMaterialService, InventoryService inventoryService) {
         this.rawMaterialService = rawMaterialService;
-        this.rawMaterialInventoryRepository = rawMaterialInventoryRepository;
+        this.inventoryService = inventoryService;
     }
 
     @GetMapping
@@ -80,13 +75,13 @@ public class RawMaterialUsageController {
     }
 
     @GetMapping("/new")
-    public String showNewForm(Model model) {
+    public String showUsageForm(Model model) {
         RawMaterialUsageFormDTO dto = new RawMaterialUsageFormDTO();
-        // Add one default empty row
-        dto.getItems().add(new RawMaterialUsageFormDTO.UsageItemDTO());
+        dto.setUsageDate(LocalDate.now());
+        dto.getItems().add(new RawMaterialUsageFormDTO.UsageItemDTO()); // one empty row
 
         model.addAttribute("usageForm", dto);
-        model.addAttribute("rawMaterials", rawMaterialInventoryRepository.findAll());
+        model.addAttribute("rawMaterials", inventoryService.getAggregatedInventory(null, "Food"));
         model.addAttribute("activePage", "usage-logs");
         model.addAttribute("pageTitle", "Log Daily Usage");
 
@@ -100,8 +95,8 @@ public class RawMaterialUsageController {
             Model model,
             RedirectAttributes redirectAttributes) {
 
-        // Remove empty rows where material is null or quantity is null
-        dto.getItems().removeIf(item -> item.getRawMaterialId() == null || item.getQuantityUsed() == null);
+        // Remove empty rows where material is null or empty, or quantity is null
+        dto.getItems().removeIf(item -> item.getRawMaterialName() == null || item.getRawMaterialName().trim().isEmpty() || item.getQuantityUsed() == null);
 
         if (dto.getItems().isEmpty()) {
             bindingResult.rejectValue("items", "error.items", "At least one raw material must be logged.");
@@ -111,26 +106,13 @@ public class RawMaterialUsageController {
             if (dto.getItems().isEmpty()) {
                 dto.getItems().add(new RawMaterialUsageFormDTO.UsageItemDTO());
             }
-            model.addAttribute("rawMaterials", rawMaterialInventoryRepository.findAll());
+            model.addAttribute("rawMaterials", inventoryService.getAggregatedInventory(null, "Food"));
             model.addAttribute("activePage", "usage-logs");
             model.addAttribute("pageTitle", "Log Daily Usage");
             return "inventory/raw-material-usage-form";
         }
 
-        List<InventoryUsageItem> items = new ArrayList<>();
-        for (RawMaterialUsageFormDTO.UsageItemDTO itemDto : dto.getItems()) {
-            Optional<RawMaterialInventory> rawMatOpt = rawMaterialInventoryRepository.findById(itemDto.getRawMaterialId());
-            if (rawMatOpt.isPresent()) {
-                InventoryUsageItem usageItem = InventoryUsageItem.builder()
-                        .rawMaterial(rawMatOpt.get())
-                        .quantityUsed(itemDto.getQuantityUsed())
-                        .unit(itemDto.getUnit())
-                        .build();
-                items.add(usageItem);
-            }
-        }
-
-        rawMaterialService.logUsage(dto.getUsageDate(), dto.getPurpose(), items);
+        rawMaterialService.logUsage(dto.getUsageDate(), dto.getPurpose(), dto.getItems());
         
         redirectAttributes.addFlashAttribute("successMessage", "Usage logged successfully. Inventory stocks have been updated.");
         return "redirect:/inventory";

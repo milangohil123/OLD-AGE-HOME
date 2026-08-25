@@ -26,10 +26,10 @@ public class RawMaterialUsageFormDTO {
 
     @Data
     public static class UsageItemDTO {
-        @NotNull(message = "Raw Material is required")
-        private Long rawMaterialId;
+        @NotBlank(message = "Raw material name is required")
+        private String rawMaterialName;
 
-        @NotNull(message = "Quantity Used is required")
+        @NotNull(message = "Quantity used is required")
         private BigDecimal quantityUsed;
 
         @NotBlank(message = "Unit is required")
