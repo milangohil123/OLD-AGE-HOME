@@ -23,14 +23,17 @@ public class DonorServiceImpl implements DonorService {
     private final DonorRepository donorRepository;
     private final DonationRepository donationRepository;
     private final com.oldagehome.portal.audit.AuditService auditService;
+    private final com.oldagehome.portal.inventory.RawMaterialInventoryService rawMaterialInventoryService;
 
     @Autowired
     public DonorServiceImpl(DonorRepository donorRepository,
             DonationRepository donationRepository,
-            com.oldagehome.portal.audit.AuditService auditService) {
+            com.oldagehome.portal.audit.AuditService auditService,
+            com.oldagehome.portal.inventory.RawMaterialInventoryService rawMaterialInventoryService) {
         this.donorRepository = donorRepository;
         this.donationRepository = donationRepository;
         this.auditService = auditService;
+        this.rawMaterialInventoryService = rawMaterialInventoryService;
     }
 
     // -------------------------------------------------------------------------
@@ -129,6 +132,23 @@ public class DonorServiceImpl implements DonorService {
         }
 
         return dto;
+    }
+
+    @Override
+    public boolean isDuplicateDonor(String fullName, String mobile, String email, String address, Long excludeId) {
+        List<Donor> matchingName = donorRepository.findByFullNameIgnoreCase(fullName);
+        for (Donor d : matchingName) {
+            if (excludeId != null && d.getId().equals(excludeId)) {
+                continue;
+            }
+            boolean sameMobile = Objects.equals(d.getMobile(), mobile);
+            boolean sameEmail = Objects.equals(d.getEmail(), email);
+            boolean sameAddress = Objects.equals(d.getAddress(), address);
+            if (sameMobile && sameEmail && sameAddress) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -240,6 +260,11 @@ public class DonorServiceImpl implements DonorService {
                         .displayOrder(displayOrder++)
                         .build();
                 donation.getFoodItems().add(item);
+                
+                // Aggregate into raw material inventory
+                if (item.getQuantity() != null && !item.getQuantity().isEmpty()) {
+                    rawMaterialInventoryService.addStock(item.getFoodName(), item.getQuantity());
+                }
             }
         }
 
@@ -332,6 +357,11 @@ public class DonorServiceImpl implements DonorService {
                             .displayOrder(displayOrder++)
                             .build();
                     donor.getFoodItems().add(item);
+                    
+                    // Aggregate into raw material inventory
+                    if (item.getQuantity() != null && !item.getQuantity().isEmpty()) {
+                        rawMaterialInventoryService.addStock(item.getFoodName(), item.getQuantity());
+                    }
                 }
             }
         } else {
@@ -370,7 +400,16 @@ public class DonorServiceImpl implements DonorService {
             }
 
             try {
-                // Key to identify a unique donor/donation event
+                // Check if this row is an exact duplicate of an existing donor
+                boolean isDuplicate = isDuplicateDonor(dto.getFullName(), dto.getMobile(), dto.getEmail(), dto.getAddress(), null);
+                if (isDuplicate) {
+                    dto.setValid(false);
+                    dto.setErrorMessage("Donor already exists. Please add donation to their account manually.");
+                    failCount++;
+                    continue;
+                }
+
+                // Key to identify a unique donor/donation event in the current excel file
                 String key = dto.getFullName() + "|" +
                         (dto.getMobile() != null ? dto.getMobile() : "") + "|" +
                         (dto.getEmail() != null ? dto.getEmail() : "") + "|" +
@@ -437,6 +476,11 @@ public class DonorServiceImpl implements DonorService {
                             .displayOrder(nextOrder)
                             .build();
                     donor.getFoodItems().add(item);
+                    
+                    // Aggregate into raw material inventory
+                    if (item.getQuantity() != null && !item.getQuantity().isEmpty()) {
+                        rawMaterialInventoryService.addStock(item.getFoodName(), item.getQuantity());
+                    }
                 }
 
                 // Save or update repository

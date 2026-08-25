@@ -25,6 +25,9 @@ public interface DonorService {
     /** Fetch single donor by primary key and convert to Form DTO for editing. */
     DonorFormDTO getDonorFormDtoById(Long id);
 
+    /** Check if a donor with the exact matching details already exists */
+    boolean isDuplicateDonor(String fullName, String mobile, String email, String address, Long excludeId);
+
     /** Create a new donor record from Form DTO. */
     Donor saveDonor(DonorFormDTO dto);
 

@@ -55,10 +55,12 @@ public class DonorExcelExporter {
         // ── Data rows ─────────────────────────────────────────────────────────
         int rowIdx = 1;
         for (Donor d : donors) {
+            String frequency = d.getDonationFrequency() != null ? d.getDonationFrequency().getDisplayName() : "One Time";
+
             if (d.getDonationType() == com.oldagehome.portal.donor.DonationType.MEDICINE && d.getMedicineItems() != null && !d.getMedicineItems().isEmpty()) {
                 for (MedicineDonationItem item : d.getMedicineItems()) {
                     Row row = sheet.createRow(rowIdx++);
-                    writeCommonColumns(row, d, dtf);
+                    writeCommonColumns(row, d, dtf, frequency);
                     row.createCell(9).setCellValue(item.getMedicineName() != null ? item.getMedicineName() : "");
                     row.createCell(10).setCellValue(item.getPrice() != null ? item.getPrice().doubleValue() : 0.0);
                     row.createCell(11).setCellValue(item.getExpiryDate() != null ? item.getExpiryDate().format(dtf) : "");
@@ -66,17 +68,27 @@ public class DonorExcelExporter {
             } else if (d.getDonationType() == com.oldagehome.portal.donor.DonationType.FOOD && d.getFoodItems() != null && !d.getFoodItems().isEmpty()) {
                 for (FoodDonationItem item : d.getFoodItems()) {
                     Row row = sheet.createRow(rowIdx++);
-                    writeCommonColumns(row, d, dtf);
+                    writeCommonColumns(row, d, dtf, frequency);
                     row.createCell(12).setCellValue(item.getFoodName() != null ? item.getFoodName() : "");
                     row.createCell(13).setCellValue(item.getQuantity() != null ? item.getQuantity() : "");
                 }
             } else {
                 Row row = sheet.createRow(rowIdx++);
-                writeCommonColumns(row, d, dtf);
+                writeCommonColumns(row, d, dtf, frequency);
                 if (d.getDonationAmount() != null) {
                     row.createCell(14).setCellValue(d.getDonationAmount().doubleValue());
                 } else {
                     row.createCell(14).setCellValue(0.0);
+                }
+
+                // Add default values for FOOD/MEDICINE types that are missing items, to prevent re-import failures
+                if (d.getDonationType() == com.oldagehome.portal.donor.DonationType.FOOD) {
+                    row.createCell(12).setCellValue("Food Package");
+                    row.createCell(13).setCellValue("1");
+                } else if (d.getDonationType() == com.oldagehome.portal.donor.DonationType.MEDICINE) {
+                    row.createCell(9).setCellValue("Generic Medicine");
+                    row.createCell(10).setCellValue(0.0);
+                    row.createCell(11).setCellValue(java.time.LocalDate.now().plusMonths(6).format(dtf));
                 }
             }
         }
@@ -92,12 +104,12 @@ public class DonorExcelExporter {
         return bos.toByteArray();
     }
 
-    private static void writeCommonColumns(Row row, Donor d, DateTimeFormatter dtf) {
+    private static void writeCommonColumns(Row row, Donor d, DateTimeFormatter dtf, String frequency) {
         row.createCell(0).setCellValue(d.getFullName() != null ? d.getFullName() : "");
         row.createCell(1).setCellValue(d.getMobile() != null ? d.getMobile() : "");
         row.createCell(2).setCellValue(d.getEmail() != null ? d.getEmail() : "");
         row.createCell(3).setCellValue(d.getAddress() != null ? d.getAddress() : "");
-        row.createCell(4).setCellValue(d.getDonationFrequency() != null ? d.getDonationFrequency().getDisplayName() : "");
+        row.createCell(4).setCellValue(frequency);
         row.createCell(5).setCellValue(d.getDonationType() != null ? d.getDonationType().getDisplayName() : "");
         row.createCell(6).setCellValue(d.getPaymentMethod() != null ? d.getPaymentMethod() : "");
         row.createCell(7).setCellValue(d.getTransactionId() != null ? d.getTransactionId() : "");

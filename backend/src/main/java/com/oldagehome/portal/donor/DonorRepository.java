@@ -22,6 +22,8 @@ public interface DonorRepository extends JpaRepository<Donor, Long>, JpaSpecific
                      "LOWER(COALESCE(d.email, '')) LIKE LOWER(CONCAT('%', :keyword, '%'))")
        Page<Donor> searchDonors(@Param("keyword") String keyword, Pageable pageable);
 
+       List<Donor> findByFullNameIgnoreCase(String fullName);
+
        // --- Dashboard statistics queries ---
 
        /** Count all donors. */

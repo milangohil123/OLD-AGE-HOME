@@ -176,6 +176,11 @@ public class DonorController {
         // Validate conditional donation fields (medicine list, food list, amount)
         validateDonorForm(donorFormDto, bindingResult);
 
+        // Check for exact duplicate donor
+        if (donorService.isDuplicateDonor(donorFormDto.getFullName(), donorFormDto.getMobile(), donorFormDto.getEmail(), donorFormDto.getAddress(), null)) {
+            bindingResult.reject("duplicateDonor", "You have an existing donor, please add the donations in their account.");
+        }
+
         if (bindingResult.hasErrors()) {
             model.addAttribute("donationFrequencies", DonationFrequency.values());
             model.addAttribute("donationTypes", DonationType.values());
@@ -246,6 +251,11 @@ public class DonorController {
 
         // Validate conditional donation fields
         validateDonorForm(donorFormDto, bindingResult);
+
+        // Check for duplicate donor excluding current ID
+        if (donorService.isDuplicateDonor(donorFormDto.getFullName(), donorFormDto.getMobile(), donorFormDto.getEmail(), donorFormDto.getAddress(), donorFormDto.getId())) {
+            bindingResult.reject("duplicateDonor", "A different donor with these exact details already exists.");
+        }
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("donationFrequencies", DonationFrequency.values());
