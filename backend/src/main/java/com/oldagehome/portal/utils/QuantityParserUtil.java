@@ -27,7 +27,7 @@ public class QuantityParserUtil {
      */
     public static ParsedQuantity parseQuantity(String rawQuantity) {
         if (rawQuantity == null || rawQuantity.trim().isEmpty()) {
-            return new ParsedQuantity(BigDecimal.ZERO, "UNIT");
+            return new ParsedQuantity(BigDecimal.ZERO, "KG");
         }
 
         String normalized = rawQuantity.trim().toLowerCase();
@@ -40,16 +40,16 @@ public class QuantityParserUtil {
                 
                 return normalizeUnit(amount, rawUnit);
             } catch (NumberFormatException e) {
-                return new ParsedQuantity(BigDecimal.ZERO, "UNIT");
+                return new ParsedQuantity(BigDecimal.ZERO, "KG");
             }
         }
         
         // Try parsing just the number if no unit
         try {
             BigDecimal amount = new BigDecimal(normalized);
-            return new ParsedQuantity(amount, "UNIT");
+            return new ParsedQuantity(amount, "KG");
         } catch (NumberFormatException e) {
-            return new ParsedQuantity(BigDecimal.ZERO, "UNIT");
+            return new ParsedQuantity(BigDecimal.ZERO, "KG");
         }
     }
 

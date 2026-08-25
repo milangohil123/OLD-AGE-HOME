@@ -19,4 +19,7 @@ public interface InventoryUsageRepository extends JpaRepository<InventoryUsage, 
     
     @Query("SELECT COUNT(u) FROM InventoryUsage u WHERE u.usageDate = :today")
     long countUsagesToday(@Param("today") LocalDate today);
+
+    @Query("SELECT SUM(i.quantityUsed) FROM InventoryUsageItem i WHERE LOWER(i.rawMaterial.itemName) = LOWER(:itemName)")
+    Double sumUsedQuantityByItemName(@Param("itemName") String itemName);
 }

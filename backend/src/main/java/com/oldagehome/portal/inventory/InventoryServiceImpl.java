@@ -19,15 +19,18 @@ public class InventoryServiceImpl implements InventoryService {
     private final FoodDonationItemRepository foodRepo;
     private final MedicineDonationItemRepository medicineRepo;
     private final RawMaterialInventoryRepository rawMaterialRepo;
+    private final InventoryUsageRepository inventoryUsageRepo;
 
     // Pattern to extract numbers and letters (e.g., "10 KG" -> "10", "KG")
     private static final Pattern QUANTITY_PATTERN = Pattern.compile("^\\s*([0-9]+(?:\\.[0-9]+)?)\\s*([a-zA-Z]+)?.*");
 
     @Autowired
-    public InventoryServiceImpl(FoodDonationItemRepository foodRepo, MedicineDonationItemRepository medicineRepo, RawMaterialInventoryRepository rawMaterialRepo) {
+    public InventoryServiceImpl(FoodDonationItemRepository foodRepo, MedicineDonationItemRepository medicineRepo, 
+                                RawMaterialInventoryRepository rawMaterialRepo, InventoryUsageRepository inventoryUsageRepo) {
         this.foodRepo = foodRepo;
         this.medicineRepo = medicineRepo;
         this.rawMaterialRepo = rawMaterialRepo;
+        this.inventoryUsageRepo = inventoryUsageRepo;
     }
 
     @Override
@@ -50,7 +53,7 @@ public class InventoryServiceImpl implements InventoryService {
                 String donationType = f[4] != null ? f[4].toString() : "UNKNOWN";
                 
                 double amount = 1.0;
-                String unit = "Unit";
+                String unit = "KG";
                 
                 Matcher m = QUANTITY_PATTERN.matcher(rawQuantity);
                 if (m.matches()) {
@@ -59,6 +62,11 @@ public class InventoryServiceImpl implements InventoryService {
                         if (m.group(2) != null && !m.group(2).trim().isEmpty()) {
                             unit = m.group(2).trim().toUpperCase();
                         }
+                    } catch (NumberFormatException ignored) {}
+                } else {
+                    // Try parsing just the number if no unit
+                    try {
+                        amount = Double.parseDouble(rawQuantity);
                     } catch (NumberFormatException ignored) {}
                 }
 
@@ -158,12 +166,16 @@ public class InventoryServiceImpl implements InventoryService {
                 return c2.getDonationDate().compareTo(c1.getDonationDate());
             });
             
-            // Override the total sum with the actual current stock from RawMaterialInventory (which accounts for usage deductions)
+            // Subtract the actual used quantity from the total historic donated quantity
+            Double usedQuantity = inventoryUsageRepo.sumUsedQuantityByItemName(dto.getItemName().trim());
+            if (usedQuantity != null) {
+                dto.setTotalQuantity(Math.max(0, dto.getTotalQuantity() - usedQuantity));
+            }
+            
+            // Still sync the unit if it was manually updated in RawMaterialInventory
             Optional<RawMaterialInventory> trueStockOpt = rawMaterialRepo.findByItemNameIgnoreCase(dto.getItemName().trim());
             if (trueStockOpt.isPresent()) {
-                RawMaterialInventory trueStock = trueStockOpt.get();
-                dto.setTotalQuantity(trueStock.getTotalQuantity().doubleValue());
-                dto.setUnit(trueStock.getUnit());
+                dto.setUnit(trueStockOpt.get().getUnit());
             }
             
             result.add(dto);
