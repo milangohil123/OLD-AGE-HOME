@@ -127,7 +127,7 @@ public class DashboardController {
         model.addAttribute("tickerInventoryItems", inventoryService.countTotalItems());
         model.addAttribute("tickerRecentContributions", inventoryService.countRecentContributions());
         model.addAttribute("tickerTodayDonations", donorService.countDonationsBetween(now, now));
-        model.addAttribute("tickerLast30DaysDonors", currentPeriodDonations); // Roughly new activity
+        model.addAttribute("tickerLast30DaysDonors", donorService.countDonationsBetween(now.minusDays(30), now));
 
         // Graph data
         try {
@@ -302,5 +302,17 @@ public class DashboardController {
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(csvBytes);
+    }
+
+    @org.springframework.web.bind.annotation.GetMapping("/api/ticker")
+    @org.springframework.web.bind.annotation.ResponseBody
+    public java.util.Map<String, Long> getTickerData() {
+        java.time.LocalDate now = java.time.LocalDate.now();
+        java.util.Map<String, Long> data = new java.util.HashMap<>();
+        data.put("inventoryItems", inventoryService.countTotalItems());
+        data.put("recentContributions", inventoryService.countRecentContributions());
+        data.put("todayDonations", donorService.countDonationsBetween(now, now));
+        data.put("last30DaysDonors", donorService.countDonationsBetween(now.minusDays(30), now));
+        return data;
     }
 }

@@ -67,25 +67,25 @@
                 <div class="ticker-wrap" aria-label="Dashboard Statistics Ticker">
                     <div class="ticker-track">
                         <!-- SET 1 -->
-                        <div class="ticker-item">UNIQUE INVENTORY ITEMS <span class="ticker-val" th:text="${tickerInventoryItems}">0</span></div>
+                        <div class="ticker-item">UNIQUE INVENTORY ITEMS <span class="ticker-val ticker-val-inventory" th:text="${tickerInventoryItems}">0</span></div>
                         <span class="ticker-separator">•</span>
-                        <div class="ticker-item">RECENT CONTRIBUTIONS <span class="ticker-val" th:text="${tickerRecentContributions}">0</span></div>
+                        <div class="ticker-item">RECENT CONTRIBUTIONS <span class="ticker-val ticker-val-recent" th:text="${tickerRecentContributions}">0</span></div>
                         <span class="ticker-separator">•</span>
-                        <div class="ticker-item">DONATIONS TODAY <span class="ticker-val" th:text="${tickerTodayDonations}">0</span></div>
+                        <div class="ticker-item">DONATIONS TODAY <span class="ticker-val ticker-val-today" th:text="${tickerTodayDonations}">0</span></div>
                         <span class="ticker-separator">•</span>
-                        <div class="ticker-item">30-DAY NEW ACTIVITY <span class="ticker-val" th:text="${tickerLast30DaysDonors}">0</span></div>
+                        <div class="ticker-item">30-DAY NEW ACTIVITY <span class="ticker-val ticker-val-30day" th:text="${tickerLast30DaysDonors}">0</span></div>
                         <span class="ticker-separator">•</span>
                         <div class="ticker-item">INVENTORY FULLY SYNCED</div>
                         <span class="ticker-separator">•</span>
                         
                         <!-- SET 2 (Duplicate for seamless loop) -->
-                        <div class="ticker-item">UNIQUE INVENTORY ITEMS <span class="ticker-val" th:text="${tickerInventoryItems}">0</span></div>
+                        <div class="ticker-item">UNIQUE INVENTORY ITEMS <span class="ticker-val ticker-val-inventory" th:text="${tickerInventoryItems}">0</span></div>
                         <span class="ticker-separator">•</span>
-                        <div class="ticker-item">RECENT CONTRIBUTIONS <span class="ticker-val" th:text="${tickerRecentContributions}">0</span></div>
+                        <div class="ticker-item">RECENT CONTRIBUTIONS <span class="ticker-val ticker-val-recent" th:text="${tickerRecentContributions}">0</span></div>
                         <span class="ticker-separator">•</span>
-                        <div class="ticker-item">DONATIONS TODAY <span class="ticker-val" th:text="${tickerTodayDonations}">0</span></div>
+                        <div class="ticker-item">DONATIONS TODAY <span class="ticker-val ticker-val-today" th:text="${tickerTodayDonations}">0</span></div>
                         <span class="ticker-separator">•</span>
-                        <div class="ticker-item">30-DAY NEW ACTIVITY <span class="ticker-val" th:text="${tickerLast30DaysDonors}">0</span></div>
+                        <div class="ticker-item">30-DAY NEW ACTIVITY <span class="ticker-val ticker-val-30day" th:text="${tickerLast30DaysDonors}">0</span></div>
                         <span class="ticker-separator">•</span>
                         <div class="ticker-item">INVENTORY FULLY SYNCED</div>
                         <span class="ticker-separator" style="padding-right: 24px;">•</span>
@@ -438,6 +438,19 @@
                     });
                 }
             });
+
+            // Real-time ticker polling
+            setInterval(function() {
+                fetch('/dashboard/api/ticker')
+                    .then(response => response.json())
+                    .then(data => {
+                        document.querySelectorAll('.ticker-val-inventory').forEach(el => el.textContent = data.inventoryItems);
+                        document.querySelectorAll('.ticker-val-recent').forEach(el => el.textContent = data.recentContributions);
+                        document.querySelectorAll('.ticker-val-today').forEach(el => el.textContent = data.todayDonations);
+                        document.querySelectorAll('.ticker-val-30day').forEach(el => el.textContent = data.last30DaysDonors);
+                    })
+                    .catch(err => console.error('Error fetching real-time ticker data:', err));
+            }, 15000); // Poll every 15 seconds
         </script>
 
     </div>
