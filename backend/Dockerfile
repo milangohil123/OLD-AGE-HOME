@@ -6,8 +6,8 @@ COPY pom.xml .
 # Download dependencies first so this layer is cached
 RUN mvn dependency:go-offline -B
 COPY src ./src
-# Build application offline using the cached dependencies
-RUN mvn clean package -DskipTests -o
+# Build application using the cached dependencies (allows downloading missing plugins/dependencies)
+RUN mvn clean package -DskipTests -B
 
 FROM eclipse-temurin:17-jdk
 
