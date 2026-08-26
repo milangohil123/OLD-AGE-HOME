@@ -204,7 +204,7 @@
                                 <a th:href="@{/dashboard(period=365)}" th:classappend="${period == 365 ? 'bg-white shadow-sm text-dark fw-bold' : 'text-muted'}" class="btn btn-sm border-0 px-3" style="font-size: 13px; border-radius: 6px;">Year</a>
                             </div>
                         </div>
-                        <div style="position: relative; height: 320px; width: 100%;">
+                        <div style="position: relative; height: 220px; width: 100%;">
                             <canvas id="donorsChart"></canvas>
                         </div>
                     </div>
@@ -218,7 +218,7 @@
                         <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
                             <h6 class="fw-bold mb-0" style="color: #0f172a; font-size: 18px;">Donation Activity</h6>
                         </div>
-                        <div style="position: relative; height: 320px; width: 100%;">
+                        <div style="position: relative; height: 220px; width: 100%;">
                             <canvas id="fundsChart"></canvas>
                         </div>
                     </div>
@@ -385,13 +385,12 @@
                             datasets: [{
                                 data: dValues,
                                 borderColor: '#16a34a',
-                                backgroundColor: 'rgba(22, 163, 74, 0.1)',
-                                borderWidth: 2,
+                                backgroundColor: 'rgba(22, 163, 74, 0.15)',
+                                borderWidth: 3,
                                 fill: true,
-                                tension: 0.4,
-                                pointRadius: 2,
-                                pointBackgroundColor: '#16a34a',
-                                pointHoverRadius: 5,
+                                tension: 0,
+                                pointRadius: 0,
+                                pointHoverRadius: 6,
                                 pointHoverBackgroundColor: '#16a34a'
                             }]
                         },
@@ -423,21 +422,19 @@
                     };
 
                     new Chart(fundsCanvas, {
-                        type: 'bar',
+                        type: 'line',
                         data: {
                             labels: fLabels,
                             datasets: [{
                                 data: fValues,
-                                backgroundColor: function(context) {
-                                    var index = context.dataIndex;
-                                    if (index === 0) return '#16a34a'; // default green
-                                    var current = context.dataset.data[index];
-                                    var previous = context.dataset.data[index - 1];
-                                    return current < previous ? '#ef4444' : '#16a34a'; // red if lower, green if higher/equal
-                                },
-                                borderRadius: 4,
-                                barThickness: 'flex',
-                                maxBarThickness: 40
+                                borderColor: '#10b981',
+                                backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                                borderWidth: 3,
+                                fill: true,
+                                tension: 0,
+                                pointRadius: 0,
+                                pointHoverRadius: 6,
+                                pointHoverBackgroundColor: '#10b981'
                             }]
                         },
                         options: fundsOptions

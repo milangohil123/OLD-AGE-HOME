@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{fragments/layout :: main(~{::#profile-settings}, 'settings', 'Profile Settings')}">
+      th:replace="~{fragments/layout :: main(~{::#profile-settings}, 'settings', #{settings.profile.title})}">
 <body>
 
     <div id="profile-settings">
@@ -17,7 +17,7 @@
 
         <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
             <i class="bi bi-check-circle-fill me-2"></i>
-            <span th:text="${successMessage}">Success!</span>
+            <span th:text="#{audit.status.success}">Success!</span>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
 
@@ -48,13 +48,13 @@
                     <div class="col-md-9">
                         <div class="row">
                             <div class="col-md-6 mb-4">
-                                <label th:replace="~{fragments/forms :: label('fullName', 'Full Name', true)}"></label>
+                                <label th:replace="~{fragments/forms :: label('fullName', #{field.fullName}, true)}"></label>
                                 <input type="text" class="form-control" th:field="*{fullName}"
                                        th:classappend="${#fields.hasErrors('fullName')} ? 'is-invalid' : ''" required>
                                 <div th:replace="~{fragments/forms :: field-error('fullName')}"></div>
                             </div>
                             <div class="col-md-6 mb-4">
-                                <label th:replace="~{fragments/forms :: label('email', 'Email Address', true)}"></label>
+                                <label th:replace="~{fragments/forms :: label('email', #{field.email}, true)}"></label>
                                 <input type="email" class="form-control" th:field="*{email}"
                                        th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''" required>
                                 <div th:replace="~{fragments/forms :: field-error('email')}"></div>
@@ -63,13 +63,13 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-4">
-                                <label th:replace="~{fragments/forms :: label('mobile', 'Mobile Number', true)}"></label>
+                                <label th:replace="~{fragments/forms :: label('mobile', #{field.mobile}, true)}"></label>
                                 <input type="text" class="form-control" th:field="*{mobile}"
                                        th:classappend="${#fields.hasErrors('mobile')} ? 'is-invalid' : ''" required>
                                 <div th:replace="~{fragments/forms :: field-error('mobile')}"></div>
                             </div>
                             <div class="col-md-6 mb-4">
-                                <label th:replace="~{fragments/forms :: label('username', 'Username', true)}"></label>
+                                <label th:replace="~{fragments/forms :: label('username', #{login.label.username}, true)}"></label>
                                 <input type="text" class="form-control" th:field="*{username}"
                                        th:classappend="${#fields.hasErrors('username')} ? 'is-invalid' : ''" required>
                                 <div th:replace="~{fragments/forms :: field-error('username')}"></div>
