@@ -375,11 +375,6 @@
                 // Donors Chart
                 var donorsCanvas = document.getElementById('donorsChart');
                 if (donorsCanvas) {
-                    var ctx1 = donorsCanvas.getContext('2d');
-                    var gradient1 = ctx1.createLinearGradient(0, 0, 0, 220);
-                    gradient1.addColorStop(0, 'rgba(22, 163, 74, 0.6)'); // Green
-                    gradient1.addColorStop(1, 'rgba(0, 0, 0, 0.1)'); // Black shadow fade
-                    
                     var dLabels = donorGraphData.map(function(item) { return item.label; });
                     var dValues = donorGraphData.map(function(item) { return item.value; });
                     
@@ -390,14 +385,14 @@
                             datasets: [{
                                 data: dValues,
                                 borderColor: '#16a34a',
-                                backgroundColor: gradient1,
+                                backgroundColor: 'rgba(22, 163, 74, 0.1)', // Very light green, no black shadow
                                 borderWidth: 3,
                                 fill: true,
-                                tension: 0, // Linear
-                                pointRadius: 0, // Remove dots
+                                tension: 0.1, // Slight curve for professional look
+                                pointRadius: 0,
                                 pointHoverRadius: 6,
-                                pointHoverBackgroundColor: '#000000',
-                                pointHoverBorderColor: '#16a34a',
+                                pointHoverBackgroundColor: '#16a34a',
+                                pointHoverBorderColor: '#ffffff',
                                 pointHoverBorderWidth: 2
                             }]
                         },
@@ -415,11 +410,6 @@
                 // Funds Chart
                 var fundsCanvas = document.getElementById('fundsChart');
                 if (fundsCanvas) {
-                    var ctx2 = fundsCanvas.getContext('2d');
-                    var gradient2 = ctx2.createLinearGradient(0, 0, 0, 220);
-                    gradient2.addColorStop(0, 'rgba(5, 150, 105, 0.6)'); // Emerald Green
-                    gradient2.addColorStop(1, 'rgba(0, 0, 0, 0.1)'); // Black shadow fade
-                    
                     var fLabels = fundsGraphData.map(function(item) { return item.label; });
                     var fValues = fundsGraphData.map(function(item) { return item.value; });
 
@@ -434,21 +424,14 @@
                     };
 
                     new Chart(fundsCanvas, {
-                        type: 'line',
+                        type: 'bar',
                         data: {
                             labels: fLabels,
                             datasets: [{
                                 data: fValues,
-                                borderColor: '#059669',
-                                backgroundColor: gradient2,
-                                borderWidth: 3,
-                                fill: true,
-                                tension: 0, // Linear
-                                pointRadius: 0, // Remove dots
-                                pointHoverRadius: 6,
-                                pointHoverBackgroundColor: '#000000',
-                                pointHoverBorderColor: '#059669',
-                                pointHoverBorderWidth: 2
+                                backgroundColor: '#10b981', // Solid emerald green bars
+                                borderRadius: 4, // Rounded corners on bars
+                                hoverBackgroundColor: '#059669' // Darker green on hover
                             }]
                         },
                         options: fundsOptions
