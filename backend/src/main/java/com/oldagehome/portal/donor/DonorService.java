@@ -28,6 +28,9 @@ public interface DonorService {
     /** Check if a donor with the exact matching details already exists */
     boolean isDuplicateDonor(String fullName, String mobile, String email, String address, Long excludeId);
 
+    /** Returns the exact duplicate donor if it exists */
+    Donor findDuplicateDonor(String fullName, String mobile, String email, String address, Long excludeId);
+
     /** Create a new donor record from Form DTO. */
     Donor saveDonor(DonorFormDTO dto);
 

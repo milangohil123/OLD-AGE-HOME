@@ -135,7 +135,7 @@ public class DonorServiceImpl implements DonorService {
     }
 
     @Override
-    public boolean isDuplicateDonor(String fullName, String mobile, String email, String address, Long excludeId) {
+    public Donor findDuplicateDonor(String fullName, String mobile, String email, String address, Long excludeId) {
         List<Donor> matchingName = donorRepository.findByFullNameIgnoreCase(fullName);
         for (Donor d : matchingName) {
             if (excludeId != null && d.getId().equals(excludeId)) {
@@ -145,10 +145,15 @@ public class DonorServiceImpl implements DonorService {
             boolean sameEmail = Objects.equals(d.getEmail(), email);
             boolean sameAddress = Objects.equals(d.getAddress(), address);
             if (sameMobile && sameEmail && sameAddress) {
-                return true;
+                return d;
             }
         }
-        return false;
+        return null;
+    }
+
+    @Override
+    public boolean isDuplicateDonor(String fullName, String mobile, String email, String address, Long excludeId) {
+        return findDuplicateDonor(fullName, mobile, email, address, excludeId) != null;
     }
 
     @Override
@@ -401,13 +406,7 @@ public class DonorServiceImpl implements DonorService {
 
             try {
                 // Check if this row is an exact duplicate of an existing donor
-                boolean isDuplicate = isDuplicateDonor(dto.getFullName(), dto.getMobile(), dto.getEmail(), dto.getAddress(), null);
-                if (isDuplicate) {
-                    dto.setValid(false);
-                    dto.setErrorMessage("Donor already exists. Please add donation to their account manually.");
-                    failCount++;
-                    continue;
-                }
+                Donor existing = findDuplicateDonor(dto.getFullName(), dto.getMobile(), dto.getEmail(), dto.getAddress(), null);
 
                 // Key to identify a unique donor/donation event in the current excel file
                 String key = dto.getFullName() + "|" +
@@ -421,37 +420,46 @@ public class DonorServiceImpl implements DonorService {
                 boolean isNew = false;
 
                 if (donor == null) {
-                    String category = "Other";
-                    if (dto.getDonationType() != null && dto.getDonationType().isFoodType()) {
-                        category = "Food Donation";
-                    } else if (dto.getDonationType() == DonationType.MEDICINE) {
-                        category = "Medicine Donation";
-                    } else if (dto.getDonationType() == DonationType.CASH
-                            || dto.getDonationType() == DonationType.UPI
-                            || dto.getDonationType() == DonationType.CHEQUE) {
-                        category = "Cash Donation";
-                    }
+                    if (existing != null) {
+                        donor = existing;
+                        // Update existing donor's latest donation info
+                        donor.setDonationDate(dto.getDonationDate());
+                        if (dto.getDonationAmount() != null) {
+                            donor.setDonationAmount(donor.getDonationAmount().add(dto.getDonationAmount()));
+                        }
+                    } else {
+                        String category = "Other";
+                        if (dto.getDonationType() != null && dto.getDonationType().isFoodType()) {
+                            category = "Food Donation";
+                        } else if (dto.getDonationType() == DonationType.MEDICINE) {
+                            category = "Medicine Donation";
+                        } else if (dto.getDonationType() == DonationType.CASH
+                                || dto.getDonationType() == DonationType.UPI
+                                || dto.getDonationType() == DonationType.CHEQUE) {
+                            category = "Cash Donation";
+                        }
 
-                    donor = Donor.builder()
-                            .fullName(dto.getFullName())
-                            .gender(dto.getGender() != null ? dto.getGender() : "OTHER")
-                            .dateOfBirth(LocalDate.of(1980, 1, 1))
-                            .mobile(dto.getMobile())
-                            .email(dto.getEmail())
-                            .address(dto.getAddress())
-                            .donationFrequency(dto.getDonationFrequency() != null ? dto.getDonationFrequency()
-                                    : DonationFrequency.ONE_TIME)
-                            .donationType(dto.getDonationType())
-                            .donationCategory(category)
-                            .donationAmount(dto.getDonationAmount() != null ? dto.getDonationAmount() : BigDecimal.ZERO)
-                            .donationDate(dto.getDonationDate())
-                            .paymentMethod(dto.getPaymentMethod())
-                            .transactionId(dto.getTransactionId())
-                            .status(dto.getStatus() != null ? dto.getStatus() : DonorStatus.ACTIVE)
-                            .medicineItems(new ArrayList<>())
-                            .foodItems(new ArrayList<>())
-                            .build();
-                    isNew = true;
+                        donor = Donor.builder()
+                                .fullName(dto.getFullName())
+                                .gender(dto.getGender() != null ? dto.getGender() : "OTHER")
+                                .dateOfBirth(LocalDate.of(1980, 1, 1))
+                                .mobile(dto.getMobile())
+                                .email(dto.getEmail())
+                                .address(dto.getAddress())
+                                .donationFrequency(dto.getDonationFrequency() != null ? dto.getDonationFrequency()
+                                        : DonationFrequency.ONE_TIME)
+                                .donationType(dto.getDonationType())
+                                .donationCategory(category)
+                                .donationAmount(dto.getDonationAmount() != null ? dto.getDonationAmount() : BigDecimal.ZERO)
+                                .donationDate(dto.getDonationDate())
+                                .paymentMethod(dto.getPaymentMethod())
+                                .transactionId(dto.getTransactionId())
+                                .status(dto.getStatus() != null ? dto.getStatus() : DonorStatus.ACTIVE)
+                                .medicineItems(new ArrayList<>())
+                                .foodItems(new ArrayList<>())
+                                .build();
+                        isNew = true;
+                    }
                 }
 
                 // Add item details if applicable
