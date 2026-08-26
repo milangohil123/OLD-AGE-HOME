@@ -139,12 +139,12 @@ a:hover {
 }
 
 .sidebar-menu-item a:hover {
-    background: var(--background);
+    background: #F1F5F9;
     color: var(--text-primary);
 }
 
 .sidebar-menu-item.active a {
-    background: var(--primary-xlight) !important;
+    background: #F1F5F9 !important;
     color: var(--primary) !important;
     box-shadow: none;
 }
