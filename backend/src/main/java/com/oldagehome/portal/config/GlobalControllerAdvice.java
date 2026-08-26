@@ -22,6 +22,10 @@ public class GlobalControllerAdvice {
         if (authentication == null || !authentication.isAuthenticated() || authentication.getName().equals("anonymousUser")) {
             return null;
         }
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof com.oldagehome.portal.auth.CustomUserDetails) {
+            return ((com.oldagehome.portal.auth.CustomUserDetails) principal).getUser();
+        }
         return userRepository.findByUsername(authentication.getName()).orElse(null);
     }
 }

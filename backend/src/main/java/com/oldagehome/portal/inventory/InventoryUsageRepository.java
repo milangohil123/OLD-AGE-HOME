@@ -22,4 +22,7 @@ public interface InventoryUsageRepository extends JpaRepository<InventoryUsage, 
 
     @Query("SELECT SUM(i.quantityUsed) FROM InventoryUsageItem i WHERE LOWER(i.rawMaterial.itemName) = LOWER(:itemName)")
     Double sumUsedQuantityByItemName(@Param("itemName") String itemName);
+
+    @Query("SELECT LOWER(i.rawMaterial.itemName), SUM(i.quantityUsed) FROM InventoryUsageItem i GROUP BY LOWER(i.rawMaterial.itemName)")
+    java.util.List<Object[]> sumUsedQuantityGroupedByItemName();
 }

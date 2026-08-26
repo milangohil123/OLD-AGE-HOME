@@ -28,11 +28,7 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("User account is disabled: " + username);
         }
 
-        // Return Spring Security's UserDetails. Note that we prepend "ROLE_" to the role string.
-        return new org.springframework.security.core.userdetails.User(
-                user.getUsername(),
-                user.getPassword(),
-                Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole()))
-        );
+        // Return our custom UserDetails which wraps the entity
+        return new CustomUserDetails(user);
     }
 }

@@ -151,6 +151,21 @@ public class InventoryServiceImpl implements InventoryService {
             }
         }
 
+        // Pre-fetch all raw materials and usages into memory maps to avoid N+1 queries
+        Map<String, Double> usageMap = new HashMap<>();
+        for (Object[] row : inventoryUsageRepo.sumUsedQuantityGroupedByItemName()) {
+            if (row[0] != null && row[1] != null) {
+                usageMap.put(row[0].toString().toLowerCase(), ((Number) row[1]).doubleValue());
+            }
+        }
+
+        Map<String, String> unitMap = new HashMap<>();
+        for (RawMaterialInventory rmi : rawMaterialRepo.findAll()) {
+            if (rmi.getItemName() != null) {
+                unitMap.put(rmi.getItemName().toLowerCase(), rmi.getUnit());
+            }
+        }
+
         // Post-process to count unique donors, sort contributors, and apply actual stock deductions
         List<InventoryItemDTO> result = new ArrayList<>();
         for (InventoryItemDTO dto : aggregatedMap.values()) {
@@ -167,15 +182,16 @@ public class InventoryServiceImpl implements InventoryService {
             });
             
             // Subtract the actual used quantity from the total historic donated quantity
-            Double usedQuantity = inventoryUsageRepo.sumUsedQuantityByItemName(dto.getItemName().trim());
+            String lowerItemName = dto.getItemName().trim().toLowerCase();
+            Double usedQuantity = usageMap.get(lowerItemName);
             if (usedQuantity != null) {
                 dto.setTotalQuantity(Math.max(0, dto.getTotalQuantity() - usedQuantity));
             }
             
             // Still sync the unit if it was manually updated in RawMaterialInventory
-            Optional<RawMaterialInventory> trueStockOpt = rawMaterialRepo.findByItemNameIgnoreCase(dto.getItemName().trim());
-            if (trueStockOpt.isPresent()) {
-                dto.setUnit(trueStockOpt.get().getUnit());
+            String trueUnit = unitMap.get(lowerItemName);
+            if (trueUnit != null) {
+                dto.setUnit(trueUnit);
             }
             
             result.add(dto);
