@@ -8,10 +8,10 @@
         <div class="card mb-4">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h3 class="mb-0 fw-bold">Change Password</h3>
-                    <p class="text-muted mb-0">Update your administration account credentials. You will be logged out upon success.</p>
+                    <h3 class="mb-0 fw-bold" th:text="#{settings.security.title}">Change Password</h3>
+                    <p class="text-muted mb-0" th:text="#{settings.security.desc}">Update your administration account credentials. You will be logged out upon success.</p>
                 </div>
-                <a th:href="@{/settings}" class="btn btn-secondary px-3">Back to Settings</a>
+                <a th:href="@{/settings}" class="btn btn-secondary px-3" th:text="#{settings.security.btn.back}">Back to Settings</a>
             </div>
         </div>
 
@@ -36,7 +36,7 @@
                     <input type="password" class="form-control" th:field="*{newPassword}"
                            th:classappend="${#fields.hasErrors('newPassword')} ? 'is-invalid' : ''" required>
                     <div th:replace="~{fragments/forms :: field-error('newPassword')}"></div>
-                    <small class="form-text text-muted">Must be at least 8 characters long, containing 1 uppercase, 1 lowercase and 1 numeric value.</small>
+                    <small class="form-text text-muted" th:text="#{settings.security.hint}">Must be at least 8 characters long, containing 1 uppercase, 1 lowercase and 1 numeric value.</small>
                 </div>
 
                 <div class="mb-4">
@@ -47,7 +47,7 @@
                 </div>
 
                 <div class="mt-4">
-                    <button type="submit" class="btn btn-primary px-5">Change Password</button>
+                    <button type="submit" class="btn btn-primary px-5" th:text="#{settings.security.btn.save}">Change Password</button>
                 </div>
 
             </form>

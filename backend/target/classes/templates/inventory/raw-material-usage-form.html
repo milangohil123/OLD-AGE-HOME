@@ -27,10 +27,10 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
                 <a th:href="@{/inventory/raw-materials/usage}" class="text-decoration-none text-muted small mb-2 d-inline-block">
-                    <i class="bi bi-arrow-left"></i> Back to Usage History
+                    <i class="bi bi-arrow-left"></i> <span th:text="#{inventory.usage.form.back}">Back to Usage History</span>
                 </a>
-                <h4 class="mb-1 text-dark fw-bold" th:text="${pageTitle}">Log Daily Usage</h4>
-                <p class="text-muted mb-0 small">Record consumption of raw materials</p>
+                <h4 class="mb-1 text-dark fw-bold" th:text="#{inventory.usage.form.title}">Log Daily Usage</h4>
+                <p class="text-muted mb-0 small" th:text="#{inventory.usage.form.desc}">Record consumption of raw materials</p>
             </div>
         </div>
 
@@ -47,33 +47,33 @@
 
                     <div class="row g-3 mb-4">
                         <div class="col-md-6">
-                            <label class="form-label fw-bold text-dark small">Usage Date <span class="text-danger">*</span></label>
+                            <label class="form-label fw-bold text-dark small"><span th:text="#{inventory.usage.form.date}">Usage Date</span> <span class="text-danger">*</span></label>
                             <input type="date" class="form-control" th:field="*{usageDate}" required>
                             <div class="text-danger small mt-1" th:if="${#fields.hasErrors('usageDate')}" th:errors="*{usageDate}"></div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-bold text-dark small">Purpose <span class="text-danger">*</span></label>
+                            <label class="form-label fw-bold text-dark small"><span th:text="#{inventory.usage.form.purpose}">Purpose</span> <span class="text-danger">*</span></label>
                             <select class="form-select" th:field="*{purpose}" required>
-                                <option value="" disabled>Select Purpose...</option>
-                                <option value="Breakfast">Breakfast</option>
-                                <option value="Lunch">Lunch</option>
-                                <option value="Dinner">Dinner</option>
-                                <option value="Snacks/Tea">Snacks/Tea</option>
-                                <option value="Special Event">Special Event</option>
-                                <option value="General Use">General Use</option>
+                                <option value="" disabled th:text="#{inventory.usage.form.purpose.select}">Select Purpose...</option>
+                                <option value="Breakfast" th:text="#{inventory.usage.form.purpose.breakfast}">Breakfast</option>
+                                <option value="Lunch" th:text="#{inventory.usage.form.purpose.lunch}">Lunch</option>
+                                <option value="Dinner" th:text="#{inventory.usage.form.purpose.dinner}">Dinner</option>
+                                <option value="Snacks/Tea" th:text="#{inventory.usage.form.purpose.snacks}">Snacks/Tea</option>
+                                <option value="Special Event" th:text="#{inventory.usage.form.purpose.event}">Special Event</option>
+                                <option value="General Use" th:text="#{inventory.usage.form.purpose.general}">General Use</option>
                             </select>
                             <div class="text-danger small mt-1" th:if="${#fields.hasErrors('purpose')}" th:errors="*{purpose}"></div>
                         </div>
                     </div>
 
-                    <h5 class="fw-bold text-dark mb-3">Items Used</h5>
+                    <h5 class="fw-bold text-dark mb-3" th:text="#{inventory.usage.form.items.title}">Items Used</h5>
                     <div class="table-responsive">
                         <table class="table table-bordered align-middle" id="itemsTable">
                             <thead class="bg-light">
                                 <tr>
-                                    <th class="text-muted small fw-bold text-uppercase">Raw Material</th>
-                                    <th class="text-muted small fw-bold text-uppercase" style="width: 200px;">Quantity</th>
-                                    <th class="text-muted small fw-bold text-uppercase" style="width: 150px;">Unit</th>
+                                    <th class="text-muted small fw-bold text-uppercase" th:text="#{inventory.usage.form.items.material}">Raw Material</th>
+                                    <th class="text-muted small fw-bold text-uppercase" style="width: 200px;" th:text="#{inventory.usage.form.items.qty}">Quantity</th>
+                                    <th class="text-muted small fw-bold text-uppercase" style="width: 150px;" th:text="#{inventory.usage.form.items.unit}">Unit</th>
                                     <th class="text-center" style="width: 60px;"></th>
                                 </tr>
                             </thead>
@@ -81,7 +81,7 @@
                                 <tr th:each="item, stat : *{items}" class="item-row">
                                     <td>
                                         <select class="form-select material-select" th:name="|items[${stat.index}].rawMaterialName|" required>
-                                            <option value="" disabled selected>Select or type material...</option>
+                                            <option value="" disabled selected th:text="#{inventory.usage.form.items.select}">Select or type material...</option>
                                             <option th:each="rm : ${rawMaterials}" 
                                                     th:value="${rm.itemName}" 
                                                     th:text="${rm.itemName + ' (Donated: ' + rm.totalQuantity + ' ' + rm.unit + ')'}"
@@ -113,14 +113,14 @@
                     
                     <div class="mb-4">
                         <button type="button" class="btn btn-outline-primary btn-sm fw-bold" onclick="addRow()">
-                            <i class="bi bi-plus-lg me-1"></i> Add Another Item
+                            <i class="bi bi-plus-lg me-1"></i> <span th:text="#{inventory.usage.form.btn.add}">Add Another Item</span>
                         </button>
                     </div>
 
                     <div class="d-flex justify-content-end gap-2 pt-3 border-top">
-                        <a th:href="@{/inventory}" class="btn btn-light ms-2 px-4 fw-medium text-secondary" style="border-radius: 8px;">Cancel</a>
+                        <a th:href="@{/inventory}" class="btn btn-light ms-2 px-4 fw-medium text-secondary" style="border-radius: 8px;" th:text="#{inventory.usage.form.btn.cancel}">Cancel</a>
                         <button type="submit" class="btn btn-success fw-bold px-4 shadow-sm">
-                            <i class="bi bi-check-lg me-1"></i> Save Usage
+                            <i class="bi bi-check-lg me-1"></i> <span th:text="#{inventory.usage.form.btn.save}">Save Usage</span>
                         </button>
                     </div>
                 </form>
