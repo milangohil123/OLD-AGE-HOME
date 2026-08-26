@@ -9,15 +9,15 @@
     --primary-hover: #15803d;
     --primary-medium: #22c55e;
     --primary-light: #dcfce7;
-    --primary-xlight: #f0fdf4;
-    --background: #f8fafc;
-    --card-bg: #FFFFFF;
-    --border: #E2E8F0;
+    --primary-xlight: #fdfaf0;
+    --background: #e2cec4;
+    --card-bg: #ebd6ce;
+    --border: #d4bdae;
     --text-primary: #0F172A;
-    --text-muted: #64748B;
+    --text-muted: #475569;
     --danger: #EF4444;
     --danger-light: #FEE2E2;
-    --sidebar-bg: #FFFFFF;
+    --sidebar-bg: #ebd6ce;
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
     --radius-card: 14px;
@@ -754,11 +754,6 @@ a:hover {
 .input-group-text {
     border: 1.5px solid var(--border);
     background: #FAFAFA;
-}
-
-font-size: 13.5px;
-margin-bottom: 0;
-width: 100%;
 }
 
 .table thead th {
@@ -1652,19 +1647,37 @@ width: 100%;
         z-index: 1040;
         transition: left 0.3s ease-in-out;
     }
+
     .app-sidebar.show {
         left: 0;
         box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
     }
+
     .app-navbar {
         padding: 0 16px;
     }
+
     .navbar-search-input {
         width: 160px;
     }
 }
+
 @media (max-width: 575.98px) {
     .navbar-search-input {
         display: none;
     }
+}
+
+/* User Theme Override */
+.bg-white {
+    background-color: var(--card-bg) !important;
+}
+.card {
+    background-color: var(--card-bg) !important;
+}
+.table {
+    --bs-table-bg: var(--card-bg);
+}
+.dropdown-menu {
+    background-color: var(--card-bg);
 }

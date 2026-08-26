@@ -75,7 +75,12 @@ public class DashboardController {
         // Resident stats
         long currentResidents = residentService.countTotalResidents();
         long prevResidents = residentService.countTotalResidentsBefore(now.minusDays(period)); // Total before period start
-        double residentTrend = prevResidents > 0 ? ((double) (currentResidents - prevResidents) / prevResidents) * 100 : 0.0;
+        double residentTrend = 0.0;
+        if (prevResidents > 0) {
+            residentTrend = ((double) (currentResidents - prevResidents) / prevResidents) * 100;
+        } else if (currentResidents > 0) {
+            residentTrend = 100.0;
+        }
         
         model.addAttribute("totalResidents", currentResidents);
         model.addAttribute("prevResidents", prevResidents);
@@ -85,7 +90,12 @@ public class DashboardController {
         // Donor stats
         long currentDonors = donorService.countTotalDonors();
         long prevDonors = donorService.countTotalDonorsBefore(now.minusDays(period)); // Total before period start
-        double donorTrend = prevDonors > 0 ? ((double) (currentDonors - prevDonors) / prevDonors) * 100 : 0.0;
+        double donorTrend = 0.0;
+        if (prevDonors > 0) {
+            donorTrend = ((double) (currentDonors - prevDonors) / prevDonors) * 100;
+        } else if (currentDonors > 0) {
+            donorTrend = 100.0;
+        }
         
         model.addAttribute("totalDonors", currentDonors);
         model.addAttribute("prevDonors", prevDonors);
@@ -97,7 +107,12 @@ public class DashboardController {
         LocalDate compareEnd = getCompareDate(now, period, compare);
         long comparePeriodDonations = donorService.countDonationsBetween(compareStart, compareEnd);
         
-        double donationPeriodTrend = comparePeriodDonations > 0 ? ((double) (currentPeriodDonations - comparePeriodDonations) / comparePeriodDonations) * 100 : 0.0;
+        double donationPeriodTrend = 0.0;
+        if (comparePeriodDonations > 0) {
+            donationPeriodTrend = ((double) (currentPeriodDonations - comparePeriodDonations) / comparePeriodDonations) * 100;
+        } else if (currentPeriodDonations > 0) {
+            donationPeriodTrend = 100.0;
+        }
         
         model.addAttribute("monthDonations", currentPeriodDonations);
         model.addAttribute("prevMonthDonations", comparePeriodDonations);
@@ -111,9 +126,11 @@ public class DashboardController {
         if (prevAmount != null && prevAmount.compareTo(BigDecimal.ZERO) > 0) {
             BigDecimal diff = totalDonationAmount.subtract(prevAmount);
             amountTrend = diff.divide(prevAmount, 4, RoundingMode.HALF_UP).multiply(new BigDecimal("100")).doubleValue();
+        } else if (totalDonationAmount != null && totalDonationAmount.compareTo(BigDecimal.ZERO) > 0) {
+            amountTrend = 100.0;
         }
         
-        model.addAttribute("totalDonationAmount", totalDonationAmount);
+        model.addAttribute("totalDonationAmount", totalDonationAmount != null ? totalDonationAmount : BigDecimal.ZERO);
         model.addAttribute("prevMonthAmount", prevAmount != null ? prevAmount : BigDecimal.ZERO);
         model.addAttribute("amountTrend", String.format("%.2f", Math.abs(amountTrend)));
         model.addAttribute("amountTrendUp", amountTrend >= 0);
