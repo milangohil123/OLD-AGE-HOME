@@ -3,10 +3,8 @@ package com.oldagehome.portal.donor;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -14,9 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class DonationFormDTO {
 
     private Long id;
@@ -45,4 +40,25 @@ public class DonationFormDTO {
     @Valid
     @Builder.Default
     private List<DonorFormDTO.FoodItemDTO> foodItems = new ArrayList<>();
+
+    public DonationFormDTO() {
+    }
+
+    @Builder
+    public DonationFormDTO(Long id, Long donorId, DonationFrequency donationFrequency, DonationType donationType,
+                           BigDecimal donationAmount, LocalDate donationDate, String paymentMethod,
+                           String transactionId, String remarks, List<DonorFormDTO.MedicineItemDTO> medicineItems,
+                           List<DonorFormDTO.FoodItemDTO> foodItems) {
+        this.id = id;
+        this.donorId = donorId;
+        this.donationFrequency = donationFrequency;
+        this.donationType = donationType;
+        this.donationAmount = donationAmount;
+        this.donationDate = donationDate;
+        this.paymentMethod = paymentMethod;
+        this.transactionId = transactionId;
+        this.remarks = remarks;
+        this.medicineItems = medicineItems != null ? medicineItems : new ArrayList<>();
+        this.foodItems = foodItems != null ? foodItems : new ArrayList<>();
+    }
 }

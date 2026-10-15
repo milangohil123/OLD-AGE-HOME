@@ -1,9 +1,7 @@
 package com.oldagehome.portal.foodschedule.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -14,9 +12,6 @@ import java.util.List;
  * with aggregate totals, used for the "Past 7 Days" accordion section.
  */
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class DailyScheduleGroupDTO {
 
     private LocalDate date;
@@ -30,4 +25,16 @@ public class DailyScheduleGroupDTO {
     private BigDecimal totalAmount;
 
     private List<FoodScheduleDTO> schedules;
+
+    public DailyScheduleGroupDTO() {
+    }
+
+    @Builder
+    public DailyScheduleGroupDTO(LocalDate date, String label, long totalMeals, BigDecimal totalAmount, List<FoodScheduleDTO> schedules) {
+        this.date = date;
+        this.label = label;
+        this.totalMeals = totalMeals;
+        this.totalAmount = totalAmount;
+        this.schedules = schedules;
+    }
 }

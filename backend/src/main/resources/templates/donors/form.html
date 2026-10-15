@@ -164,7 +164,7 @@
                         <div class="row" id="donationAmountContainer">
                             <div class="col-md-12 mb-4">
                                 <label
-                                    th:replace="~{fragments/forms :: label('donationAmount', 'Donation Amount (₹)', true)}"></label>
+                                    th:replace="~{fragments/forms :: label('donationAmount', 'Donation Amount (₹)', false)}"></label>
                                 <input type="number" step="0.01" min="0" class="form-control" id="donationAmountInput"
                                     th:field="*{donationAmount}"
                                     th:classappend="${#fields.hasErrors('donationAmount')} ? 'is-invalid' : ''"
@@ -389,7 +389,7 @@
                 function toggleFields() {
                     const type = donationTypeSelect.value;
 
-                    const foodTypes = ["FOOD", "MILK", "RICE", "WHEAT", "VEGETABLES", "OIL", "SUGAR", "DAL", "FRUITS", "BREAKFAST_KIT", "LUNCH_KIT", "DINNER_KIT", "SNACKS", "OTHER_FOOD_ITEM"];
+                    const foodTypes = ["FOOD", "MILK", "RICE", "WHEAT", "VEGETABLES", "OIL", "SUGAR", "DAL", "FRUITS", "BREAKFAST_KIT", "LUNCH_KIT", "DINNER_KIT", "SNACKS", "OTHER_FOOD_ITEM", "GROCERY"];
 
                     if (type === "MEDICINE") {
                         donationAmountContainer.style.display = "none";

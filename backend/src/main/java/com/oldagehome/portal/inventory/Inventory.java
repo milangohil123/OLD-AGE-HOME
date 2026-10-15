@@ -2,10 +2,8 @@ package com.oldagehome.portal.inventory;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -16,9 +14,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "inventory")
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class Inventory {
 
     @Id
@@ -95,6 +90,34 @@ public class Inventory {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    public Inventory() {
+    }
+
+    @Builder
+    public Inventory(Long id, String medicineCode, String medicineName, MedicineCategory category,
+                     String manufacturer, String supplier, String batchNumber, LocalDate purchaseDate,
+                     LocalDate expiryDate, Integer quantity, Integer minimumStock, BigDecimal unitPrice,
+                     String rackLocation, InventoryStatus status, String notes, LocalDateTime createdAt,
+                     LocalDateTime updatedAt) {
+        this.id = id;
+        this.medicineCode = medicineCode;
+        this.medicineName = medicineName;
+        this.category = category;
+        this.manufacturer = manufacturer;
+        this.supplier = supplier;
+        this.batchNumber = batchNumber;
+        this.purchaseDate = purchaseDate;
+        this.expiryDate = expiryDate;
+        this.quantity = quantity;
+        this.minimumStock = minimumStock != null ? minimumStock : 10;
+        this.unitPrice = unitPrice;
+        this.rackLocation = rackLocation;
+        this.status = status != null ? status : InventoryStatus.AVAILABLE;
+        this.notes = notes;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
 
     /**
      * Automatically computes the correct status based on business rules

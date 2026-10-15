@@ -65,10 +65,10 @@
                             </div>
                         </div>
 
-                        <!-- Amount Field (shown for Cash/UPI/Cheque) -->
+                        <!-- Amount Field (shown for Cash/UPI/Cheque, optional) -->
                         <div class="row" id="donationAmountContainer">
                             <div class="col-md-12 mb-4">
-                                <label for="donationAmount" class="form-label fw-semibold">Donation Amount (₹) <span class="text-danger">*</span></label>
+                                <label for="donationAmount" class="form-label fw-semibold">Donation Amount (₹)</label>
                                 <input type="number" step="0.01" min="0" class="form-control" id="donationAmountInput"
                                        th:field="*{donationAmount}"
                                        th:classappend="${#fields.hasErrors('donationAmount')} ? 'is-invalid' : ''"
@@ -126,15 +126,15 @@
                             <div th:if="${#fields.hasErrors('medicineItems')}" class="text-danger small mt-2" th:errors="*{medicineItems}"></div>
                         </div>
 
-                        <!-- Food Table -->
+                        <!-- Food / Physical Items Table -->
                         <div id="foodTableContainer" class="mb-4" style="display: none;">
-                            <h5 class="fw-bold mb-3 text-secondary">Food Items List</h5>
+                            <h5 class="fw-bold mb-3 text-secondary">Physical / Food Items List</h5>
                             <div class="table-responsive">
                                 <table class="table table-bordered align-middle" id="foodTable">
                                     <thead class="table-light">
                                         <tr>
-                                            <th>Food Name <span class="text-danger">*</span></th>
-                                            <th style="width: 250px;">Quantity <span class="text-danger">*</span></th>
+                                            <th>Item Name <span class="text-danger">*</span></th>
+                                            <th style="width: 280px;">Quantity &amp; Unit <span class="text-danger">*</span></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -143,14 +143,14 @@
                                                 <input type="text" class="form-control food-name"
                                                        th:field="*{foodItems[__${stat.index}__].foodName}"
                                                        th:classappend="${#fields.hasErrors('foodItems[__${stat.index}__].foodName')} ? 'is-invalid' : ''"
-                                                       placeholder="e.g. Basmati Rice">
+                                                       placeholder="e.g. Dal, Rice, Wheat, Sugar">
                                                 <div class="invalid-feedback" th:if="${#fields.hasErrors('foodItems[__${stat.index}__].foodName')}" th:errors="*{foodItems[__${stat.index}__].foodName}"></div>
                                             </td>
                                             <td>
                                                 <input type="text" class="form-control food-qty"
                                                        th:field="*{foodItems[__${stat.index}__].quantity}"
                                                        th:classappend="${#fields.hasErrors('foodItems[__${stat.index}__].quantity')} ? 'is-invalid' : ''"
-                                                       placeholder="e.g. 50 kg" oninput="calculateTotalFoodQuantity()">
+                                                       placeholder="e.g. 5 kg, 10 packets, 2 bags" oninput="calculateTotalFoodQuantity()">
                                                 <div class="invalid-feedback" th:if="${#fields.hasErrors('foodItems[__${stat.index}__].quantity')}" th:errors="*{foodItems[__${stat.index}__].quantity}"></div>
                                             </td>
                                         </tr>
@@ -242,6 +242,12 @@
                 const medicineTableContainer = document.getElementById("medicineTableContainer");
                 const foodTableContainer = document.getElementById("foodTableContainer");
 
+                const foodTypes = [
+                    "FOOD", "MILK", "RICE", "WHEAT", "VEGETABLES", "OIL",
+                    "SUGAR", "DAL", "FRUITS", "BREAKFAST_KIT", "LUNCH_KIT",
+                    "DINNER_KIT", "SNACKS", "OTHER_FOOD_ITEM", "GROCERY"
+                ];
+
                 function toggleFields() {
                     const type = donationTypeSelect.value;
 
@@ -250,11 +256,23 @@
                         donationAmountInput.removeAttribute("required");
                         medicineTableContainer.style.display = "block";
                         foodTableContainer.style.display = "none";
-                    } else if (type === "FOOD") {
+                    } else if (foodTypes.includes(type)) {
                         donationAmountContainer.style.display = "none";
                         donationAmountInput.removeAttribute("required");
                         medicineTableContainer.style.display = "none";
                         foodTableContainer.style.display = "block";
+
+                        const firstFoodNameInput = document.querySelector('#foodTable tbody .food-name');
+                        if (firstFoodNameInput && !firstFoodNameInput.value.trim()) {
+                            if (type === "DAL") firstFoodNameInput.value = "Dal";
+                            else if (type === "RICE") firstFoodNameInput.value = "Rice";
+                            else if (type === "WHEAT") firstFoodNameInput.value = "Wheat";
+                            else if (type === "SUGAR") firstFoodNameInput.value = "Sugar";
+                            else if (type === "MILK") firstFoodNameInput.value = "Milk";
+                            else if (type === "VEGETABLES") firstFoodNameInput.value = "Vegetables";
+                            else if (type === "OIL") firstFoodNameInput.value = "Cooking Oil";
+                            else if (type === "FRUITS") firstFoodNameInput.value = "Fruits";
+                        }
                         calculateTotalFoodQuantity();
                     } else {
                         donationAmountContainer.style.display = "flex";
@@ -313,10 +331,10 @@
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>
-                        <input type="text" class="form-control food-name" name="foodItems[${idx}].foodName" placeholder="e.g. Basmati Rice">
+                        <input type="text" class="form-control food-name" name="foodItems[${idx}].foodName" placeholder="e.g. Dal, Rice, Wheat, Sugar">
                     </td>
                     <td>
-                        <input type="text" class="form-control food-qty" name="foodItems[${idx}].quantity" placeholder="e.g. 50 kg" oninput="calculateTotalFoodQuantity()">
+                        <input type="text" class="form-control food-qty" name="foodItems[${idx}].quantity" placeholder="e.g. 5 kg, 10 packets, 2 bags" oninput="calculateTotalFoodQuantity()">
                     </td>
                 `;
                 tbody.appendChild(row);

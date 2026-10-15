@@ -32,7 +32,6 @@ public class InventoryController {
         
         // Manual pagination
         int totalElements = fullInventoryList.size();
-        int totalPages = (int) Math.ceil((double) totalElements / size);
         int startIndex = page * size;
         int endIndex = Math.min(startIndex + size, totalElements);
         

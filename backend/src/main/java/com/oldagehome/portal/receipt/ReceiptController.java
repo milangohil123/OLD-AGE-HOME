@@ -23,6 +23,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("/receipt")
+@org.springframework.transaction.annotation.Transactional(readOnly = true)
 public class ReceiptController {
 
     private final DonationRepository donationRepository;
@@ -91,7 +92,7 @@ public class ReceiptController {
     // ─────────────────────────────────────────────────────────────────────────
 
     private boolean isGiftType(DonationType type) {
-        return type == DonationType.FOOD || type == DonationType.MEDICINE;
+        return type != null && (type == DonationType.MEDICINE || type.isFoodType());
     }
 
     /** Build ReceiptDTO from a Donation record. */
@@ -184,7 +185,7 @@ public class ReceiptController {
             List<MedicineDonationItem> medItems) {
 
         List<ReceiptDTO.ReceiptItemDTO> list = new ArrayList<>();
-        if (type == DonationType.FOOD && foodItems != null) {
+        if (type != null && type.isFoodType() && foodItems != null) {
             for (FoodDonationItem f : foodItems) {
                 list.add(new ReceiptDTO.ReceiptItemDTO(f.getFoodName(), f.getQuantity()));
             }

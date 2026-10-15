@@ -2,10 +2,8 @@ package com.oldagehome.portal.resident;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -16,9 +14,6 @@ import java.time.Period;
 @Entity
 @Table(name = "residents")
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class Resident {
 
     @Id
@@ -113,6 +108,42 @@ public class Resident {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    public Resident() {
+    }
+
+    @Builder
+    public Resident(Long id, String fullName, String gender, LocalDate dateOfBirth, Integer age,
+                    String bloodGroup, String mobile, String email, String address, LocalDate joiningDate,
+                    ResidentStatus status, String guardianName, String guardianPhone, String guardianEmail,
+                    String guardianAddress, String medicalNotes, String medicalPrescription, String roomNumber,
+                    String occupation, String disability, String aadhaarNumber, String photo,
+                    LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.fullName = fullName;
+        this.gender = gender;
+        this.dateOfBirth = dateOfBirth;
+        this.age = age;
+        this.bloodGroup = bloodGroup;
+        this.mobile = mobile;
+        this.email = email;
+        this.address = address;
+        this.joiningDate = joiningDate;
+        this.status = status != null ? status : ResidentStatus.ACTIVE;
+        this.guardianName = guardianName;
+        this.guardianPhone = guardianPhone;
+        this.guardianEmail = guardianEmail;
+        this.guardianAddress = guardianAddress;
+        this.medicalNotes = medicalNotes;
+        this.medicalPrescription = medicalPrescription;
+        this.roomNumber = roomNumber;
+        this.occupation = occupation;
+        this.disability = disability;
+        this.aadhaarNumber = aadhaarNumber;
+        this.photo = photo;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
 
     // Hook to calculate age automatically before persist/update
     @PrePersist

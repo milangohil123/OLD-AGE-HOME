@@ -1,10 +1,8 @@
 package com.oldagehome.portal.donor;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -17,9 +15,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "food_donation_items")
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class FoodDonationItem {
 
     @Id
@@ -50,4 +45,20 @@ public class FoodDonationItem {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    public FoodDonationItem() {
+    }
+
+    @Builder
+    public FoodDonationItem(Long id, Donor donor, Donation donation, String foodName, String quantity,
+                            Integer displayOrder, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.donor = donor;
+        this.donation = donation;
+        this.foodName = foodName;
+        this.quantity = quantity;
+        this.displayOrder = displayOrder;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
 }

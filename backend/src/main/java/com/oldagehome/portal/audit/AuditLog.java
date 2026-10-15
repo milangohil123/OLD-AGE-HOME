@@ -1,10 +1,8 @@
 package com.oldagehome.portal.audit;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -12,9 +10,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "audit_logs")
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class AuditLog {
 
     @Id
@@ -71,4 +66,31 @@ public class AuditLog {
 
     @Column(name = "error_message", columnDefinition = "TEXT")
     private String errorMessage;
+
+    public AuditLog() {
+    }
+
+    @Builder
+    public AuditLog(Long id, String username, String fullName, String role, AuditModule module,
+                    AuditAction action, String description, String entityName, Long entityId,
+                    String ipAddress, String browser, String operatingSystem, String requestUrl,
+                    String httpMethod, LocalDateTime timestamp, Boolean success, String errorMessage) {
+        this.id = id;
+        this.username = username;
+        this.fullName = fullName;
+        this.role = role;
+        this.module = module;
+        this.action = action;
+        this.description = description;
+        this.entityName = entityName;
+        this.entityId = entityId;
+        this.ipAddress = ipAddress;
+        this.browser = browser;
+        this.operatingSystem = operatingSystem;
+        this.requestUrl = requestUrl;
+        this.httpMethod = httpMethod;
+        this.timestamp = timestamp;
+        this.success = success;
+        this.errorMessage = errorMessage;
+    }
 }

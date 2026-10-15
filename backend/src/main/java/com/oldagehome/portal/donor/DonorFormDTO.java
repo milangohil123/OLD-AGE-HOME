@@ -2,10 +2,8 @@ package com.oldagehome.portal.donor;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -21,9 +19,6 @@ import java.util.List;
  *  3. Isolation from JPA lazy-loading concerns during form binding.
  */
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class DonorFormDTO {
 
     private Long id;
@@ -96,26 +91,75 @@ public class DonorFormDTO {
     @Builder.Default
     private List<FoodItemDTO> foodItems = new ArrayList<>();
 
+    public DonorFormDTO() {
+    }
+
+    @Builder
+    public DonorFormDTO(Long id, String fullName, String gender, LocalDate dateOfBirth, String mobile,
+                        String email, String address, String city, String state, String pincode,
+                        DonationFrequency donationFrequency, DonationType donationType, String donationCategory,
+                        BigDecimal donationAmount, LocalDate donationDate, String paymentMethod,
+                        String transactionId, String remarks, DonorStatus status, String photo,
+                        List<MedicineItemDTO> medicineItems, List<FoodItemDTO> foodItems) {
+        this.id = id;
+        this.fullName = fullName;
+        this.gender = gender;
+        this.dateOfBirth = dateOfBirth;
+        this.mobile = mobile;
+        this.email = email;
+        this.address = address;
+        this.city = city;
+        this.state = state;
+        this.pincode = pincode;
+        this.donationFrequency = donationFrequency;
+        this.donationType = donationType;
+        this.donationCategory = donationCategory;
+        this.donationAmount = donationAmount;
+        this.donationDate = donationDate;
+        this.paymentMethod = paymentMethod;
+        this.transactionId = transactionId;
+        this.remarks = remarks;
+        this.status = status != null ? status : DonorStatus.ACTIVE;
+        this.photo = photo;
+        this.medicineItems = medicineItems != null ? medicineItems : new ArrayList<>();
+        this.foodItems = foodItems != null ? foodItems : new ArrayList<>();
+    }
+
     // ── Inner DTOs ────────────────────────────────────────────────────────────
 
     @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
     public static class MedicineItemDTO {
         private Long id; // null for new rows
         private String medicineName;
         private BigDecimal price;
         private LocalDate expiryDate;
+
+        public MedicineItemDTO() {
+        }
+
+        @Builder
+        public MedicineItemDTO(Long id, String medicineName, BigDecimal price, LocalDate expiryDate) {
+            this.id = id;
+            this.medicineName = medicineName;
+            this.price = price;
+            this.expiryDate = expiryDate;
+        }
     }
 
     @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
     public static class FoodItemDTO {
         private Long id; // null for new rows
         private String foodName;
         private String quantity;
+
+        public FoodItemDTO() {
+        }
+
+        @Builder
+        public FoodItemDTO(Long id, String foodName, String quantity) {
+            this.id = id;
+            this.foodName = foodName;
+            this.quantity = quantity;
+        }
     }
 }

@@ -7,7 +7,6 @@ import com.oldagehome.portal.foodschedule.dto.FoodDashboardDTO;
 import com.oldagehome.portal.foodschedule.dto.FoodScheduleDTO;
 import com.oldagehome.portal.foodschedule.dto.FoodSponsorDTO;
 import com.oldagehome.portal.foodschedule.dto.SearchDTO;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,11 +21,15 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-@RequiredArgsConstructor
 public class FoodScheduleServiceImpl implements FoodScheduleService {
 
     private final FoodScheduleRepository foodScheduleRepository;
     private final DonorRepository donorRepository;
+
+    public FoodScheduleServiceImpl(FoodScheduleRepository foodScheduleRepository, DonorRepository donorRepository) {
+        this.foodScheduleRepository = foodScheduleRepository;
+        this.donorRepository = donorRepository;
+    }
 
     @Override
     @Transactional

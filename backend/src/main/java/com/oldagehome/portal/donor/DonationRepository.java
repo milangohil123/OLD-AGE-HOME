@@ -9,6 +9,8 @@ import java.util.List;
 public interface DonationRepository extends JpaRepository<Donation, Long> {
     List<Donation> findByDonorIdOrderByDonationDateDesc(Long donorId);
 
-    @org.springframework.data.jpa.repository.Query("SELECT new com.oldagehome.portal.dto.DonationTrendDTO(d.donationDate, SUM(d.donationAmount)) FROM Donation d WHERE d.donationDate >= :startDate GROUP BY d.donationDate ORDER BY d.donationDate")
+    List<Donation> findAllByDonorIdOrderByDonationDateDescCreatedAtDesc(Long donorId);
+
+    @org.springframework.data.jpa.repository.Query("SELECT new com.oldagehome.portal.dto.DonationTrendDTO(d.donationDate, COALESCE(SUM(d.donationAmount), 0)) FROM Donation d WHERE d.donationDate >= :startDate GROUP BY d.donationDate ORDER BY d.donationDate")
     List<com.oldagehome.portal.dto.DonationTrendDTO> getDonationTrend(@org.springframework.data.repository.query.Param("startDate") java.time.LocalDate startDate);
 }

@@ -2,10 +2,8 @@ package com.oldagehome.portal.donor;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -19,9 +17,6 @@ import java.util.List;
 @Entity
 @Table(name = "donors")
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class Donor {
 
     @Id
@@ -131,6 +126,45 @@ public class Donor {
     @OrderBy("displayOrder ASC")
     @Builder.Default
     private List<FoodDonationItem> foodItems = new ArrayList<>();
+
+    public Donor() {
+    }
+
+    @Builder
+    public Donor(Long id, String fullName, String gender, LocalDate dateOfBirth, Integer age,
+                 String mobile, String email, String address, String city, String state,
+                 String pincode, DonationFrequency donationFrequency, DonationType donationType,
+                 String donationCategory, BigDecimal donationAmount, LocalDate donationDate,
+                 String paymentMethod, String transactionId, String remarks, DonorStatus status,
+                 String photo, LocalDateTime createdAt, LocalDateTime updatedAt,
+                 List<Donation> donations, List<MedicineDonationItem> medicineItems, List<FoodDonationItem> foodItems) {
+        this.id = id;
+        this.fullName = fullName;
+        this.gender = gender;
+        this.dateOfBirth = dateOfBirth;
+        this.age = age;
+        this.mobile = mobile;
+        this.email = email;
+        this.address = address;
+        this.city = city;
+        this.state = state;
+        this.pincode = pincode;
+        this.donationFrequency = donationFrequency;
+        this.donationType = donationType;
+        this.donationCategory = donationCategory;
+        this.donationAmount = donationAmount;
+        this.donationDate = donationDate;
+        this.paymentMethod = paymentMethod;
+        this.transactionId = transactionId;
+        this.remarks = remarks;
+        this.status = status != null ? status : DonorStatus.ACTIVE;
+        this.photo = photo;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.donations = donations != null ? donations : new ArrayList<>();
+        this.medicineItems = medicineItems != null ? medicineItems : new ArrayList<>();
+        this.foodItems = foodItems != null ? foodItems : new ArrayList<>();
+    }
 
     // ── Age calculation callback hook ─────────────────────────────────────────
     @PrePersist

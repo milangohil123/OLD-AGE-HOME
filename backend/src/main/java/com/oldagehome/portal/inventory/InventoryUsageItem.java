@@ -4,10 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -17,9 +15,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "inventory_usage_item")
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class InventoryUsageItem {
 
     @Id
@@ -50,4 +45,19 @@ public class InventoryUsageItem {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    public InventoryUsageItem() {
+    }
+
+    @Builder
+    public InventoryUsageItem(Long id, InventoryUsage inventoryUsage, RawMaterialInventory rawMaterial,
+                              BigDecimal quantityUsed, String unit, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.inventoryUsage = inventoryUsage;
+        this.rawMaterial = rawMaterial;
+        this.quantityUsed = quantityUsed;
+        this.unit = unit;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
 }

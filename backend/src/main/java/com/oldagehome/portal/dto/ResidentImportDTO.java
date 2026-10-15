@@ -1,16 +1,11 @@
 package com.oldagehome.portal.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class ResidentImportDTO {
     private int rowNum;
     private String fullName;
@@ -33,4 +28,32 @@ public class ResidentImportDTO {
     private boolean valid = true;
     @Builder.Default
     private String errorMessage = "";
+
+    public ResidentImportDTO() {
+    }
+
+    @Builder
+    public ResidentImportDTO(int rowNum, String fullName, String gender, String dateOfBirthString,
+                             LocalDate dateOfBirth, String mobile, String guardianName, String guardianPhone,
+                             String guardianEmail, String guardianAddress, String medicalPrescription,
+                             String roomNumber, String occupation, String disability, String aadhaarNumber,
+                             boolean valid, String errorMessage) {
+        this.rowNum = rowNum;
+        this.fullName = fullName;
+        this.gender = gender;
+        this.dateOfBirthString = dateOfBirthString;
+        this.dateOfBirth = dateOfBirth;
+        this.mobile = mobile;
+        this.guardianName = guardianName;
+        this.guardianPhone = guardianPhone;
+        this.guardianEmail = guardianEmail;
+        this.guardianAddress = guardianAddress;
+        this.medicalPrescription = medicalPrescription;
+        this.roomNumber = roomNumber;
+        this.occupation = occupation;
+        this.disability = disability;
+        this.aadhaarNumber = aadhaarNumber;
+        this.valid = valid;
+        this.errorMessage = errorMessage != null ? errorMessage : "";
+    }
 }

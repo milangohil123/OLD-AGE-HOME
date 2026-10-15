@@ -49,6 +49,9 @@ public interface DonorService {
     /** Save a new donation to an existing donor */
     void saveDonation(DonationFormDTO dto);
 
+    /** Get all donations for a donor ordered by date descending */
+    List<Donation> getDonationsByDonorId(Long donorId);
+
     /** Parse, validate, persist from Excel; returns row-level result DTOs. */
     List<com.oldagehome.portal.dto.DonorImportDTO> importFromExcel(MultipartFile file) throws Exception;
 

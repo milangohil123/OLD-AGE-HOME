@@ -3,10 +3,8 @@ package com.oldagehome.portal.inventory;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -18,9 +16,6 @@ import java.util.List;
 @Entity
 @Table(name = "inventory_usage")
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class InventoryUsage {
 
     @Id
@@ -46,4 +41,18 @@ public class InventoryUsage {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    public InventoryUsage() {
+    }
+
+    @Builder
+    public InventoryUsage(Long id, LocalDate usageDate, String purpose, List<InventoryUsageItem> items,
+                          LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.usageDate = usageDate;
+        this.purpose = purpose;
+        this.items = items != null ? items : new ArrayList<>();
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
 }

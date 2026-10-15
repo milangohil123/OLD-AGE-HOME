@@ -3,10 +3,8 @@ package com.oldagehome.portal.foodschedule.dto;
 import com.oldagehome.portal.foodschedule.MealType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
@@ -14,9 +12,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class FoodScheduleDTO {
     
     private Long id;
@@ -50,4 +45,28 @@ public class FoodScheduleDTO {
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    public FoodScheduleDTO() {
+    }
+
+    @Builder
+    public FoodScheduleDTO(Long id, LocalDate mealDate, MealType mealType, String menuItems, Long donorId,
+                           String donorName, String donorMobile, BigDecimal donationAmount, String paymentMethod,
+                           LocalDate donationDate, String remarks, String status, LocalDateTime createdAt,
+                           LocalDateTime updatedAt) {
+        this.id = id;
+        this.mealDate = mealDate;
+        this.mealType = mealType;
+        this.menuItems = menuItems;
+        this.donorId = donorId;
+        this.donorName = donorName;
+        this.donorMobile = donorMobile;
+        this.donationAmount = donationAmount;
+        this.paymentMethod = paymentMethod;
+        this.donationDate = donationDate;
+        this.remarks = remarks;
+        this.status = status;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
 }

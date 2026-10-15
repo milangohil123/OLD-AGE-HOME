@@ -5,6 +5,10 @@
 <body>
 <div id="donor-profile-container">
 
+    <!-- Alert Messages -->
+    <div th:replace="~{fragments/alerts :: success(${successMessage})}"></div>
+    <div th:replace="~{fragments/alerts :: error(${errorMessage})}"></div>
+
     <!-- Page Header -->
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div>
@@ -178,15 +182,15 @@
                         </div>
                     </div>
 
-                    <!-- Food Table -->
-                    <div th:if="${donor.donationType != null and donor.donationType.name() == 'FOOD'}">
-                        <h6 class="fw-bold text-secondary mb-3">Food Items</h6>
+                    <!-- Food / Physical Items Table -->
+                    <div th:if="${donor.donationType != null and donor.donationType.isFoodType()}">
+                        <h6 class="fw-bold text-secondary mb-3">Physical / Food Items</h6>
                         <div class="table-responsive">
                             <table class="table table-bordered table-hover align-middle mb-0" style="font-size:14px;">
                                 <thead class="table-light">
                                     <tr>
-                                        <th>Food Name</th>
-                                        <th style="width: 250px;">Quantity</th>
+                                        <th>Item Name</th>
+                                        <th style="width: 250px;">Quantity &amp; Unit</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -196,7 +200,7 @@
                                     </tr>
                                 </tbody>
                                 <tfoot>
-                                    <tr class="table-light fw-bold">
+                                    <tr class="table-light fw-bold" th:if="${donor.formattedTotalFoodQuantity != null and donor.formattedTotalFoodQuantity != '0'}">
                                         <td>Total Quantity</td>
                                         <td th:text="${donor.formattedTotalFoodQuantity}">0</td>
                                     </tr>
@@ -205,15 +209,17 @@
                         </div>
                     </div>
 
-                    <!-- Amount -->
-                    <div th:if="${donor.donationType == null or (donor.donationType.name() != 'MEDICINE' and donor.donationType.name() != 'FOOD')}">
+                    <!-- Monetary Amount or In-Kind Badge -->
+                    <div th:if="${donor.donationType == null or (!donor.donationType.isFoodType() and donor.donationType.name() != 'MEDICINE')}">
                         <div class="d-flex align-items-center gap-3 bg-light rounded p-4 border">
                             <div class="bg-primary bg-opacity-10 text-primary rounded px-3 py-2 fs-3">
                                 <i class="bi bi-cash-coin"></i>
                             </div>
                             <div>
                                 <span class="text-muted small d-block text-uppercase fw-bold" style="letter-spacing:0.05em;">Donation Amount</span>
-                                <h3 class="fw-bold text-primary mb-0" th:text="${donor.donationAmount != null ? '₹' + #numbers.formatDecimal(donor.donationAmount, 1, 'COMMA', 2, 'POINT') : '₹0.00'}">₹0.00</h3>
+                                <h3 class="fw-bold text-primary mb-0" th:if="${donor.donationAmount != null and donor.donationAmount > 0}"
+                                    th:text="'₹' + ${#numbers.formatDecimal(donor.donationAmount, 1, 'COMMA', 2, 'POINT')}">₹0.00</h3>
+                                <span class="badge bg-light text-secondary border px-3 py-2 mt-1 fs-6" th:if="${donor.donationAmount == null or donor.donationAmount <= 0}">In-kind donation</span>
                             </div>
                         </div>
                     </div>
@@ -244,14 +250,97 @@
 
             <!-- Donation History -->
             <div class="pf-card">
-                <div class="pf-card-hd">
+                <div class="pf-card-hd d-flex justify-content-between align-items-center">
                     <div class="d-flex align-items-center gap-2">
                         <div class="pf-icon pf-icon-slate"><i class="bi bi-clock-history"></i></div>
                         <span class="pf-card-title">Donation History</span>
                     </div>
+                    <span class="badge bg-primary rounded-pill px-3 py-2" th:if="${donations != null and !#lists.isEmpty(donations)}" th:text="${#lists.size(donations)} + ' Donation(s)'">0</span>
                 </div>
                 <div class="p-4">
-                    <p class="text-muted mb-0">Feature coming soon.</p>
+                    <div th:if="${donations == null or #lists.isEmpty(donations)}" class="text-center py-4">
+                        <i class="bi bi-inbox text-muted fs-1 d-block mb-2"></i>
+                        <p class="text-muted mb-0">No donation history records found for this donor.</p>
+                    </div>
+
+                    <div th:if="${donations != null and !#lists.isEmpty(donations)}" class="table-responsive">
+                        <table class="table table-hover align-middle mb-0" style="font-size:13.5px;">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Details / Items</th>
+                                    <th>Amount</th>
+                                    <th>Payment / Txn</th>
+                                    <th class="text-end">Receipt</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="d : ${donations}">
+                                    <td class="fw-semibold text-nowrap">
+                                        <i class="bi bi-calendar3 me-1 text-muted"></i>
+                                        <span th:text="${d.donationDate != null ? #temporals.format(d.donationDate, 'dd-MM-yyyy') : '—'}">—</span>
+                                        <div class="small text-muted" th:if="${d.donationFrequency != null}" th:text="${d.donationFrequency.displayName}">One-time</div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info text-dark" th:if="${d.donationType != null and d.donationType.isFoodType()}" th:text="${d.donationType.displayName}">Food / Grocery</span>
+                                        <span class="badge bg-warning text-dark" th:if="${d.donationType != null and d.donationType.name() == 'MEDICINE'}" th:text="${d.donationType.displayName}">Medicine</span>
+                                        <span class="badge bg-success" th:if="${d.donationType != null and !d.donationType.isFoodType() and d.donationType.name() != 'MEDICINE'}" th:text="${d.donationType.displayName}">Cash/UPI</span>
+                                        <span class="badge bg-secondary" th:if="${d.donationType == null}">General</span>
+                                    </td>
+                                    <td>
+                                        <!-- Physical / Food items -->
+                                        <div th:if="${d.donationType != null and d.donationType.isFoodType()}">
+                                            <div th:if="${d.foodItems != null and !#lists.isEmpty(d.foodItems)}">
+                                                <div th:each="item : ${d.foodItems}" class="mb-1">
+                                                    <span class="fw-bold" th:text="${item.foodName}">Item</span>: 
+                                                    <span class="text-secondary" th:text="${item.quantity}">Qty</span>
+                                                </div>
+                                            </div>
+                                            <div th:if="${d.foodItems == null or #lists.isEmpty(d.foodItems)}" class="text-muted fst-italic">
+                                                <span th:text="${d.donationType.displayName}">Physical Donation</span>
+                                            </div>
+                                        </div>
+                                        <!-- Medicine items -->
+                                        <div th:if="${d.donationType != null and d.donationType.name() == 'MEDICINE'}">
+                                            <div th:if="${d.medicineItems != null and !#lists.isEmpty(d.medicineItems)}">
+                                                <div th:each="item : ${d.medicineItems}" class="mb-1">
+                                                    <span class="fw-bold" th:text="${item.medicineName}">Med</span>
+                                                    <span th:if="${item.price != null and item.price > 0}" class="text-muted" th:text="'(₹' + ${#numbers.formatDecimal(item.price, 1, 'COMMA', 2, 'POINT')} + ')'"></span>
+                                                </div>
+                                            </div>
+                                            <div th:if="${d.medicineItems == null or #lists.isEmpty(d.medicineItems)}" class="text-muted fst-italic">
+                                                Medicines
+                                            </div>
+                                        </div>
+                                        <!-- Monetary / General -->
+                                        <div th:if="${d.donationType == null or (!d.donationType.isFoodType() and d.donationType.name() != 'MEDICINE')}">
+                                            <span th:text="${d.donationCategory != null ? d.donationCategory : 'Monetary Contribution'}">Monetary Contribution</span>
+                                        </div>
+                                        <div th:if="${!#strings.isEmpty(d.remarks)}" class="small text-muted fst-italic mt-1" th:text="${d.remarks}"></div>
+                                    </td>
+                                    <td class="text-nowrap">
+                                        <div th:if="${d.donationAmount != null and d.donationAmount > 0}">
+                                            <strong class="text-success" th:text="'₹' + ${#numbers.formatDecimal(d.donationAmount, 1, 'COMMA', 2, 'POINT')}">₹0.00</strong>
+                                        </div>
+                                        <div th:if="${d.donationAmount == null or d.donationAmount <= 0}">
+                                            <span class="badge bg-light text-secondary border">In-kind donation</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div th:if="${!#strings.isEmpty(d.paymentMethod)}" class="fw-semibold" th:text="${d.paymentMethod}">CASH</div>
+                                        <div th:if="${!#strings.isEmpty(d.transactionId)}" class="small text-muted font-monospace" th:text="${d.transactionId}">TXN123</div>
+                                        <div th:if="${#strings.isEmpty(d.paymentMethod) and #strings.isEmpty(d.transactionId)}" class="text-muted">—</div>
+                                    </td>
+                                    <td class="text-end">
+                                        <a th:href="@{/receipt/donation/{id}(id=${d.id})}" class="btn btn-sm btn-outline-danger" target="_blank" title="Print Receipt" style="border-radius:6px;">
+                                            <i class="bi bi-printer"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

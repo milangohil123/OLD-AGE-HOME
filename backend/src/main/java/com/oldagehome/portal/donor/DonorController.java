@@ -39,6 +39,11 @@ public class DonorController {
         this.fileUploadUtility = fileUploadUtility;
     }
 
+    @InitBinder
+    public void initBinder(org.springframework.web.bind.WebDataBinder binder) {
+        binder.registerCustomEditor(String.class, new org.springframework.beans.propertyeditors.StringTrimmerEditor(true));
+    }
+
     // -------------------------------------------------------------------------
     // GET /donors — List with pagination and search
     // -------------------------------------------------------------------------
@@ -130,11 +135,21 @@ public class DonorController {
     // -------------------------------------------------------------------------
 
     @GetMapping("/view/{id}")
-    public String viewDonor(@PathVariable("id") Long id, Model model) {
-        Donor donor = donorService.getDonorById(id);
-        model.addAttribute("donor", donor);
-        model.addAttribute("activePage", "donors");
-        return "donors/view";
+    public String viewDonor(@PathVariable("id") Long id, Model model, RedirectAttributes redirectAttributes) {
+        if (id == null || id <= 0) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Invalid donor ID.");
+            return "redirect:/donors";
+        }
+        try {
+            Donor donor = donorService.getDonorById(id);
+            model.addAttribute("donor", donor);
+            model.addAttribute("donations", donorService.getDonationsByDonorId(id));
+            model.addAttribute("activePage", "donors");
+            return "donors/view";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Donor not found with ID: " + id);
+            return "redirect:/donors";
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -395,8 +410,19 @@ public class DonorController {
     // -------------------------------------------------------------------------
 
     @GetMapping("/{id}/donations/new")
-    public String showAddDonationForm(@PathVariable("id") Long id, Model model) {
-        Donor donor = donorService.getDonorById(id);
+    public String showAddDonationForm(@PathVariable("id") Long id, Model model, RedirectAttributes redirectAttributes) {
+        if (id == null || id <= 0) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Invalid donor ID.");
+            return "redirect:/donors";
+        }
+
+        Donor donor;
+        try {
+            donor = donorService.getDonorById(id);
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Donor not found with ID: " + id);
+            return "redirect:/donors";
+        }
         
         DonationFormDTO dto = new DonationFormDTO();
         dto.setDonorId(donor.getId());
@@ -430,10 +456,22 @@ public class DonorController {
             Model model,
             RedirectAttributes redirectAttributes) {
 
+        if (id == null || id <= 0) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Invalid donor ID.");
+            return "redirect:/donors";
+        }
+
+        Donor donor;
+        try {
+            donor = donorService.getDonorById(id);
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Donor not found with ID: " + id);
+            return "redirect:/donors";
+        }
+
         validateDonationForm(donationFormDto, bindingResult);
 
         if (bindingResult.hasErrors()) {
-            Donor donor = donorService.getDonorById(id);
             model.addAttribute("donor", donor);
             model.addAttribute("donationFrequencies", DonationFrequency.values());
             model.addAttribute("donationTypes", DonationType.values());
@@ -442,10 +480,20 @@ public class DonorController {
             return "donors/donation-form";
         }
 
-        donationFormDto.setDonorId(id);
-        donorService.saveDonation(donationFormDto);
-        redirectAttributes.addFlashAttribute("successMessage", "Donation added successfully.");
-        return "redirect:/donors/view/" + id;
+        try {
+            donationFormDto.setDonorId(id);
+            donorService.saveDonation(donationFormDto);
+            redirectAttributes.addFlashAttribute("successMessage", "Donation added successfully.");
+            return "redirect:/donors/view/" + id;
+        } catch (Exception e) {
+            bindingResult.reject("error.save", "Failed to save donation: " + e.getMessage());
+            model.addAttribute("donor", donor);
+            model.addAttribute("donationFrequencies", DonationFrequency.values());
+            model.addAttribute("donationTypes", DonationType.values());
+            model.addAttribute("activePage", "donors");
+            model.addAttribute("pageTitle", "Add Donation for " + donor.getFullName());
+            return "donors/donation-form";
+        }
     }
 
     private void validateDonationForm(DonationFormDTO dto, BindingResult bindingResult) {
@@ -457,55 +505,66 @@ public class DonorController {
             return;
         }
 
+        if (dto.getDonationDate() == null) {
+            bindingResult.rejectValue("donationDate", "error.donationDate", "Donation Date is required");
+        }
+
+        // Amount validation: optional, but if entered it must be positive (> 0)
+        if (dto.getDonationAmount() != null) {
+            if (dto.getDonationAmount().compareTo(BigDecimal.ZERO) <= 0) {
+                bindingResult.rejectValue("donationAmount", "error.donationAmount", "Donation amount must be greater than zero");
+            }
+        }
+
         if (dto.getDonationType() == DonationType.MEDICINE) {
             List<DonorFormDTO.MedicineItemDTO> items = dto.getMedicineItems();
             boolean hasAtLeastOne = false;
-            for (int i = 0; i < items.size(); i++) {
-                DonorFormDTO.MedicineItemDTO item = items.get(i);
-                boolean hasAnyField = (item.getMedicineName() != null && !item.getMedicineName().isBlank())
-                        || item.getPrice() != null
-                        || item.getExpiryDate() != null;
-                if (hasAnyField) {
-                    hasAtLeastOne = true;
-                    if (item.getMedicineName() == null || item.getMedicineName().isBlank()) {
-                        bindingResult.rejectValue("medicineItems[" + i + "].medicineName", "error.medicineName", "Medicine Name is required");
-                    }
-                    if (item.getPrice() == null) {
-                        bindingResult.rejectValue("medicineItems[" + i + "].price", "error.price", "Price is required");
-                    } else if (item.getPrice().compareTo(BigDecimal.ZERO) < 0) {
-                        bindingResult.rejectValue("medicineItems[" + i + "].price", "error.price", "Price cannot be negative");
-                    }
-                    if (item.getExpiryDate() == null) {
-                        bindingResult.rejectValue("medicineItems[" + i + "].expiryDate", "error.expiryDate", "Expiry Date is required");
+            if (items != null) {
+                for (int i = 0; i < items.size(); i++) {
+                    DonorFormDTO.MedicineItemDTO item = items.get(i);
+                    boolean hasAnyField = (item.getMedicineName() != null && !item.getMedicineName().isBlank())
+                            || item.getPrice() != null
+                            || item.getExpiryDate() != null;
+                    if (hasAnyField) {
+                        hasAtLeastOne = true;
+                        if (item.getMedicineName() == null || item.getMedicineName().isBlank()) {
+                            bindingResult.rejectValue("medicineItems[" + i + "].medicineName", "error.medicineName", "Medicine Name is required");
+                        }
+                        if (item.getPrice() == null) {
+                            bindingResult.rejectValue("medicineItems[" + i + "].price", "error.price", "Price is required");
+                        } else if (item.getPrice().compareTo(BigDecimal.ZERO) < 0) {
+                            bindingResult.rejectValue("medicineItems[" + i + "].price", "error.price", "Price cannot be negative");
+                        }
+                        if (item.getExpiryDate() == null) {
+                            bindingResult.rejectValue("medicineItems[" + i + "].expiryDate", "error.expiryDate", "Expiry Date is required");
+                        }
                     }
                 }
             }
             if (!hasAtLeastOne) {
                 bindingResult.rejectValue("medicineItems", "error.medicineItems", "At least one medicine row is required");
             }
-        } else if (dto.getDonationType() == DonationType.FOOD) {
+        } else if (dto.getDonationType() != null && dto.getDonationType().isFoodType()) {
             List<DonorFormDTO.FoodItemDTO> items = dto.getFoodItems();
             boolean hasAtLeastOne = false;
-            for (int i = 0; i < items.size(); i++) {
-                DonorFormDTO.FoodItemDTO item = items.get(i);
-                boolean hasAnyField = (item.getFoodName() != null && !item.getFoodName().isBlank())
-                        || (item.getQuantity() != null && !item.getQuantity().isBlank());
-                if (hasAnyField) {
-                    hasAtLeastOne = true;
-                    if (item.getFoodName() == null || item.getFoodName().isBlank()) {
-                        bindingResult.rejectValue("foodItems[" + i + "].foodName", "error.foodName", "Food Name is required");
-                    }
-                    if (item.getQuantity() == null || item.getQuantity().isBlank()) {
-                        bindingResult.rejectValue("foodItems[" + i + "].quantity", "error.quantity", "Quantity is required");
+            if (items != null) {
+                for (int i = 0; i < items.size(); i++) {
+                    DonorFormDTO.FoodItemDTO item = items.get(i);
+                    boolean hasAnyField = (item.getFoodName() != null && !item.getFoodName().isBlank())
+                            || (item.getQuantity() != null && !item.getQuantity().isBlank());
+                    if (hasAnyField) {
+                        hasAtLeastOne = true;
+                        if (item.getFoodName() == null || item.getFoodName().isBlank()) {
+                            bindingResult.rejectValue("foodItems[" + i + "].foodName", "error.foodName", "Food / Item Name is required");
+                        }
+                        if (item.getQuantity() == null || item.getQuantity().isBlank()) {
+                            bindingResult.rejectValue("foodItems[" + i + "].quantity", "error.quantity", "Quantity is required (e.g. 5 kg)");
+                        }
                     }
                 }
             }
             if (!hasAtLeastOne) {
-                bindingResult.rejectValue("foodItems", "error.foodItems", "At least one food row is required");
-            }
-        } else if (dto.getDonationType() == DonationType.CASH || dto.getDonationType() == DonationType.UPI || dto.getDonationType() == DonationType.CHEQUE) {
-            if (dto.getDonationAmount() == null) {
-                bindingResult.rejectValue("donationAmount", "error.donationAmount", "Donation Amount is required");
+                bindingResult.rejectValue("foodItems", "error.foodItems", "Please specify the item name (e.g. Dal) and quantity (e.g. 5 kg) for this physical donation");
             }
         }
     }
@@ -545,6 +604,13 @@ public class DonorController {
             return;
         }
 
+        // Amount validation: optional, but if entered it must be positive (> 0)
+        if (dto.getDonationAmount() != null) {
+            if (dto.getDonationAmount().compareTo(BigDecimal.ZERO) <= 0) {
+                bindingResult.rejectValue("donationAmount", "error.donationAmount", "Donation amount must be greater than zero");
+            }
+        }
+
         if (dto.getDonationType() == DonationType.MEDICINE) {
             List<DonorFormDTO.MedicineItemDTO> items = dto.getMedicineItems();
             boolean hasAtLeastOne = false;
@@ -571,7 +637,7 @@ public class DonorController {
             if (!hasAtLeastOne) {
                 bindingResult.rejectValue("medicineItems", "error.medicineItems", "At least one medicine row is required");
             }
-        } else if (dto.getDonationType() == DonationType.FOOD) {
+        } else if (dto.getDonationType() != null && dto.getDonationType().isFoodType()) {
             List<DonorFormDTO.FoodItemDTO> items = dto.getFoodItems();
             boolean hasAtLeastOne = false;
             for (int i = 0; i < items.size(); i++) {
@@ -581,19 +647,15 @@ public class DonorController {
                 if (hasAnyField) {
                     hasAtLeastOne = true;
                     if (item.getFoodName() == null || item.getFoodName().isBlank()) {
-                        bindingResult.rejectValue("foodItems[" + i + "].foodName", "error.foodName", "Food Name is required");
+                        bindingResult.rejectValue("foodItems[" + i + "].foodName", "error.foodName", "Food / Item Name is required");
                     }
                     if (item.getQuantity() == null || item.getQuantity().isBlank()) {
-                        bindingResult.rejectValue("foodItems[" + i + "].quantity", "error.quantity", "Quantity is required");
+                        bindingResult.rejectValue("foodItems[" + i + "].quantity", "error.quantity", "Quantity is required (e.g. 5 kg)");
                     }
                 }
             }
             if (!hasAtLeastOne) {
-                bindingResult.rejectValue("foodItems", "error.foodItems", "At least one food row is required");
-            }
-        } else if (dto.getDonationType() == DonationType.CASH || dto.getDonationType() == DonationType.UPI || dto.getDonationType() == DonationType.CHEQUE) {
-            if (dto.getDonationAmount() == null) {
-                bindingResult.rejectValue("donationAmount", "error.donationAmount", "Donation Amount is required");
+                bindingResult.rejectValue("foodItems", "error.foodItems", "Please specify the item name (e.g. Dal) and quantity (e.g. 5 kg) for this physical donation");
             }
         }
     }

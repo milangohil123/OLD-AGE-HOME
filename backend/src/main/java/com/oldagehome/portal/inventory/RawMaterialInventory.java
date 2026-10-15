@@ -2,10 +2,8 @@ package com.oldagehome.portal.inventory;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -15,9 +13,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "raw_material_inventory")
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class RawMaterialInventory {
 
     @Id
@@ -44,4 +39,18 @@ public class RawMaterialInventory {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    public RawMaterialInventory() {
+    }
+
+    @Builder
+    public RawMaterialInventory(Long id, String itemName, BigDecimal totalQuantity, String unit,
+                                LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.itemName = itemName;
+        this.totalQuantity = totalQuantity;
+        this.unit = unit;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
 }

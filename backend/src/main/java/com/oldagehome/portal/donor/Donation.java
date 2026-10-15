@@ -1,10 +1,8 @@
 package com.oldagehome.portal.donor;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -17,9 +15,6 @@ import java.util.List;
 @Entity
 @Table(name = "donations")
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class Donation {
 
     @Id
@@ -70,6 +65,29 @@ public class Donation {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    public Donation() {
+    }
+
+    @Builder
+    public Donation(Long id, Donor donor, DonationFrequency donationFrequency, DonationType donationType,
+                    BigDecimal donationAmount, LocalDate donationDate, String paymentMethod,
+                    String transactionId, String remarks, List<MedicineDonationItem> medicineItems,
+                    List<FoodDonationItem> foodItems, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.donor = donor;
+        this.donationFrequency = donationFrequency;
+        this.donationType = donationType;
+        this.donationAmount = donationAmount;
+        this.donationDate = donationDate;
+        this.paymentMethod = paymentMethod;
+        this.transactionId = transactionId;
+        this.remarks = remarks;
+        this.medicineItems = medicineItems != null ? medicineItems : new ArrayList<>();
+        this.foodItems = foodItems != null ? foodItems : new ArrayList<>();
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
 
     public double getTotalFoodQuantity() {
         if (foodItems == null || foodItems.isEmpty()) {

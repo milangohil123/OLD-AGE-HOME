@@ -82,9 +82,58 @@ public class DonorServiceImpl implements DonorService {
         }
         if (donor.getDonations() != null) {
             donor.getDonations().size();
+            for (Donation d : donor.getDonations()) {
+                if (d.getFoodItems() != null) {
+                    d.getFoodItems().size();
+                }
+                if (d.getMedicineItems() != null) {
+                    d.getMedicineItems().size();
+                }
+            }
+        }
+
+        // If donor has no Donation rows in history yet, sync the initial registration donation into history
+        if ((donor.getDonations() == null || donor.getDonations().isEmpty()) && donor.getDonationDate() != null) {
+            syncInitialDonation(donor);
         }
         
         return donor;
+    }
+
+    private void syncInitialDonation(Donor donor) {
+        Donation initial = Donation.builder()
+                .donor(donor)
+                .donationFrequency(donor.getDonationFrequency())
+                .donationType(donor.getDonationType())
+                .donationAmount(donor.getDonationAmount())
+                .donationDate(donor.getDonationDate())
+                .paymentMethod(donor.getPaymentMethod())
+                .transactionId(donor.getTransactionId())
+                .remarks(donor.getRemarks())
+                .build();
+
+        if (donor.getFoodItems() != null) {
+            for (FoodDonationItem f : donor.getFoodItems()) {
+                if (f.getDonation() == null) {
+                    f.setDonation(initial);
+                    initial.getFoodItems().add(f);
+                }
+            }
+        }
+        if (donor.getMedicineItems() != null) {
+            for (MedicineDonationItem m : donor.getMedicineItems()) {
+                if (m.getDonation() == null) {
+                    m.setDonation(initial);
+                    initial.getMedicineItems().add(m);
+                }
+            }
+        }
+
+        Donation saved = donationRepository.save(initial);
+        if (donor.getDonations() == null) {
+            donor.setDonations(new ArrayList<>());
+        }
+        donor.getDonations().add(saved);
     }
 
     @Override
@@ -167,11 +216,42 @@ public class DonorServiceImpl implements DonorService {
                 com.oldagehome.portal.audit.AuditAction.CREATE, "Created donor record for: " + saved.getFullName(),
                 "Donor", saved.getId(), true, null);
 
-        BigDecimal amount = saved.getDonationAmount() != null ? saved.getDonationAmount() : BigDecimal.ZERO;
+        // Also save initial donation record to donations table so it appears in history
+        Donation initialDonation = Donation.builder()
+                .donor(saved)
+                .donationFrequency(saved.getDonationFrequency())
+                .donationType(saved.getDonationType())
+                .donationAmount(saved.getDonationAmount())
+                .donationDate(saved.getDonationDate())
+                .paymentMethod(saved.getPaymentMethod())
+                .transactionId(saved.getTransactionId())
+                .remarks(saved.getRemarks())
+                .build();
+
+        if (saved.getMedicineItems() != null) {
+            for (MedicineDonationItem med : saved.getMedicineItems()) {
+                med.setDonation(initialDonation);
+                initialDonation.getMedicineItems().add(med);
+            }
+        }
+        if (saved.getFoodItems() != null) {
+            for (FoodDonationItem food : saved.getFoodItems()) {
+                food.setDonation(initialDonation);
+                initialDonation.getFoodItems().add(food);
+            }
+        }
+
+        Donation savedDonation = donationRepository.save(initialDonation);
+        if (saved.getDonations() == null) {
+            saved.setDonations(new ArrayList<>());
+        }
+        saved.getDonations().add(savedDonation);
+
+        String amountStr = saved.getDonationAmount() != null ? "₹" + saved.getDonationAmount() : "In-Kind / Physical";
         auditService.logActivity(com.oldagehome.portal.audit.AuditModule.DONATION,
                 com.oldagehome.portal.audit.AuditAction.CREATE, "Created donation record for: " + saved.getFullName()
-                        + ", Type: " + saved.getDonationType() + ", Amount: ₹" + amount,
-                "Donation", saved.getId(), true, null);
+                        + ", Type: " + saved.getDonationType() + ", Amount: " + amountStr,
+                "Donation", savedDonation.getId(), true, null);
 
         return saved;
     }
@@ -218,6 +298,9 @@ public class DonorServiceImpl implements DonorService {
 
     @Override
     public void saveDonation(DonationFormDTO dto) {
+        if (dto.getDonorId() == null) {
+            throw new IllegalArgumentException("Donor ID cannot be null");
+        }
         Donor donor = getDonorById(dto.getDonorId());
 
         Donation donation = Donation.builder()
@@ -230,11 +313,11 @@ public class DonorServiceImpl implements DonorService {
                 .remarks(dto.getRemarks())
                 .build();
 
-        if (dto.getDonationType() == DonationType.MEDICINE
-                || (dto.getDonationType() != null && dto.getDonationType().isFoodType())) {
-            donation.setDonationAmount(BigDecimal.ZERO);
-        } else {
+        // Optional monetary amount: preserve value if > 0, otherwise store null (do not fabricate 0.00 for in-kind)
+        if (dto.getDonationAmount() != null && dto.getDonationAmount().compareTo(BigDecimal.ZERO) > 0) {
             donation.setDonationAmount(dto.getDonationAmount());
+        } else {
+            donation.setDonationAmount(null);
         }
 
         if (dto.getDonationType() == DonationType.MEDICINE && dto.getMedicineItems() != null) {
@@ -251,6 +334,7 @@ public class DonorServiceImpl implements DonorService {
                         .displayOrder(displayOrder++)
                         .build();
                 donation.getMedicineItems().add(item);
+                donor.getMedicineItems().add(item);
             }
         } else if (dto.getDonationType() != null && dto.getDonationType().isFoodType() && dto.getFoodItems() != null) {
             int displayOrder = 1;
@@ -265,6 +349,7 @@ public class DonorServiceImpl implements DonorService {
                         .displayOrder(displayOrder++)
                         .build();
                 donation.getFoodItems().add(item);
+                donor.getFoodItems().add(item);
                 
                 // Aggregate into raw material inventory
                 if (item.getQuantity() != null && !item.getQuantity().isEmpty()) {
@@ -274,12 +359,32 @@ public class DonorServiceImpl implements DonorService {
         }
 
         Donation saved = donationRepository.save(donation);
+        if (donor.getDonations() == null) {
+            donor.setDonations(new ArrayList<>());
+        }
+        if (!donor.getDonations().contains(saved)) {
+            donor.getDonations().add(saved);
+        }
 
-        BigDecimal amount = saved.getDonationAmount() != null ? saved.getDonationAmount() : BigDecimal.ZERO;
+        String amountDisplay = saved.getDonationAmount() != null ? "₹" + saved.getDonationAmount() : "In-Kind / Physical";
         auditService.logActivity(com.oldagehome.portal.audit.AuditModule.DONATION,
                 com.oldagehome.portal.audit.AuditAction.CREATE, "Added new donation for: " + donor.getFullName()
-                        + ", Type: " + saved.getDonationType() + ", Amount: ₹" + amount,
+                        + ", Type: " + saved.getDonationType() + ", Amount: " + amountDisplay,
                 "Donation", saved.getId(), true, null);
+    }
+
+    @Override
+    public List<Donation> getDonationsByDonorId(Long donorId) {
+        if (donorId == null || donorId <= 0) {
+            return Collections.emptyList();
+        }
+        List<Donation> list = donationRepository.findAllByDonorIdOrderByDonationDateDescCreatedAtDesc(donorId);
+        // Eagerly initialize child collections inside transaction to prevent LazyInitializationException
+        for (Donation d : list) {
+            if (d.getFoodItems() != null) d.getFoodItems().size();
+            if (d.getMedicineItems() != null) d.getMedicineItems().size();
+        }
+        return list;
     }
 
     private void mapDtoToEntity(DonorFormDTO dto, Donor donor) {
@@ -296,12 +401,11 @@ public class DonorServiceImpl implements DonorService {
         donor.setDonationType(dto.getDonationType());
         donor.setDonationCategory(dto.getDonationCategory());
 
-        // Handle specific type requirements
-        if (dto.getDonationType() == DonationType.MEDICINE
-                || (dto.getDonationType() != null && dto.getDonationType().isFoodType())) {
-            donor.setDonationAmount(BigDecimal.ZERO);
-        } else {
+        // Handle specific type requirements without fabricating zero for in-kind
+        if (dto.getDonationAmount() != null && dto.getDonationAmount().compareTo(BigDecimal.ZERO) > 0) {
             donor.setDonationAmount(dto.getDonationAmount());
+        } else {
+            donor.setDonationAmount(null);
         }
 
         donor.setDonationDate(dto.getDonationDate());

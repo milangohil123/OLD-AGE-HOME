@@ -1,18 +1,13 @@
 package com.oldagehome.portal.inventory;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class InventoryItemDTO {
     private String itemName;
     private String category; // Food, Medicine
@@ -23,6 +18,21 @@ public class InventoryItemDTO {
     
     @Builder.Default
     private List<InventoryContributorDTO> contributors = new ArrayList<>();
+
+    public InventoryItemDTO() {
+    }
+
+    @Builder
+    public InventoryItemDTO(String itemName, String category, double totalQuantity, String unit,
+                            int donorsCount, LocalDate lastContributionDate, List<InventoryContributorDTO> contributors) {
+        this.itemName = itemName;
+        this.category = category;
+        this.totalQuantity = totalQuantity;
+        this.unit = unit;
+        this.donorsCount = donorsCount;
+        this.lastContributionDate = lastContributionDate;
+        this.contributors = contributors != null ? contributors : new ArrayList<>();
+    }
     
     public String getFormattedTotalQuantity() {
         if (totalQuantity == (long) totalQuantity) {

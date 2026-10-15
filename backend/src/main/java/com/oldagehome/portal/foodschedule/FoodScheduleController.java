@@ -6,7 +6,6 @@ import com.oldagehome.portal.audit.AuditService;
 import com.oldagehome.portal.foodschedule.dto.FoodScheduleDTO;
 import com.oldagehome.portal.foodschedule.dto.SearchDTO;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,11 +18,15 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/food-schedule")
-@RequiredArgsConstructor
 public class FoodScheduleController {
 
     private final FoodScheduleService foodScheduleService;
     private final AuditService auditService;
+
+    public FoodScheduleController(FoodScheduleService foodScheduleService, AuditService auditService) {
+        this.foodScheduleService = foodScheduleService;
+        this.auditService = auditService;
+    }
 
     @GetMapping
     public String listSchedules(

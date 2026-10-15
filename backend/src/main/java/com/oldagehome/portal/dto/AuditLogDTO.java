@@ -2,17 +2,12 @@ package com.oldagehome.portal.dto;
 
 import com.oldagehome.portal.audit.AuditAction;
 import com.oldagehome.portal.audit.AuditModule;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class AuditLogDTO {
     private Long id;
     private String username;
@@ -31,4 +26,31 @@ public class AuditLogDTO {
     private LocalDateTime timestamp;
     private Boolean success;
     private String errorMessage;
+
+    public AuditLogDTO() {
+    }
+
+    @Builder
+    public AuditLogDTO(Long id, String username, String fullName, String role, AuditModule module,
+                       AuditAction action, String description, String entityName, Long entityId,
+                       String ipAddress, String browser, String operatingSystem, String requestUrl,
+                       String httpMethod, LocalDateTime timestamp, Boolean success, String errorMessage) {
+        this.id = id;
+        this.username = username;
+        this.fullName = fullName;
+        this.role = role;
+        this.module = module;
+        this.action = action;
+        this.description = description;
+        this.entityName = entityName;
+        this.entityId = entityId;
+        this.ipAddress = ipAddress;
+        this.browser = browser;
+        this.operatingSystem = operatingSystem;
+        this.requestUrl = requestUrl;
+        this.httpMethod = httpMethod;
+        this.timestamp = timestamp;
+        this.success = success;
+        this.errorMessage = errorMessage;
+    }
 }

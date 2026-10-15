@@ -1,10 +1,8 @@
 package com.oldagehome.portal.receipt;
 
 import com.oldagehome.portal.donor.DonationType;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -17,9 +15,6 @@ import java.util.List;
  * No @Entity — purely a view/presentation DTO.
  */
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class ReceiptDTO {
 
     // ── Receipt Meta ──────────────────────────────────────────────────────────
@@ -55,14 +50,53 @@ public class ReceiptDTO {
     // ── Back-link ─────────────────────────────────────────────────────────────
     private String backUrl;
 
+    public ReceiptDTO() {
+    }
+
+    @Builder
+    public ReceiptDTO(String receiptNumber, DonationType donationType, Long donorId, Long donationId,
+                      String donorName, String address, String city, String state, String pincode,
+                      String email, String mobile, String idProof, LocalDate birthDate, LocalDate marriageDate,
+                      LocalDate donationDate, String paymentMethod, String transactionId, BigDecimal donationAmount,
+                      String amountInWords, String remarks, List<ReceiptItemDTO> items, String backUrl) {
+        this.receiptNumber = receiptNumber;
+        this.donationType = donationType;
+        this.donorId = donorId;
+        this.donationId = donationId;
+        this.donorName = donorName;
+        this.address = address;
+        this.city = city;
+        this.state = state;
+        this.pincode = pincode;
+        this.email = email;
+        this.mobile = mobile;
+        this.idProof = idProof;
+        this.birthDate = birthDate;
+        this.marriageDate = marriageDate;
+        this.donationDate = donationDate;
+        this.paymentMethod = paymentMethod;
+        this.transactionId = transactionId;
+        this.donationAmount = donationAmount;
+        this.amountInWords = amountInWords;
+        this.remarks = remarks;
+        this.items = items != null ? items : new ArrayList<>();
+        this.backUrl = backUrl;
+    }
+
     // ─────────────────────────────────────────────────────────────────────────
 
     @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
     public static class ReceiptItemDTO {
         private String particulars;
         private String quantity;
+
+        public ReceiptItemDTO() {
+        }
+
+        @Builder
+        public ReceiptItemDTO(String particulars, String quantity) {
+            this.particulars = particulars;
+            this.quantity = quantity;
+        }
     }
 }

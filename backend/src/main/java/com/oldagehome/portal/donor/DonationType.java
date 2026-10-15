@@ -22,7 +22,8 @@ public enum DonationType {
     LUNCH_KIT("Lunch Kit"),
     DINNER_KIT("Dinner Kit"),
     SNACKS("Snacks"),
-    OTHER_FOOD_ITEM("Other Food Item");
+    OTHER_FOOD_ITEM("Other Food Item"),
+    GROCERY("In-Kind / Grocery Donation");
 
     private final String displayName;
 

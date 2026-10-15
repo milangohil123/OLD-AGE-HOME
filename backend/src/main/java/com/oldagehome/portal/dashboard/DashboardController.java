@@ -1,8 +1,5 @@
 package com.oldagehome.portal.dashboard;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.oldagehome.portal.donor.Donor;
 import com.oldagehome.portal.donor.DonorService;
 import com.oldagehome.portal.resident.ResidentService;
 import org.springframework.beans.factory.annotation.Autowired;
